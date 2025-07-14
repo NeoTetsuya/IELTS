@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourism - Interactive Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab.active {
+            border-bottom-color: #3B82F6;
+            color: #3B82F6;
+            font-weight: 600;
+        }
+        /* Style for clickable vocabulary terms */
+        .vocab-term-interactive {
+            background-color: #EFF6FF;
+            color: #1D4ED8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px dotted #60A5FA;
+            transition: background-color 0.2s;
+        }
+        .vocab-term-interactive:hover {
+            background-color: #DBEAFE;
+        }
+        .answer-feedback {
+            display: none;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        .correct {
+            color: #16A34A;
+        }
+        .incorrect {
+            color: #DC2626;
+        }
+        .question-container {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        /* Popover styles */
+        #vocab-popover {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            transform: translateY(10px);
+        }
+        /* Language switcher styles */
+        .lang-btn.active {
+            background-color: #3B82F6;
+            color: white;
+        }
+        /* Hide inactive language content */
+        .lang-vi, .lang-en {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+             <!-- Language Switcher -->
+            <div class="flex justify-center space-x-2 mb-4">
+                <button id="lang-btn-vi" class="lang-btn px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Tiếng Việt</button>
+                <button id="lang-btn-en" class="lang-btn active px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">English</button>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">
+                <span class="lang-vi">Du lịch</span>
+                <span class="lang-en">Tourism</span>
+            </h1>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex flex-wrap justify-center sm:justify-start -mb-px space-x-4 sm:space-x-8" aria-label="Tabs">
+                <button class="tab active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="words">
+                    <span class="lang-vi">Từ vựng trong ngữ cảnh</span>
+                    <span class="lang-en">Words in Context</span>
+                </button>
+                <button class="tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="explore">
+                    <span class="lang-vi">Khám phá kiến thức</span>
+                    <span class="lang-en">Explore Knowledge</span>
+                </button>
+                <button class="tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="apply">
+                    <span class="lang-vi">Hiểu & Áp dụng</span>
+                    <span class="lang-en">Understanding & Applying</span>
+                </button>
+                 <button class="tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="essay">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tab-contents">
+            <!-- Words in Context Section -->
+            <div id="words" class="tab-content active">
+                <div class="space-y-4 text-justify">
+                    <h2 class="text-2xl font-semibold text-gray-900 border-b pb-2">
+                         <span class="lang-vi">Du lịch ảnh hưởng đến văn hóa và xã hội như thế nào?</span>
+                         <span class="lang-en">How does tourism affect culture and society?</span>
+                    </h2>
+                    <div class="lang-vi space-y-4">
+                        <p>Mặc dù du lịch đóng góp to lớn cho nền kinh tế và sự phát triển của địa phương, nó cũng có thể có ảnh hưởng khác nhau cho <span class="vocab-term-interactive" data-definition="Những khía cạnh văn hóa và xã hội">the social and cultural aspects</span> của địa phương.</p>
+                        <p>Ở mặt tích cực, sự phát triển của du lịch tại một địa phương sẽ giúp <span class="vocab-term-interactive" data-definition="Bảo tồn những di sản của địa phương">preserve the local heritage</span> và <span class="vocab-term-interactive" data-definition="Cung cấp cơ sở vật chất tốt hơn">provide better facilities</span>. Du lịch còn <span class="vocab-term-interactive" data-definition="Tạo nhiều việc làm">create more job opportunities for local inhabitants</span> và điều này sẽ giúp <span class="vocab-term-interactive" data-definition="Cải thiện mức sống">improve living standards</span> của họ. Ngoài ra, việc tiếp xúc thường xuyên giữa người dân địa phương và khách du lịch đến từ <span class="vocab-term-interactive" data-definition="Lý lịch đa dạng">diverse backgrounds</span> sẽ tạo ra <span class="vocab-term-interactive" data-definition="Sự đa dạng văn hóa">cultural diversity</span>, giúp cho người dân địa phương có cơ hội <span class="vocab-term-interactive" data-definition="Mở mang kiến thức">expand knowledge</span> từ một xã hội phát triển và văn minh hơn.</p>
+                        <p>Tuy nhiên, khi mật độ du khách và các phương tiện giao thông tăng lên quá nhanh, cơ sở hạ tầng có thể không đủ để đáp ứng và do đó dẫn tới <span class="vocab-term-interactive" data-definition="Đông đúc chật chội và kém vệ sinh">overcrowding and poor sanitation</span>. <span class="vocab-term-interactive" data-definition="Sự xâm nhập của người ngoài">The intrusion of outsiders</span> vào địa phương nếu không có sự kiểm soát cũng có thể dẫn tới <span class="vocab-term-interactive" data-definition="Bùng phát dịch bệnh">a disease outbreak</span>. Ngoài ra, người dân địa phương có thể sao chép lối sống của du khách mà quên đi các <span class="vocab-term-interactive" data-definition="Quy chuẩn hành vi">standards of behavior</span> của quê hương mình, do đó dẫn đến <span class="vocab-term-interactive" data-definition="Sự mất đi của truyền thống và tập quán địa phương">the loss of local traditions and customs</span>.</p>
+                        <p>Nhiều khách du lịch cũng không nhận thức được <span class="vocab-term-interactive" data-definition="Những giá trị đạo đức và tín ngưỡng ở địa phương">the local moral and religious values</span> bằng việc ăn mặc không phù hợp khi đặt chân đến <span class="vocab-term-interactive" data-definition="Những điểm tham quan mang tính tín ngưỡng">religious attractions</span>. Điều này khiến cho nhiều người dân địa phương hiểu nhầm rằng khách du lịch đang <span class="vocab-term-interactive" data-definition="Thiếu tôn trọng tập quán và những giá trị đạo đức">disrespect their customs and moral values</span>, dẫn đến sự căng thẳng giữa khách du lịch và người dân địa phương.</p>
+                    </div>
+                    <div class="lang-en space-y-4">
+                        <p>Although tourism contributes greatly to the local economy and development, it can also have various impacts on the <span class="vocab-term-interactive" data-definition="Những khía cạnh văn hóa và xã hội">social and cultural aspects</span> of the locality.</p>
+                        <p>On the positive side, the development of tourism in a locality will help <span class="vocab-term-interactive" data-definition="Bảo tồn những di sản của địa phương">preserve the local heritage</span> and <span class="vocab-term-interactive" data-definition="Cung cấp cơ sở vật chất tốt hơn">provide better facilities</span>. Tourism also <span class="vocab-term-interactive" data-definition="Tạo nhiều việc làm">creates more job opportunities for local inhabitants</span>, which will help <span class="vocab-term-interactive" data-definition="Cải thiện mức sống">improve their living standards</span>. In addition, regular contact between local people and tourists from <span class="vocab-term-interactive" data-definition="Lý lịch đa dạng">diverse backgrounds</span> will create <span class="vocab-term-interactive" data-definition="Sự đa dạng văn hóa">cultural diversity</span>, giving local people the opportunity to <span class="vocab-term-interactive" data-definition="Mở mang kiến thức">expand their knowledge</span> from a more developed and civilized society.</p>
+                        <p>However, when the density of tourists and vehicles increases too quickly, the infrastructure may not be sufficient to meet the demand, leading to <span class="vocab-term-interactive" data-definition="Đông đúc chật chội và kém vệ sinh">overcrowding and poor sanitation</span>. <span class="vocab-term-interactive" data-definition="Sự xâm nhập của người ngoài">The intrusion of outsiders</span> into the locality, if not controlled, can also lead to <span class="vocab-term-interactive" data-definition="Bùng phát dịch bệnh">a disease outbreak</span>. Furthermore, local people may copy the lifestyles of tourists and forget their own <span class="vocab-term-interactive" data-definition="Quy chuẩn hành vi">standards of behavior</span>, leading to <span class="vocab-term-interactive" data-definition="Sự mất đi của truyền thống và tập quán địa phương">the loss of local traditions and customs</span>.</p>
+                        <p>Many tourists are also unaware of <span class="vocab-term-interactive" data-definition="Những giá trị đạo đức và tín ngưỡng ở địa phương">the local moral and religious values</span> by dressing inappropriately when visiting <span class="vocab-term-interactive" data-definition="Những điểm tham quan mang tính tín ngưỡng">religious attractions</span>. This can make many locals feel that tourists are <span class="vocab-term-interactive" data-definition="Thiếu tôn trọng tập quán và những giá trị đạo đức">disrespecting their customs and moral values</span>, leading to tension between tourists and local people.</p>
+                    </div>
+                    <p class="mt-6 text-center text-gray-500 italic">
+                        <span class="lang-vi">Nhấp vào các từ được đánh dấu để xem ý nghĩa của chúng.</span>
+                        <span class="lang-en">Click on the highlighted words to see their meaning.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Explore Knowledge Section -->
+            <div id="explore" class="tab-content">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">
+                    <span class="lang-vi">Phần 1: Đánh giá độ phù hợp</span>
+                    <span class="lang-en">Part 1: Assess Suitability</span>
+                </h2>
+                <div class="space-y-4">
+                    <div class="question-container">
+                        <p><strong>1.</strong> In tourist destinations, the locals interact with the tourists and mix with people from <strong>similar backgrounds</strong>, which creates cultural diversity in the region.</p>
+                        <p class="lang-vi text-sm text-gray-600 mt-1"><em>Ở các địa điểm du lịch, người dân địa phương tiếp xúc với khách du lịch đến từ nhiều similar backgrounds, điều này tạo ra cultural diversity ở khu vực.</em></p>
+                        <div class="mt-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="checkSuitability(this, false)">
+                                <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                            </button>
+                            <span class="answer-feedback ml-4"></span>
+                        </div>
+                    </div>
+                    <div class="question-container">
+                        <p><strong>2.</strong> The government does not need to invest money in <strong>preserving the local heritage</strong> because it cannot be damaged or destroyed no matter how big the domestic tourism industry gets.</p>
+                         <p class="lang-vi text-sm text-gray-600 mt-1"><em>Chính phủ không cần đầu tư tiền cho việc preserving the local heritage bởi vì nó không thể bị gây hại hoặc phá huỷ cho dù ngành du lịch trong nước có phát triển đến mức nào đi chăng nữa.</em></p>
+                        <div class="mt-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="checkSuitability(this, false)">
+                                <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                            </button>
+                            <span class="answer-feedback ml-4"></span>
+                        </div>
+                    </div>
+                    <div class="question-container">
+                        <p><strong>3.</strong> The development of the tourism sector <strong>creates more job opportunities</strong> for local inhabitants because of a higher demand for goods and services (hotel, entertainment etc).</p>
+                        <p class="lang-vi text-sm text-gray-600 mt-1"><em>Sự phát triển của ngành du lịch creates more job opportunities cho người dân địa phương bởi vì nhu cầu cho sản phẩm và dịch vụ gia tăng (khách sạn, giải trí v...v...).</em></p>
+                        <div class="mt-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="checkSuitability(this, true)">
+                                <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                            </button>
+                            <span class="answer-feedback ml-4"></span>
+                        </div>
+                    </div>
+                    <div class="question-container">
+                        <p><strong>4.</strong> When organized tours to remote areas are more and more popular, the locals will have the opportunity to <strong>expand their knowledge</strong> due to exposure to people from more civilized societies.</p>
+                        <p class="lang-vi text-sm text-gray-600 mt-1"><em>Khi các Tours du lịch đến những vừng xa xôi hẻo lánh trở lên phổ biến, người dân địa phương sẽ có cơ hội expand their knowledge vì có sự tiếp xúc đến du khách đến từ những xã hội phát triển và văn minh hơn.</em></p>
+                        <div class="mt-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="checkSuitability(this, true)">
+                                <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                            </button>
+                            <span class="answer-feedback ml-4"></span>
+                        </div>
+                    </div>
+                    <div class="question-container">
+                        <p><strong>5.</strong> Lack of clean water and <strong>poor sanitation</strong> have negligible effects on people's health.</p>
+                        <p class="lang-vi text-sm text-gray-600 mt-1"><em>Việc thiếu nước sạch và poor sanitation có rất ít ảnh hưởng tới sức khoẻ mọi người.</em></p>
+                        <div class="mt-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="checkSuitability(this, false)">
+                                <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                            </button>
+                            <span class="answer-feedback ml-4"></span>
+                        </div>
+                    </div>
+                     <div class="question-container">
+                        <p><strong>6.</strong> The typical example of a <strong>disease outbreak</strong> can be seen in the recent Ebola outbreak, where infected travelers carried the virus from Africa to a number of other countries.</p>
+                        <p class="lang-vi text-sm text-gray-600 mt-1"><em>Ví dụ điển hình của a disease outbreak có thể nhìn thấy ở sự bùng phát bệnh Ebola, khi mà các khách du lịch nhiễm bệnh mang Virus từ Châu Phi đến một vài quốc gia khác.</em></p>
+                        <div class="mt-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="checkSuitability(this, true)">
+                                <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                            </button>
+                            <span class="answer-feedback ml-4"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mt-10 mb-6">
+                    <span class="lang-vi">Phần 2: Trắc nghiệm</span>
+                    <span class="lang-en">Part 2: Multiple Choice</span>
+                </h2>
+                 <div class="space-y-4">
+                    <div class="question-container" data-correct="B">
+                        <p><strong>1.</strong> Vietnam is famous for ___ including more than 50 different ethnic groups, each with its own language.</p>
+                        <p class="lang-vi text-sm text-gray-600 mt-1"><em>Vietnam nổi tiếng với ___ bao gồm hơn 50 dân tộc thiểu số, mỗi dân tộc đều có ngôn ngữ riêng của họ.</em></p>
+                        <div class="mt-2 space-y-2">
+                            <label class="flex items-center"><input type="radio" name="q1" value="A" class="mr-2"> A. similar backgrounds.</label>
+                            <label class="flex items-center"><input type="radio" name="q1" value="B" class="mr-2"> B. cultural diversity.</label>
+                            <label class="flex items-center"><input type="radio" name="q1" value="C" class="mr-2"> C. religious attractions.</label>
+                        </div>
+                        <div class="mt-2">
+                             <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="checkMCQ(this)">
+                                <span class="lang-vi">Kiểm tra</span><span class="lang-en">Check Answer</span>
+                             </button>
+                             <span class="answer-feedback ml-4"></span>
+                        </div>
+                    </div>
+                     <div class="question-container" data-correct="C">
+                        <p><strong>2.</strong> In many tourist destinations, many people are forced to abandon their traditional jobs and work in the tourist industry, which leads to ___.</p>
+                        <p class="lang-vi text-sm text-gray-600 mt-1"><em>Ở nhiều địa điểm du lịch, nhiều người bị ép buộc phải bỏ công việc truyền thống và tham gia làm việc trong nghành du lịch, điều này dẫn đến ___.</em></p>
+                        <div class="mt-2 space-y-2">
+                            <label class="flex items-center"><input type="radio" name="q2" value="A" class="mr-2"> A. overcrowding</label>
+                            <label class="flex items-center"><input type="radio" name="q2" value="B" class="mr-2"> B. cultural diversity</label>
+                            <label class="flex items-center"><input type="radio" name="q2" value="C" class="mr-2"> C. the loss of local traditions</label>
+                        </div>
+                        <div class="mt-2">
+                             <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="checkMCQ(this)">
+                                <span class="lang-vi">Kiểm tra</span><span class="lang-en">Check Answer</span>
+                             </button>
+                             <span class="answer-feedback ml-4"></span>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+            <!-- Understanding & Applying Section -->
+            <div id="apply" class="tab-content">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">
+                    <span class="lang-vi">Phần 1: Mở rộng câu</span>
+                    <span class="lang-en">Part 1: Extend the Sentences</span>
+                </h2>
+                <p class="mb-4 text-gray-600">
+                    <span class="lang-vi">Sử dụng tối thiểu 1 trong những từ / cụm từ gợi ý để mở rộng các câu sau.</span>
+                    <span class="lang-en">Use at least one of the suggested words/phrases to expand the following sentences.</span>
+                </p>
+                <div class="space-y-6">
+                    <div class="question-container">
+                        <p><strong>1.</strong> Although many people think international tourism is likely to cause tension, my conviction is that...</p>
+                        <p class="text-sm text-blue-600 my-2"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Suggestions</span>:</strong> facilitate, understanding, cultural backgrounds</p>
+                        <textarea class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Type your extended sentence here..."></textarea>
+                    </div>
+                    <div class="question-container">
+                        <p><strong>2.</strong> A well-developed tourism industry...</p>
+                        <p class="text-sm text-blue-600 my-2"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Suggestions</span>:</strong> job opportunities, local people, an influx of money</p>
+                        <textarea class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Type your extended sentence here..."></textarea>
+                    </div>
+                    <div class="question-container">
+                        <p><strong>3.</strong> Many traditional customs are modified for...</p>
+                        <p class="text-sm text-blue-600 my-2"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Suggestions</span>:</strong> commercialization, the loss of local traditions</p>
+                        <textarea class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Type your extended sentence here..."></textarea>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mt-10 mb-6">
+                    <span class="lang-vi">Phần 2: Xây dựng câu</span>
+                    <span class="lang-en">Part 2: Build Sentences</span>
+                </h2>
+                <p class="mb-4 text-gray-600">
+                    <span class="lang-vi">Xây dựng câu hoàn chỉnh chứa ít nhất một trong các cụm từ cho sẵn dưới đây.</span>
+                    <span class="lang-en">Construct a complete sentence containing at least one of the given phrases.</span>
+                </p>
+                 <div class="space-y-6">
+                    <div class="question-container">
+                        <p class="text-sm text-blue-600 my-2"><strong><span class="lang-vi">Cụm từ</span><span class="lang-en">Phrases</span>:</strong> Boost economy, the social and cultural aspects, host communities.</p>
+                        <textarea class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Type your sentence here..."></textarea>
+                    </div>
+                    <div class="question-container">
+                        <p class="text-sm text-blue-600 my-2"><strong><span class="lang-vi">Cụm từ</span><span class="lang-en">Phrases</span>:</strong> Holidaymakers, local customs and moral values, dress inappropriately.</p>
+                        <textarea class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Type your sentence here..."></textarea>
+                    </div>
+                 </div>
+            </div>
+            
+            <!-- Essay Practice Section -->
+            <div id="essay" class="tab-content">
+                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </h2>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <span class="lang-vi">Đề bài</span>
+                        <span class="lang-en">Essay Prompt</span>
+                    </h3>
+                    <p class="mt-2 text-gray-700 italic">"Nowadays, international tourism is the biggest industry in the world. Unfortunately, international tourism creates tension rather than understanding between people from different cultures. To what extent do you agree or disagree with this opinion?"</p>
+                    
+                    <hr class="my-6">
+
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <span class="lang-vi">Gợi ý & Ý tưởng</span>
+                        <span class="lang-en">Brainstorming & Ideas</span>
+                    </h4>
+                    <p class="mt-2 mb-4 text-gray-600">
+                        <span class="lang-vi">Xem xét các điểm sau cho bài luận của bạn:</span>
+                        <span class="lang-en">Consider the following points for your essay:</span>
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Arguments for "Creates Tension" -->
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h4 class="font-semibold text-red-800">
+                                <span class="lang-vi">Lập luận cho "Gây căng thẳng"</span>
+                                <span class="lang-en">Arguments for "Creates Tension"</span>
+                            </h4>
+                            <ul class="mt-2 list-disc list-inside space-y-2 text-sm text-red-700">
+                                <li>
+                                    <span class="lang-vi">Góp phần làm mất đi truyền thống và phong tục địa phương.</span>
+                                    <span class="lang-en">Contributes to the loss of local traditions and customs.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-vi">Sự xâm nhập của người ngoài có thể khiến người dân địa phương sao chép lối sống (ví dụ: mặc quần short, uống rượu).</span>
+                                    <span class="lang-en">The intrusion of outsiders can lead to locals copying lifestyles (e.g., wearing shorts, drinking alcohol).</span>
+                                </li>
+                                <li>
+                                    <span class="lang-vi">Nhiều khách du lịch quốc tế không tôn trọng phong tục và các giá trị đạo đức của địa phương.</span>
+                                    <span class="lang-en">Many international tourists disrespect local customs and moral values.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-vi">Ăn mặc không phù hợp (ví dụ: váy ngắn) tại các điểm tham quan tôn giáo.</span>
+                                    <span class="lang-en">Dressing inappropriately (e.g., short skirts) at religious attractions.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Arguments for "Builds Understanding" -->
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-semibold text-green-800">
+                                <span class="lang-vi">Lập luận cho "Xây dựng sự hiểu biết"</span>
+                                <span class="lang-en">Arguments for "Builds Understanding"</span>
+                            </h4>
+                            <ul class="mt-2 list-disc list-inside space-y-2 text-sm text-green-700">
+                                <li>
+                                    <span class="lang-vi">Tạo điều kiện trao đổi văn hóa.</span>
+                                    <span class="lang-en">Facilitates cultural exchange.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-vi">Tương tác với khách du lịch từ các nền văn hóa đa dạng tạo ra sự đa dạng văn hóa.</span>
+                                    <span class="lang-en">Interaction with tourists from diverse backgrounds creates cultural diversity.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-vi">Giúp mở rộng kiến thức và hiểu biết về một xã hội văn minh hơn.</span>
+                                    <span class="lang-en">Helps broaden knowledge and understanding of a more civilized society.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-vi">Mang lại cho khách du lịch những trải nghiệm độc đáo và giúp họ nhận thức được các giá trị đạo đức và tôn giáo.</span>
+                                    <span class="lang-en">Gives tourists unique experiences and makes them aware of moral and religious values.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                     <hr class="my-6">
+
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <span class="lang-vi">Bài luận của bạn</span>
+                        <span class="lang-en">Your Essay</span>
+                    </h3>
+                    <textarea class="w-full mt-4 p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="15" placeholder="Start writing your 250-word essay here..."></textarea>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Popover element -->
+    <div id="vocab-popover" class="hidden absolute z-20 w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl border border-gray-700">
+        <h4 id="popover-term" class="font-bold text-lg text-blue-300"></h4>
+        <p id="popover-definition" class="mt-1"></p>
+    </div>
+
+
+    <script>
+        // --- Global variables and functions ---
+        let langButtons; // Will be initialized after DOM loads
+
+        // This function is called by inline onclick attributes, so it must be global.
+        function checkSuitability(button, isCorrect) {
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (isCorrect) {
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Đúng.</strong> Cụm từ được sử dụng phù hợp.' : '<strong>Correct.</strong> The use of the phrase is appropriate.';
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Sai.</strong> Cụm từ không được sử dụng phù hợp hoặc câu có lỗi logic.' : '<strong>Incorrect.</strong> The phrase is not used appropriately or the statement is logically flawed.';
+            }
+        }
+
+        // This function is called by inline onclick attributes, so it must be global.
+        function checkMCQ(button) {
+            const questionContainer = button.closest('.question-container');
+            const correctAnswer = questionContainer.dataset.correct;
+            const selectedAnswer = questionContainer.querySelector('input[type="radio"]:checked');
+            const feedback = button.nextElementSibling;
+            
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (!selectedAnswer) {
+                feedback.textContent = lang === 'vi' ? 'Vui lòng chọn một câu trả lời.' : 'Please select an answer.';
+                feedback.className = 'answer-feedback incorrect';
+                return;
+            }
+
+            if (selectedAnswer.value === correctAnswer) {
+                feedback.textContent = lang === 'vi' ? 'Đúng!' : 'Correct!';
+                feedback.className = 'answer-feedback correct';
+            } else {
+                feedback.textContent = lang === 'vi' ? `Sai. Đáp án đúng là ${correctAnswer}.` : `Incorrect. The correct answer is ${correctAnswer}.`;
+                feedback.className = 'answer-feedback incorrect';
+            }
+        }
+
+
+        // --- Main script execution after DOM is loaded ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Initialize global variables ---
+            langButtons = {
+                vi: document.getElementById('lang-btn-vi'),
+                en: document.getElementById('lang-btn-en')
+            };
+
+            // --- Language Switcher Functionality ---
+            function setLanguage(lang) {
+                // Hide all language elements
+                document.querySelectorAll('.lang-vi, .lang-en').forEach(el => el.style.display = 'none');
+                // Show elements for the selected language
+                document.querySelectorAll(`.lang-${lang}`).forEach(el => el.style.display = 'inline');
+
+                // Update button styles
+                for (const key in langButtons) {
+                    langButtons[key].classList.remove('active');
+                }
+                langButtons[lang].classList.add('active');
+            }
+
+            langButtons.vi.addEventListener('click', () => setLanguage('vi'));
+            langButtons.en.addEventListener('click', () => setLanguage('en'));
+            
+            setLanguage('en'); // Set initial language
+
+            // --- Tab Functionality ---
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+
+            // --- Vocabulary Popover Functionality ---
+            const popover = document.getElementById('vocab-popover');
+            const popoverTerm = document.getElementById('popover-term');
+            const popoverDefinition = document.getElementById('popover-definition');
+            const vocabTerms = document.querySelectorAll('.vocab-term-interactive');
+
+            vocabTerms.forEach(term => {
+                term.addEventListener('click', (event) => {
+                    event.stopPropagation(); 
+                    popoverTerm.textContent = term.textContent;
+                    popoverDefinition.textContent = term.dataset.definition;
+                    const rect = term.getBoundingClientRect();
+                    popover.style.left = `${rect.left + window.scrollX}px`;
+                    popover.style.top = `${rect.bottom + window.scrollY + 8}px`;
+                    popover.classList.remove('hidden');
+                    setTimeout(() => {
+                        popover.style.opacity = '1';
+                        popover.style.transform = 'translateY(0)';
+                    }, 10);
+                });
+            });
+
+            document.addEventListener('click', () => {
+                if (!popover.classList.contains('hidden')) {
+                    popover.style.opacity = '0';
+                    popover.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        popover.classList.add('hidden');
+                    }, 200);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
