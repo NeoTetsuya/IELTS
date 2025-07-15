@@ -65,302 +65,386 @@
 
         <!-- Main Content -->
         <main class="flex-1 p-4 md:p-10">
-            <!-- Page 1: Introduction -->
-            <div id="page-intro" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-bold mb-6 text-gray-700">1. Giới thiệu các loại bản đồ</h2>
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-600">Miêu tả bản đồ đôi:</h3>
-                        <p class="text-lg leading-relaxed">Đây là dạng bài thường xuất hiện hơn cả. Đề bài thường sẽ yêu cầu người viết miêu tả sự thay đổi của một địa điểm giữa quá khứ và hiện tại hoặc giữa hiện tại và tương lai.</p>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-600">Miêu tả bản đồ đơn:</h3>
-                        <p class="text-lg leading-relaxed">Dạng bài này hiếm khi xuất hiện và nó chỉ thường yêu cầu người viết miêu tả một vài sự thay đổi CÓ THỂ DIỄN RA trong một khu vực hơn là những thay đổi đã diễn ra.</p>
+            <div class="max-w-5xl mx-auto">
+                <!-- Page 1: Introduction -->
+                <div id="page-intro" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">1. Giới thiệu các loại bản đồ</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-indigo-600">Miêu tả bản đồ đôi:</h3>
+                            <p class="text-lg leading-relaxed">Đây là dạng bài thường xuất hiện hơn cả. Đề bài thường sẽ yêu cầu người viết miêu tả sự thay đổi của một địa điểm giữa quá khứ và hiện tại hoặc giữa hiện tại và tương lai.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-indigo-600">Miêu tả bản đồ đơn:</h3>
+                            <p class="text-lg leading-relaxed">Dạng bài này hiếm khi xuất hiện và nó chỉ thường yêu cầu người viết miêu tả một vài sự thay đổi CÓ THỂ DIỄN RA trong một khu vực hơn là những thay đổi đã diễn ra.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Page 2: Language of Location -->
-            <div id="page-location" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-bold mb-6 text-gray-700">2. Ngôn ngữ Vị trí (Directional Languages)</h2>
-                <p class="text-lg mb-6">Ngôn ngữ vị trí miêu tả vị trí trong không gian của các thành phần trong bản đồ.</p>
+                <!-- Page 2: Language of Location -->
+                <div id="page-location" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">2. Ngôn ngữ Vị trí (Directional Languages)</h2>
+                    <p class="text-lg mb-6">Ngôn ngữ vị trí miêu tả vị trí trong không gian của các thành phần trong bản đồ.</p>
+                    
+                    <h3 class="text-xl font-semibold mb-4 text-indigo-600">Các hướng cơ bản:</h3>
+                    <div class="flex flex-col md:flex-row items-center gap-8 mb-8">
+                        <div class="grid grid-cols-3 gap-4 text-center p-4 border rounded-lg bg-gray-50 flex-1">
+                            <div>North-west</div><div>North</div><div>North-east</div>
+                            <div>West</div><div class="font-bold">Center</div><div>East</div>
+                            <div>South-west</div><div>South</div><div>South-east</div>
+                        </div>
+                        <div class="flex-1 flex justify-center">
+                            <svg width="150" height="150" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="48" fill="white" stroke="#d1d5db" />
+                                <line x1="50" y1="10" x2="50" y2="90" stroke="#4b5563" stroke-width="1.5"/>
+                                <line x1="10" y1="50" x2="90" y2="50" stroke="#4b5563" stroke-width="1.5"/>
+                                <line x1="22" y1="22" x2="78" y2="78" stroke="#9ca3af" stroke-width="1"/>
+                                <line x1="22" y1="78" x2="78" y2="22" stroke="#9ca3af" stroke-width="1"/>
+                                <text x="50" y="8" font-size="8" font-weight="bold">N</text>
+                                <text x="50" y="98" font-size="8" font-weight="bold">S</text>
+                                <text x="5" y="54" font-size="8" font-weight="bold">W</text>
+                                <text x="95" y="54" font-size="8" font-weight="bold">E</text>
+                                <text x="18" y="20" font-size="7">NW</text>
+                                <text x="82" y="20" font-size="7">NE</text>
+                                <text x="18" y="84" font-size="7">SW</text>
+                                <text x="82" y="84" font-size="7">SE</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mb-4 text-indigo-600">Ví dụ cụ thể:</h3>
+                    <div class="space-y-6">
+                         <!-- Example 1 -->
+                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-t border-b">
+                            <div class="flex-shrink-0 flex items-center gap-2">
+                                <div class="w-20 h-12 bg-red-500 flex items-center justify-center text-white font-bold">A</div>
+                                <div class="w-20 h-12 bg-gray-400 flex items-center justify-center text-white font-bold">B</div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
+                                <ul class="list-disc list-inside">
+                                    <li>A is <span class="font-semibold">to the west/left of</span> B.</li>
+                                    <li>B is <span class="font-semibold">to the east/right of</span> A.</li>
+                                </ul>
+                            </div>
+                        </div>
+                         <!-- Example 2 -->
+                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-b">
+                             <div class="flex-shrink-0 flex flex-col items-start gap-2">
+                                <div class="w-20 h-12 bg-gray-400 flex items-center justify-center text-white font-bold ml-10">B</div>
+                                <div class="w-20 h-12 bg-red-500 flex items-center justify-center text-white font-bold">A</div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
+                                <ul class="list-disc list-inside">
+                                    <li>A is <span class="font-semibold">to the south-west of</span> B.</li>
+                                    <li>B is <span class="font-semibold">to the north-east of</span> A.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Example 3 -->
+                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-b">
+                             <div class="flex-shrink-0 relative w-48 h-16 bg-red-500 flex items-center justify-center text-white font-bold">
+                                A
+                                <div class="absolute top-2 left-2 w-12 h-12 bg-gray-400 flex items-center justify-center text-white font-bold">B</div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
+                                <ul class="list-disc list-inside">
+                                    <li>B is <span class="font-semibold">in the east/on the left-hand side of</span> A.</li>
+                                </ul>
+                            </div>
+                        </div>
+                         <!-- Example 4 -->
+                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-b">
+                             <div class="flex-shrink-0 relative w-32 h-32 bg-red-500 flex items-center justify-center text-white font-bold">
+                                A
+                                <div class="absolute bottom-2 right-2 w-16 h-12 bg-gray-400 flex items-center justify-center text-white font-bold">B</div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
+                                <ul class="list-disc list-inside">
+                                    <li>B is <span class="font-semibold">in the south-west/on the bottom right-hand corner of</span> A.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Example 5 -->
+                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-b">
+                             <div class="flex-shrink-0 relative w-48 h-24 bg-red-500 flex items-center justify-center text-white font-bold">
+                                A
+                                <div class="absolute bottom-0 left-0 w-full h-10 bg-gray-400 flex items-center justify-center text-white font-bold">B</div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
+                                <ul class="list-disc list-inside">
+                                    <li>B is <span class="font-semibold">in the south/at the bottom of</span> A.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 p-4 bg-blue-50 border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg text-blue-800">Một số chú ý:</h4>
+                        <p class="mt-2 text-blue-700">Chú ý điểm khác nhau khi sử dụng các giới từ <span class="font-bold">to</span> và <span class="font-bold">in/on/at</span>. Dựa vào ví dụ minh họa ta thấy:</p>
+                        <ul class="list-disc list-inside ml-4 mt-2 space-y-2 text-blue-700">
+                            <li>“B is <strong class="text-blue-900">to the west/left of</strong> A” có nghĩa là B ở phía Tây của A, nhưng <strong class="text-blue-900">KHÔNG NẰM TRONG A</strong>. (Vietnam is to the west of Laos)</li>
+                            <li>“B is <strong class="text-blue-900">in the south-west/on the bottom right-hand corner of</strong> A” có nghĩa là B ở phía Tây Nam của A, nhưng <strong class="text-blue-900">NẰM TRONG A</strong>. (Vietnam is in the south-east of Asia)</li>
+                        </ul>
+                    </div>
+                </div>
                 
-                <h3 class="text-xl font-semibold mb-4 text-indigo-600">Các hướng cơ bản:</h3>
-                <div class="grid grid-cols-3 gap-4 text-center mb-8 p-4 border rounded-lg bg-gray-50">
-                    <div>North-west</div><div>North</div><div>North-east</div>
-                    <div>West</div><div class="font-bold">Center</div><div>East</div>
-                    <div>South-west</div><div>South</div><div>South-east</div>
-                </div>
-
-                <h3 class="text-xl font-semibold mb-4 text-indigo-600">Ví dụ cụ thể:</h3>
-                <div class="space-y-4">
-                    <p><code class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">to the west/left of</code>: B ở phía Tây của A, nhưng <span class="font-bold">không nằm trong</span> A. (Ví dụ: Vietnam is to the west of Laos)</p>
-                    <p><code class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">in the south-west of</code>: B ở phía Tây Nam của A, nhưng <span class="font-bold">nằm trong</span> A. (Ví dụ: Vietnam is in the south-east of Asia)</p>
-                    <p><code class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">surrounded by</code>: Được bao quanh bởi.</p>
-                    <p><code class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">directly opposite</code>: Đối diện trực tiếp.</p>
-                    <p><code class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">in close proximity to</code>: Ở gần.</p>
-                    <p><code class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">(halfway/midway) between</code>: Ở giữa.</p>
-                    <p><code class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">parallel to</code>: Song song với.</p>
-                    <p><code class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">perpendicular to</code>: Vuông góc với.</p>
-                </div>
-            </div>
-            
-            <!-- Page 3: Language of Change -->
-            <div id="page-change" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-bold mb-6 text-gray-700">3. Ngôn ngữ về sự Thay đổi</h2>
-                <p class="text-lg mb-6">Ngôn ngữ thay đổi thể hiện sự thay đổi theo thời gian của các đối tượng trong bản đồ. Phép so sánh để làm nổi bật ra sự thay đổi là điều cực kỳ quan trọng.</p>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border rounded-lg">
-                        <thead class="bg-indigo-500 text-white">
-                            <tr>
-                                <th class="py-3 px-4 text-left">Đối tượng</th>
-                                <th class="py-3 px-4 text-left">Sự thay đổi (Động từ)</th>
-                                <th class="py-3 px-4 text-left">Nghĩa</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <tr><td colspan="3" class="px-4 py-2 font-bold bg-indigo-100">Buildings</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Built, constructed, erected</td><td class="px-4 py-2">Được xây lên</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Renovated, reconstructed, modernized</td><td class="px-4 py-2">Được xây lại/hiện đại hóa</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Converted, transformed (into)</td><td class="px-4 py-2">Được biến đổi thành</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Replaced (by)</td><td class="px-4 py-2">Được thế chỗ bởi</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Relocated (to)</td><td class="px-4 py-2">Được di dời tới</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Extended, expanded</td><td class="px-4 py-2">Được mở rộng</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Demolished, knocked down, flattened</td><td class="px-4 py-2">Bị dỡ bỏ</td></tr>
-                            
-                            <tr><td colspan="3" class="px-4 py-2 font-bold bg-green-100">Trees/Forest</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Cut-down, chopped down</td><td class="px-4 py-2">Bị chặt hạ</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Cleared (to make way for)</td><td class="px-4 py-2">Bị xóa sổ để dành chỗ cho</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Planted</td><td class="px-4 py-2">Được trồng</td></tr>
-
-                            <tr><td colspan="3" class="px-4 py-2 font-bold bg-blue-100">Infrastructure (Bridge, road, etc.)</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Constructed, built, erected</td><td class="px-4 py-2">Được xây lên</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Extended, expanded, widened</td><td class="px-4 py-2">Được mở rộng</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Reopened</td><td class="px-4 py-2">Được khôi phục</td></tr>
-
-                            <tr><td colspan="3" class="px-4 py-2 font-bold bg-yellow-100">Amenities</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Opened up, set up, established</td><td class="px-4 py-2">Được xây dựng/thành lập</td></tr>
-                            <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Developed, expanded</td><td class="px-4 py-2">Được phát triển/mở rộng</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Page 4: Exercise 1 & 2 -->
-            <div id="page-exercise1" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-bold mb-6 text-gray-700">4. Bài tập: Vị trí & Thay đổi</h2>
-                <p class="mb-4">Dựa vào bản đồ dưới đây để hoàn thành các bài tập.</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <img src="https://i.postimg.cc/dVx19j2b/Exercise4-2005.png" alt="Map 2005" class="w-full rounded-lg shadow border">
-                    <img src="https://i.postimg.cc/0QgyT5HZ/Exercise4-2010.png" alt="Map 2010" class="w-full rounded-lg shadow border">
-                </div>
-                
-                <div id="exercise-container-1">
-                    <h3 class="text-xl font-semibold mb-4 text-indigo-600">Bài tập 1: Miêu tả vị trí (2005)</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center">1. The restaurant was <input type="text" data-answer="directly opposite" class="answer-input mx-2 p-2 border rounded-md w-48"> the hotel. <span class="answer-feedback"></span></div>
-                        <div class="flex items-center">2. The factory was <input type="text" data-answer="surrounded by" class="answer-input mx-2 p-2 border rounded-md w-48"> a lot of trees. <span class="answer-feedback"></span></div>
-                        <div class="flex items-center">3. The disused railway was <input type="text" data-answer="perpendicular to" class="answer-input mx-2 p-2 border rounded-md w-48"> the main road. <span class="answer-feedback"></span></div>
-                        <div class="flex items-center">4. The filling station was <input type="text" data-answer="on the bottom right-hand corner" class="answer-input mx-2 p-2 border rounded-md w-48"> of the map. <span class="answer-feedback"></span></div>
-                        <div class="flex items-center">5. The restaurant was <input type="text" data-answer="halfway between" class="answer-input mx-2 p-2 border rounded-md w-48"> the filling station and the hotel. <span class="answer-feedback"></span></div>
-                    </div>
-                    <button onclick="checkAnswers('exercise-container-1')" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Kiểm tra Bài 1</button>
-                </div>
-                
-                <hr class="my-8">
-
-                <div id="exercise-container-2">
-                    <h3 class="text-xl font-semibold mb-4 text-indigo-600">Bài tập 2: Miêu tả thay đổi (2010)</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center">1. The bus stop was <input type="text" data-answer="replaced by" class="answer-input mx-2 p-2 border rounded-md w-48"> a car park and <input type="text" data-answer="relocated to" class="answer-input mx-2 p-2 border rounded-md w-48"> a new place near the church. <span class="answer-feedback"></span></div>
-                        <div class="flex items-center">2. The pine trees opposite the hotel were <input type="text" data-answer="chopped down" class="answer-input mx-2 p-2 border rounded-md w-48"> to <input type="text" data-answer="make way for" class="answer-input mx-2 p-2 border rounded-md w-48"> a hospital. <span class="answer-feedback"></span></div>
-                        <div class="flex items-center">3. The disused railway was <input type="text" data-answer="reopened" class="answer-input mx-2 p-2 border rounded-md w-48"> and a new railway station was <input type="text" data-answer="built" class="answer-input mx-2 p-2 border rounded-md w-48">. <span class="answer-feedback"></span></div>
-                        <div class="flex items-center">4. The farm was <input type="text" data-answer="converted into" class="answer-input mx-2 p-2 border rounded-md w-48"> a golf course. <span class="answer-feedback"></span></div>
-                        <div class="flex items-center">5. A new road which leads to the golf course was <input type="text" data-answer="constructed" class="answer-input mx-2 p-2 border rounded-md w-48">. <span class="answer-feedback"></span></div>
-                    </div>
-                    <button onclick="checkAnswers('exercise-container-2')" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Kiểm tra Bài 2</button>
-                </div>
-            </div>
-            
-            <!-- Page 5: Islip Example -->
-            <div id="page-islip" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-bold mb-6 text-gray-700">5. Ví dụ: Thị trấn Islip (2005-2010)</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                     <img src="https://i.postimg.cc/2yGjLQjX/Islip-2005.png" alt="Islip 2005" class="w-full rounded-lg shadow border">
-                     <img src="https://i.postimg.cc/8PkzQ0t8/Islip-2010.png" alt="Islip 2010" class="w-full rounded-lg shadow border">
-                </div>
-                <div class="space-y-6 mb-6">
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 1: Phân tích bản đồ</h4>
-                        <p><strong>Phân tích THỜI GIAN:</strong> Bản đồ đã cho đưa ra 2 mốc thời gian là năm 2005 và 2010, vì vậy chúng ta sẽ sử dụng thì <strong>QUÁ KHỨ ĐƠN</strong>.</p>
-                        <p><strong>Phân tích KHÔNG GIAN:</strong> Tất cả các đối tượng đều khá quen thuộc và đã được ghi tên. Tuy nhiên có 1 khái niệm tương đối xa lạ là “Dual carriageway”. Đây là tuyến đường cao tốc có phần đất nhỏ hoặc giải phân cách ở giữa để ngăn cách 2 làn đường ngược chiều nhau. Chúng ta có thể cải thiện tiêu chí từ vựng một cách đáng kể cho bài viết của mình bằng cách PARAPHRASE lại những địa điểm đã cho trong bản đồ. Sau đây là một vài phương án PARAPHRASE khả thi:</p>
-                        <table class="min-w-full bg-white border rounded-lg mt-2">
+                <!-- Page 3: Language of Change -->
+                <div id="page-change" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">3. Ngôn ngữ về sự Thay đổi</h2>
+                    <p class="text-lg mb-6">Ngôn ngữ thay đổi thể hiện sự thay đổi theo thời gian của các đối tượng trong bản đồ. Phép so sánh để làm nổi bật ra sự thay đổi là điều cực kỳ quan trọng.</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border rounded-lg">
+                            <thead class="bg-indigo-500 text-white">
+                                <tr>
+                                    <th class="py-3 px-4 text-left">Đối tượng</th>
+                                    <th class="py-3 px-4 text-left">Sự thay đổi (Động từ)</th>
+                                    <th class="py-3 px-4 text-left">Nghĩa</th>
+                                </tr>
+                            </thead>
                             <tbody class="divide-y divide-gray-200">
-                                <tr><td class="px-4 py-2">Countryside</td><td class="px-4 py-2">rural area</td></tr>
-                                <tr><td class="px-4 py-2">dual carriageway (UK)</td><td class="px-4 py-2">divided highway (US)</td></tr>
-                                <tr><td class="px-4 py-2">bus station</td><td class="px-4 py-2">bus stop</td></tr>
-                                <tr><td class="px-4 py-2">shopping centre</td><td class="px-4 py-2">shopping mall</td></tr>
-                                <tr><td class="px-4 py-2">Housing</td><td class="px-4 py-2">accommodation/residential area</td></tr>
-                                <tr><td class="px-4 py-2">pedestrians only</td><td class="px-4 py-2">pedestrian precinct</td></tr>
+                                <tr><td colspan="3" class="px-4 py-2 font-bold bg-indigo-100">Buildings</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Built, constructed, erected</td><td class="px-4 py-2">Được xây lên</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Renovated, reconstructed, modernized</td><td class="px-4 py-2">Được xây lại/hiện đại hóa</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Converted, transformed (into)</td><td class="px-4 py-2">Được biến đổi thành</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Replaced (by)</td><td class="px-4 py-2">Được thế chỗ bởi</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Relocated (to)</td><td class="px-4 py-2">Được di dời tới</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Extended, expanded</td><td class="px-4 py-2">Được mở rộng</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Demolished, knocked down, flattened</td><td class="px-4 py-2">Bị dỡ bỏ</td></tr>
+                                
+                                <tr><td colspan="3" class="px-4 py-2 font-bold bg-green-100">Trees/Forest</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Cut-down, chopped down</td><td class="px-4 py-2">Bị chặt hạ</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Cleared (to make way for)</td><td class="px-4 py-2">Bị xóa sổ để dành chỗ cho</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Planted</td><td class="px-4 py-2">Được trồng</td></tr>
+
+                                <tr><td colspan="3" class="px-4 py-2 font-bold bg-blue-100">Infrastructure (Bridge, road, etc.)</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Constructed, built, erected</td><td class="px-4 py-2">Được xây lên</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Extended, expanded, widened</td><td class="px-4 py-2">Được mở rộng</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Reopened</td><td class="px-4 py-2">Được khôi phục</td></tr>
+
+                                <tr><td colspan="3" class="px-4 py-2 font-bold bg-yellow-100">Amenities</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Opened up, set up, established</td><td class="px-4 py-2">Được xây dựng/thành lập</td></tr>
+                                <tr><td class="px-4 py-2"></td><td class="px-4 py-2">Developed, expanded</td><td class="px-4 py-2">Được phát triển/mở rộng</td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 2: Viết Introduction</h4>
-                        <p>Tương tự như những dạng bài Writing khác, cách đơn giản và trực tiếp nhất để viết 1 câu Introduction rõ ràng là PARAPHRASE lại câu hỏi. Người viết có thể sử dụng một số cách viết sau:</p>
-                        <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>The two maps describe a number of changes which took place in Islip town during a 10-year period starting from 2005.</em></p>
-                    </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 3: Viết Overview</h4>
-                        <p>Bước quan trọng tiếp theo là tìm ra điểm nổi bật của bản đồ để đưa vào miêu tả trong đoạn Overview. Cách đơn giản nhất là đưa ra 1 nhận xét chung về MỨC ĐỘ và XU HƯỚNG của sự thay đổi. Người viết có thể tham khảo một số mẫu Overview như sau:</p>
-                        <ul class="list-disc list-inside mt-2 space-y-1">
-                            <li>Overall, the town was totally transformed in a number of different ways.</li>
-                            <li>As can be seen from the pictures, the town witnessed dramatic changes.</li>
-                            <li>Overall, the town has been completely transformed after the constructions of several facilities.</li>
-                        </ul>
-                        <p class="mt-2 p-4 bg-gray-50 rounded-lg border">Ví dụ: <em>“Overall, the town has been completely transformed after the constructions of several facilities.”</em></p>
-                    </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 4: Lập dàn ý</h4>
-                        <ul class="list-disc list-inside space-y-2">
-                            <li>Với dạng bài miêu tả bản đồ kép, người viết có thể dành 1 đoạn ngắn để nói về khu vực cần miêu tả vào thời điểm <strong>trước khi có những sự thay đổi</strong>. (Trong trường hợp này là hình thứ nhất vào năm 2005). Cách tiếp cận này đặc biệt hữu dụng với những bài chứa ít thông tin, bởi nó đảm bảo độ dài cũng như sự đầy đủ về mặt nội dung của bài viết.</li>
-                            <li>Lấy tuyến đường chính làm mốc, chúng ta bắt đầu miêu tả thị trấn Islip:
-                                <ul class="list-['✓'] list-inside ml-6 mt-2 space-y-1">
-                                    <li>Tuyến đường chính chạy theo hướng Đông-Tây và được trải dài bởi cửa hàng.</li>
-                                    <li>Phía Bắc của tuyến đường là một vùng đồng quê.</li>
-                                    <li>Phía Nam của tuyến đường là hai khu nhà ở. Có một ngôi trường ở phía Tây và một công viên ở phía Đông của hai khu nhà này. Ngôi trường và công viên đều được kết nối với tuyến đường chính bằng các tuyến đường phụ.</li>
-                                </ul>
-                            </li>
-                            <li class="mt-4">Bước tiếp theo, chúng ta sẽ miêu tả những sự thay đổi. Nếu không có 1 sự phân chia cụ thể, rất khó có thể tìm ra thứ tự miêu tả các đối tượng 1 cách hợp lí. Vì vậy chúng ta nên dành ra 1 ít thời gian để <strong>PHÂN LOẠI THÔNG TIN</strong>, qua đó triển khai bài viết 1 cách khoa học hơn.</li>
-                             <li>Một mẹo nhỏ với những bản đồ có tuyến <strong>đường chính</strong> (main road): Chia bản đồ ra thành 2 phần với <strong>ranh giới là tuyến đường đó</strong> và miêu tả <strong>lần lượt từng phần</strong>. Điều này đảm bảo sự sắp xếp khoa học trong bài viết.</li>
-                             <li>Sự thay đổi đáng kể nhất là sự xuất hiện của tuyến đường cao tốc (dual carriageway) và tuyến đường chính đã trở thành khu phố đi bộ (pedestrians only). Các công trình khác đều được xây dựng xung quanh khu phố này:
-                                <ul class="list-['✓'] list-inside ml-6 mt-2 space-y-1">
-                                    <li>Ở phía Bắc của khu phố đi bộ, dãy cửa hàng đã được đập bỏ hoàn toàn.</li>
-                                    <li>Một bến xe buýt và một bãi đỗ xe đã được xây dựng. Ở giữa hai khu này là một trung tâm mua sắm.</li>
-                                    <li>Một khu nhà ở mới cũng đã được xây. Cư dân có thể đi vào khu này nhờ một con đường nhỏ nối với tuyến đường cao tốc.</li>
-                                    <li>Ở phía Nam khu phố đi bộ, có thêm nhiều nhà được xây. Công viên được thu hẹp lại để nhường chỗ cho điều này.</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
-                <button class="collapsible-trigger bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors mb-4">Hiện/Ẩn Bài viết hoàn chỉnh</button>
-                <div class="collapsible-content p-6 bg-gray-50 border border-gray-200 rounded-lg">
-                    <p class="text-base leading-relaxed">The two maps describe a number of changes which took place in Islip town during a 10-year period starting from 2005.
-                    <br><br>Overall, the town has been completely transformed after the constructions of several facilities.
-                    <br><br>In 2005, a main road ran from east to west and was lined with shops. There were two housing areas to the south of this road while the northern side remained a rural area. A school was located to the west of the residential areas and there was a park to the east of the accommodations. Both the school and the park were connected to the main road by minor roads.
-                    <br><br>As can be seen from the second picture, the most notable change that took place in Islip in 2010 was the construction of a dual carriageway surrounding the town. Besides, the main road was converted into a pedestrian precinct and the shops on the north side of it were demolished. A bus stop and a car park were built and in the middle of these areas, a shopping mall was established. In addition, there was also a new housing area which can be accessed via a minor road connecting with the divided highway. Finally, more accommodations were also built on the south side of the pedestrian zone and the park was made smaller to make way for this development.
-                    </p>
-                </div>
-            </div>
 
-            <!-- Page 6: Health Centre Exercise -->
-            <div id="page-exercise3" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-bold mb-6 text-gray-700">6. Luyện tập: Trung tâm Y tế (2005 - Hiện tại)</h2>
-                <div class="mb-6">
-                    <img src="https://i.postimg.cc/mgsfWzbP/healthcenter.png" alt="Health Centre Changes" class="w-full rounded-lg shadow border">
-                </div>
-                 <div class="space-y-6 mb-6">
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 1: Phân tích bản đồ</h4>
-                        <p><strong>Thời gian:</strong> Bản đồ 1: 2005. Bản đồ 2: hiện tại => Thì được sử dụng chủ yếu là: <strong>Hiện tại hoàn thành</strong>.</p>
-                        <p><strong>Không gian:</strong> (thường chia thành 2 nhóm để viết cho 2 đoạn thân bài)</p>
-                        <ul class="list-disc list-inside ml-4">
-                            <li><strong>TRONG NHÀ:</strong> có thể miêu tả theo trình tự sau: Minor operation room => CR rooms => Office => Reception Area.</li>
-                            <li><strong>NGOÀI NHÀ:</strong> Garden và Car parking.</li>
-                        </ul>
+                <!-- Page 4: Exercise 1 & 2 -->
+                <div id="page-exercise1" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">4. Bài tập: Vị trí & Thay đổi</h2>
+                    <p class="mb-4">Dựa vào bản đồ dưới đây để hoàn thành các bài tập.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <img src="https://i.postimg.cc/dVx19j2b/Exercise4-2005.png" alt="Map 2005" class="w-full rounded-lg shadow border">
+                        <img src="https://i.postimg.cc/0QgyT5HZ/Exercise4-2010.png" alt="Map 2010" class="w-full rounded-lg shadow border">
                     </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 2: Viết introduction</h4>
-                        <p>Áp dụng một trong các cách viết Introduction đã nêu ở phần trước. Ví dụ:</p>
-                        <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>“The two plans describe a health centre before and after some developments from 2005 to now.”</em></p>
+                    
+                    <div id="exercise-container-1">
+                        <h3 class="text-xl font-semibold mb-4 text-indigo-600">Bài tập 1: Miêu tả vị trí (2005)</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center">1. The restaurant was <input type="text" data-answer="directly opposite" class="answer-input mx-2 p-2 border rounded-md w-48"> the hotel. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">2. The factory was <input type="text" data-answer="surrounded by" class="answer-input mx-2 p-2 border rounded-md w-48"> a lot of trees. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">3. The disused railway was <input type="text" data-answer="perpendicular to" class="answer-input mx-2 p-2 border rounded-md w-48"> the main road. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">4. The filling station was <input type="text" data-answer="on the bottom right-hand corner" class="answer-input mx-2 p-2 border rounded-md w-48"> of the map. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">5. The restaurant was <input type="text" data-answer="halfway between" class="answer-input mx-2 p-2 border rounded-md w-48"> the filling station and the hotel. <span class="answer-feedback"></span></div>
+                        </div>
+                        <button onclick="checkAnswers('exercise-container-1')" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Kiểm tra Bài 1</button>
                     </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 3: Viết overview</h4>
-                        <p>Chúng ta có thể thấy: sự thay đổi diễn ra cả TRONG NHÀ (rooms) lẫn BÊN NGOÀI (car park, garden). Viết ngay điểm nổi bật này thành 1 đoạn Overview:</p>
-                        <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>“As can be seen from the plans, the health centre has witnessed dramatic changes both outdoors and indoors over the given period.”</em></p>
-                    </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 4: Chọn thông tin đưa vào 2 đoạn detail</h4>
-                        <p><strong>Detail 1:</strong></p>
-                        <ul class="list-disc list-inside ml-4">
-                            <li>Phòng tiểu phẫu (Minor operations room) được xây ngay cạnh phòng vật lí trị liệu (physiotherapy room).</li>
-                            <li>Các phòng khám (CRs) thay đổi cả về kích thước lẫn số lượng (nhỏ hơn, nhưng nhiều hơn).</li>
-                            <li>Văn phòng (office) bé hơn 1 chút để dành chỗ cho khu tiếp tân (Reception Area). Khu tiếp tân rộng hơn, có thêm chỗ chơi cho trẻ em (children’s playground) đối diện lối vào (entrance) và nhiều ghế (seats) hơn.</li>
-                        </ul>
-                        <p><strong>Detail 2:</strong></p>
-                        <ul class="list-disc list-inside ml-4">
-                            <li>Bãi đỗ xe (car parking) tăng sức chứa từ 12 thành 30 chỗ.</li>
-                            <li>Khu vườn đằng sau được thu hẹp lại để nhường chỗ cho bãi đỗ xe.</li>
-                        </ul>
-                    </div>
-                </div>
-                 <button class="collapsible-trigger bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors mb-4">Hiện/Ẩn Bài viết hoàn chỉnh</button>
-                <div class="collapsible-content p-6 bg-gray-50 border border-gray-200 rounded-lg">
-                    <p class="text-base leading-relaxed">
-                        The two plans describe the developments of a health centre from 2005 to the present day.
-                        <br><br>
-                        Overall, the health centre has witnessed dramatic changes both outdoors and indoors over the given period.
-                        <br><br>
-                        Looking at the details, a minor operations room has been built next to the physiotherapy room. The consulting rooms have also changed in both size and number. While the rooms have become smaller, the total number of them has increased from 3 to 4. The office has been slightly reduced in size to make way for the new reception area, which is now larger and includes a children's play area opposite the entrance and more seats for patients.
-                        <br><br>
-                        Regarding the exterior, the car parking capacity has been significantly increased from 12 to 30 spaces. To accommodate this expansion, the garden at the back of the centre has been made smaller.
-                    </p>
-                </div>
-            </div>
+                    
+                    <hr class="my-8">
 
-            <!-- Page 7: Ashford Exercise -->
-            <div id="page-exercise4" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-bold mb-6 text-gray-700">7. Luyện tập: Khu vực Ashford (1965 - Hiện tại)</h2>
-                <div class="mb-6">
-                    <img src="https://i.postimg.cc/K8DXGGzJ/Ashfordarea.png" alt="Ashford Area Changes" class="w-full rounded-lg shadow border">
-                </div>
-                <div class="space-y-6 mb-6">
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 1: Phân tích bản đồ</h4>
-                        <p><strong>Thời gian:</strong> Bản đồ 1: 1965. Bản đồ 2: hiện tại => Thì được sử dụng chủ yếu là: <strong>Hiện tại hoàn thành</strong>. Một điểm cần lưu ý: Các khu sẽ được xây trong tương lai (planned by 2018) được đánh dấu bởi nét vẽ đứt rời. Với những sự thay đổi này, người viết có thể sử dụng thì <strong>TƯƠNG LAI ĐƠN</strong>, <strong>TƯƠNG LAI GẦN</strong> hoặc cấu trúc “it is expected/planned to..”</p>
-                        <p><strong>Không gian:</strong> Lấy cây cầu (road bridge) làm ranh giới, chia khu vực cần miêu tả thành 2 phần:</p>
-                        <ul class="list-disc list-inside ml-4">
-                            <li><strong>PHÍA BẮC:</strong> có thể miêu tả theo trình tự từ trái sang phải: Large car park => housing => small car park => apartment; hoặc theo đối tượng: Large car park => small car park => housing and apartment.</li>
-                            <li><strong>PHÍA NAM:</strong> Ngoài một vài ngôi nhà đã được xây, còn có foot bridge, car park và yatch marina được dự tính sẽ hoàn thành vào năm 2018.</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 2: Viết introduction</h4>
-                        <p>Áp dụng một trong các cách viết Introduction đã nêu ở phần trước. Ví dụ:</p>
-                        <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>“The two plans describe an area before and after some developments from 1965 to now.”</em></p>
-                    </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 3: Viết overview</h4>
-                        <p>Sự thay đổi đáng kể nhất là bến phà (ferry) đã được thay thế bởi một cây cầu (road bridge). Viết ngay điểm nổi bật này thành 1 đoạn Overview:</p>
-                        <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>“As can be seen from the plans, the most notable change taking place in the area is the construction of a road bridge, which replaces the ferry.”</em></p>
-                    </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 4: Chọn thông tin đưa vào 2 đoạn Detail</h4>
-                        <p><strong>Detail 1:</strong></p>
-                        <ul class="list-disc list-inside ml-4">
-                            <li>Cây cối bên bờ sông phía Tây bị đốn hạ để nhường chỗ cho một bãi đỗ xe lớn.</li>
-                            <li>Có rất nhiều ngôi nhà mới được xây ở phía bờ bên kia của dòng sông. Bên cạnh đó còn có sự xuất hiện của nhiều khu căn hộ.</li>
-                            <li>Ở trung tâm khu nhà ở là một bãi đỗ xe nhỏ. Bãi đỗ xe này được nối với tuyến đường chính bởi một con đường phụ.</li>
-                        </ul>
-                        <p><strong>Detail 2:</strong></p>
-                        <ul class="list-disc list-inside ml-4">
-                            <li>Nhiều ngôi nhà đã được xây về hướng Đông Nam của cây cầu.</li>
-                            <li>Dự kiến tới năm 2018, một cây cầu cho người đi bộ (foot bridge) sẽ được xây song song với cây cầu lớn. Một bãi đỗ xe và một bến tàu (yatch marina) cũng được lên kế hoạch xây dựng.</li>
-                        </ul>
+                    <div id="exercise-container-2">
+                        <h3 class="text-xl font-semibold mb-4 text-indigo-600">Bài tập 2: Miêu tả thay đổi (2010)</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center">1. The bus stop was <input type="text" data-answer="replaced by" class="answer-input mx-2 p-2 border rounded-md w-48"> a car park and <input type="text" data-answer="relocated to" class="answer-input mx-2 p-2 border rounded-md w-48"> a new place near the church. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">2. The pine trees opposite the hotel were <input type="text" data-answer="chopped down" class="answer-input mx-2 p-2 border rounded-md w-48"> to <input type="text" data-answer="make way for" class="answer-input mx-2 p-2 border rounded-md w-48"> a hospital. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">3. The disused railway was <input type="text" data-answer="reopened" class="answer-input mx-2 p-2 border rounded-md w-48"> and a new railway station was <input type="text" data-answer="built" class="answer-input mx-2 p-2 border rounded-md w-48">. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">4. The farm was <input type="text" data-answer="converted into" class="answer-input mx-2 p-2 border rounded-md w-48"> a golf course. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">5. A new road which leads to the golf course was <input type="text" data-answer="constructed" class="answer-input mx-2 p-2 border rounded-md w-48">. <span class="answer-feedback"></span></div>
+                        </div>
+                        <button onclick="checkAnswers('exercise-container-2')" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Kiểm tra Bài 2</button>
                     </div>
                 </div>
-                 <button class="collapsible-trigger bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors mb-4">Hiện/Ẩn Bài viết hoàn chỉnh</button>
-                <div class="collapsible-content p-6 bg-gray-50 border border-gray-200 rounded-lg">
-                    <p class="text-base leading-relaxed">
-                        The two maps illustrate the development of an area called Ashford from 1965 to the present day, including some future plans.
-                        <br><br>
-                        Overall, the most notable change that has taken place in the area is the construction of a road bridge, which has replaced the old ferry service. The area has become significantly more developed and residential.
-                        <br><br>
-                        In 1965, the area was largely undeveloped, with a forest on the west bank of the river and a small town of Ashford on the east bank. A road ran through the forest and another looped around the town, connected by a ferry across the river.
-                        <br><br>
-                        By the present day, the area has been transformed. The trees on the west bank have been cleared to make way for a large car park. On the east bank, the town has expanded with many new houses and the construction of apartments. A small car park has been added in the center of the housing area. More houses have also been built to the southeast of the new road bridge. Furthermore, there are plans to build a footbridge parallel to the road bridge, along with a new car park and a yacht marina on the south bank, which are expected to be completed soon.
-                    </p>
+                
+                <!-- Page 5: Islip Example -->
+                <div id="page-islip" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">5. Ví dụ: Thị trấn Islip (2005-2010)</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                         <img src="https://i.postimg.cc/2yGjLQjX/Islip-2005.png" alt="Islip 2005" class="w-full rounded-lg shadow border">
+                         <img src="https://i.postimg.cc/8PkzQ0t8/Islip-2010.png" alt="Islip 2010" class="w-full rounded-lg shadow border">
+                    </div>
+                    <div class="space-y-6 mb-6">
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 1: Phân tích bản đồ</h4>
+                            <p><strong>Phân tích THỜI GIAN:</strong> Bản đồ đã cho đưa ra 2 mốc thời gian là năm 2005 và 2010, vì vậy chúng ta sẽ sử dụng thì <strong>QUÁ KHỨ ĐƠN</strong>.</p>
+                            <p><strong>Phân tích KHÔNG GIAN:</strong> Tất cả các đối tượng đều khá quen thuộc và đã được ghi tên. Tuy nhiên có 1 khái niệm tương đối xa lạ là “Dual carriageway”. Đây là tuyến đường cao tốc có phần đất nhỏ hoặc giải phân cách ở giữa để ngăn cách 2 làn đường ngược chiều nhau. Chúng ta có thể cải thiện tiêu chí từ vựng một cách đáng kể cho bài viết của mình bằng cách PARAPHRASE lại những địa điểm đã cho trong bản đồ. Sau đây là một vài phương án PARAPHRASE khả thi:</p>
+                            <table class="min-w-full bg-white border rounded-lg mt-2">
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr><td class="px-4 py-2">Countryside</td><td class="px-4 py-2">rural area</td></tr>
+                                    <tr><td class="px-4 py-2">dual carriageway (UK)</td><td class="px-4 py-2">divided highway (US)</td></tr>
+                                    <tr><td class="px-4 py-2">bus station</td><td class="px-4 py-2">bus stop</td></tr>
+                                    <tr><td class="px-4 py-2">shopping centre</td><td class="px-4 py-2">shopping mall</td></tr>
+                                    <tr><td class="px-4 py-2">Housing</td><td class="px-4 py-2">accommodation/residential area</td></tr>
+                                    <tr><td class="px-4 py-2">pedestrians only</td><td class="px-4 py-2">pedestrian precinct</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 2: Viết Introduction</h4>
+                            <p>Tương tự như những dạng bài Writing khác, cách đơn giản và trực tiếp nhất để viết 1 câu Introduction rõ ràng là PARAPHRASE lại câu hỏi. Người viết có thể sử dụng một số cách viết sau:</p>
+                            <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>The two maps describe a number of changes which took place in Islip town during a 10-year period starting from 2005.</em></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 3: Viết Overview</h4>
+                            <p>Bước quan trọng tiếp theo là tìm ra điểm nổi bật của bản đồ để đưa vào miêu tả trong đoạn Overview. Cách đơn giản nhất là đưa ra 1 nhận xét chung về MỨC ĐỘ và XU HƯỚNG của sự thay đổi. Người viết có thể tham khảo một số mẫu Overview như sau:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li>Overall, the town was totally transformed in a number of different ways.</li>
+                                <li>As can be seen from the pictures, the town witnessed dramatic changes.</li>
+                                <li>Overall, the town has been completely transformed after the constructions of several facilities.</li>
+                            </ul>
+                            <p class="mt-2 p-4 bg-gray-50 rounded-lg border">Ví dụ: <em>“Overall, the town has been completely transformed after the constructions of several facilities.”</em></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 4: Lập dàn ý</h4>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>Với dạng bài miêu tả bản đồ kép, người viết có thể dành 1 đoạn ngắn để nói về khu vực cần miêu tả vào thời điểm <strong>trước khi có những sự thay đổi</strong>. (Trong trường hợp này là hình thứ nhất vào năm 2005). Cách tiếp cận này đặc biệt hữu dụng với những bài chứa ít thông tin, bởi nó đảm bảo độ dài cũng như sự đầy đủ về mặt nội dung của bài viết.</li>
+                                <li>Lấy tuyến đường chính làm mốc, chúng ta bắt đầu miêu tả thị trấn Islip:
+                                    <ul class="list-['✓'] list-inside ml-6 mt-2 space-y-1">
+                                        <li>Tuyến đường chính chạy theo hướng Đông-Tây và được trải dài bởi cửa hàng.</li>
+                                        <li>Phía Bắc của tuyến đường là một vùng đồng quê.</li>
+                                        <li>Phía Nam của tuyến đường là hai khu nhà ở. Có một ngôi trường ở phía Tây và một công viên ở phía Đông của hai khu nhà này. Ngôi trường và công viên đều được kết nối với tuyến đường chính bằng các tuyến đường phụ.</li>
+                                    </ul>
+                                </li>
+                                <li class="mt-4">Bước tiếp theo, chúng ta sẽ miêu tả những sự thay đổi. Nếu không có 1 sự phân chia cụ thể, rất khó có thể tìm ra thứ tự miêu tả các đối tượng 1 cách hợp lí. Vì vậy chúng ta nên dành ra 1 ít thời gian để <strong>PHÂN LOẠI THÔNG TIN</strong>, qua đó triển khai bài viết 1 cách khoa học hơn.</li>
+                                 <li>Một mẹo nhỏ với những bản đồ có tuyến <strong>đường chính</strong> (main road): Chia bản đồ ra thành 2 phần với <strong>ranh giới là tuyến đường đó</strong> và miêu tả <strong>lần lượt từng phần</strong>. Điều này đảm bảo sự sắp xếp khoa học trong bài viết.</li>
+                                 <li>Sự thay đổi đáng kể nhất là sự xuất hiện của tuyến đường cao tốc (dual carriageway) và tuyến đường chính đã trở thành khu phố đi bộ (pedestrians only). Các công trình khác đều được xây dựng xung quanh khu phố này:
+                                    <ul class="list-['✓'] list-inside ml-6 mt-2 space-y-1">
+                                        <li>Ở phía Bắc của khu phố đi bộ, dãy cửa hàng đã được đập bỏ hoàn toàn.</li>
+                                        <li>Một bến xe buýt và một bãi đỗ xe đã được xây dựng. Ở giữa hai khu này là một trung tâm mua sắm.</li>
+                                        <li>Một khu nhà ở mới cũng đã được xây. Cư dân có thể đi vào khu này nhờ một con đường nhỏ nối với tuyến đường cao tốc.</li>
+                                        <li>Ở phía Nam khu phố đi bộ, có thêm nhiều nhà được xây. Công viên được thu hẹp lại để nhường chỗ cho điều này.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button class="collapsible-trigger bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors mb-4">Hiện/Ẩn Bài viết hoàn chỉnh</button>
+                    <div class="collapsible-content p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                        <p class="text-base leading-relaxed">The two maps describe a number of changes which took place in Islip town during a 10-year period starting from 2005.
+                        <br><br>Overall, the town has been completely transformed after the constructions of several facilities.
+                        <br><br>In 2005, a main road ran from east to west and was lined with shops. There were two housing areas to the south of this road while the northern side remained a rural area. A school was located to the west of the residential areas and there was a park to the east of the accommodations. Both the school and the park were connected to the main road by minor roads.
+                        <br><br>As can be seen from the second picture, the most notable change that took place in Islip in 2010 was the construction of a dual carriageway surrounding the town. Besides, the main road was converted into a pedestrian precinct and the shops on the north side of it were demolished. A bus stop and a car park were built and in the middle of these areas, a shopping mall was established. In addition, there was also a new housing area which can be accessed via a minor road connecting with the divided highway. Finally, more accommodations were also built on the south side of the pedestrian zone and the park was made smaller to make way for this development.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Page 6: Health Centre Exercise -->
+                <div id="page-exercise3" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">6. Luyện tập: Trung tâm Y tế (2005 - Hiện tại)</h2>
+                    <div class="mb-6">
+                        <img src="https://i.postimg.cc/mgsfWzbP/healthcenter.png" alt="Health Centre Changes" class="w-full rounded-lg shadow border">
+                    </div>
+                     <div class="space-y-6 mb-6">
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 1: Phân tích bản đồ</h4>
+                            <p><strong>Thời gian:</strong> Bản đồ 1: 2005. Bản đồ 2: hiện tại => Thì được sử dụng chủ yếu là: <strong>Hiện tại hoàn thành</strong>.</p>
+                            <p><strong>Không gian:</strong> (thường chia thành 2 nhóm để viết cho 2 đoạn thân bài)</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>TRONG NHÀ:</strong> có thể miêu tả theo trình tự sau: Minor operation room => CR rooms => Office => Reception Area.</li>
+                                <li><strong>NGOÀI NHÀ:</strong> Garden và Car parking.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 2: Viết introduction</h4>
+                            <p>Áp dụng một trong các cách viết Introduction đã nêu ở phần trước. Ví dụ:</p>
+                            <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>“The two plans describe a health centre before and after some developments from 2005 to now.”</em></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 3: Viết overview</h4>
+                            <p>Chúng ta có thể thấy: sự thay đổi diễn ra cả TRONG NHÀ (rooms) lẫn BÊN NGOÀI (car park, garden). Viết ngay điểm nổi bật này thành 1 đoạn Overview:</p>
+                            <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>“As can be seen from the plans, the health centre has witnessed dramatic changes both outdoors and indoors over the given period.”</em></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 4: Chọn thông tin đưa vào 2 đoạn detail</h4>
+                            <p><strong>Detail 1:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Phòng tiểu phẫu (Minor operations room) được xây ngay cạnh phòng vật lí trị liệu (physiotherapy room).</li>
+                                <li>Các phòng khám (CRs) thay đổi cả về kích thước lẫn số lượng (nhỏ hơn, nhưng nhiều hơn).</li>
+                                <li>Văn phòng (office) bé hơn 1 chút để dành chỗ cho khu tiếp tân (Reception Area). Khu tiếp tân rộng hơn, có thêm chỗ chơi cho trẻ em (children’s playground) đối diện lối vào (entrance) và nhiều ghế (seats) hơn.</li>
+                            </ul>
+                            <p><strong>Detail 2:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Bãi đỗ xe (car parking) tăng sức chứa từ 12 thành 30 chỗ.</li>
+                                <li>Khu vườn đằng sau được thu hẹp lại để nhường chỗ cho bãi đỗ xe.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <button class="collapsible-trigger bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors mb-4">Hiện/Ẩn Bài viết hoàn chỉnh</button>
+                    <div class="collapsible-content p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                        <p class="text-base leading-relaxed">
+                            The two plans describe the developments of a health centre from 2005 to the present day.
+                            <br><br>
+                            Overall, the health centre has witnessed dramatic changes both outdoors and indoors over the given period.
+                            <br><br>
+                            Looking at the details, a minor operations room has been built next to the physiotherapy room. The consulting rooms have also changed in both size and number. While the rooms have become smaller, the total number of them has increased from 3 to 4. The office has been slightly reduced in size to make way for the new reception area, which is now larger and includes a children's play area opposite the entrance and more seats for patients.
+                            <br><br>
+                            Regarding the exterior, the car parking capacity has been significantly increased from 12 to 30 spaces. To accommodate this expansion, the garden at the back of the centre has been made smaller.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Page 7: Ashford Exercise -->
+                <div id="page-exercise4" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">7. Luyện tập: Khu vực Ashford (1965 - Hiện tại)</h2>
+                    <div class="mb-6">
+                        <img src="https://i.postimg.cc/K8DXGGzJ/Ashfordarea.png" alt="Ashford Area Changes" class="w-full rounded-lg shadow border">
+                    </div>
+                    <div class="space-y-6 mb-6">
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 1: Phân tích bản đồ</h4>
+                            <p><strong>Thời gian:</strong> Bản đồ 1: 1965. Bản đồ 2: hiện tại => Thì được sử dụng chủ yếu là: <strong>Hiện tại hoàn thành</strong>. Một điểm cần lưu ý: Các khu sẽ được xây trong tương lai (planned by 2018) được đánh dấu bởi nét vẽ đứt rời. Với những sự thay đổi này, người viết có thể sử dụng thì <strong>TƯƠNG LAI ĐƠN</strong>, <strong>TƯƠNG LAI GẦN</strong> hoặc cấu trúc “it is expected/planned to..”</p>
+                            <p><strong>Không gian:</strong> Lấy cây cầu (road bridge) làm ranh giới, chia khu vực cần miêu tả thành 2 phần:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>PHÍA BẮC:</strong> có thể miêu tả theo trình tự từ trái sang phải: Large car park => housing => small car park => apartment; hoặc theo đối tượng: Large car park => small car park => housing and apartment.</li>
+                                <li><strong>PHÍA NAM:</strong> Ngoài một vài ngôi nhà đã được xây, còn có foot bridge, car park và yatch marina được dự tính sẽ hoàn thành vào năm 2018.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 2: Viết introduction</h4>
+                            <p>Áp dụng một trong các cách viết Introduction đã nêu ở phần trước. Ví dụ:</p>
+                            <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>“The two plans describe an area before and after some developments from 1965 to now.”</em></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 3: Viết overview</h4>
+                            <p>Sự thay đổi đáng kể nhất là bến phà (ferry) đã được thay thế bởi một cây cầu (road bridge). Viết ngay điểm nổi bật này thành 1 đoạn Overview:</p>
+                            <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>“As can be seen from the plans, the most notable change taking place in the area is the construction of a road bridge, which replaces the ferry.”</em></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 4: Chọn thông tin đưa vào 2 đoạn Detail</h4>
+                            <p><strong>Detail 1:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Cây cối bên bờ sông phía Tây bị đốn hạ để nhường chỗ cho một bãi đỗ xe lớn.</li>
+                                <li>Có rất nhiều ngôi nhà mới được xây ở phía bờ bên kia của dòng sông. Bên cạnh đó còn có sự xuất hiện của nhiều khu căn hộ.</li>
+                                <li>Ở trung tâm khu nhà ở là một bãi đỗ xe nhỏ. Bãi đỗ xe này được nối với tuyến đường chính bởi một con đường phụ.</li>
+                            </ul>
+                            <p><strong>Detail 2:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Nhiều ngôi nhà đã được xây về hướng Đông Nam của cây cầu.</li>
+                                <li>Dự kiến tới năm 2018, một cây cầu cho người đi bộ (foot bridge) sẽ được xây song song với cây cầu lớn. Một bãi đỗ xe và một bến tàu (yatch marina) cũng được lên kế hoạch xây dựng.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <button class="collapsible-trigger bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors mb-4">Hiện/Ẩn Bài viết hoàn chỉnh</button>
+                    <div class="collapsible-content p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                        <p class="text-base leading-relaxed">
+                            The two maps illustrate the development of an area called Ashford from 1965 to the present day, including some future plans.
+                            <br><br>
+                            Overall, the most notable change that has taken place in the area is the construction of a road bridge, which has replaced the old ferry service. The area has become significantly more developed and residential.
+                            <br><br>
+                            In 1965, the area was largely undeveloped, with a forest on the west bank of the river and a small town of Ashford on the east bank. A road ran through the forest and another looped around the town, connected by a ferry across the river.
+                            <br><br>
+                            By the present day, the area has been transformed. The trees on the west bank have been cleared to make way for a large car park. On the east bank, the town has expanded with many new houses and the construction of apartments. A small car park has been added in the center of the housing area. More houses have also been built to the southeast of the new road bridge. Furthermore, there are plans to build a footbridge parallel to the road bridge, along with a new car park and a yacht marina on the south bank, which are expected to be completed soon.
+                        </p>
+                    </div>
                 </div>
             </div>
         </main>
