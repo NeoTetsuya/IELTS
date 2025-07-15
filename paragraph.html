@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Paragraph Writing Worksheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        .practice-answer {
+            display: none;
+        }
+        .diagram-bubble {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .diagram-bubble:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-backdrop.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-backdrop.visible .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Writing Task 2: Paragraphs</h1>
+            <p class="text-gray-600 mt-2">An interactive guide to mastering paragraph structure.</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
+                <button onclick="changeTab(event, 'page1')" class="tab-btn active w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">1. Paragraph Structure</button>
+                <button onclick="changeTab(event, 'page2')" class="tab-btn w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">2. Topic Sentence</button>
+                <button onclick="changeTab(event, 'page3')" class="tab-btn w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">3. Supporting Sentences</button>
+                <button onclick="changeTab(event, 'page4')" class="tab-btn w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">4. Paragraph Types</button>
+            </nav>
+        </div>
+
+        <!-- Page 1: Paragraph Structure -->
+        <div id="page1" class="page active">
+             <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Unit 1: Cấu trúc một đoạn văn (Paragraph Structure)</h2>
+                <p class="mb-6">Một đoạn văn tốt cần có 2 yếu tố sau:</p>
+                <div class="space-y-6">
+                    <div class="p-4 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-lg">
+                        <h3 class="font-semibold text-lg text-indigo-800">Câu mở đoạn (Topic Sentence)</h3>
+                        <p class="mt-1">Đây là câu đầu tiên của một đoạn. Câu mở đoạn khái quát ý chính và nội dung mà người viết muốn triển khai trong đoạn. Câu mở đoạn thường ngắn, đơn giản và đi thẳng vào vấn đề.</p>
+                    </div>
+                    <div class="p-4 border-l-4 border-sky-500 bg-sky-50 rounded-r-lg">
+                        <h3 class="font-semibold text-lg text-sky-800">Câu triển khai ý (Supporting Sentences)</h3>
+                        <p class="mt-1">Những câu triển khai ý được dùng để phân tích và phát triển ý đã được đưa ra ở câu mở đoạn. Những chi tiết được đưa vào những câu này cần liên quan, logic, và cụ thể.</p>
+                    </div>
+                </div>
+                 <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-lg">
+                    <p><strong>Lưu ý:</strong> Một đoạn thường có 4 đến 5 câu và không cần câu kết bài (concluding sentence).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2: Topic Sentence -->
+        <div id="page2" class="page">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Lesson 1.1: Câu chủ đề (Topic Sentence)</h2>
+                <div class="practice-section space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice: Điền thông tin vào chỗ trống</h3>
+                    <!-- All 10 questions for Topic Sentence Practice -->
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">1. The tradition of families getting together to eat meals is disappearing. What are the impacts?</p>
+                        <p class="mt-2"><strong>Chủ đề chung:</strong> sự biến mất của truyền thống ăn uống cùng gia đình.</p>
+                        <p><strong>Ý tưởng trung tâm:</strong> các ảnh hưởng cả tích cực và tiêu cực của vấn đề trên.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">2. Nowadays, some employers think that formal academic qualifications are more important than life experience or personal qualities. Is it a positive or negative development?</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Chủ đề chung của bài văn..."></textarea>
+                        <p class="mt-2"><strong>Ý tưởng trung tâm:</strong> các ảnh hưởng mang tính tích cực.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">3. Some people believe that it is more important to teach children the literature of their own country than other countries. Do you agree or disagree?</p>
+                        <p class="mt-2"><strong>Chủ đề chung:</strong> so sánh việc dạy trẻ em học văn học trong nước và văn học nước ngoài.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Ý tưởng trung tâm của đoạn văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">4. The best way to ensure the growth of children is to make parents take parenting courses. Do you agree or disagree?</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Chủ đề chung của bài văn..."></textarea>
+                        <p class="mt-2"><strong>Ý tưởng trung tâm:</strong> Đây có thể là một cách tốt.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">5. Some people think that developing countries need financial help from international organizations. Others think that it is practical aid and advice that is needed. Discuss these views and give your own opinion.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Chủ đề chung của bài văn..."></textarea>
+                        <p class="mt-2"><strong>Ý tưởng trung tâm:</strong> Còn những phương pháp khác có cùng hiệu quả thay vì cung cấp hỗ trợ tài chính.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">6. People have little understanding of the importance of the natural world. What are the reasons and how can people learn more about the natural world?</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Chủ đề chung của bài văn..."></textarea>
+                        <p class="mt-2"><strong>Ý tưởng trung tâm:</strong> lý do của vấn đề này.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">7. In many countries, people like to eat a wider range of foods than can be grown in their local place... Do you think the advantages of this development outweigh disadvantages?</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Chủ đề chung của bài văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Ý tưởng trung tâm của đoạn văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">8. Advertising are becoming more and more common in everyday life. Some people say that advertising has a positive impact on our lives. To what extent do you agree or disagree?</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Chủ đề chung của bài văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Ý tưởng trung tâm của đoạn văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">9. International tourism has brought enormous benefit to many places... Do the disadvantages of international tourism outweigh the advantages?</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Chủ đề chung của bài văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Ý tưởng trung tâm của đoạn văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">10. People say that reading for pleasure helps people to develop imagination and better language skills than watch TV. To what extent do you agree or disagree?</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Chủ đề chung của bài văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Ý tưởng trung tâm của đoạn văn..."></textarea>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Viết câu chủ đề của bạn ở đây..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Key</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-2">
+                        <p><strong>1.</strong> The loss of such a tradition has both positive and negative impacts on people.</p>
+                        <p><strong>2.</strong> The emphasis on formal degrees amongst recruiters will bring about some positive effects on society as a whole.</p>
+                        <p><strong>3.</strong> On the one hand, locally written works come with numerous benefits to students.</p>
+                        <p><strong>4.</strong> Parenting courses could help parents deal with raising their children.</p>
+                        <p><strong>5.</strong> I do agree that other forms of assistance should be given rather than financial aid.</p>
+                        <p><strong>6.</strong> In modern societies, most people have a severe lack of understanding when it comes to the role that nature plays in their lives, and this can be attributed to a number of reasons.</p>
+                        <p><strong>7.</strong> The use of food from other places comes with a number of disadvantages.</p>
+                        <p><strong>8.</strong> Widespread advertising can have some negative consequences that are worthy of consideration.</p>
+                        <p><strong>9.</strong> There are a number of drawbacks that arise from the expansion of a country’s tourism industry.</p>
+                        <p><strong>10.</strong> Watching TV does little to enhance people’s imagination and language skills.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3: Supporting Sentences -->
+        <div id="page3" class="page">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Lesson 1.2: Các câu phát triển ý (Supporting Sentences)</h2>
+                <p class="mb-4">Các lý lẽ và dẫn chứng được sử dụng để làm rõ và chứng minh các lập luận và ý tưởng trung tâm. <strong class="text-indigo-600">Click on a bubble to learn more.</strong></p>
+                <div id="interactive-diagram" class="grid grid-cols-3 grid-rows-3 gap-4 my-8 mx-auto max-w-lg h-96">
+                    <div class="flex items-center justify-center"></div>
+                    <div class="diagram-bubble flex items-center justify-center text-center p-2 bg-gray-200 rounded-full" data-key="example">Ví dụ</div>
+                    <div class="flex items-center justify-center"></div>
+                    <div class="diagram-bubble flex items-center justify-center text-center p-2 bg-gray-200 rounded-full" data-key="fact">Sự thật</div>
+                    <div class="flex items-center justify-center text-center p-4 bg-gray-300 rounded-full font-bold text-xl">Lý lẽ & dẫn chứng</div>
+                    <div class="diagram-bubble flex items-center justify-center text-center p-2 bg-gray-200 rounded-full" data-key="result">Kết quả</div>
+                    <div class="diagram-bubble flex items-center justify-center text-center p-2 bg-gray-200 rounded-full" data-key="reason">Lý do</div>
+                    <div class="diagram-bubble flex items-center justify-center text-center p-2 bg-gray-200 rounded-full" data-key="hypothesis">Giả thuyết</div>
+                    <div class="diagram-bubble flex items-center justify-center text-center p-2 bg-gray-200 rounded-full" data-key="comparison">So sánh</div>
+                </div>
+                <div class="practice-section mt-8 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 1: Đặt câu</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">1. Viết giả thuyết để chứng minh tầm quan trọng của giáo viên đối với sự tiến bộ trong học tập của học sinh.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Without..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">2. Viết ví dụ về một đất nước có nền giáo dục tốt và không yêu cầu học sinh phải làm bài tập về nhà.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="For example..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">3. Viết một câu về điểm tiện lợi của việc học online khi so sánh với việc học offline.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Compared with..."></textarea>
+                    </div>
+                     <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">4. Hậu quả về sức khỏe của việc học quá nhiều.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="Learning excessively..."></textarea>
+                    </div>
+                     <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">5. Tình trạng học sinh bị quá nhiều áp lực đến từ nhiều nguồn hiện nay.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" placeholder="These days..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Key</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-2">
+                        <p><strong>1.</strong> Without the teachers’ support, students may not comprehensively understand their lessons and as a result may make no progress in their learning.</p>
+                        <p><strong>2.</strong> For example, Finland – an European country – is known for its no-homework education system. However, this does not affect the academic performance of Finnish children...</p>
+                        <p><strong>3.</strong> Compared with traditional classes, online ones provide learners with more learning materials and virtual assistance.</p>
+                        <p><strong>4.</strong> Excessive learning is one of the causes of exhaustion and memory loss.</p>
+                        <p><strong>5.</strong> These days, students are under a huge amount of pressure from their parents’ expectations and their peers’ academic achievements.</p>
+                    </div>
+                </div>
+                 <div class="practice-section mt-8 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 2: Viết 1-3 câu lý lẽ và dẫn chứng</h3>
+                    <!-- All 9 questions for this section -->
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">1. Câu chủ đề: Recruiters tend to favour academic degrees because such qualifications are considered to be a tool to measure the level of knowledge that students possess.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                     <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">2. Câu chủ đề: On the one hand, locally written works are beneficial for students as these pieces of art can enrich student’s skills to use their own language.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                     <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">3. Câu chủ đề: Parenting courses could equip parents with necessary skills and knowledge to help them deal with raising their children.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">4. Câu chủ đề: The provision of financial assistance to developing countries brings great economic impacts.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">5. Câu chủ đề: Our lack of understanding of the environment’s roles in our lives may come from this type of knowledge not being taught at schools.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">6. Câu chủ đề: The availability of a vast array of foods from other regions allows people to experience a range of cuisines without leaving their own town or city.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">7. Câu chủ đề: Widespread advertising can have several negative consequences.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">8. Câu chủ đề: However, there are a number of drawbacks that arise from the expansion of a country’s tourism industry.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                       <p class="font-semibold">9. Câu chủ đề: Reading for enjoyment can help people to develop their imagination and improve their language skills in many ways.</p>
+                       <textarea class="w-full mt-2 p-2 border rounded-md" rows="4" placeholder="Viết các câu phát triển luận điểm..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Key</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                        <p><strong>1.</strong> To be more specific, to achieve a good degree in most universities, students need to pass many examinations focusing on testing their knowledge and take part in practical training courses. These factors ensure that students have gained sufficient in-depth knowledge in the field that the company is looking for. That is why recruiters place higher value on employers holding formal academic qualifications.</p>
+                        <p><strong>2.</strong> Indeed, through learning literature of their mother tongue, students can learn the art of using the language such as the flexibility in the vocabulary highlights used, the syntax of sentences, different ways to convey ideas. Hence, linguistic knowledge will gradually be built up and benefit the students not only in their study but also in social communication.</p>
+                        <p><strong>3.</strong> For example, many first-time parents can be overwhelmed by the responsibility of caring for their new born infant. Without proper instruction, they do not know how to handle or care for their baby most effectively. Parenting courses could help parents to overcome these common problems.</p>
+                        <p><strong>4.</strong> As a matter of fact, financial aid from developed countries enables governments of poorer nations to implement important infrastructural development, such as healthcare systems, fresh water and power supplies. This can help to avoid stagnation of development and help a country to foster economic progress.</p>
+                        <p><strong>5.</strong> For example, biology is not one of the subjects that holds great importance in most schools these days.</p>
+                        <p><strong>6.</strong> For example, some kinds of nutrient-rich berries that can only be grown in Asia can now be enjoyed by people all over the world. Similarly, people in Vietnam who, in the past, had to travel a long way to Japan to eat fresh salmon, which were not bred in Vietnam, can now have this dish in their own place of living.</p>
+                        <p><strong>7.</strong> First, the information delivered in advertisements is not always accurate, as many companies exaggerate the features of their products in order to draw attention from the public. As a result, consumers are likely to receive products of much lower quality than advertised. Second, the heavy cost of producing a range of advertisements can raise the market price of many products, meaning that people will have to pay more money to buy an item that they want.</p>
+                        <p><strong>8.</strong> For example, in many countries in South East Asia, tourism has been a major cause of environmental pollution and destruction. For example, most tourists generally drink bottled water when on holiday, and this creates mountains of plastic waste every year. Many developing countries do not have appropriate recycling facilities and do not know how to deal with the waste, and therefore, it commonly ends up littered throughout the countryside, rivers, seas, beaches and oceans. Furthermore, the invasion of tourists into certain places can disrupt the local wildlife and ecosystems, causing further environmental damage.</p>
+                        <p><strong>9.</strong> Firstly, while watching television is said to be more of a passive activity, reading is considered to be an active form of learning. Reading stimulates people’s brains more as they have to use their imagination to visualise the characters and plot of the story, and this helps to further develop their imaginative thinking skills. Secondly, language skills can also be improved from reading. By reading regularly, people can expand their vocabulary and learn different grammatical structures and how to use them effectively.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 4: Paragraph Types -->
+        <div id="page4" class="page">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Unit 2: Các loại đoạn văn thường dùng trong IELTS</h2>
+                <div class="practice-section mt-8 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice: Single-idea paragraphs</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">1. The range of technology available to people is increasing the gap between the rich and the poor. Others think it has an opposite effect. Discuss both views and give your opinions.</p>
+                        <p class="mt-2"><strong>Ý tưởng trọng tâm:</strong> Sự đa dạng công nghệ giúp thu hẹp khoảng cách giàu nghèo do giá sản phẩm công nghệ rẻ hơn.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="5" placeholder="Viết đoạn văn của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">2. Advertising are becoming more and more common in everyday life. Some people say that advertising has a positive impact on our lives. To what extent do you agree or disagree?</p>
+                        <p class="mt-2"><strong>Ý tưởng trọng tâm:</strong> Sự thông dụng của quảng cáo giúp người sử dụng có thể so sánh các sản phẩm với nhau và đưa ra được quyết định mua hàng đúng đắn.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="5" placeholder="Viết đoạn văn của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">3. Large shopping malls are replacing small shops. Do you think it is a positive or negative development?</p>
+                        <p class="mt-2"><strong>Ý tưởng trọng tâm:</strong> Sự trỗi dậy của các trung tâm thương mại lớn giúp người mua hàng tiết kiệm thời gian.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="5" placeholder="Viết đoạn văn của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">4. For schoolchildren, their teachers have more influence on their intelligence and social development than their parents. To what extent do you agree or disagree?</p>
+                        <p class="mt-2"><strong>Ý tưởng trọng tâm:</strong> Cha mẹ có ảnh hưởng nhiều đến cuộc đời trẻ em từ trước khi trẻ được đi học.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="5" placeholder="Viết đoạn văn của bạn ở đây..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Key</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                        <p><strong>1.</strong> With an increase in the availability of many new technologies, it is also becoming more affordable for the majority of people, which has provided more equal opportunities between people, whether rich or poor. As a matter of fact, the internet has become extremely widespread worldwide these days and has provided people of all financial status with access to a great deal of information that they can use to help them educate themselves to live better lives, and therefore potentially decrease the gap.</p>
+                        <p><strong>2.</strong> People in the modern world are exposed to advertisements almost everywhere, from online commercials, to banners displayed on crowded streets. Frequent exposure to advertisements of the same, or similar types of products, helps consumers make a clear comparison between certain aspects of the products, such as features or prices, before deciding which items are suitable for their needs. For instance, thanks to the commercials of iPhone X and Samsung Galaxy S10, people wishing to purchase a smartphone can easily weigh up the pros and cons of these two brands, and choose the right one that better serves their demand.</p>
+                        <p><strong>3.</strong> First of all, people can now save time shopping thanks to the availability of many types of stores located in one place. Shopping malls offer groceries, clothing, and books, alongside food courts and entertainment facilities. This provides a high level of convenience to people who choose to shop there instead of in separate smaller stores.</p>
+                        <p><strong>4.</strong> The first few years of a child’s life are spent almost entirely in the company of their parental figures. These years are critical in the social development of a child, as they contain their first attempts to communicate with other people in order to receive the care and attention necessary for survival. Most school children start their education between the ages of four to seven years. Therefore, they have already experienced a considerable amount of parental influence before teachers are even introduced to them.</p>
+                    </div>
+                </div>
+                 <div class="practice-section mt-8 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice: Double-idea paragraphs</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">1. Some people think that the best way to improve road safety is to increase the minimum legal age for driving a car or motorbike. To what extent do you agree or disagree?</p>
+                        <p class="mt-2"><strong>Ý tưởng trọng tâm:</strong> Có thể tăng an toàn đường bộ bằng các cách thức hữu hiệu khác ngoài cách tăng tuổi cho phép lái xe.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="5" placeholder="Viết đoạn văn của bạn ở đây..."></textarea>
+                    </div>
+                     <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">2. In most successful companies, some people think that communication between employers and workers is the most important factor, other people say that other factors are more important. Discuss both views and give your opinion.</p>
+                        <p class="mt-2"><strong>Ý tưởng trọng tâm:</strong> Các yếu tố quan trọng hơn giao tiếp đối với thành công của một công ty.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="5" placeholder="Viết đoạn văn của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">3. Nowadays, people have little awareness of the importance of the natural world. What are the reasons and how can people learn more about the natural world?</p>
+                        <p class="mt-2"><strong>Ý tưởng trọng tâm:</strong> Các lý do dẫn đến sự thiếu hiểu biết về tầm quan trọng của tự nhiên.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="5" placeholder="Viết đoạn văn của bạn ở đây..."></textarea>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">4. In many countries, the costs of living are rising. What are the effects on individuals and society? Suggest solutions to this problem.</p>
+                        <p class="mt-2"><strong>Ý tưởng trọng tâm:</strong> Các giải pháp cho vấn đề chi phí sống tăng.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="5" placeholder="Viết đoạn văn của bạn ở đây..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Key</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                        <p><strong>1.</strong> I think that better road safety can be achieved by other more effective methods without increasing the driving age. To begin with, more stringent traffic regulations should be imposed, which would act as a deterrent to would-be traffic law breakers. In Singapore, people who run red lights are fined heavily, and therefore this will make them more responsible in order to avoid future punishments. In addition, governments should allocate financial resources for improving public transport, which would encourage citizens to drive their private cars or motorbikes less. As a result, these residents will no longer worry about the risks that they may face when driving their own vehicles, such as drunk driving or falling asleep at the wheel.</p>
+                        <p><strong>2.</strong> There are many other factors that contribute to a company’s success, some of which could be considered more important than effective communication. For example, the competency of managers themselves contributes significantly to success. Poor managerial skills lead to poor investment or policy decisions which can be useless or detrimental to the organization’s success. Another contributing factor to success is the reliability and availability of good workers. An organization could have the best managers in the world, but if there is not a skilled and reliable work force available to them, progress will be slow and success difficult to come by. I believe that both of these factors are more important than communication between managers and workers itself.</p>
+                        <p><strong>3.</strong> In modern societies, most people have a severe lack of understanding when it comes to the role that nature plays in their lives, and this can be attributed to a number of reasons. Firstly, most modern cities these days are nothing more than concrete jungles, devoid of any significant amount of nature. As a consequence, people are not close to nature and therefore do not appreciate or understand its significance. Kids these days spend their free time playing computer games or staring at a smartphone or TV screen, while adults are endlessly working or pursuing other leisure activities, which tends to disconnect them from the natural world. Another possible reason for this lack of understanding may be that it is not taught in schools. For example, biology is not one of the subjects that holds great importance in most schools these days.</p>
+                        <p><strong>4.</strong> Although rising living costs pose serious problems in many places, there are a number of solutions that could be implemented to help tackle this issue. Firstly, individuals need to learn how to budget their income more effectively, and be careful not to waste money. By adhering to a strict budget, people will be able to pay their bills and save money to cover other expenses. On the other hand, governments should enact laws to ensure that citizens receive minimum wages that are enough to cover rising living expenses. Lastly, governments can create more jobs, particularly in big cities where living costs are much higher.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Interactive Diagram -->
+    <div id="diagram-modal" class="modal-backdrop" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3 id="modal-title" class="text-2xl font-bold mb-4 text-indigo-700"></h3>
+            <div id="modal-body" class="space-y-4"></div>
+            <button onclick="closeModal()" class="mt-6 w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function changeTab(event, pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function toggleAnswers(button) {
+            const answerDiv = button.nextElementSibling;
+            if (answerDiv.style.display === 'block') {
+                answerDiv.style.display = 'none';
+                button.textContent = 'Show Key';
+            } else {
+                answerDiv.style.display = 'block';
+                button.textContent = 'Hide Key';
+            }
+        }
+
+        const modal = document.getElementById('diagram-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const diagramContent = {
+            reason: { title: 'Lý do (Reason)', content: `<p><strong>Mục đích:</strong> Làm rõ nguồn gốc của vấn đề.</p><p class="mt-2 p-3 bg-gray-100 rounded-md"><strong>Ví dụ:</strong> Many people cannot spend as much time with other family members... <strong>because</strong> they have other things to take care of.</p>` },
+            fact: { title: 'Sự thật (Fact)', content: `<p><strong>Mục đích:</strong> Làm rõ vấn đề bằng một tình huống mà nhiều người đã trải qua.</p><p class="mt-2 p-3 bg-gray-100 rounded-md"><strong>Ví dụ:</strong> <strong>In fact,</strong> with a device connected to the Internet, a person can attend virtual classrooms...</p>` },
+            example: { title: 'Ví dụ (Example)', content: `<p><strong>Mục đích:</strong> Giúp người đọc hình dung và/hoặc chứng minh lập luận.</p><p class="mt-2 p-3 bg-gray-100 rounded-md"><strong>Ví dụ:</strong> Singapore, <strong>for example,</strong> has successfully developed an industrial air purifier system...</p>` },
+            result: { title: 'Kết quả (Result)', content: `<p><strong>Mục đích:</strong> Chứng minh lập luận bằng cách đưa ra hiệu quả/hậu quả.</p><p class="mt-2 p-3 bg-gray-100 rounded-md"><strong>Ví dụ:</strong> ...<strong>As a result,</strong> they tend to neglect other family members...</p>` },
+            comparison: { title: 'So sánh (Comparison)', content: `<p><strong>Mục đích:</strong> So sánh hai đối tượng để thấy sự tương đồng hoặc khác biệt.</p><p class="mt-2 p-3 bg-gray-100 rounded-md"><strong>Ví dụ:</strong> <strong>Compared with</strong> users of other forms of transports, cyclists are less prone to various cancers.</p>` },
+            hypothesis: { title: 'Giả thuyết (Hypothesis)', content: `<p><strong>Mục đích:</strong> Đưa giả định để cho thấy tầm quan trọng của đối tượng/giải pháp.</p><p class="mt-2 p-3 bg-gray-100 rounded-md"><strong>Ví dụ:</strong> <strong>Without</strong> parental guidance, children will not be able to tell right from wrong...</p>` }
+        };
+
+        document.getElementById('interactive-diagram').addEventListener('click', function(e) {
+            if (e.target.classList.contains('diagram-bubble')) {
+                const key = e.target.dataset.key;
+                const data = diagramContent[key];
+                if (data) {
+                    modalTitle.textContent = data.title;
+                    modalBody.innerHTML = data.content;
+                    modal.classList.add('visible');
+                }
+            }
+        });
+
+        function closeModal() {
+            modal.classList.remove('visible');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.tab-btn').click();
+        });
+    </script>
+
+</body>
+</html>

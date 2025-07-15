@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive IELTS Writing Strategies Worksheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        .practice-answer {
+            display: none;
+        }
+        .vocab-list ul {
+            columns: 2;
+            -webkit-columns: 2;
+            -moz-columns: 2;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">IELTS Essay Writing Strategies</h1>
+            <p class="text-gray-600 mt-2">A guide to structuring and writing different types of IELTS essays.</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
+                <button onclick="changeTab(event, 'page1')" class="tab-btn active w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">1. 4P Structure</button>
+                <button onclick="changeTab(event, 'page2')" class="tab-btn w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">2. Body & Conclusion</button>
+                <button onclick="changeTab(event, 'page3')" class="tab-btn w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">3. 2-Part Question</button>
+                <button onclick="changeTab(event, 'page4')" class="tab-btn w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">4. Positive/Negative</button>
+                <button onclick="changeTab(event, 'page5')" class="tab-btn w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">5. Opinion</button>
+                <button onclick="changeTab(event, 'page6')" class="tab-btn w-full sm:w-auto text-center border-b-2 border-transparent py-4 px-1 text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">6. Discussion</button>
+            </nav>
+        </div>
+
+        <!-- Page 1: 4P Structure & Introduction -->
+        <div id="page1" class="page active">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Lesson 7.1: Cấu trúc 4P (4-paragraph format)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mb-6">
+                    <div class="p-4 bg-indigo-100 rounded-lg">
+                        <h3 class="font-semibold text-lg text-indigo-800">Mở bài (2-3 câu)</h3>
+                        <ul class="list-disc list-inside text-left mt-2">
+                            <li>Giới thiệu chủ đề</li>
+                            <li>Trả lời câu hỏi</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-sky-100 rounded-lg">
+                        <h3 class="font-semibold text-lg text-sky-800">Thân bài (2 đoạn)</h3>
+                         <ul class="list-disc list-inside text-left mt-2">
+                            <li>Đoạn 1: Câu chủ đề + Triển khai ý</li>
+                            <li>Đoạn 2: Câu chủ đề + Triển khai ý</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-emerald-100 rounded-lg">
+                        <h3 class="font-semibold text-lg text-emerald-800">Kết bài (1-2 câu)</h3>
+                         <ul class="list-disc list-inside text-left mt-2">
+                            <li>Nhắc lại câu trả lời</li>
+                        </ul>
+                    </div>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Cách viết mở bài</h3>
+                <p class="mb-4">Phần mở bài gồm 2 câu: 1 câu viết lại nội dung đề bài (paraphrase) và 1 câu nêu ý kiến/câu trả lời. Để paraphrase hiệu quả, bạn cần hiểu rõ nghĩa, xác định từ vựng chủ đề không nên thay đổi, và dùng các kỹ thuật như đổi cấu trúc câu, dạng từ.</p>
+                <div class="practice-section mt-8 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice: Viết đoạn mở bài</h3>
+                    <!-- All 10 questions -->
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">1. Many animal species are becoming extinct due to human activities both on land and in the sea. What activities can harm animal existence? What can be done to prevent this?</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">2. Children nowadays are spending too much time playing video games and very little time playing sports. Why is this happening? Is this a positive or negative development?</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">3. It is becoming increasingly popular for people to have a year off between finishing school and going to university. Do the advantages of having a gap year outweigh its disadvantages?</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">4. Fossil fuels, such as coal, oil and natural gas, are the main source for many countries. However, some nations are using alternative energy such as solar power, wind power. Is this a positive or negative development?</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">5. Some people work for the same organisation all their working life. Others believe it is better to work for different organisations. Discuss both views and give your opinion.</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">6. Some people think parents of children who commit crime should also be punished as they are responsible for their children’s crime. To what extent do you agree or disagree?</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">7. Some people think that reading for pleasure can help people develop imagination and creativity better than watching TV. To what extent do you agree or disagree?</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">8. Many people now do not feel safe either when they are at home or out. Why is this happening? What can be done help people feel safer?</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">9. Some people think the government should ban dangerous sports. Others believe people should have the freedom to do any sports and activities they want. Discuss both views and give your opinion.</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    <div class="p-4 border border-gray-200 rounded-lg"><p class="font-semibold">10. Some people think films are less important than other forms of art. To what extent do you agree or disagree?</p><textarea class="w-full mt-2 p-2 border rounded-md" rows="3" placeholder="Viết đoạn mở bài của bạn..."></textarea></div>
+                    
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Key</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                        <p><strong>1.</strong> A number of animal species are facing the verge of extinction as a consequence of human activities on land and in the sea. There are two main activities that pose a direct threat to animals and in my opinion, the government should take actions to prevent a possible mass extinction.</p>
+                        <p><strong>2.</strong> Nowadays, many children spend the majority of their time playing video games and hardly engage in any sport or exercise. Overall, I believe this is definitely a negative trend and will discuss the reasons why in the following essay.</p>
+                        <p><strong>3.</strong> More and more students are taking a year off between finishing school and entering university. In my opinion, the benefits that a gap year can bring to students far outweigh its drawbacks.</p>
+                        <p><strong>4.</strong> Although fossil fuels still remain the most important energy sources in many places, some countries are now already using alternative sources like solar or wind power. In my opinion, it can be difficult for a country to move towards using alternative energy at first, but this development brings about several benefits in the long run.</p>
+                        <p><strong>5.</strong> Some people choose to work for an organisation throughout their whole career while others think it is better to work for multiple organisations. In my opinion, both decisions come with several advantages and therefore should both be considered carefully by workers.</p>
+                        <p><strong>6.</strong> Many people think that parents of criminal children should be responsible for their children’s wrongdoings and therefore should also be punished. Personally, I disagree with this statement for the following reasons.</p>
+                        <p><strong>7.</strong> Some people believe that reading for pleasure can be more beneficial for our imagination and creativity than watching TV. Personally, I agree with this idea for the following reasons.</p>
+                        <p><strong>8.</strong> Many people now feel insecure when they are out and even at home. The main cause of this problem comes from the high crime rate in many places, and I believe that both the government and people should cooperate to ensure the safety of everyone.</p>
+                        <p><strong>9.</strong> Some people think there should a ban on dangerous sports while others believe people should be allowed to freely do any sports and activities they want. Personally, I agree with the latter view for the following reasons.</p>
+                        <p><strong>10.</strong> Many people think films now play a less important role than other art forms. In my opinion, all forms of art, including movies, are important to our life in different aspects.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2: Body & Conclusion -->
+        <div id="page2" class="page">
+             <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Lesson 7.2: Cách viết thân bài và kết bài</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">Cách viết thân bài</h3>
+                        <p>Tất cả các đoạn body phải có 1 nội dung trọng tâm và các ý được sắp xếp logic.</p>
+                        <div class="grid md:grid-cols-2 gap-4 mt-4">
+                            <div class="p-4 bg-gray-100 rounded-lg">
+                                <h4 class="font-bold">Single-idea paragraph</h4>
+                                <p>Dùng để nêu quan điểm. Gồm 1 câu chủ đề và các câu giải thích/ví dụ. Thường dài 4-5 câu. Có thể có câu kết đoạn (không bắt buộc).</p>
+                            </div>
+                             <div class="p-4 bg-gray-100 rounded-lg">
+                                <h4 class="font-bold">Double-idea paragraph</h4>
+                                <p>Dùng để liệt kê (reasons, causes, solutions...). Gồm 1 câu chủ đề và 2 ý phụ (sub-ideas) được phát triển.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">Cách viết kết bài</h3>
+                        <p>Chỉ bao gồm 1-2 câu tóm tắt nội dung chính và khẳng định lại ý kiến. Không đưa ra luận điểm mới.</p>
+                        <p class="mt-2 p-3 bg-emerald-50 text-emerald-800 rounded-md"><strong>Ví dụ:</strong> In conclusion, I hold the view that politicians alone cannot deal with all environmental problems, and therefore individuals should also make a contribution to protecting the environment.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3: 2-Part Question -->
+        <div id="page3" class="page">
+             <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Lesson 7.3: Dạng “2-part question”</h2>
+                <div class="practice-section space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 1</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">Chủ đề: People in many countries are spending less time with their family. What are the reasons? What are the effects of this trend?</p>
+                        <div class="mt-4">
+                            <h4 class="font-bold">Luận điểm</h4>
+                            <p class="mt-1">Nguyên nhân tại sao bây giờ người ta dành ít thời gian với gia đình?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                            <p class="mt-2">Tác động của điều này là gì?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-bold">Dàn ý</h4>
+                            <ul class="list-disc list-inside mt-1">
+                                <li><strong>Mở bài:</strong> Giới thiệu chủ đề. Định hướng bài viết.</li>
+                                <li><strong>Thân bài:</strong> Đoạn 1: 2 nguyên nhân. Đoạn 2: 2 tác động.</li>
+                                <li><strong>Kết bài:</strong> Tóm tắt đại ý.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mt-4">Thực hành</h4>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="12" placeholder="Write your essay here..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Sample Essay</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                        <p><strong>Bài mẫu:</strong><br>In many parts of the world nowadays, family members are spending less time together. This essay will outline a number of reasons for this trend and a number of the associated effects.<br><br>One of the main reasons is that adults are too occupied with their work and social relationships. In countries like Japan where people spend the majority of their time working, many adults tend to stay at work until late in the evening and hardly have enough time to have dinner or to watch TV with their family members. Meanwhile, young children in this day and age are under great pressure from study; and children, especially in Asian countries, typically spend ten hours a day and six days a week at school, not to mention extra classes in the evening. The amount of homework those children have to do everyday is also excessive, and therefore they cannot think of anything else, let alone spend time with their parents.<br><br>There are several impacts from this trend, and they all tend to be detrimental. Firstly, young children who do not spend enough time with their siblings or parents are often more vulnerable to social pressures, such as bullying, because they do not receive enough affection and encouragement from their family. As a consequence, those children may grow up with low self-esteem and even suffer from depression. Secondly, family relationships will greatly suffer because it will become more difficult to bridge the generation gap between parents and children without family bonding time. This usually leads to conflicts and unhappiness.<br><br>In conclusion, people are spending less and less time with family largely due to work and study pressures, and the impacts of this on both individuals and families are severe.</p>
+                        <div class="mt-4 vocab-list">
+                            <h4 class="font-bold mb-2">Từ vựng:</h4>
+                            <ul>
+                                <li>Spend a major proportion of their life working</li>
+                                <li>Under great pressure from study</li>
+                                <li>Vulnerable to social pressures</li>
+                                <li>Affection and encouragement</li>
+                                <li>Low self-esteem and depression</li>
+                                <li>Conflicts and unhappiness</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="practice-section mt-6 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 2</h3>
+                     <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">Chủ đề: Consumers are faced with increasing numbers of advertisements from competing companies. To what extent do you think consumers are influenced by advertisements? What measures can be taken to protect them?</p>
+                        <div class="mt-4">
+                            <h4 class="font-bold">Luận điểm</h4>
+                            <p class="mt-1">Người tiêu dùng bị ảnh hưởng bởi quảng cáo tới mức độ như thế nào?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                            <p class="mt-2">Những biện pháp gì có thể thực hiện để bảo vệ người tiêu dùng?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-bold">Dàn ý</h4>
+                            <ul class="list-disc list-inside mt-1">
+                                <li><strong>Mở bài:</strong> Giới thiệu chủ đề. Đưa ra câu trả lời ngắn cho 2 câu hỏi.</li>
+                                <li><strong>Thân bài:</strong> Đoạn 1: Mức độ ảnh hưởng của quảng cáo. Đoạn 2: Biện pháp bảo vệ.</li>
+                                <li><strong>Kết bài:</strong> Nhắc lại ngắn gọn câu trả lời.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mt-4">Thực hành</h4>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="12" placeholder="Write your essay here..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Sample Essay</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                        <p><strong>Bài mẫu:</strong><br>These days, due to a strong competitive commercial market, people are exposed to an ever increasing amount of advertising. I believe that people are highly susceptible to modern day advertising and marketing techniques, and that certain actions need to be taken to ensure the wellbeing of consumers.<br><br>Advertising has become a multibillion dollar industry, and much research has gone into its development and effectiveness in order to help businesses sell more products and services. And although advertising can provide many benefits to the consumer, it can also have quite a negative impact on individuals and society as a whole. One of the negative effects advertising can have is that it can lead people to buy things that they don’t actually need or even necessarily want. Advertising techniques can make us feel as though we really need to have something and this can cause people to make impulsive purchases, which they may not have made if they had made a more thorough decision.<br><br>Furthermore, in societies where advertising laws are more relaxed, people are faced with large amounts of advertising containing many subliminal messages and explicit content. For instance, it is well known in the advertising industry that sex sells. Creating sexual undertones within advertisements can influence people’s thoughts about not only the product but ideas associated around it. This can have many negative influences on the minds of people, and in particular children, potentially forming certain negative beliefs and ideas about such topics.<br><br>In conclusion, for these, and many other reasons, I believe that Governments and other organisations need to monitor how companies try to promote their products and services in order to protect innocent consumers. This can be achieved through the regulation of the content of advertisements and the regulation of the space where advertisements occur, such as billboards and posters. Individual companies also must take responsibility regarding their advertisements to ensure that they do not contain subliminal or explicit material that might negatively affect consumers.</p>
+                         <div class="mt-4 vocab-list">
+                            <h4 class="font-bold mb-2">Từ vựng:</h4>
+                            <ul>
+                                <li>Advertising and marketing techniques</li>
+                                <li>A multibillion dollar industry</li>
+                                <li>Make impulsive purchases</li>
+                                <li>Subliminal messages</li>
+                                <li>Promote their products and services</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 4: Positive/Negative -->
+        <div id="page4" class="page">
+             <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Lesson 7.4: Dạng “Positive – Negative”</h2>
+                <div class="practice-section space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 1</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">Chủ đề: The increase in people’s life expectancy means that they have to work until an older age to pay for their retirement. One alternative is that people start to work at a younger age. Is this alternative a positive or negative development?</p>
+                        <div class="mt-4">
+                            <h4 class="font-bold">Luận điểm</h4>
+                            <p class="mt-1">Mặt lợi của việc làm việc sớm:</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                            <p class="mt-2">Mặt hại của việc làm việc sớm:</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-bold">Dàn ý</h4>
+                            <ul class="list-disc list-inside mt-1">
+                                <li><strong>Mở bài:</strong> Giới thiệu chủ đề. Đưa ra quan điểm cá nhân.</li>
+                                <li><strong>Thân bài:</strong> Đoạn 1: Mặt lợi. Đoạn 2: Mặt hại.</li>
+                                <li><strong>Kết bài:</strong> Khẳng định lại quan điểm.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mt-4">Thực hành</h4>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="12" placeholder="Write your essay here..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Sample Essay</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                         <p><strong>Bài mẫu:</strong><br>Over the past few decades, people have become used to the idea that they will have to devote a larger proportion of their life to work, and some of them even continue to work after the legal age of retirement. The fact is that as human life expectancy increases, only a few jobs can ensure that people have a comfortable retirement. Therefore, many people are choosing to enter the workforce much earlier than before, and in my opinion, this is a negative development.<br><br>I agree that starting to work at a young age is advantageous for young people, but they should only consider this as a way of gaining experience. Having a job while studying with the aim of saving money to enjoy retirement is both unrealistic and counter-productive. For one, most part-time jobs students can do, like bartending or tutoring, only offer quite low salaries, certainly not enough to contribute to their retirement. Also, many high paying jobs, such as lawyers or doctors, require a qualification that can take up to 6 years to get, and therefore are not possible for young people to do at a young age.<br><br>On the other hand, people nowadays are still fit to continue working well into their sixties or even seventies. I believe working keeps people not only mentally but also physically healthy, which is extremely important for the elderly. For example, my grandfather admits that he felt so bored and unhealthy after retirement that he had to set up a workshop near his house and has been working there ever since. This example also suggests that people should not consider working at a younger age as a way to save money for retirement.<br><br>In conclusion, I understand there are reasons for young people to start their working lives earlier than the generations of their parents or grandparents. However, working after the retirement age is a way to enjoy a longer life expectancy, and therefore there is no obligation to have a job and save money from an earlier age.</p>
+                         <div class="mt-4 vocab-list">
+                            <h4 class="font-bold mb-2">Từ vựng:</h4>
+                            <ul>
+                                <li>Devote a larger proportion of their life to work</li>
+                                <li>Enter the workforce</li>
+                                <li>Unrealistic and counter-productive</li>
+                                <li>Not only mentally but also physically healthy</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="practice-section mt-6 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 2</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">Chủ đề: In the modern world, it is possible to shop, work and communicate with people via the Internet and live without any face-to-face contact with others. Is it a positive or negative development in your opinion?</p>
+                         <div class="mt-4">
+                            <h4 class="font-bold">Luận điểm</h4>
+                            <p class="mt-1">Mặt lợi của “Internet”:</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                            <p class="mt-2">Mặt hại của “Internet”:</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-bold">Dàn ý</h4>
+                            <ul class="list-disc list-inside mt-1">
+                                <li><strong>Mở bài:</strong> Giới thiệu chủ đề. Đưa ra quan điểm cá nhân.</li>
+                                <li><strong>Thân bài:</strong> Đoạn 1: Mặt lợi. Đoạn 2: Mặt hại.</li>
+                                <li><strong>Kết bài:</strong> Khẳng định lại quan điểm cá nhân.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mt-4">Thực hành</h4>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="12" placeholder="Write your essay here..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Sample Essay</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                         <p><strong>Bài mẫu:</strong><br>With the Internet having a huge impact on our shopping, work and communication, we can now live without any face-to-face interaction with other people. Whilst making modern life more convenient in some ways, this situation is a negative trend in the long run.<br><br>In this day and age, we can literally stay at home and have almost anything delivered to our homes as most consumer goods are widely available for online purchase. We also have more opportunities in terms of employment because many applications like Skype or Google Hangouts allow employees to work from home. Members of an organization nowadays rely on email and other online platforms to maintain effective communication and ensure their businesses operate smoothly. When it comes to personal relationships, we use Facebook to connect and stay in touch with friends and relatives. The Internet, without doubt, enhances our shopping experiences, makes our workplaces more streamlined and efficient, and facilitates our communication with others.<br><br>However, we are faced with a foreseeable and unfortunate consequence due to our reliance on such technology. We are losing direct interactions that are deemed extremely important in this technological era. Children hardly spend time talking to their parents because they are too engrossed in media hype on Facebook. It is common to see both young and old people with their eyes glued to their phones instead of having conversations like they did before the advent of smart devices. This is leading us toward a society where people will turn to favoring virtual interactions and undervaluing real life relationships.<br><br>The influence of the Internet on many aspects of our lives is remarkable. However, the benefits it offers do not justify the fact that it is inflicting severe damage on our relationships, which can only flourish on the basis of true communication.</p>
+                         <div class="mt-4 vocab-list">
+                            <h4 class="font-bold mb-2">Từ vựng:</h4>
+                            <ul>
+                                <li>To have almost anything delivered to our homes</li>
+                                <li>To be widely available for online purchase</li>
+                                <li>To maintain effective communication</li>
+                                <li>To stay in touch with</li>
+                                <li>To enhance our shopping experiences</li>
+                                <li>To make our workplaces more streamlined and efficient</li>
+                                <li>To facilitate our communication</li>
+                                <li>To be engrossed in</li>
+                                <li>To undervalue</li>
+                                <li>To inflict damage on</li>
+                                <li>Flourish</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 5: Opinion -->
+        <div id="page5" class="page">
+             <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Lesson 7.5: Dạng “Opinion”</h2>
+                <div class="practice-section space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 1</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">Chủ đề: Schools are no longer necessary because children can get so much information available through the Internet, and they can study just as well at home. To what extent do you agree or disagree?</p>
+                        <div class="mt-4">
+                            <h4 class="font-bold">Luận điểm</h4>
+                            <p class="mt-1">Học sinh có thể có được nhiều thông tin từ Internet:</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                            <p class="mt-2">Học sinh có thể tự học ở nhà hiệu quả hay không?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-bold">Dàn ý</h4>
+                            <ul class="list-disc list-inside mt-1">
+                                <li><strong>Mở bài:</strong> Giới thiệu chủ đề. Đưa ra quan điểm cá nhân.</li>
+                                <li><strong>Thân bài:</strong> Đoạn 1: Lợi ích của Internet. Đoạn 2: Sự cần thiết của trường học.</li>
+                                <li><strong>Kết bài:</strong> Khẳng định lại quan điểm cá nhân.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mt-4">Thực hành</h4>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="12" placeholder="Write your essay here..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Sample Essay</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                         <p><strong>Bài mẫu:</strong><br>Since there is a wealth of information available on the Internet, students can study by themselves at home just as effectively as they do at school; and therefore some people believe that schools are not needed anymore. In my view, much as I agree that students can study well at home with the help of the Internet, I feel that schools play a vital role in our society and cannot be replaced no matter what.<br><br>There are ways for children to learn from the Internet, most of which are either free or affordable for almost everyone. One great way is from online newspapers and video websites such as National Geographic and Youtube, which offers a variety of topic areas suitable for people of different ages. Children can learn a great deal of knowledge about culture, science, and many other areas which they are taught at schools. Also, they can participate in online courses favored by a growing number of youths nowadays. This type of learning is even more advantageous in the sense that children can flexibly choose to study whatever subjects they are interested in.<br><br>That being said, my conviction is that formal education is irreplaceable in any society. It is true that students can acquire knowledge at home very easily with the help of the Internet; however, lack of teachers’ guidance and peer support is a clear disadvantage to this form of learning. These factors are extremely important to a child’s intellectual development, which emphasizes the necessity of school environments. Furthermore, knowledge and skills are not the only things to expect from formal education but social relationships and mental development. Children who go to school and establish friendships can both have fun and improve their learning outcomes.<br><br>In conclusion, the Internet is a good way for young children to study at home, but I think that claiming schools are irrelevant to children’s learning because of this is merely absurd.</p>
+                         <div class="mt-4 vocab-list">
+                            <h4 class="font-bold mb-2">Từ vựng:</h4>
+                            <ul>
+                                <li>A wealth of information</li>
+                                <li>Acquire knowledge</li>
+                                <li>Lack of teachers’ guidance and peer support</li>
+                                <li>A child’s intellectual development</li>
+                                <li>Formal education</li>
+                                <li>Establish friendships</li>
+                                <li>Improve their learning outcomes</li>
+                                <li>Irrelevant to children’s learning</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                 <div class="practice-section mt-6 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 2</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">Chủ đề: The best way to reduce youth crimes is to educate their parents with parental skills. To what extent you agree or disagree?</p>
+                        <div class="mt-4">
+                            <h4 class="font-bold">Luận điểm</h4>
+                            <p class="mt-1">Tại sao kĩ năng nuôi dạy con cái lại là một biện pháp tốt?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                            <p class="mt-2">Còn những biện pháp nào khác tốt hơn?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-bold">Dàn ý</h4>
+                            <ul class="list-disc list-inside mt-1">
+                                <li><strong>Mở bài:</strong> Giới thiệu chủ đề. Đưa ra quan điểm cá nhân.</li>
+                                <li><strong>Thân bài:</strong> Đoạn 1: Tại sao kĩ năng nuôi dạy con cái là một biện pháp tốt. Đoạn 2: Những biện pháp khác tốt hơn.</li>
+                                <li><strong>Kết bài:</strong> Khẳng định lại quan điểm cá nhân.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mt-4">Thực hành</h4>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="12" placeholder="Write your essay here..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Sample Essay</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                         <p><strong>Bài mẫu:</strong><br>It is true that more and more young people are getting involved in crimes, and how to best address this critical issue is an ongoing debate. There are many ways to prevent youth crimes, one of which is better parenting skills; however, those ways need to be carried out simultaneously if they are to be effective.<br><br>On the one hand, parents are the closest people to their children and more likely to have an impact on their children’s behaviour. In fact, a vast number of youth crimes nowadays are the result of inappropriate childrearing, lack of childcare and education about crime alike. Therefore, it is totally reasonable to say that improving parenting skills will promise a decrease in juvenile offences.<br><br>However, education at home alone is not enough since there are a lot of kids who are not willing to listen to their parents. And children in this day and age spend the largest amount of time at school, and therefore are more likely to be influenced by their teachers or friends. For example, in my home country Vietnam, many high school students are susceptible to negative peer pressure. This usually leads to the increasing use of alcohol or drugs, all of which are primary contributors to crimes at this age. These facts suggest that we should introduce education about the consequences one may face when committing an offence in the school curriculum as well as help children manage negative peer pressure.<br><br>In conclusion, enhancing skills to educate children at home is a good way to curb juvenile delinquencies; but I think there is no one best way to do this as different measures need to be taken at the same time.</p>
+                         <div class="mt-4 vocab-list">
+                            <h4 class="font-bold mb-2">Từ vựng:</h4>
+                            <ul>
+                                <li>Get involved in crimes</li>
+                                <li>Have an impact on children’s behavior</li>
+                                <li>Inappropriate childrearing</li>
+                                <li>Juvenile offences</li>
+                                <li>Susceptible to negative peer pressure</li>
+                                <li>Commit an offence</li>
+                                <li>Manage negative peer pressure</li>
+                                <li>Curb juvenile delinquencies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 6: Discussion -->
+        <div id="page6" class="page">
+             <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Lesson 7.6: Dạng “Discussion”</h2>
+                <div class="practice-section space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 1</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">Chủ đề: Some people could be naturally good leaders. Others believe that people can learn leadership skills. Discuss both views and give your opinion.</p>
+                        <div class="mt-4">
+                            <h4 class="font-bold">Luận điểm</h4>
+                            <p class="mt-1">Tại sao nhiều người lại nghĩ kỹ năng lãnh đạo là bẩm sinh?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                            <p class="mt-2">Tại sao nhiều người khác lại nghĩ có thể học được kỹ năng lãnh đạo?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-bold">Dàn ý</h4>
+                            <ul class="list-disc list-inside mt-1">
+                                <li><strong>Mở bài:</strong> Giới thiệu chủ đề. Định hướng bài viết.</li>
+                                <li><strong>Thân bài:</strong> Đoạn 1: Bàn luận về kỹ năng bẩm sinh. Đoạn 2: Bàn luận về kỹ năng học được.</li>
+                                <li><strong>Kết bài:</strong> Đưa ra quan điểm cá nhân.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mt-4">Thực hành</h4>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="12" placeholder="Write your essay here..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Sample Essay</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                         <p><strong>Bài mẫu:</strong><br>Some people think that great leaders are born and not made. Others, however, feel that leadership skills are developed over time through training, experience and mentoring. Both sides of this argument will be discussed in my essay below.<br><br>On the one hand, there are a number of reasons why some people feel that leadership is a characteristic that some people are born with. They might argue that good leaders possess optimism and energy that will encourage others to work together effectively. In fact, some studies have shown that these characteristics are genetic, as are certain individual talents that one may be blessed with at birth. Furthermore, people such as Barrack Obama, have certain charisma that allows them to inspire passion and energy in others, and this particular trait is also believed to be innate.<br><br>On the other hand, many people consider leadership a skill that can be learnt. There are other elements that make a person a great leader, such as discipline and resourcefulness, which can definitely be developed through one’s up-bringing. Furthermore, the credibility of a true leader is built on his self-confidence and mastery of his area of expertise which only emerge after a great deal of time and experience. Without these qualities, a leader’s capability may be questioned, and as a result, people are unlikely to heed the leader’s direction.<br><br>In conclusion, I think the skills and attributes of a good leader are both genetic and enhanced through training, experience and a lot of persistent hard work. There are many people born with natural leadership skills that can still become good leaders in the future.</p>
+                         <div class="mt-4 vocab-list">
+                            <h4 class="font-bold mb-2">Từ vựng:</h4>
+                            <ul>
+                                <li>Possess optimism and energy</li>
+                                <li>Encourage others to work together effectively</li>
+                                <li>To be blessed with at birth</li>
+                                <li>Have certain charisma</li>
+                                <li>Inspire passion and energy in others</li>
+                                <li>Innate</li>
+                                <li>Discipline and resourcefulness</li>
+                                <li>To be developed through one’s up-bringing</li>
+                                <li>Heed the leader’s direction</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="practice-section mt-6 space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Practice 2</h3>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="font-semibold">Chủ đề: Some people say that what children watch on TV influences their behaviour while others say the amount of time children they spend watching TV influences their behavior. Discuss both views and give your opinion.</p>
+                        <div class="mt-4">
+                            <h4 class="font-bold">Luận điểm</h4>
+                            <p class="mt-1">Tại sao nhiều người lại nghĩ nội dung chương trình TV ảnh hưởng đến trẻ em?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                            <p class="mt-2">Tại sao những người khác lại nghĩ thời gian xem TV mới ảnh hưởng đến trẻ em?</p>
+                            <textarea class="w-full mt-1 p-2 border rounded-md" rows="2" placeholder="Your ideas..."></textarea>
+                        </div>
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-bold">Dàn ý</h4>
+                            <ul class="list-disc list-inside mt-1">
+                                <li><strong>Mở bài:</strong> Giới thiệu chủ đề. Định hướng bài viết.</li>
+                                <li><strong>Thân bài:</strong> Đoạn 1: Bàn luận về ảnh hưởng của nội dung. Đoạn 2: Bàn luận về ảnh hưởng của thời gian xem.</li>
+                                <li><strong>Kết bài:</strong> Đưa ra quan điểm cá nhân.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mt-4">Thực hành</h4>
+                        <textarea class="w-full mt-2 p-2 border rounded-md" rows="12" placeholder="Write your essay here..."></textarea>
+                    </div>
+                    <button onclick="toggleAnswers(this)" class="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Show Sample Essay</button>
+                    <div class="practice-answer mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg space-y-3">
+                         <p><strong>Bài mẫu:</strong><br>Some people suggest that it is not how much time children spend watching television that has an impact on their behaviour, but rather the content of what they watch, while others disagree. I will discuss both sides of this argument in my essay below.<br><br>Firstly, over the last decade or two, there has been a steady increase in the amount of inappropriate content that has been allowed to be televised. Television programmes and commercials these days are full of graphic violence, sex scenes and sexual connotations, amongst other topics that are considered unsuitable for children’s viewing. Even cartoon programmes these days are full of violence. Young children are the most affected by this issue due to the fact that they are still learning and developing ideas about the world. Being exposed to such content can negatively shape their views and personal relationships, and therefore affect their behaviour.<br><br>However, not only does the content of what children watch affect their behaviour but also how much time they spend watching television. In most modern societies it is very common for young children to spend hours of their day with their eyes glued to the television screen. Many children watch television as soon as they wake up in the morning and as soon as they come home from school. Many parents even consider the television to be like a baby-sitter, something to keep their children occupied. Unfortunately, this has many detrimental effects on children’s behaviour, the primary reason being that most children suffer from a severe lack of outdoor activity and exercise, which are vital for a child’s well-being and development.<br><br>In conclusion, I believe that both what children watch and how much time they spend watching television can impact their behaviour. Governing authorities should consider more stringent regulations when it comes to television programme content and parents need to be more careful about how much time their children spend watching television every day to avoid the negative implications that it can have on their children’s behaviour.</p>
+                         <div class="mt-4 vocab-list">
+                            <h4 class="font-bold mb-2">Từ vựng:</h4>
+                            <ul>
+                                <li>Inappropriate content</li>
+                                <li>Televised</li>
+                                <li>Graphic violence, sex scenes and sexual connotations</li>
+                                <li>Negatively shape their views</li>
+                                <li>Their eyes glued to the television screen</li>
+                                <li>Detrimental effects</li>
+                                <li>The primary reason</li>
+                                <li>A severe lack of outdoor activitiy and exercise</li>
+                                <li>Vital for a child’s well-being and development</li>
+                                <li>More stringent regulations</li>
+                                <li>Avoid the negative implications</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function changeTab(event, pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function toggleAnswers(button) {
+            const answerDiv = button.nextElementSibling;
+            if (answerDiv.style.display === 'block') {
+                answerDiv.style.display = 'none';
+                button.textContent = 'Show Key';
+                if (button.textContent.includes('Essay')) {
+                    button.textContent = 'Show Sample Essay';
+                }
+            } else {
+                answerDiv.style.display = 'block';
+                button.textContent = 'Hide Key';
+                 if (button.textContent.includes('Essay')) {
+                    button.textContent = 'Hide Sample Essay';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.tab-btn').click();
+        });
+    </script>
+
+</body>
+</html>
