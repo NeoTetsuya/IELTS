@@ -67,11 +67,12 @@
         }
         /* Popover styles */
         #vocab-popover {
+            position: absolute; /* Changed from relative to absolute */
             transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
             transform: translateY(10px);
-            position: relative;
+            z-index: 50;
         }
-        #vocab-popover::before {
+        #vocab-popover-content::before {
             content: '';
             position: absolute;
             bottom: 100%;
@@ -113,8 +114,8 @@
             transition: ring 0.2s, border-color 0.2s;
         }
         .form-input:focus {
-            ring: 2px;
-            ring-color: #93C5FD;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
             border-color: #3B82F6;
         }
     </style>
@@ -188,16 +189,16 @@
                     <span class="lang-vi">Phần 1: Đánh giá độ phù hợp</span>
                     <span class="lang-en">Part 1: Assess Suitability</span>
                 </h2>
-                <div class="space-y-6">
-                    <!-- Questions are dynamically generated -->
+                <div id="suitability-questions" class="space-y-6">
+                    <!-- Questions are dynamically generated here -->
                 </div>
 
                 <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
                     <span class="lang-vi">Phần 2: Điền từ</span>
                     <span class="lang-en">Part 2: Fill in the blanks</span>
                 </h2>
-                 <div class="space-y-6">
-                    <!-- Questions are dynamically generated -->
+                 <div id="fill-in-questions" class="space-y-6">
+                    <!-- Questions are dynamically generated here -->
                  </div>
             </div>
 
@@ -207,16 +208,16 @@
                     <span class="lang-vi">Phần 1: Mở rộng câu</span>
                     <span class="lang-en">Part 1: Extend the Sentences</span>
                 </h2>
-                <div class="space-y-6">
-                    <!-- Questions are dynamically generated -->
+                <div id="extend-sentence-questions" class="space-y-6">
+                    <!-- Questions are dynamically generated here -->
                 </div>
 
                 <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
                     <span class="lang-vi">Phần 2: Xây dựng câu</span>
                     <span class="lang-en">Part 2: Build Sentences</span>
                 </h2>
-                 <div class="space-y-6">
-                    <!-- Questions are dynamically generated -->
+                 <div id="build-sentence-questions" class="space-y-6">
+                    <!-- Questions are dynamically generated here -->
                  </div>
                  
                 <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
@@ -243,7 +244,7 @@
                     <span class="lang-vi">Luyện viết luận</span>
                     <span class="lang-en">Essay Practice</span>
                 </h2>
-                <div class="space-y-10">
+                <div id="essay-prompts" class="space-y-10">
                     <!-- Essay prompts will be generated here -->
                 </div>
             </div>
@@ -252,48 +253,187 @@
     </div>
 
     <!-- Popover element -->
-    <div id="vocab-popover" class="hidden absolute z-20 w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl border border-gray-700">
-        <h4 id="popover-term" class="font-bold text-lg text-blue-300"></h4>
-        <p id="popover-definition" class="mt-1"></p>
+    <div id="vocab-popover" class="hidden">
+        <div id="vocab-popover-content" class="relative w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl border border-gray-700">
+            <h4 id="popover-term" class="font-bold text-lg text-blue-300"></h4>
+            <p id="popover-definition" class="mt-1"></p>
+        </div>
     </div>
 
 
     <script>
         let langButtons; 
 
-        function checkSuitability(button, isCorrect) {
-            const feedback = button.nextElementSibling;
-            feedback.style.display = 'inline';
-            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+        // --- DATA FOR DYNAMIC CONTENT ---
+        const suitabilityData = [
+            { en: "A person does not need any <strong>formal qualifications</strong> to be a successful doctor or lawyer.", vi: "Một người có thể không cần bất cứ formal qualifications nào để trở thành một bác sĩ hay luật sư thành công.", correct: false },
+            { en: "It is necessary to be well-educated in a <strong>knowledge-based society</strong>.", vi: "Ở knowledge-based society, việc được giáo dục bài bản là rất cần thiết.", correct: true },
+            { en: "Joining a music club at school is considered to be an <strong>extracurricular activity</strong>.", vi: "Tham gia câu lạc bộ âm nhạc ở trường được coi là một extracurricular activity.", correct: true },
+            { en: "Doing group presentations can help students improve their <strong>practical skills</strong>, which are very important for their future adult life.", vi: "Làm thuyết trình nhóm có thể giúp học sinh cải thiện practical skills mà rất quan trọng với cuộc sống trưởng thành sau này.", correct: true },
+            { en: "<strong>Interactive learning</strong> undermines the role of teachers and therefore reduces educational outcomes.", vi: "Interactive learning làm nhẹ đi vai trò của người giáo viên và từ đó làm giảm hiệu quả giáo dục.", correct: false },
+            { en: "Every job in today's world requires us to pursue <strong>tertiary education</strong>.", vi: "Mọi ngành nghề ở thời đại ngày nay đều yêu cầu chúng ta theo đuổi tertiary education.", correct: false },
+            { en: "A person can enhance his/her <strong>career prospects</strong> by expanding his/her circle of friends at work.", vi: "Một người có thể cải thiện career prospects bằng cách mở rộng mối quan hệ trong công việc.", correct: true },
+            { en: "Schools should focus on providing students with more hands-on experience instead of only <strong>theoretical knowledge</strong> about their future work.", vi: "Trường học nên tập trung vào việc cung cấp cho học sinh nhiều kinh nghiệm thực tế hơn là chỉ có theoretical knowledge về công việc tương lai của họ.", correct: true }
+        ];
 
-            if (isCorrect) {
-                feedback.classList.add('correct');
-                feedback.classList.remove('incorrect');
-                feedback.innerHTML = lang === 'vi' ? '<strong>Đúng.</strong>' : '<strong>Correct.</strong>';
-            } else {
-                feedback.classList.add('incorrect');
-                feedback.classList.remove('correct');
-                feedback.innerHTML = lang === 'vi' ? '<strong>Sai.</strong>' : '<strong>Incorrect.</strong>';
+        const fillInData = [
+            { en: "Students who have access to t___ e___ might have better job opportunities after graduation.", vi: "Những học sinh mà có thể tiếp cận với t___ e___ có thể có nhiều cơ hội nghề nghiệp tốt hơn sau khi tốt nghiệp.", answer: "tertiary education" },
+            { en: "People with f___ q___ are more likely to find work.", vi: "Những người có f___ q___ sẽ dễ tìm được việc hơn.", answer: "formal qualifications" },
+            { en: "We are living in a k___-b___ s___ where an increase in knowledge has a direct relationship with financial wealth.", vi: "Chúng ta đang sống trong k___-b___ s___, một xã hội mà càng có nhiều tri thức thì càng giàu có.", answer: "knowledge-based society" },
+            { en: "I___ l___ is a new and more effective educational approach that focuses on having two-way discussions between teachers and learners.", vi: "I___ l___ là một phương pháp giáo dục mới và hiệu quả, tập trung vào sự trao đổi hai chiều giữa giáo viên và người học.", answer: "Interactive learning" },
+            { en: "A person with an excellent university degree is likely to have better c___ p___.", vi: "Một người có tấm bằng đại học xuất sắc sẽ có c___ p___ tốt hơn.", answer: "career prospects" },
+            { en: "University students are encouraged to participate in e___ a___ to improve their practical skills.", vi: "Học sinh đại học được khuyến khích tham gia các e___ a___ để cải thiện kĩ năng mềm của mình.", answer: "extracurricular activities" },
+            { en: "Many subjects in Vietnamese universities contain a great deal of t___ k___ that will be of little use in the future.", vi: "Rất nhiều môn ở các trường đại học ở Việt Nam cung cấp rất nhiều t___ k___ mà không hữu dụng mấy trong tương lai.", answer: "theoretical knowledge" },
+            { en: "Doing part-time jobs can help students enhance their p___ s___ such as communication or teamwork.", vi: "Làm việc bán thời gian có thể giúp học sinh rèn luyện p___ s___ của họ, như là kĩ năng giao tiếp hay làm việc nhóm.", answer: "practical skills" }
+        ];
+        
+        const extendSentenceData = [
+            { en: "In recent years, the government ..., contributing to the development of a more skilled workforce.", suggestions: "university education, traditional learning models" },
+            { en: "During their time at university, students ...", suggestions: "practical skills, career prospects" },
+            { en: "... can equip students with ...", suggestions: "Extracurricular activities, practical skills, interpersonal and teamwork skills" },
+            { en: "Thanks to ..., the focus of instruction in public schools ...", suggestions: "interactive learning, shift" },
+            { en: "... are often cited as ...", suggestions: "recruitment, interpersonal and teamwork skills, candidate" }
+        ];
+
+        const buildSentenceData = [
+            { phrases: "Prestigious university, formal qualifications, career prospects" },
+            { phrases: "Tertiary education, extracurricular activities" },
+            { phrases: "Knowledge-based, financially comfortable, well-educated" },
+            { phrases: "Part-time jobs, student's horizons, practical skills, job opportunities" },
+            { phrases: "Tertiary education, hands-on experience, employment" }
+        ];
+
+        const essayData = [
+            {
+                prompt: "It is neither possible nor useful to provide university places for a high proportion of young people. To what extent do you agree or disagree?",
+                ideas: [
+                    { title: "Approach 1: Impossible & Unnecessary", points: ["It is impossible to provide almost all young people with access to tertiary education.", "Having a university degree no longer has a vital role in the future of young people."], color: "red" },
+                    { title: "Approach 2: Necessary but Impossible", points: ["Having a university degree has a vital role in the future of young people in this knowledge-based society.", "It is impossible to provide almost all young people with access to tertiary education."], color: "green" }
+                ]
+            },
+            {
+                prompt: "Nowadays, some employers think that formal academic qualifications are more important than life experience or personal qualities when they look for new employees. Why is it the case? Is it a positive or negative development?",
+                ideas: [
+                    { title: "Why value qualifications?", points: ["Qualifications show necessary knowledge & skills for the job.", "Better career/promotion prospects."], color: "blue" },
+                    { title: "Positive or Negative?", points: ["<strong>Positive:</strong> Students study harder; enhances education quality.", "<strong>Negative:</strong> Schools focus only on theory; practical skills are ignored."], color: "yellow" }
+                ]
+            },
+            {
+                prompt: "Many people say that universities should only offer places to young students with the highest marks, while others say they should accept people of all ages, even if they did not do well at school. Discuss both views and give your own opinion.",
+                ideas: [
+                    { title: "View 1: Highest Marks Only", points: ["Students with high marks are intelligent and hard-working.", "Ensures graduates are highly educated and find work easily."], color: "purple" },
+                    { title: "View 2: Accept All Ages/Abilities", points: ["Age does not reflect intellectual potential.", "Academic results are not the only measure of intelligence."], color: "teal" }
+                ]
             }
+        ];
+
+
+        // --- DYNAMIC CONTENT GENERATION ---
+        function populateSuitability() {
+            const container = document.getElementById('suitability-questions');
+            suitabilityData.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi}</em></p>
+                    <div class="mt-4">
+                        <button class="action-btn bg-blue-600 text-white hover:bg-blue-700" onclick="checkSuitability(this, ${q.correct})">
+                            <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                        </button>
+                        <span class="answer-feedback ml-4"></span>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+        
+        function populateFillIn() {
+            const container = document.getElementById('fill-in-questions');
+            fillInData.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi}</em></p>
+                    <div class="mt-4 flex flex-wrap items-center gap-2">
+                        <input type="text" class="form-input p-2 flex-grow" placeholder="Your answer...">
+                        <button class="action-btn bg-blue-600 text-white hover:bg-blue-700" onclick="checkFillIn(this, '${q.answer}')">
+                           <span class="lang-vi">Kiểm tra</span><span class="lang-en">Check</span>
+                        </button>
+                        <span class="answer-feedback ml-4"></span>
+                    </div>`;
+                container.appendChild(div);
+            });
         }
 
-        function checkFillIn(button, correctAnswer) {
-            const input = button.previousElementSibling;
-            const feedback = button.nextElementSibling;
-            feedback.style.display = 'inline';
-            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
-
-            if (input.value.trim().toLowerCase() === correctAnswer.toLowerCase()) {
-                feedback.textContent = lang === 'vi' ? 'Đúng!' : 'Correct!';
-                feedback.className = 'answer-feedback correct';
-            } else {
-                feedback.textContent = lang === 'vi' ? `Sai. Đáp án đúng là: ${correctAnswer}` : `Incorrect. The correct answer is: ${correctAnswer}`;
-                feedback.className = 'answer-feedback incorrect';
-            }
+        function populateExtendSentence() {
+            const container = document.getElementById('extend-sentence-questions');
+            extendSentenceData.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="text-sm text-blue-700 my-2"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Suggestions</span>:</strong> ${q.suggestions}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 form-input" rows="3" placeholder="Type your extended sentence here..."></textarea>`;
+                container.appendChild(div);
+            });
         }
 
+        function populateBuildSentence() {
+            const container = document.getElementById('build-sentence-questions');
+            buildSentenceData.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> <span class="lang-vi">Xây dựng câu với các cụm từ sau:</span><span class="lang-en">Build a sentence with the following phrases:</span></p>
+                    <p class="text-sm text-blue-700 my-2"><strong><span class="lang-vi">Cụm từ</span><span class="lang-en">Phrases</span>:</strong> ${q.phrases}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 form-input" rows="3" placeholder="Type your sentence here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateEssays() {
+            const container = document.getElementById('essay-prompts');
+            const colors = { red: 'red', green: 'green', blue: 'blue', yellow: 'yellow', purple: 'purple', teal: 'teal' };
+            essayData.forEach((q, index) => {
+                const ideasHTML = q.ideas.map(idea => `
+                    <div class="bg-${colors[idea.color]}-50 p-4 rounded-lg border border-${colors[idea.color]}-200">
+                        <h4 class="font-semibold text-${colors[idea.color]}-800">${idea.title}</h4>
+                        <ul class="mt-2 list-disc list-inside space-y-2 text-sm text-${colors[idea.color]}-700">
+                            ${idea.points.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>`).join('');
+
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <span class="lang-vi">Đề bài ${index + 1}</span>
+                        <span class="lang-en">Essay Prompt ${index + 1}</span>
+                    </h3>
+                    <p class="mt-2 text-gray-700 italic">"${q.prompt}"</p>
+                    <hr class="my-4">
+                    <h4 class="font-semibold text-gray-800">
+                        <span class="lang-vi">Gợi ý & Ý tưởng</span>
+                        <span class="lang-en">Brainstorming & Ideas</span>
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">${ideasHTML}</div>
+                    <textarea class="w-full mt-4 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 form-input" rows="10" placeholder="Start writing your essay here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+
+        // --- SCRIPT INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             
+            // Populate all dynamic content
+            populateSuitability();
+            populateFillIn();
+            populateExtendSentence();
+            populateBuildSentence();
+            populateEssays();
+
             langButtons = {
                 vi: document.getElementById('lang-btn-vi'),
                 en: document.getElementById('lang-btn-en')
@@ -337,8 +477,11 @@
                     popoverTerm.textContent = term.textContent;
                     popoverDefinition.textContent = term.dataset.definition;
                     const rect = term.getBoundingClientRect();
+                    
+                    // Position popover right below the clicked term
                     popover.style.left = `${rect.left + window.scrollX}px`;
-                    popover.style.top = `${rect.bottom + window.scrollY + 8}px`;
+                    popover.style.top = `${rect.bottom + window.scrollY + 10}px`; // 10px below for spacing
+
                     popover.classList.remove('hidden');
                     setTimeout(() => {
                         popover.style.opacity = '1';
