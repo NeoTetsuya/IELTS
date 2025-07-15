@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education - Interactive Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* A slightly warmer gray */
+            line-height: 1.65;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab {
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .tab.active {
+            border-bottom-color: #2563EB; /* A stronger blue */
+            color: #1E40AF;
+            font-weight: 700;
+        }
+        /* Style for clickable vocabulary terms */
+        .vocab-term-interactive {
+            background-color: #E0E7FF;
+            color: #3730A3;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid #A5B4FC;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .vocab-term-interactive:hover {
+            background-color: #C7D2FE;
+            border-color: #818CF8;
+        }
+        .answer-feedback {
+            display: none;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .correct {
+            color: #15803D; /* A slightly darker green */
+        }
+        .incorrect {
+            color: #B91C1C; /* A slightly darker red */
+        }
+        .question-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: box-shadow 0.2s;
+        }
+        .question-container:hover {
+             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        /* Popover styles */
+        #vocab-popover {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            transform: translateY(10px);
+            position: relative;
+        }
+        #vocab-popover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 24px;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent #1f2937 transparent; /* Corresponds to bg-gray-800 */
+        }
+        /* Language switcher styles */
+        .lang-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .lang-btn.active {
+            background-color: #2563EB;
+            color: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        /* Hide inactive language content */
+        .lang-vi, .lang-en {
+            display: none;
+        }
+        /* General Button Style */
+        .action-btn {
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        /* Input Field Style */
+        .form-input {
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            transition: ring 0.2s, border-color 0.2s;
+        }
+        .form-input:focus {
+            ring: 2px;
+            ring-color: #93C5FD;
+            border-color: #3B82F6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-700">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+        <header class="text-center mb-10">
+             <!-- Language Switcher -->
+            <div class="flex justify-center space-x-2 mb-6">
+                <button id="lang-btn-vi" class="lang-btn px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Tiếng Việt</button>
+                <button id="lang-btn-en" class="lang-btn active px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">English</button>
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                <span class="lang-vi">Giáo dục</span>
+                <span class="lang-en">Education</span>
+            </h1>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="-mb-px flex flex-wrap justify-center sm:justify-start -mb-px space-x-6 sm:space-x-10" aria-label="Tabs">
+                <button class="tab active whitespace-nowrap pb-4 px-1 border-b-2 font-semibold text-base" data-tab="words">
+                    <span class="lang-vi">Từ vựng trong ngữ cảnh</span>
+                    <span class="lang-en">Words in Context</span>
+                </button>
+                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="explore">
+                    <span class="lang-vi">Khám phá kiến thức</span>
+                    <span class="lang-en">Explore Knowledge</span>
+                </button>
+                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="apply">
+                    <span class="lang-vi">Hiểu & Áp dụng</span>
+                    <span class="lang-en">Understanding & Applying</span>
+                </button>
+                 <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="essay">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tab-contents">
+            <!-- Words in Context Section -->
+            <div id="words" class="tab-content active">
+                <div class="space-y-5 text-justify text-lg leading-relaxed">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                         <span class="lang-vi">Giáo dục đại học có đang làm chúng ta thất vọng?</span>
+                         <span class="lang-en">Is Higher Education letting us down?</span>
+                    </h2>
+                    <div class="lang-vi space-y-5">
+                        <p>Ở nhiều nơi trên thế giới, <span class="vocab-term-interactive" data-definition="Giáo dục đại học">university education (1)</span> đang không đem lại kết quả như chúng ta mong đợi. Thay vì được cung cấp những kiến thức cũng như kỹ năng cần thiết cho công việc trong tương lai, học sinh đại học hầu như bị vùi đầu vào <span class="vocab-term-interactive" data-definition="Kiến thức lý thuyết (thiếu tính thực tế)">theoretical knowledge (2)</span>, thiếu tính thực tiễn để có thể qua được các bài kiểm tra trên trường. <span class="vocab-term-interactive" data-definition="Những mô hình học tập truyền thống">Traditional learning models (3)</span> không còn phát huy tác dụng, trong khi đó các hình thức <span class="vocab-term-interactive" data-definition="Cách học tập nhiều tương tác">interactive learning (4)</span> không được phổ cập ở môi trường đại học.</p>
+                        <p>Thời gian dành cho <span class="vocab-term-interactive" data-definition="Các hoạt động ngoại khóa">extracurricular activities (5)</span> từ đó cũng bị hạn chế dần. Tuy rằng nhiều ngành nghề yêu cầu <span class="vocab-term-interactive" data-definition="Các loại bằng cấp">formal qualifications (6)</span> tốt nhưng điều đó không có nghĩa những <span class="vocab-term-interactive" data-definition="Kĩ năng thực tiễn">practical skills (7)</span> như <span class="vocab-term-interactive" data-definition="Kĩ năng ứng xử và làm việc nhóm">interpersonal and teamworking skills (8)</span> là không cần thiết. Chỉ có kiến thức sách vở chứ không có kỹ năng mềm, học sinh không thể có <span class="vocab-term-interactive" data-definition="Triển vọng nghề nghiệp">career prospects (9)</span> tốt sau khi ra trường.</p>
+                        <p><span class="vocab-term-interactive" data-definition="Xã hội đề cao kiến thức">Knowledge-based society (10)</span> hiện nay cần những cá nhân toàn vẹn cả về kiến thức lẫn kỹ năng. Chính vì vậy, <span class="vocab-term-interactive" data-definition="Các loại hình giáo dục sau bậc phổ thông">tertiary education (11)</span> cần có sự cải cách lớn để có thể đáp ứng được nhu cầu này của xã hội.</p>
+                    </div>
+                    <div class="lang-en space-y-5">
+                        <p>In many parts of the world, <span class="vocab-term-interactive" data-definition="Giáo dục đại học">university education (1)</span> is not delivering the results we expect. Instead of being provided with the necessary knowledge and skills for future work, university students are mostly buried in <span class="vocab-term-interactive" data-definition="Kiến thức lý thuyết (thiếu tính thực tế)">theoretical knowledge (2)</span>, lacking practicality to pass school exams. <span class="vocab-term-interactive" data-definition="Những mô hình học tập truyền thống">Traditional learning models (3)</span> are no longer effective, while forms of <span class="vocab-term-interactive" data-definition="Cách học tập nhiều tương tác">interactive learning (4)</span> are not widespread in the university environment.</p>
+                        <p>Time for <span class="vocab-term-interactive" data-definition="Các hoạt động ngoại khóa">extracurricular activities (5)</span> is thus gradually limited. Although many professions require good <span class="vocab-term-interactive" data-definition="Các loại bằng cấp">formal qualifications (6)</span>, it does not mean that <span class="vocab-term-interactive" data-definition="Kĩ năng thực tiễn">practical skills (7)</span> like <span class="vocab-term-interactive" data-definition="Kĩ năng ứng xử và làm việc nhóm">interpersonal and teamworking skills (8)</span> are unnecessary. With only book knowledge and no soft skills, students cannot have good <span class="vocab-term-interactive" data-definition="Triển vọng nghề nghiệp">career prospects (9)</span> after graduation.</p>
+                        <p>Today's <span class="vocab-term-interactive" data-definition="Xã hội đề cao kiến thức">knowledge-based society (10)</span> needs individuals who are well-rounded in both knowledge and skills. Therefore, <span class="vocab-term-interactive" data-definition="Các loại hình giáo dục sau bậc phổ thông">tertiary education (11)</span> needs major reform to meet this societal demand.</p>
+                    </div>
+                    <p class="mt-8 text-center text-gray-500 italic">
+                        <span class="lang-vi">Nhấp vào các từ được đánh dấu để xem ý nghĩa của chúng.</span>
+                        <span class="lang-en">Click on the highlighted words to see their meaning.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Explore Knowledge Section -->
+            <div id="explore" class="tab-content">
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Phần 1: Đánh giá độ phù hợp</span>
+                    <span class="lang-en">Part 1: Assess Suitability</span>
+                </h2>
+                <div class="space-y-6">
+                    <!-- Questions are dynamically generated -->
+                </div>
+
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 2: Điền từ</span>
+                    <span class="lang-en">Part 2: Fill in the blanks</span>
+                </h2>
+                 <div class="space-y-6">
+                    <!-- Questions are dynamically generated -->
+                 </div>
+            </div>
+
+            <!-- Understanding & Applying Section -->
+            <div id="apply" class="tab-content">
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Phần 1: Mở rộng câu</span>
+                    <span class="lang-en">Part 1: Extend the Sentences</span>
+                </h2>
+                <div class="space-y-6">
+                    <!-- Questions are dynamically generated -->
+                </div>
+
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 2: Xây dựng câu</span>
+                    <span class="lang-en">Part 2: Build Sentences</span>
+                </h2>
+                 <div class="space-y-6">
+                    <!-- Questions are dynamically generated -->
+                 </div>
+                 
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 3: Viết đoạn văn ngắn</span>
+                    <span class="lang-en">Part 3: Write a short paragraph</span>
+                </h2>
+                <div class="question-container">
+                    <p class="font-semibold text-lg text-gray-800"><strong><span class="lang-vi">Viết một đoạn văn ngắn (100 – 120 từ) trả lời câu hỏi sau.</span><span class="lang-en">Write a short paragraph (100–120 words) answering the following question.</span></strong></p>
+                    <p class="mt-2 text-gray-700">What are the benefits of pursuing university education?</p>
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg text-center">
+                        <p class="font-bold text-gray-800">University education</p>
+                        <div class="flex flex-col sm:flex-row justify-around mt-2">
+                            <p class="text-sm text-gray-600">Knowledge and skills needed to find work</p>
+                            <p class="text-sm text-gray-600">An environment to accumulate knowledge about different fields</p>
+                        </div>
+                    </div>
+                    <textarea class="w-full mt-4 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 form-input" rows="6" placeholder="Start writing your paragraph here..."></textarea>
+                </div>
+            </div>
+            
+            <!-- Essay Practice Section -->
+            <div id="essay" class="tab-content">
+                 <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </h2>
+                <div class="space-y-10">
+                    <!-- Essay prompts will be generated here -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Popover element -->
+    <div id="vocab-popover" class="hidden absolute z-20 w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl border border-gray-700">
+        <h4 id="popover-term" class="font-bold text-lg text-blue-300"></h4>
+        <p id="popover-definition" class="mt-1"></p>
+    </div>
+
+
+    <script>
+        let langButtons; 
+
+        function checkSuitability(button, isCorrect) {
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (isCorrect) {
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Đúng.</strong>' : '<strong>Correct.</strong>';
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Sai.</strong>' : '<strong>Incorrect.</strong>';
+            }
+        }
+
+        function checkFillIn(button, correctAnswer) {
+            const input = button.previousElementSibling;
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (input.value.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                feedback.textContent = lang === 'vi' ? 'Đúng!' : 'Correct!';
+                feedback.className = 'answer-feedback correct';
+            } else {
+                feedback.textContent = lang === 'vi' ? `Sai. Đáp án đúng là: ${correctAnswer}` : `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'answer-feedback incorrect';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            langButtons = {
+                vi: document.getElementById('lang-btn-vi'),
+                en: document.getElementById('lang-btn-en')
+            };
+
+            function setLanguage(lang) {
+                document.querySelectorAll('.lang-vi, .lang-en').forEach(el => el.style.display = 'none');
+                document.querySelectorAll(`.lang-${lang}`).forEach(el => el.style.display = 'inline');
+
+                for (const key in langButtons) {
+                    langButtons[key].classList.remove('active');
+                }
+                langButtons[lang].classList.add('active');
+            }
+
+            langButtons.vi.addEventListener('click', () => setLanguage('vi'));
+            langButtons.en.addEventListener('click', () => setLanguage('en'));
+            
+            setLanguage('en'); 
+
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+
+            const popover = document.getElementById('vocab-popover');
+            const popoverTerm = document.getElementById('popover-term');
+            const popoverDefinition = document.getElementById('popover-definition');
+            const vocabTerms = document.querySelectorAll('.vocab-term-interactive');
+
+            vocabTerms.forEach(term => {
+                term.addEventListener('click', (event) => {
+                    event.stopPropagation(); 
+                    popoverTerm.textContent = term.textContent;
+                    popoverDefinition.textContent = term.dataset.definition;
+                    const rect = term.getBoundingClientRect();
+                    popover.style.left = `${rect.left + window.scrollX}px`;
+                    popover.style.top = `${rect.bottom + window.scrollY + 8}px`;
+                    popover.classList.remove('hidden');
+                    setTimeout(() => {
+                        popover.style.opacity = '1';
+                        popover.style.transform = 'translateY(0)';
+                    }, 10);
+                });
+            });
+
+            document.addEventListener('click', () => {
+                if (!popover.classList.contains('hidden')) {
+                    popover.style.opacity = '0';
+                    popover.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        popover.classList.add('hidden');
+                    }, 200);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
