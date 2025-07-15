@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technology in Education - Interactive Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            line-height: 1.65;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab {
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .tab.active {
+            border-bottom-color: #2563EB;
+            color: #1E40AF;
+            font-weight: 700;
+        }
+        .vocab-term-interactive {
+            background-color: #E0E7FF;
+            color: #3730A3;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid #A5B4FC;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .vocab-term-interactive:hover {
+            background-color: #C7D2FE;
+            border-color: #818CF8;
+        }
+        .answer-feedback {
+            display: none;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .correct {
+            color: #15803D;
+        }
+        .incorrect {
+            color: #B91C1C;
+        }
+        .question-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: box-shadow 0.2s;
+        }
+        .question-container:hover {
+             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        #vocab-popover {
+            position: absolute;
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            transform: translateY(10px);
+            z-index: 50;
+        }
+        #vocab-popover-content::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 24px;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent #1f2937 transparent;
+        }
+        .lang-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .lang-btn.active {
+            background-color: #2563EB;
+            color: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        .lang-vi, .lang-en {
+            display: none;
+        }
+        .action-btn {
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .form-input {
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            transition: ring 0.2s, border-color 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            border-color: #3B82F6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-700">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+        <header class="text-center mb-10">
+            <div class="flex justify-center space-x-2 mb-6">
+                <button id="lang-btn-vi" class="lang-btn px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Tiếng Việt</button>
+                <button id="lang-btn-en" class="lang-btn active px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">English</button>
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                <span class="lang-vi">Công nghệ trong giáo dục</span>
+                <span class="lang-en">Technology in Education</span>
+            </h1>
+        </header>
+
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="-mb-px flex flex-wrap justify-center sm:justify-start -mb-px space-x-6 sm:space-x-10" aria-label="Tabs">
+                <button class="tab active whitespace-nowrap pb-4 px-1 border-b-2 font-semibold text-base" data-tab="words">
+                    <span class="lang-vi">Từ vựng trong ngữ cảnh</span>
+                    <span class="lang-en">Words in Context</span>
+                </button>
+                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="explore">
+                    <span class="lang-vi">Khám phá kiến thức</span>
+                    <span class="lang-en">Explore Knowledge</span>
+                </button>
+                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="apply">
+                    <span class="lang-vi">Hiểu & Áp dụng</span>
+                    <span class="lang-en">Understanding & Applying</span>
+                </button>
+                 <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="essay">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </button>
+            </nav>
+        </div>
+
+        <div id="tab-contents">
+            <div id="words" class="tab-content active">
+                <div class="space-y-5 text-justify text-lg leading-relaxed">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                         <span class="lang-vi">Công nghệ hiện đại đang định hướng tương lai của giáo dục</span>
+                         <span class="lang-en">Modern technology is shaping the future of education</span>
+                    </h2>
+                    <div class="lang-vi space-y-5">
+                        <p>Công nghệ thế kỷ 21 đang dọn đường cho sự xuất hiện của rất nhiều <span class="vocab-term-interactive" data-definition="Những mô hình học tập cá nhân hóa">personalized learning models(1)</span>. Mỗi cá nhân học sinh <span class="vocab-term-interactive" data-definition="Tiếp thu kiến thức">acquire knowledge(2)</span> theo cách khác nhau, và công nghệ ngày nay cho phép giáo viên có thể điều chỉnh chương trình để <span class="vocab-term-interactive" data-definition="Thích nghi với năng lực của từng học sinh">adapt to each student's skill level(3)</span> và giúp họ có thể <span class="vocab-term-interactive" data-definition="Học theo nhịp độ riêng">learn at their own pace(4)</span>. <span class="vocab-term-interactive" data-definition="Những chương trình máy tính được thiết kế phù hợp với từng cá nhân">Tailor-made computer programs(5)</span> đang dần thay thế vai trò của sách giáo khoa trong lớp học trong việc hỗ trợ học sinh học tập.</p>
+                        <p>Thêm vào đó, với sự bùng nổ của Internet, hình thức học trực tuyến ngày càng thu hút được nhiều sự quan tâm từ tất cả mọi người. Học sinh có thể có rất nhiều sự lựa chọn cho <span class="vocab-term-interactive" data-definition="Các khóa học trực tuyến">online courses(6)</span> về tất cả các chủ đề khác nhau của cuộc sống. Đồng thời, để tham gia <span class="vocab-term-interactive" data-definition="Một lớp học ảo">a virtual classroom(7)</span> như vậy, người học chỉ cần có một thiết bị thông minh, điện thoại hay máy tính, kết nối với Internet. Rất nhiều trường đại học trên thế giới đã đầu tư vào <span class="vocab-term-interactive" data-definition="Những nền tảng học trực tuyến">online learning platforms(8)</span> để sinh viên có nhiều sự lựa chọn hơn.</p>
+                        <p>Tuy rằng việc học trực tuyến có nhiều bất lợi như học sinh không có <span class="vocab-term-interactive" data-definition="Tương tác trực tiếp">face-to-face interaction(9)</span> với thầy cô hay khó có thể nhận được <span class="vocab-term-interactive" data-definition="Hỗ trợ từ bạn bè">peer support(10)</span>, đây là bước đi đầu tiên đến với một kỷ nguyên giáo dục mới.</p>
+                    </div>
+                    <div class="lang-en space-y-5">
+                        <p>21st-century technology is paving the way for the emergence of many <span class="vocab-term-interactive" data-definition="Những mô hình học tập cá nhân hóa">personalized learning models(1)</span>. Each student <span class="vocab-term-interactive" data-definition="Tiếp thu kiến thức">acquires knowledge(2)</span> differently, and today's technology allows teachers to adjust programs to <span class="vocab-term-interactive" data-definition="Thích nghi với năng lực của từng học sinh">adapt to each student's skill level(3)</span> and help them <span class="vocab-term-interactive" data-definition="Học theo nhịp độ riêng">learn at their own pace(4)</span>. <span class="vocab-term-interactive" data-definition="Những chương trình máy tính được thiết kế phù hợp với từng cá nhân">Tailor-made computer programs(5)</span> are gradually replacing textbooks in the classroom to support student learning.</p>
+                        <p>In addition, with the explosion of the Internet, online learning is attracting more and more attention from everyone. Students can have many choices of <span class="vocab-term-interactive" data-definition="Các khóa học trực tuyến">online courses(6)</span> on all different topics of life. At the same time, to participate in <span class="vocab-term-interactive" data-definition="Một lớp học ảo">a virtual classroom(7)</span>, learners only need a smart device connected to the Internet. Many universities around the world have invested in <span class="vocab-term-interactive" data-definition="Những nền tảng học trực tuyến">online learning platforms(8)</span> to give students more choices.</p>
+                        <p>Although online learning has disadvantages such as students not having <span class="vocab-term-interactive" data-definition="Tương tác trực tiếp">face-to-face interaction(9)</span> with teachers or finding it difficult to receive <span class="vocab-term-interactive" data-definition="Hỗ trợ từ bạn bè">peer support(10)</span>, this is the first step towards a new era of education.</p>
+                    </div>
+                    <p class="mt-8 text-center text-gray-500 italic">
+                        <span class="lang-vi">Nhấp vào các từ được đánh dấu để xem ý nghĩa của chúng.</span>
+                        <span class="lang-en">Click on the highlighted words to see their meaning.</span>
+                    </p>
+                </div>
+            </div>
+
+            <div id="explore" class="tab-content">
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Phần 1: Đánh giá độ phù hợp</span>
+                    <span class="lang-en">Part 1: Assess Suitability</span>
+                </h2>
+                <div id="suitability-questions-tech" class="space-y-6"></div>
+
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 2: Điền từ</span>
+                    <span class="lang-en">Part 2: Fill in the blanks</span>
+                </h2>
+                 <div id="fill-in-questions-tech" class="space-y-6"></div>
+            </div>
+
+            <div id="apply" class="tab-content">
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Phần 1: Mở rộng câu</span>
+                    <span class="lang-en">Part 1: Extend the Sentences</span>
+                </h2>
+                <div id="extend-sentence-questions-tech" class="space-y-6"></div>
+
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 2: Xây dựng câu</span>
+                    <span class="lang-en">Part 2: Build Sentences</span>
+                </h2>
+                 <div id="build-sentence-questions-tech" class="space-y-6"></div>
+                 
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 3: Viết đoạn văn ngắn</span>
+                    <span class="lang-en">Part 3: Write a short paragraph</span>
+                </h2>
+                <div class="question-container">
+                    <p class="font-semibold text-lg text-gray-800"><strong><span class="lang-vi">Viết một đoạn văn ngắn (100 – 120 từ) trả lời câu hỏi sau.</span><span class="lang-en">Write a short paragraph (100–120 words) answering the following question.</span></strong></p>
+                    <p class="mt-2 text-gray-700">What are the benefits of using technology in education?</p>
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg text-center">
+                        <p class="font-bold text-gray-800">Technology in education</p>
+                        <div class="flex flex-col sm:flex-row justify-around mt-2">
+                            <p class="text-sm text-gray-600">Benefit 1: Technology can create an effective learning environment.</p>
+                            <p class="text-sm text-gray-600">Benefit 2: It is more convenient for students who live far away from school.</p>
+                        </div>
+                    </div>
+                    <textarea class="w-full mt-4 p-3 border border-gray-300 rounded-lg form-input" rows="6" placeholder="Start writing your paragraph here..."></textarea>
+                </div>
+            </div>
+            
+            <div id="essay" class="tab-content">
+                 <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </h2>
+                <div id="essay-prompts-tech" class="space-y-10"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vocab-popover" class="hidden">
+        <div id="vocab-popover-content" class="relative w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl border border-gray-700">
+            <h4 id="popover-term" class="font-bold text-lg text-blue-300"></h4>
+            <p id="popover-definition" class="mt-1"></p>
+        </div>
+    </div>
+
+    <script>
+        let langButtons;
+
+        const suitabilityDataTech = [
+            { en: "<strong>Personalized learning models</strong> are suitable for a huge number of students of varied abilities.", vi: "Personalized learning models phù hợp với số lượng học sinh lớn và có trình độ khác nhau.", correct: true },
+            { en: "Vietnamese students now can choose to attend <strong>online courses</strong> offered by a foreign university without having to travel abroad.", vi: "Học sinh Việt Nam bây giờ có thể chọn tham gia online courses của một trường đại học nước ngoài mà không cần phải di chuyển đến nước đó.", correct: true },
+            { en: "Online students can receive great <strong>peer support</strong> because it is extremely easy to communicate and exchange ideas with other online participants.", vi: "Học sinh học trực tuyến có thể nhận được peer support rất lớn vì rất dễ để họ có thể giao tiếp và trao đổi ý tưởng với các thành viên khác.", correct: false },
+            { en: "Personalized learning models allow students to <strong>study at their own pace</strong>.", vi: "Personalized learning models cho phép học sinh có thể học at their own pace.", correct: true },
+            { en: "The majority of courses on many renowned online learning platforms, such as Udemy, are designed so that participants can have <strong>face-to-face interaction</strong> with their instructors.", vi: "Phần lớn các khóa học trên nhiều nền tảng học trực tuyến nổi tiếng như Udemy được thiết kế để người tham gia có thể có face-to-face interaction với người hướng dẫn khóa học.", correct: false }
+        ];
+
+        const fillInDataTech = [
+            { en: "Lack of p___ s___ is one major drawback of online learning that leads to lower study results compared to the traditional learning model.", vi: "Thiếu đi p___ s___ là một bất lợi lớn của việc học trực tuyến, và điều này dẫn đến kết quả học tập thấp hơn mô hình học truyền thống.", answer: "peer support" },
+            { en: "Nowadays, t___-m___ c___ p___ are replacing textbooks, many of which are obsolete and not able to help students adapt to today's ever-changing world.", vi: "Ngày nay, t___-m___ c___ p___ đang thay thế dần sách giáo khoa, rất nhiều trong số đó đã lỗi thời và không thể giúp học sinh thích ứng được với thế giới không ngừng đổi thay bây giờ.", answer: "tailor-made computer programs" },
+            { en: "A v___ c___ allows participants to view videos or presentations through an Internet-based application, such as Skype.", vi: "A v___ c___ cho phép người học có thể xem videos và các bài thuyết trình thông qua một ứng dụng sử dụng nền tảng mạng Internet, ví dụ như Skype.", answer: "virtual classroom" },
+            { en: "With the widespread presence of the Internet, o___ c___ is being favored by an increasing number of learners, regardless of where they are.", vi: "Với sự có mặt rộng rãi mạng Internet, o___ c___ đang được yêu thích bởi nhiều người ở bất cứ nơi đâu trên thế giới.", answer: "online courses" },
+            { en: "Modern educational technology is making way for a number of p___ l___ m___ that are suitable for each individual student's skill level.", vi: "Công nghệ giáo dục hiện đại đang tạo điền kiện cho sự xuất hiện của p___ l___ m___ mà phù hợp với trình độ của từng cá nhân học sinh.", answer: "personalized learning models" },
+            { en: "Coursera and many other o___ l___ p___ are offering many free courses about Finance and Accounting.", vi: "Coursera và rất nhiều o___ l___ p___ khác đang có những khóa học miễn phí về Tài chính và Kế toán.", answer: "online learning platforms" }
+        ];
+        
+        const extendSentenceDataTech = [
+            { en: "During the Covid-19 pandemic, ...", suggestions: "online learning, traditional learning modes" },
+            { en: "... has greatly facilitated learners' language acquisition process.", suggestions: "integration, modern technology" },
+            { en: "Many teachers have complained about ...", suggestions: "face-to-face interaction, virtual classrooms" },
+            { en: "The newly added discussion feature is believed to ...", suggestions: "peer support, online learning platform" },
+            { en: "Massive open online courses ...", suggestions: "learn at their own pace, adult learners" }
+        ];
+
+        const buildSentenceDataTech = [
+            { phrases: "The traditional learning model, face-to-face interaction, learning outcomes" },
+            { phrases: "Modern technology, students' independent learning, more interesting lessons" },
+            { phrases: "Peer support, online courses, an increasing number of participants" },
+            { phrases: "Modern technology, personalized learning models, pace" },
+            { phrases: "Internet-based applications, group discussions, exchange of ideas" }
+        ];
+
+        const essayDataTech = [
+            {
+                prompt: "Some universities offer online courses as an alternative to classes delivered on campus. Do you think this is a positive or negative development?",
+                ideas: [
+                    { title: "Positive", points: ["Variety of courses and programs", "Flexibility", "Personalized learning model", "Reduced costs"], color: "green" },
+                    { title: "Negative", points: ["Little face-to-face interaction and peer support", "Intense requirement of self-discipline", "Lack of accreditation and lower quality"], color: "red" }
+                ]
+            },
+            {
+                prompt: "Schools are no longer necessary because children can get so much information available through the Internet, and they can study just as well at home. To what extent do you agree or disagree?",
+                ideas: [
+                    { title: "Agree (Schools no longer necessary)", points: ["Modern technology allows for personalized learning", "Many online courses are available", "Information is easily found on the Internet"], color: "blue" },
+                    { title: "Disagree (Schools still necessary)", points: ["Schools provide a social environment", "Extracurricular activities enhance practical skills", "Schools provide better direction and guidance"], color: "purple" }
+                ]
+            }
+        ];
+
+        function populateSuitability(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi}</em></p>
+                    <div class="mt-4">
+                        <button class="action-btn bg-blue-600 text-white hover:bg-blue-700" onclick="checkSuitability(this, ${q.correct})">
+                            <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                        </button>
+                        <span class="answer-feedback ml-4"></span>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateFillIn(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi}</em></p>
+                    <div class="mt-4 flex flex-wrap items-center gap-2">
+                        <input type="text" class="form-input p-2 flex-grow" placeholder="Your answer...">
+                        <button class="action-btn bg-blue-600 text-white hover:bg-blue-700" onclick="checkFillIn(this, '${q.answer}')">
+                           <span class="lang-vi">Kiểm tra</span><span class="lang-en">Check</span>
+                        </button>
+                        <span class="answer-feedback ml-4"></span>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateExtendSentence(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="text-sm text-blue-700 my-2"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Suggestions</span>:</strong> ${q.suggestions}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg form-input" rows="3" placeholder="Type your extended sentence here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateBuildSentence(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> <span class="lang-vi">Xây dựng câu với các cụm từ sau:</span><span class="lang-en">Build a sentence with the following phrases:</span></p>
+                    <p class="text-sm text-blue-700 my-2"><strong><span class="lang-vi">Cụm từ</span><span class="lang-en">Phrases</span>:</strong> ${q.phrases}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg form-input" rows="3" placeholder="Type your sentence here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateEssays(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            const colors = { red: 'red', green: 'green', blue: 'blue', purple: 'purple' };
+            data.forEach((q, index) => {
+                const ideasHTML = q.ideas.map(idea => `
+                    <div class="bg-${colors[idea.color]}-50 p-4 rounded-lg border border-${colors[idea.color]}-200">
+                        <h4 class="font-semibold text-${colors[idea.color]}-800">${idea.title}</h4>
+                        <ul class="mt-2 list-disc list-inside space-y-2 text-sm text-${colors[idea.color]}-700">
+                            ${idea.points.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>`).join('');
+
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <span class="lang-vi">Đề bài ${index + 1}</span>
+                        <span class="lang-en">Essay Prompt ${index + 1}</span>
+                    </h3>
+                    <p class="mt-2 text-gray-700 italic">"${q.prompt}"</p>
+                    <hr class="my-4">
+                    <h4 class="font-semibold text-gray-800">
+                        <span class="lang-vi">Gợi ý & Ý tưởng</span>
+                        <span class="lang-en">Brainstorming & Ideas</span>
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">${ideasHTML}</div>
+                    <textarea class="w-full mt-4 p-3 border border-gray-300 rounded-lg form-input" rows="10" placeholder="Start writing your essay here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function checkSuitability(button, isCorrect) {
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (isCorrect) {
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Đúng.</strong>' : '<strong>Correct.</strong>';
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Sai.</strong>' : '<strong>Incorrect.</strong>';
+            }
+        }
+
+        function checkFillIn(button, correctAnswer) {
+            const input = button.previousElementSibling;
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (input.value.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                feedback.textContent = lang === 'vi' ? 'Đúng!' : 'Correct!';
+                feedback.className = 'answer-feedback correct';
+            } else {
+                feedback.textContent = lang === 'vi' ? `Sai. Đáp án đúng là: ${correctAnswer}` : `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'answer-feedback incorrect';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateSuitability('suitability-questions-tech', suitabilityDataTech);
+            populateFillIn('fill-in-questions-tech', fillInDataTech);
+            populateExtendSentence('extend-sentence-questions-tech', extendSentenceDataTech);
+            populateBuildSentence('build-sentence-questions-tech', buildSentenceDataTech);
+            populateEssays('essay-prompts-tech', essayDataTech);
+
+            langButtons = {
+                vi: document.getElementById('lang-btn-vi'),
+                en: document.getElementById('lang-btn-en')
+            };
+
+            function setLanguage(lang) {
+                document.querySelectorAll('.lang-vi, .lang-en').forEach(el => el.style.display = 'none');
+                document.querySelectorAll(`.lang-${lang}`).forEach(el => el.style.display = 'inline');
+                for (const key in langButtons) {
+                    langButtons[key].classList.remove('active');
+                }
+                langButtons[lang].classList.add('active');
+            }
+
+            langButtons.vi.addEventListener('click', () => setLanguage('vi'));
+            langButtons.en.addEventListener('click', () => setLanguage('en'));
+            setLanguage('en');
+
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+
+            const popover = document.getElementById('vocab-popover');
+            const popoverTerm = document.getElementById('popover-term');
+            const popoverDefinition = document.getElementById('popover-definition');
+            const vocabTerms = document.querySelectorAll('.vocab-term-interactive');
+            vocabTerms.forEach(term => {
+                term.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    popoverTerm.textContent = term.textContent;
+                    popoverDefinition.textContent = term.dataset.definition;
+                    const rect = term.getBoundingClientRect();
+                    popover.style.left = `${rect.left + window.scrollX}px`;
+                    popover.style.top = `${rect.bottom + window.scrollY + 10}px`;
+                    popover.classList.remove('hidden');
+                    setTimeout(() => {
+                        popover.style.opacity = '1';
+                        popover.style.transform = 'translateY(0)';
+                    }, 10);
+                });
+            });
+
+            document.addEventListener('click', () => {
+                if (!popover.classList.contains('hidden')) {
+                    popover.style.opacity = '0';
+                    popover.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        popover.classList.add('hidden');
+                    }, 200);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
