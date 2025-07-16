@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading - Lessons & Exercises</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .lesson-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .lesson-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        .lesson-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+        .lesson-section p {
+            line-height: 1.6;
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+        .exercise-box {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .passage-box {
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-style: italic;
+            color: #374151;
+        }
+        .question-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s;
+        }
+        .question-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 1px #4f46e5;
+        }
+        .correct {
+            border-color: #10b981 !important;
+            background-color: #f0fdf4;
+        }
+        .incorrect {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2;
+        }
+        .correct-answer-text {
+            color: #10b981;
+            font-weight: 600;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            border-bottom: none;
+        }
+        .tab-button.active {
+            background-color: #1e3a8a;
+            color: white;
+        }
+        .tab-button:not(.active) {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+        mark {
+            border-radius: 0.25rem;
+            padding: 0.1rem 0.2rem;
+            cursor: pointer;
+        }
+        .color-swatch {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .color-swatch.active {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px white;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto flex gap-x-8">
+        <!-- Main Content -->
+        <div class="flex-grow">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800">IELTS Reading: Lessons & Exercises</h1>
+                <p class="text-gray-600 mt-2">Interactive guide to question types and reading tips.</p>
+            </header>
+
+            <!-- Tabs for Units -->
+            <div class="flex border-b border-gray-200">
+                <button id="tab1" class="tab-button active" onclick="switchUnit(1)">Unit 1: Question Types</button>
+                <button id="tab2" class="tab-button" onclick="switchUnit(2)">Unit 2: Reading Tips (1)</button>
+                <button id="tab3" class="tab-button" onclick="switchUnit(3)">Unit 3: Reading Tips (2)</button>
+            </div>
+
+            <div id="unit-container" class="mt-6">
+                <!-- Content for units will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Right-side Toolbar -->
+        <div class="w-48 flex-shrink-0 sticky top-8 self-start">
+            <div class="bg-white p-4 rounded-lg shadow-lg border space-y-6">
+                <h4 class="text-lg font-bold text-gray-800 text-center">Tools</h4>
+                <div class="space-y-2">
+                    <p class="text-sm font-semibold text-gray-600">Highlight Color</p>
+                    <div id="color-palette" class="flex flex-wrap gap-2 color-palette">
+                        <button class="color-swatch active" style="background-color: #fef08a;" onclick="selectHighlightColor('#fef08a', this)"></button>
+                        <button class="color-swatch" style="background-color: #bae6fd;" onclick="selectHighlightColor('#bae6fd', this)"></button>
+                        <button class="color-swatch" style="background-color: #bbf7d0;" onclick="selectHighlightColor('#bbf7d0', this)"></button>
+                        <button class="color-swatch" style="background-color: #fbcfe8;" onclick="selectHighlightColor('#fbcfe8', this)"></button>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                     <button onclick="highlightSelection()" class="w-full bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition">Apply Highlight</button>
+                     <button onclick="clearAllHighlights()" class="w-full mt-2 text-sm text-gray-500 hover:text-indigo-600">Clear All Highlights</button>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-sm font-semibold text-gray-600">Text Size</p>
+                    <div class="flex items-center justify-center space-x-2">
+                        <button onclick="changeFontSize(-1)" class="bg-gray-200 w-8 h-8 rounded-full text-lg font-bold hover:bg-gray-300">-</button>
+                        <button onclick="changeFontSize(1)" class="bg-gray-200 w-8 h-8 rounded-full text-lg font-bold hover:bg-gray-300">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- DATA & STATE MANAGEMENT ---
+    let selectedHighlightColor = '#fef08a'; // Default: yellow
+
+    const units = {
+        1: {
+            title: "Unit 1: IELTS Reading Question Types",
+            content: `
+                <div class="lesson-section">
+                    <h2>1. Multiple-Choice Questions</h2>
+                    <p>Multiple-Choice Questions are designed to test a wide variety of reading skills. The questions may require you to have an overall understanding of the main points of the text or a detailed understanding of particular points. They may also ask you to identify facts or opinions.</p>
+                    <div class="exercise-box">
+                        <h3>Example Exercise</h3>
+                        <div class="passage-box mt-4" id="passage-ex1">
+                            <p>The main elements required for survival are food, fire, shelter and water. Their order of importance will depend upon where you happen to be. In the desert water will head the list; in polar regions shelter and fire will be the main concerns. Ordering your priorities is the first step to survival.</p>
+                            <p>It takes a healthy person quite a long time to die of starvation, for the body can use up its stored resources, but exposure to wind, rain and cold can be fatal even in mild climates and death comes in only minutes in the icy waters of the poles. Food is rarely the first priority. Even in those places where it is difficult to find, there are usually other problems to face first. Shelter will often be the prime necessity in extremes of climate or temperatures such as in the frozen polar regions or in the baking deserts. The need for fire is closely linked.</p>
+                            <p>Water is something that most people in the modern world take for granted. They are so used to turning on a tap that until an extreme drought causes water rationing they seldom think about it. Yet the survivor at sea, or after a flood, though surrounded by water, may be desperate for drinkable water. And there are many places where, unless it rains, no obvious water is available. Although there could be other survival necessities to deal with, water is always universally important.</p>
+                        </div>
+                        <div class="mt-4 space-y-4" id="ex1">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">1. The factor which decides the order of importance of the main elements required for survival is</label>
+                                <select class="question-input mt-1" data-answer="B"><option value="">Select...</option><option value="A">A. your health.</option><option value="B">B. your location.</option><option value="C">C. your job.</option><option value="D">D. your strength.</option></select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">2. The basic need that may NOT be equally important as the others in extremely cold places is</label>
+                                <select class="question-input mt-1" data-answer="A"><option value="">Select...</option><option value="A">A. water.</option><option value="B">B. shelter.</option><option value="C">C. fire.</option><option value="D">D. none of above.</option></select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">3. Fire is described as</label>
+                                <select class="question-input mt-1" data-answer="D"><option value="">Select...</option><option value="A">A. universally important.</option><option value="B">B. being taken for granted.</option><option value="C">C. the prime necessity.</option><option value="D">D. closely linked with shelter.</option></select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">4. According to the passage, which of the following statements is TRUE?</label>
+                                <select class="question-input mt-1" data-answer="B"><option value="">Select...</option><option value="A">A. Exposure to wind is not dangerous in mild climates.</option><option value="B">B. People may die quickly in the water of polar regions.</option><option value="C">C. Looking for food is the first thing to do most of the time.</option><option value="D">D. Survivors after a flood won't need water for drinking.</option></select>
+                            </div>
+                            <button onclick="checkAnswers('ex1')" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">Check Answers</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lesson-section">
+                    <h2>2. Short-Answer Questions</h2>
+                    <p>This question type asks you to write an answer of between one and four words, usually with the instruction 'NO MORE THAN THREE WORDS'. Spelling must be correct.</p>
+                    <div class="exercise-box">
+                        <h3>Example Exercise</h3>
+                        <div class="passage-box mt-4" id="passage-ex2">
+                            <h4>The Peace Corps</h4>
+                            <p>On March 1, 1961, President John F. Kennedy issued an order creating the Peace Corps. Its mission was to promote world peace and friendship by providing qualified volunteers to interested countries. Today it sends an average of 6,000 U.S. citizens abroad each year.</p>
+                            <p>Volunteers live at a local level in their host countries. They are paid in local currency. Each month they receive a small sum of money that covers basic living expenses, and varies with the local economy. For example, volunteers in Micronesia make the equivalent of $300 per month, while those in Turkmenistan make $75. Most volunteers live with host families. This is a great chance to learn the language and the culture.</p>
+                            <p>For each month that they spend overseas, volunteers receive a sum of about $200. This money helps them to get back on their feet in the United States.</p>
+                            <p>Serving countries all over the world, the Peace Corps lives up to its promise as "the toughest job you'll ever love." Volunteers do everything from teaching English to sharing tips on growing food to providing preventive health care. However, the application process to become a Peace Corps volunteer is very competitive. You must be a U.S. citizen, at least eighteen years old, in good health, and willing to serve for two years. Nearly all volunteers have a bachelor's degree in their chosen field, and about 18 percent have their master's or doctorate degrees. Knowing a language, especially French and Spanish, helps.</p>
+                        </div>
+                        <div class="mt-4 space-y-4" id="ex2">
+                            <p class="text-sm font-semibold">Answer with NO MORE THAN THREE WORDS from the passage.</p>
+                            <div><label class="block text-sm">1. What kind of U.S. citizens does the Peace Corps send abroad to fulfil its mission?</label><input class="question-input mt-1" data-answer="qualified volunteers"></div>
+                            <div><label class="block text-sm">2. What does the monthly payment in local currency to volunteers cover?</label><input class="question-input mt-1" data-answer="basic living expenses"></div>
+                            <div><label class="block text-sm">3. Whom do the volunteers stay with in their host countries?</label><input class="question-input mt-1" data-answer="host families"></div>
+                            <div><label class="block text-sm">4. What is the shortest time that volunteers can work for the Peace Corps?</label><input class="question-input mt-1" data-answer="two years"></div>
+                            <div><label class="block text-sm">5. Which languages are given as an example of what can benefit volunteers?</label><input class="question-input mt-1" data-answer="French and Spanish"></div>
+                            <button onclick="checkAnswers('ex2')" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">Check Answers</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lesson-section">
+                    <h2>3. Sentence-Completion Questions</h2>
+                    <p>These questions test your ability to find details to complete sentences. You will be provided with a number of incomplete sentences which you need to complete, using information from the passage, usually in three words or fewer.</p>
+                    <div class="exercise-box">
+                        <h3>Example Exercise</h3>
+                        <div class="passage-box mt-4" id="passage-ex3">
+                             <h4>Solar Collector</h4>
+                            <p>Solar collectors absorb heat from the sun's rays. They can be used to effectively heat and cool buildings. The most common type of collector for space heating is a flat plate designed to absorb both radiation falling directly on it, as well as radiation scattered by the atmosphere.</p>
+                            <p>Collectors are usually panels of aluminium, copper, or steel. The panels are usually painted black. The black colouring inhibits reflection and encourages absorption. Insulation is placed behind the collector to prevent heat loss.</p>
+                            <p>The collector is covered with glass or plastic. This layer allows short-wave radiation or light to enter the collector. As the radiation passes through the glass or plastic, it is transformed from short-wave radiation to long-wave radiation - or heat. Long-wave radiation cannot pass through the glass or plastic back into the atmosphere. Therefore, the heat is trapped within the collector. Collectors are usually placed at an angle to maximise the amount of radiation falling on them.</p>
+                            <p>A transfer agent (air or water) is circulated through the collector and becomes heated. As it leaves the collector and travels through the heating ducts of a house, it warms the air inside the house or brings hot water to sinks, tubs, and appliances. With solar collectors, storage is a problem: great amounts of heat must be stored for nighttime use and for use during cloudy days.</p>
+                        </div>
+                        <div class="mt-4 space-y-4" id="ex3">
+                            <p class="text-sm font-semibold">Complete with NO MORE THAN THREE WORDS from the passage.</p>
+                            <p>1. Solar collectors can heat and cool houses with heat absorbed from <input class="question-input inline-block w-auto" data-answer="the sun's rays">.</p>
+                            <p>2. Collectors are coloured black to prevent <input class="question-input inline-block w-auto" data-answer="reflection">.</p>
+                            <p>3. Glass and plastic are used to cover the collector so that short-wave radiation can <input class="question-input inline-block w-auto" data-answer="enter the collector">.</p>
+                            <p>4. The glass or plastic cover on the collector helps to trap the <input class="question-input inline-block w-auto" data-answer="heat">.</p>
+                            <p>5. For nighttime and cloudy days, heat needs to be <input class="question-input inline-block w-auto" data-answer="stored">.</p>
+                            <button onclick="checkAnswers('ex3')" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">Check Answers</button>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+        2: {
+            title: "Unit 2: IELTS Reading Tips (1)",
+            content: `
+                <div class="lesson-section">
+                    <h2>Reading Strategies</h2>
+                    <p>One of the main difficulties experienced by candidates doing the IELTS Reading test is they do not have enough time to complete the test. It is, therefore, essential to read both efficiently and effectively. Here are some key skills.</p>
+                </div>
+                <div class="lesson-section">
+                    <h3>1. Previewing & Skimming</h3>
+                    <p>Skimming is reading fast to get the gist or the general idea of the text. You can run your eyes over the passage without stopping at words you don't understand. Another way to skim is to read the title, subheadings, and the first and last paragraphs.</p>
+                    <div class="exercise-box">
+                        <h4>Example: Polluting the Air</h4>
+                        <div class="passage-box" id="passage-unit2-ex1">
+                            <p>Every moment, all of us are affecting the atmosphere. Plants take the gas carbon dioxide (CO2) from the air and return oxygen (O2). Animals breathe in O2 and breathe out CO2. The air protects us. It blocks dangerous X-rays, gamma rays, and ultraviolet rays from the sun.</p>
+                            <p>Now we have upset the balance. By burning coal and oil, we release carbon that was locked up underground millions of years ago. The amount of CO2 in the air is growing. Carbon dioxide holds the sun's heat in the atmosphere just as the glass roof of a greenhouse holds heat in the greenhouse. Many scientists believe that more CO2 will create a greenhouse effect. The earth will get warmer, causing harmful changes in our climate.</p>
+                            <p>A group of gases called chlorofluorocarbons are contributing to the greenhouse effect. They are also destroying the ozone layer, a part of the atmosphere that protects us from the sun's ultraviolet radiation. These gases, often called CFCs, are used in refrigerators, air conditioners, and some aerosol spray cans. When they escape they rise high into the air. There they meet ozone, a kind of oxygen that stops ultraviolet rays. They break up the ozone and let ultraviolet rays through to the earth.</p>
+                        </div>
+                        <p class="mt-4"><strong>Tip:</strong> By quickly reading the title and the first sentence of each paragraph, you can grasp the general idea: Human beings are affecting the atmosphere, we have upset the balance, and certain gases contribute to the greenhouse effect.</p>
+                    </div>
+                </div>
+                <div class="lesson-section">
+                    <h3>2. Reading Charts and Tables</h3>
+                    <p>Learning to read charts and tables helps you gather and categorize information quickly. Always read the title and headings of a chart before reading the main text to get a general idea of the topic.</p>
+                     <div class="exercise-box">
+                        <h4>Example: East versus West - Water Usage</h4>
+                        <div class="passage-box" id="passage-unit2-ex2">
+                            <p>Some industries in the United States use huge amounts of water while others use very little. Paper companies are always located along rivers that provide the large amounts of water required for the production of paper products. Producing one ton of paper for books may require as much as 184,000 gallons of water. Steel mills and oil refineries also require large volumes of water, and many are located along the coast. Some 60,000 gallons of water is needed to refine a barrel of crude oil. This includes 10 gallons of water for each gallon of gasoline produced.</p>
+                            <p>Water use in the eastern part of the States differs from its use in the western part. The chart below shows how the water is used in each region of the country.</p>
+                        </div>
+                        <table class="w-full mt-4 text-left border-collapse">
+                            <thead>
+                                <tr><th colspan="2" class="p-2 border bg-gray-100 text-center">East versus West - Water Usage Ranked in Descending Order</th></tr>
+                                <tr><th class="p-2 border">The West</th><th class="p-2 border">The East</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="p-2 border">Irrigated agriculture</td><td class="p-2 border">Energy</td></tr>
+                                <tr><td class="p-2 border">Domestic and Commercial</td><td class="p-2 border">Manufacturing</td></tr>
+                                <tr><td class="p-2 border">Energy</td><td class="p-2 border">Irrigated agriculture</td></tr>
+                                <tr><td class="p-2 border">Minerals</td><td class="p-2 border">Minerals</td></tr>
+                            </tbody>
+                        </table>
+                        <p class="mt-4"><strong>Tip:</strong> Skimming the table first tells you the passage will compare water usage in the East and West for different purposes, with 'Irrigated agriculture' being the top user in the West and 'Energy' in the East.</p>
+                    </div>
+                </div>
+                 <div class="lesson-section">
+                    <h3>3. Looking for Details (Scanning)</h3>
+                    <p>Scanning is searching for specific information, like numbers, dates, names, or key words from a question. Read the question first to know what you're looking for, then scan the text to find it.</p>
+                    <div class="exercise-box">
+                        <h3>Example Exercise</h3>
+                        <div class="passage-box mt-4" id="passage-ex4">
+                            <h4>Population Growth</h4>
+                            <p>In the next decade, population growth will probably add to world hunger problems. As the population grows, according to the World Hunger Programme, so will the number of malnourished people. The world's population, estimated at 5.6 billion in 1994, may reach 11.5 billion by the year 2150, and most of that growth is occurring in the world's poorest countries. At least 95 percent of the global population growth over the next thirty-five years will take place in the hunger-belt regions of Africa, Asia, and Latin America. For countries that already have a hard time feeding their populations, growth on a scale of even 3 percent a year could add significantly to their food problems. This level of growth is already occurring in Namibia and in South Africa, and many other countries are not far behind.</p>
+                            <p>In 1981, the United States recorded a population on the African continent of 481 million people. This number topped 800 million by the year 2000. Africa would have to increase its food production by 4 percent a year to meet the food needs of its increased population. But Africa's food production is growing by only 1 percent a year, which means that nations already struggling to meet their people's food needs will have an even greater struggle as populations grow. "When food supply grows slower than population," says Professor De-Gregori, "a country is in trouble."</p>
+                        </div>
+                        <div class="mt-4 space-y-4" id="ex4">
+                            <div>
+                                <label class="block text-sm">1. What will be increased, according to the World Hunger Programme, together with the rapid growth of population?</label>
+                                <input class="question-input mt-1" data-answer="the number of malnourished people">
+                            </div>
+                             <div>
+                                <label class="block text-sm">2. For some countries, a population growth of even 3 percent a year can worsen their...</label>
+                                <input class="question-input mt-1" data-answer="food problems">
+                            </div>
+                            <button onclick="checkAnswers('ex4')" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">Check Answers</button>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+        3: {
+            title: "Unit 3: IELTS Reading Tips (2)",
+            content: `
+                <div class="lesson-section">
+                    <h2>Working Out Unfamiliar Vocabulary</h2>
+                    <p>You will likely come across words you don't know. Don't panic! You can often work out the meaning from the context or by understanding how words are built.</p>
+                    <h3>1. Using Common Roots, Prefixes, and Suffixes</h3>
+                    <p>Knowledge of common word parts can help you guess the meaning of unknown words.</p>
+                    <ul>
+                        <li>A <strong>prefix</strong> is added to the beginning of a word (e.g., 'un-' in 'unhappy').</li>
+                        <li>A <strong>suffix</strong> is added to the end of a word (e.g., '-able' in 'readable').</li>
+                        <li>A <strong>root</strong> is the main part of a word (e.g., 'port' in 'transport').</li>
+                    </ul>
+                </div>
+                <div class="lesson-section">
+                    <h3>2. Examining the Context</h3>
+                    <p>Look at the words and sentences surrounding an unfamiliar word for clues like definitions, explanations, synonyms, antonyms, and examples.</p>
+                    <div class="exercise-box">
+                        <h4>Example: Guessing from Context</h4>
+                        <div class="passage-box" id="passage-unit3-ex1">
+                            <p>Unlike us, many mammals are <strong>nocturnal</strong>, which means that they are active by night and sleep through the day. Long ago, the first mammals moved about under the cover of darkness to escape predatory dinosaurs.</p>
+                        </div>
+                        <p class="mt-4"><strong>Question:</strong> What does "nocturnal" mean?</p>
+                        <p><strong>Clue:</strong> The passage gives a direct definition right after the word: "...which means that they are active by night and sleep through the day."</p>
+                    </div>
+                </div>
+                <div class="lesson-section">
+                    <h2>Common Roots and Affixes</h2>
+                    <p>Use the search box below to filter the table and find the meanings of common word parts.</p>
+                    <input type="text" id="affix-search" onkeyup="filterAffixes()" placeholder="Search for a root or affix..." class="question-input mb-4">
+                    <div class="overflow-x-auto">
+                        <table id="affix-table" class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-2 border">Root/Affix</th>
+                                    <th class="p-2 border">Meaning</th>
+                                    <th class="p-2 border">Examples</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table rows will be inserted by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `
+        }
+    };
+    
+    const affixData = [
+        { affix: "-able, -ible", meaning: "capable of", examples: "eatable, payable" },
+        { affix: "-al", meaning: "relating to", examples: "national, political" },
+        { affix: "anti-", meaning: "against", examples: "antislavery, antiwar" },
+        { affix: "audi-, audio-", meaning: "connecting with hearing", examples: "auditor, auditorium" },
+        { affix: "auto-", meaning: "by oneself or by itself", examples: "automatic, autobiography" },
+        { affix: "bi-", meaning: "two", examples: "bicycle, bimonthly" },
+        { affix: "bio-", meaning: "of life and living things", examples: "biology, biography" },
+        { affix: "cent-, centi-", meaning: "hundred or hundredth", examples: "century, centimetre" },
+        { affix: "counter-", meaning: "opposite, against", examples: "countermarch, counterattack" },
+        { affix: "dic-", meaning: "say, speak", examples: "diction, dictate" },
+        { affix: "dis-", meaning: "not, negative", examples: "disagree, dishonest" },
+        { affix: "en-", meaning: "put into; cause to be", examples: "endanger, enrich" },
+        { affix: "-er, -or", meaning: "a person or thing that does an action", examples: "teacher, actor" },
+        { affix: "ex-", meaning: "former", examples: "ex-wife, ex-student" },
+        { affix: "-ful", meaning: "full of; having the qualities of", examples: "handful, joyful" },
+        { affix: "-fy, -ify", meaning: "make or become", examples: "purify, terrify" },
+        { affix: "geo-", meaning: "of the earth", examples: "geology, geography" },
+        { affix: "-graph-", meaning: "something written or drawn", examples: "autograph, graphology" },
+        { affix: "homo-", meaning: "same, like", examples: "homosexual, homophone" },
+        { affix: "il-, im-, in-, ir-", meaning: "not, negative", examples: "illegal, impossible, incomplete, irregular" },
+        { affix: "inter-", meaning: "between, among", examples: "international, intermediate" },
+        { affix: "-ism", meaning: "principles or teaching of", examples: "Buddhism, socialism" },
+        { affix: "-ist", meaning: "a person who is skilled in an area", examples: "artist, scientist" },
+        { affix: "-ize, -ise", meaning: "cause to be or become", examples: "realise, nationalise" },
+        { affix: "-less", meaning: "lack of, without", examples: "careless, helpless" },
+        { affix: "-logy, -ology", meaning: "the science or study of", examples: "psychology, biology" },
+        { affix: "mal-", meaning: "bad or badly", examples: "malpractice, maltreat" },
+        { affix: "mis-", meaning: "bad, wrong or badly, wrongly", examples: "misfortune, misunderstand" },
+        { affix: "mono-", meaning: "one, single", examples: "monologue, monotonous" },
+        { affix: "multi-", meaning: "many", examples: "multiply, multinational" },
+        { affix: "-ness", meaning: "the condition of", examples: "sadness, illness" },
+        { affix: "non-", meaning: "not, lack of", examples: "nonfiction, non-profit" },
+        { affix: "-ous", meaning: "having the nature of", examples: "joyous, monotonous" },
+        { affix: "phon-", meaning: "sound, voice", examples: "telephone, phonology" },
+        { affix: "port-", meaning: "carry, movement", examples: "transport, portable" },
+        { affix: "post-", meaning: "after", examples: "postwar, postgraduate" },
+        { affix: "pre-", meaning: "before", examples: "prewar, pretest" },
+        { affix: "re-", meaning: "back, again", examples: "replay, rewrite" },
+        { affix: "spect-", meaning: "look, see", examples: "spectator, inspect" },
+        { affix: "sub-", meaning: "under, less important", examples: "subzero, subeditor" },
+        { affix: "super-", meaning: "over, more than usual", examples: "supernatural, superpower" },
+        { affix: "tele-", meaning: "over a distance", examples: "television, telegram" },
+        { affix: "trans-", meaning: "across", examples: "translate, transplant" },
+        { affix: "un-", meaning: "not, negative", examples: "unfortunate, unfair" },
+        { affix: "vis-", meaning: "see", examples: "vision, visible" }
+    ];
+
+    let currentUnit = 1;
+
+    // --- CORE FUNCTIONS ---
+
+    function switchUnit(unitNum) {
+        currentUnit = unitNum;
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab${unitNum}`).classList.add('active');
+        loadUnitContent(unitNum);
+    }
+
+    function loadUnitContent(unitNum) {
+        const unitData = units[unitNum];
+        const container = document.getElementById('unit-container');
+        container.innerHTML = unitData.content;
+
+        if (unitNum === 3) {
+            populateAffixTable();
+        }
+    }
+    
+    function populateAffixTable() {
+        const tableBody = document.querySelector('#affix-table tbody');
+        if (!tableBody) return;
+        tableBody.innerHTML = '';
+        affixData.forEach(item => {
+            const row = `<tr>
+                <td class="p-2 border">${item.affix}</td>
+                <td class="p-2 border">${item.meaning}</td>
+                <td class="p-2 border">${item.examples}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    function filterAffixes() {
+        const input = document.getElementById('affix-search');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('affix-table');
+        const tr = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName('td')[0];
+            if (td) {
+                const txtValue = td.textContent || td.innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function checkAnswers(exerciseId) {
+        const exerciseContainer = document.getElementById(exerciseId);
+        if (!exerciseContainer) return;
+
+        exerciseContainer.querySelectorAll('.correct-answer-text').forEach(el => el.remove());
+
+        const inputs = exerciseContainer.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            const userAnswer = input.value.trim().toLowerCase();
+            const correctAnswer = input.dataset.answer.toLowerCase();
+            input.classList.remove('correct', 'incorrect');
+
+            if (userAnswer === correctAnswer) {
+                input.classList.add('correct');
+            } else {
+                input.classList.add('incorrect');
+                const hint = document.createElement('span');
+                hint.className = 'correct-answer-text ml-2';
+                hint.textContent = `Correct: ${input.dataset.answer}`;
+                input.parentElement.appendChild(hint);
+            }
+        });
+    }
+
+    // --- TOOLBAR FUNCTIONS ---
+    function selectHighlightColor(color, element) {
+        selectedHighlightColor = color;
+        document.querySelectorAll('#color-palette .color-swatch').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function highlightSelection() {
+        const selection = window.getSelection();
+        if (!selection.rangeCount || selection.isCollapsed) return;
+        
+        const range = selection.getRangeAt(0);
+        
+        // Check if selection is within any passage box
+        const passageBoxes = document.querySelectorAll('.passage-box');
+        let inPassage = false;
+        passageBoxes.forEach(box => {
+            if (box.contains(range.commonAncestorContainer)) {
+                inPassage = true;
+            }
+        });
+        if (!inPassage) return;
+
+        const mark = document.createElement('mark');
+        mark.style.backgroundColor = selectedHighlightColor;
+        mark.onclick = (event) => {
+            event.target.outerHTML = event.target.innerHTML;
+        };
+        
+        try {
+            range.surroundContents(mark);
+        } catch (e) {
+            console.error("Could not surround content", e);
+        }
+        selection.removeAllRanges();
+    }
+    
+    function clearAllHighlights() {
+        document.querySelectorAll('.passage-box mark').forEach(mark => {
+            mark.outerHTML = mark.innerHTML;
+        });
+    }
+
+    function changeFontSize(direction) {
+        const content = document.getElementById('unit-container');
+        if (content) {
+            let currentSize = parseFloat(window.getComputedStyle(content, null).getPropertyValue('font-size'));
+            content.style.fontSize = (currentSize + direction) + 'px';
+        }
+    }
+
+    // --- INITIALIZATION ---
+    window.onload = () => {
+        switchUnit(1);
+    };
+
+</script>
+</body>
+</html>
