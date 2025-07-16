@@ -255,7 +255,30 @@
                 <div class="question-group">
                     <h4 class="font-semibold mb-3">Questions 18-21</h4>
                     <p class="mb-4 text-sm text-gray-600">Complete the diagram below. Choose NO MORE THAN TWO WORDS from the passage for each answer.</p>
-                    <img src="https://i.imgur.com/k2o4Y2k.png" alt="Diagram of Carbolic Smoke Ball" class="mx-auto my-4 border rounded-md">
+                    <svg aria-labelledby="diagram-title" role="img" viewBox="0 0 250 250" class="mx-auto my-4 border rounded-md bg-gray-50">
+                        <title id="diagram-title">Diagram of a Carbolic Smoke Ball</title>
+                        <defs>
+                            <pattern id="powder-texture" patternUnits="userSpaceOnUse" width="5" height="5"><circle cx="2" cy="2" r="0.5" fill="#a3a3a3"/></pattern>
+                            <pattern id="gauze-texture" patternUnits="userSpaceOnUse" width="4" height="4"><path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="#8c8c8c" stroke-width="0.5" /></pattern>
+                        </defs>
+                        <circle cx="125" cy="155" r="75" fill="#f0f0f0" stroke="#525252" stroke-width="1.5"/>
+                        <path d="M 125,155 L 60,110 A 75 75 0 0 1 190 110 L 125,155 Z" fill="url(#powder-texture)" stroke="#525252" stroke-width="1"/>
+                        <path d="M 60,110 A 75 75 0 0 1 190 110" fill="none" stroke="#525252" stroke-width="1"/>
+                        <rect x="110" y="50" width="30" height="40" fill="#f0f0f0" stroke="#525252" stroke-width="1.5"/>
+                        <rect x="105" y="35" width="40" height="15" fill="url(#gauze-texture)" stroke="#525252" stroke-width="1.5" rx="2"/>
+                        
+                        <line x1="145" y1="42" x2="175" y2="25" stroke="#333" stroke-width="1"/>
+                        <text x="180" y="28" text-anchor="start" font-family="Inter, sans-serif" font-size="12">Covered with <tspan font-weight="bold">18</tspan></text>
+                        
+                        <line x1="110" y1="70" x2="80" y2="70" stroke="#333" stroke-width="1"/>
+                        <text x="75" y="74" text-anchor="end" font-family="Inter, sans-serif" font-size="12">Metal <tspan font-weight="bold">19</tspan></text>
+                        
+                        <line x1="160" y1="130" x2="190" y2="130" stroke="#333" stroke-width="1"/>
+                        <text x="195" y="134" text-anchor="start" font-family="Inter, sans-serif" font-size="12">Content <tspan font-weight="bold">20</tspan></text>
+                        
+                        <line x1="85" y1="195" x2="60" y2="215" stroke="#333" stroke-width="1"/>
+                        <text x="55" y="219" text-anchor="end" font-family="Inter, sans-serif" font-size="12" font-weight="bold">21</text>
+                    </svg>
                     <div class="space-y-3">
                         <div data-explanation="The passage describes the smoke ball as having 'a nozzle covered by gauze.'"><label class="block text-sm">18. Covered with</label><input id="q18" data-answer="gauze" class="question-input"></div>
                         <div data-explanation="The description of the ball says it had 'a nozzle covered by gauze.'"><label class="block text-sm">19. Metal</label><input id="q19" data-answer="nozzle" class="question-input"></div>
