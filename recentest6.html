@@ -53,6 +53,15 @@
             font-size: 0.875rem;
             margin-left: 0.5rem;
         }
+        .explanation-box {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background-color: #f3f4f6;
+            border-left: 4px solid #6b7280;
+            font-size: 0.875rem;
+            color: #4b5563;
+            border-radius: 0.25rem;
+        }
         .tab-button {
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem 0.5rem 0 0;
@@ -95,7 +104,13 @@
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-8 pt-24">
+
+    <div id="global-timer" class="fixed top-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-lg border z-50 text-center">
+        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Time Left</p>
+        <p id="timer-display" class="text-4xl font-bold text-indigo-600">60</p>
+        <p class="text-sm text-gray-600 -mt-1">minutes</p>
+    </div>
 
     <div class="max-w-6xl mx-auto">
         <header class="text-center mb-8">
@@ -141,23 +156,23 @@
                     <h4 class="font-semibold mb-3">Questions 1-7</h4>
                     <p class="mb-4 text-sm text-gray-600">Which paragraph contains the following information? Write the correct letter A-G.</p>
                     <div class="space-y-3">
-                        <div><label class="block text-sm">1. The description of one family member persuading another of selling cleaning products</label><input id="q1" data-answer="F" class="question-input"></div>
-                        <div><label class="block text-sm">2. An account of the co-operation of all factory staff to cope with sales increase</label><input id="q2" data-answer="E" class="question-input"></div>
-                        <div><label class="block text-sm">3. An account of the creation of the formula of Shower Power</label><input id="q3" data-answer="C" class="question-input"></div>
-                        <div><label class="block text-sm">4. An account of buying the original OzKleen company</label><input id="q4" data-answer="B" class="question-input"></div>
-                        <div><label class="block text-sm">5. The description of Shower Power's international expansion</label><input id="q5" data-answer="G" class="question-input"></div>
-                        <div><label class="block text-sm">6. The reason for changing the packaging size of Shower Power</label><input id="q6" data-answer="D" class="question-input"></div>
-                        <div><label class="block text-sm">7. An example of some innovative ideas</label><input id="q7" data-answer="A" class="question-input"></div>
+                        <div data-explanation="Paragraph F states: '...the daughter of a Coles Myer executive used the product... and convinced her father that Shower Power should be in Coles supermarkets.'"><label class="block text-sm">1. The description of one family member persuading another of selling cleaning products</label><input id="q1" data-answer="F" class="question-input"></div>
+                        <div data-explanation="Paragraph E mentions: 'It was all hands on deck at the factory, labelling and bottling Shower Power to keep up with demand.'"><label class="block text-sm">2. An account of the co-operation of all factory staff to cope with sales increase</label><input id="q2" data-answer="E" class="question-input"></div>
+                        <div data-explanation="Paragraph C describes how Peter Quinn began 'working with the chemist on the formulas, looking at the potential for citrus-based cleaning products.'"><label class="block text-sm">3. An account of the creation of the formula of Shower Power</label><input id="q3" data-answer="C" class="question-input"></div>
+                        <div data-explanation="Paragraph B states: 'In 1995, Tom Quinn and John Heron bought a struggling cleaning products business, OzKleen, for $250,000.'"><label class="block text-sm">4. An account of buying the original OzKleen company</label><input id="q4" data-answer="B" class="question-input"></div>
+                        <div data-explanation="Paragraph G describes the expansion: 'Shower Power, known as Bath Power in Britain, was launched four years ago... OzKleen is already number three in the British market, and the next stop is France.'"><label class="block text-sm">5. The description of Shower Power's international expansion</label><input id="q5" data-answer="G" class="question-input"></div>
+                        <div data-explanation="Paragraph D explains Tom Quinn decided to sell it in 750ml bottles 'after the constant &quot;raves&quot; from customers at their retail store.'"><label class="block text-sm">6. The reason for changing the packaging size of Shower Power</label><input id="q6" data-answer="D" class="question-input"></div>
+                        <div data-explanation="Paragraph A lists several examples, including 'new water-saving shower heads, a keyless locking system, ping-pong balls that keep pollution out of rainwater tanks...'"><label class="block text-sm">7. An example of some innovative ideas</label><input id="q7" data-answer="A" class="question-input"></div>
                     </div>
                 </div>
                 <div class="question-group">
                     <h4 class="font-semibold mb-3">Questions 8-11</h4>
                     <p class="mb-4 text-sm text-gray-600">Match each person with the correct statement A-E.</p>
                     <div class="space-y-3">
-                        <div><label class="block text-sm">8. Grant Kearney</label><select id="q8" data-answer="C" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
-                        <div><label class="block text-sm">9. Tom Quinn</label><select id="q9" data-answer="A" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
-                        <div><label class="block text-sm">10. Peter Quinn</label><select id="q10" data-answer="D" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
-                        <div><label class="block text-sm">11. Belinda McDonnell</label><select id="q11" data-answer="B" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
+                        <div data-explanation="Grant Kearney is quoted in paragraph A saying, 'An idea only becomes innovation when it is connected to the right resources and capabilities,' meaning it needs support."><label class="block text-sm">8. Grant Kearney</label><select id="q8" data-answer="C" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
+                        <div data-explanation="Tom Quinn, in paragraph D, describes how they 'did a dummy label and went to see Woolworths,' which is a chain store."><label class="block text-sm">9. Tom Quinn</label><select id="q9" data-answer="A" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
+                        <div data-explanation="Peter Quinn, in paragraph F, mentions the company was 'wary of how long the sales would last and hesitated to spend money on upgrading,' indicating a concern about risks."><label class="block text-sm">10. Peter Quinn</label><select id="q10" data-answer="D" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
+                        <div data-explanation="Belinda McDonnell is quoted in paragraph E saying, 'It was hand-to-mouth, cash flow was very difficult.'"><label class="block text-sm">11. Belinda McDonnell</label><select id="q11" data-answer="B" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
                     </div>
                     <div class="mt-4 p-3 bg-gray-50 rounded-md text-sm text-gray-700 border">
                         <p class="font-semibold">List of Statements</p>
@@ -174,14 +189,14 @@
                     <h4 class="font-semibold mb-3">Questions 12-13</h4>
                     <p class="mb-4 text-sm text-gray-600">Choose the correct letter A, B, C or D.</p>
                     <div class="space-y-4">
-                        <div id="q12" data-answer="B">
+                        <div id="q12" data-answer="B" data-explanation="Paragraph D states the change was made because of 'constant &quot;raves&quot; from customers at their retail store,' showing it was to appeal to individual buyers, not just commercial ones.">
                             <p class="mb-2">12. Tom Quinn changed the bottle size to 750ml to make Shower Power...</p>
                             <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q12" value="A" class="mr-2"> A. easier to package.</label></div>
                             <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q12" value="B" class="mr-2"> B. appealing to individual customers.</label></div>
                             <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q12" value="C" class="mr-2"> C. popular in foreign markets.</label></div>
                             <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q12" value="D" class="mr-2"> D. attractive to supermarkets.</label></div>
                         </div>
-                        <div id="q13" data-answer="D">
+                        <div id="q13" data-answer="D" data-explanation="At the end of paragraph G, Tom Quinn says, 'We're having too much fun.' This implies he is happy with the current situation and wants to keep things as they are.">
                             <p class="mb-2">13. Why did Tom Quinn decide not to sell OzKleen?</p>
                             <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q13" value="A" class="mr-2"> A. No one wanted to buy OzKleen.</label></div>
                             <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q13" value="B" class="mr-2"> B. New products were being developed in OzKleen.</label></div>
@@ -219,19 +234,19 @@
                     <h4 class="font-semibold mb-3">Questions 14-17</h4>
                     <p class="mb-4 text-sm text-gray-600">Do the following statements agree with the information? Write TRUE, FALSE, or NOT GIVEN.</p>
                     <div class="space-y-4">
-                        <div id="q14" data-answer="NOT GIVEN">
+                        <div id="q14" data-answer="NOT GIVEN" data-explanation="The text mentions that 'Whole cities came to a standstill. London was especially hard-hit.' It also mentions Paris, Berlin, and Vienna. However, it never compares the impact on cities to that in rural areas.">
                             <p class="mb-2">14. Cities rather than rural areas were badly affected by the pandemic flu.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q14" value="TRUE"> True</label><label><input type="radio" name="q14" value="FALSE"> False</label><label><input type="radio" name="q14" value="NOT GIVEN"> Not Given</label></div>
                         </div>
-                        <div id="q15" data-answer="FALSE">
+                        <div id="q15" data-answer="FALSE" data-explanation="The passage states, 'By now, the theory that micro-organisms caused disease was gaining ground...' This contradicts the idea that people didn't know about the link; they just hadn't identified the specific organism for flu.">
                             <p class="mb-2">15. At the time of the flu pandemic, people didn't know the link between micro-organisms and illnesses.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q15" value="TRUE"> True</label><label><input type="radio" name="q15" value="FALSE"> False</label><label><input type="radio" name="q15" value="NOT GIVEN"> Not Given</label></div>
                         </div>
-                        <div id="q16" data-answer="TRUE">
+                        <div id="q16" data-answer="TRUE" data-explanation="The text says, 'In the absence of a germ, many clung to the old idea of bad airs, or miasmas...' This confirms the statement.">
                             <p class="mb-2">16. People used to believe flu was caused by miasmas.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q16" value="TRUE"> True</label><label><input type="radio" name="q16" value="FALSE"> False</label><label><input type="radio" name="q16" value="NOT GIVEN"> Not Given</label></div>
                         </div>
-                        <div id="q17" data-answer="NOT GIVEN">
+                        <div id="q17" data-answer="NOT GIVEN" data-explanation="The passage mentions drugs like quinine and heroin were prescribed for symptoms, but it does not state whether they were considered harmful in the doses given or if harmful ingredients were common in prescriptions.">
                             <p class="mb-2">17. Flu prescriptions often contained harmful ingredients.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q17" value="TRUE"> True</label><label><input type="radio" name="q17" value="FALSE"> False</label><label><input type="radio" name="q17" value="NOT GIVEN"> Not Given</label></div>
                         </div>
@@ -242,20 +257,20 @@
                     <p class="mb-4 text-sm text-gray-600">Complete the diagram below. Choose NO MORE THAN TWO WORDS from the passage for each answer.</p>
                     <img src="https://i.imgur.com/k2o4Y2k.png" alt="Diagram of Carbolic Smoke Ball" class="mx-auto my-4 border rounded-md">
                     <div class="space-y-3">
-                        <div><label class="block text-sm">18. Covered with</label><input id="q18" data-answer="gauze" class="question-input"></div>
-                        <div><label class="block text-sm">19. Metal</label><input id="q19" data-answer="nozzle" class="question-input"></div>
-                        <div><label class="block text-sm">20. Content</label><input id="q20" data-answer="powder" class="question-input"></div>
-                        <div><label class="block text-sm">21.</label><input id="q21" data-answer="hollow rubber ball" class="question-input"></div>
+                        <div data-explanation="The passage describes the smoke ball as having 'a nozzle covered by gauze.'"><label class="block text-sm">18. Covered with</label><input id="q18" data-answer="gauze" class="question-input"></div>
+                        <div data-explanation="The description of the ball says it had 'a nozzle covered by gauze.'"><label class="block text-sm">19. Metal</label><input id="q19" data-answer="nozzle" class="question-input"></div>
+                        <div data-explanation="The text states: 'Inside was a powder treated with carbolic acid, or phenol.'"><label class="block text-sm">20. Content</label><input id="q20" data-answer="powder" class="question-input"></div>
+                        <div data-explanation="The first sentence of the description is: 'The carbolic smoke ball was a hollow rubber ball...'"><label class="block text-sm">21.</label><input id="q21" data-answer="hollow rubber ball" class="question-input"></div>
                     </div>
                 </div>
                  <div class="question-group">
                     <h4 class="font-semibold mb-3">Questions 22-25</h4>
                     <p class="mb-4 text-sm text-gray-600">Match each person with the correct statement A-F.</p>
                     <div class="space-y-3">
-                        <div><label class="block text-sm">22. Mrs. Carlill</label><select id="q22" data-answer="B" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option></select></div>
-                        <div><label class="block text-sm">23. Mrs. Carlill's husband</label><select id="q23" data-answer="A" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option></select></div>
-                        <div><label class="block text-sm">24. Judge Hawkins</label><select id="q24" data-answer="D" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option></select></div>
-                        <div><label class="block text-sm">25. Lord Justice Bowen</label><select id="q25" data-answer="F" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option></select></div>
+                        <div data-explanation="Mrs. Carlill used the smoke ball as directed but still got the flu, meaning she was the one who (unintentionally) fulfilled the conditions that 'broke' the company's contractual promise."><label class="block text-sm">22. Mrs. Carlill</label><select id="q22" data-answer="B" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option></select></div>
+                        <div data-explanation="The passage states that her husband 'wrote to the Carbolic Smoke Ball Company' and 'There was no reply.'"><label class="block text-sm">23. Mrs. Carlill's husband</label><select id="q23" data-answer="A" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option></select></div>
+                        <div data-explanation="Judge Hawkins 'pointed out that adverts were not aimed at the wise and thoughtful, but at the credulous and weak,' thereby describing the target audience."><label class="block text-sm">24. Judge Hawkins</label><select id="q24" data-answer="D" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option></select></div>
+                        <div data-explanation="Lord Justice Bowen's final judgment treated the advertisement as a promise that the company was bound to, which is a form of contract."><label class="block text-sm">25. Lord Justice Bowen</label><select id="q25" data-answer="F" class="question-input"><option value="">Select...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option></select></div>
                     </div>
                     <div class="mt-4 p-3 bg-gray-50 rounded-md text-sm text-gray-700 border">
                         <p class="font-semibold">List of Statements</p>
@@ -272,7 +287,7 @@
                 <div class="question-group">
                     <h4 class="font-semibold mb-3">Question 26</h4>
                     <p class="mb-4 text-sm text-gray-600">Choose the correct letter A, B, C or D.</p>
-                    <div id="q26" data-answer="B">
+                    <div id="q26" data-answer="B" data-explanation="The final sentence of the passage states: 'The case established the principle of the unilateral contract and is frequently cited today.'">
                         <p class="mb-2">26. Why is Mrs. Carlill's case often cited in present-day court trials?</p>
                         <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q26" value="A" class="mr-2"> A. It proved the untrustworthiness of advertisements.</label></div>
                         <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q26" value="B" class="mr-2"> B. It established the validity of one-sided contract.</label></div>
@@ -307,14 +322,14 @@
                     <h4 class="font-semibold mb-3">Questions 27-34</h4>
                     <p class="mb-4 text-sm text-gray-600">Choose the correct heading for each section from the list of headings below.</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-sm">27. Section A</label><select id="q27" data-answer="x" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
-                        <div><label class="block text-sm">28. Section B</label><select id="q28" data-answer="vii" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
-                        <div><label class="block text-sm">29. Section C</label><select id="q29" data-answer="i" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
-                        <div><label class="block text-sm">30. Section D</label><select id="q30" data-answer="iv" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
-                        <div><label class="block text-sm">31. Section E</label><select id="q31" data-answer="ix" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
-                        <div><label class="block text-sm">32. Section F</label><select id="q32" data-answer="viii" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
-                        <div><label class="block text-sm">33. Section G</label><select id="q33" data-answer="vi" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
-                        <div><label class="block text-sm">34. Section H</label><select id="q34" data-answer="ii" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
+                        <div data-explanation="Section A discusses the historical origins of classifying temperaments from Hippocrates and Galen, which are forms of self-assessment."><label class="block text-sm">27. Section A</label><select id="q27" data-answer="x" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
+                        <div data-explanation="Section B explains the value of understanding styles: 'they help depersonalise conflicts in interpersonal relationships.'"><label class="block text-sm">28. Section B</label><select id="q28" data-answer="vii" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
+                        <div data-explanation="Section C introduces the 'four basic temperaments: sanguine, phlegmatic, melancholic, and choleric.'"><label class="block text-sm">29. Section C</label><select id="q29" data-answer="i" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
+                        <div data-explanation="Section D describes the sanguine person as having 'enthusiasm' and being a 'great team motivator,' which matches 'a lively person who encourages.'"><label class="block text-sm">30. Section D</label><select id="q30" data-answer="iv" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
+                        <div data-explanation="Section E describes the phlegmatic style as 'focused on facts and technical details,' which aligns with 'Factual and analytical personality.'"><label class="block text-sm">31. Section E</label><select id="q31" data-answer="ix" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
+                        <div data-explanation="Section F describes the melancholic person as 'soft-hearted and oriented towards doing things for others,' matching 'Cautious and caring.'"><label class="block text-sm">32. Section F</label><select id="q32" data-answer="viii" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
+                        <div data-explanation="Section G describes the choleric style as 'direct,' 'forceful,' and can be 'very intimidating,' aligning with 'Demanding and unsympathetic personality.'"><label class="block text-sm">33. Section G</label><select id="q33" data-answer="vi" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
+                        <div data-explanation="Section H states, 'A well-functioning team should have all of these communication styles for true effectiveness.' This matches 'Combined styles for workplace.'"><label class="block text-sm">34. Section H</label><select id="q34" data-answer="ii" class="question-input"><option value="">Select...</option><option value="i">i</option><option value="ii">ii</option><option value="iii">iii</option><option value="iv">iv</option><option value="v">v</option><option value="vi">vi</option><option value="vii">vii</option><option value="viii">viii</option><option value="ix">ix</option><option value="x">x</option></select></div>
                     </div>
                      <div class="mt-4 p-3 bg-gray-50 rounded-md text-sm text-gray-700 border">
                         <p class="font-semibold">List of Headings</p>
@@ -336,23 +351,23 @@
                     <h4 class="font-semibold mb-3">Questions 35-39</h4>
                     <p class="mb-4 text-sm text-gray-600">Do the following statements agree with the information? Write TRUE, FALSE, or NOT GIVEN.</p>
                     <div class="space-y-4">
-                        <div id="q35" data-answer="FALSE">
+                        <div id="q35" data-answer="FALSE" data-explanation="Section D says sanguine people 'love change and are constantly looking for new and exciting adventures.' This is the opposite of disliking variety.">
                             <p class="mb-2">35. It is believed that sanguine people dislike variety.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q35" value="TRUE"> True</label><label><input type="radio" name="q35" value="FALSE"> False</label><label><input type="radio" name="q35" value="NOT GIVEN"> Not Given</label></div>
                         </div>
-                        <div id="q36" data-answer="TRUE">
+                        <div id="q36" data-answer="TRUE" data-explanation="Section F says that melancholic people 'need time to consider the changes in order to adapt to them,' just 'like phlegmatic people.' This shows a similar characteristic.">
                             <p class="mb-2">36. Melancholic and phlegmatic people have similar characteristics.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q36" value="TRUE"> True</label><label><input type="radio" name="q36" value="FALSE"> False</label><label><input type="radio" name="q36" value="NOT GIVEN"> Not Given</label></div>
                         </div>
-                        <div id="q37" data-answer="NOT GIVEN">
+                        <div id="q37" data-answer="NOT GIVEN" data-explanation="The passage describes the personality types and their use in teams, but it never mentions how managers select employees.">
                             <p class="mb-2">37. Managers often select their best employees according to personality types.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q37" value="TRUE"> True</label><label><input type="radio" name="q37" value="FALSE"> False</label><label><input type="radio" name="q37" value="NOT GIVEN"> Not Given</label></div>
                         </div>
-                        <div id="q38" data-answer="NOT GIVEN">
+                        <div id="q38" data-answer="NOT GIVEN" data-explanation="Section H says we have the ability to 'develop flexibility in our styles,' but it does not explicitly state that a person can fundamentally change their core personality type.">
                             <p class="mb-2">38. It is possible to change one's personality type.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q38" value="TRUE"> True</label><label><input type="radio" name="q38" value="FALSE"> False</label><label><input type="radio" name="q38" value="NOT GIVEN"> Not Given</label></div>
                         </div>
-                        <div id="q39" data-answer="TRUE">
+                        <div id="q39" data-answer="TRUE" data-explanation="Section H clearly states, 'The work environment can influence communication styles...'">
                             <p class="mb-2">39. Workplace environment can affect which communication style is most effective.</p>
                             <div class="flex space-x-4"><label><input type="radio" name="q39" value="TRUE"> True</label><label><input type="radio" name="q39" value="FALSE"> False</label><label><input type="radio" name="q39" value="NOT GIVEN"> Not Given</label></div>
                         </div>
@@ -361,7 +376,7 @@
                  <div class="question-group">
                     <h4 class="font-semibold mb-3">Question 40</h4>
                     <p class="mb-4 text-sm text-gray-600">Choose the correct letter A, B, C or D.</p>
-                    <div id="q40" data-answer="B">
+                    <div id="q40" data-answer="B" data-explanation="Section B explains the value of self-assessments: 'The depersonalisation occurs when you realise that others aren't trying to be difficult, but they need different or more information than you do.' This is about understanding colleagues' behaviour.">
                         <p class="mb-2">40. The writer believes using self-assessment tools can...</p>
                         <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q40" value="A" class="mr-2"> A. help to develop one's personality.</label></div>
                         <div class="space-y-1"><label class="flex items-center"><input type="radio" name="q40" value="B" class="mr-2"> B. help to understand colleagues' behaviour.</label></div>
@@ -375,20 +390,18 @@
 
     let currentPassage = 1;
     let timerInterval;
-    let timeRemaining = 20 * 60; // 20 minutes in seconds
+    let timeRemaining = 60 * 60; // 60 minutes in seconds
     let selectedHighlightColor = '#fef08a'; // Default: yellow
 
     // --- CORE FUNCTIONS ---
 
     function switchPassage(passageNum) {
         currentPassage = passageNum;
-        timeRemaining = 20 * 60;
         
         document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab${passageNum}`).classList.add('active');
         
         loadPassageContent(passageNum);
-        startTimer();
     }
 
     function loadPassageContent(passageNum) {
@@ -435,7 +448,6 @@
                          <div class="flex justify-between items-center">
                             <div>
                                 <h3 class="font-bold text-xl text-gray-800">Questions</h3>
-                                <div id="timer" class="text-2xl font-mono font-bold text-indigo-600">20:00</div>
                             </div>
                             <div id="score-display" class="text-right"></div>
                          </div>
@@ -456,22 +468,24 @@
 
     function startTimer() {
         clearInterval(timerInterval);
-        const timerElement = document.getElementById('timer');
+        const timerDisplay = document.getElementById('timer-display');
         
         timerInterval = setInterval(() => {
-            timeRemaining--;
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            if (timerElement) {
-                 timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            if (timeRemaining > 0) {
+                timeRemaining--;
+            }
+            
+            const minutes = Math.ceil(timeRemaining / 60);
+            if (timerDisplay) {
+                 timerDisplay.textContent = minutes;
             }
 
             if (timeRemaining <= 0) {
                 clearInterval(timerInterval);
-                if(timerElement) timerElement.textContent = "Time's up!";
-                checkAnswers();
+                if(timerDisplay) timerDisplay.textContent = "0";
+                // You can add a function here to handle the end of the test, e.g., auto-checking all answers.
             }
-        }, 1000);
+        }, 1000); // Interval still runs every second for accuracy
     }
     
     function selectHighlightColor(color, element) {
@@ -492,9 +506,7 @@
 
         const mark = document.createElement('mark');
         mark.style.backgroundColor = selectedHighlightColor;
-        // Add onclick to remove the specific highlight
         mark.onclick = (event) => {
-            // Replaces the <mark> tag with its inner content
             event.target.outerHTML = event.target.innerHTML;
         };
         
@@ -524,60 +536,82 @@
     }
 
     function resetAll() {
-        switchPassage(currentPassage);
+        // Reloading the page is the simplest way to reset the global timer and all inputs.
+        window.location.reload();
     }
 
     // --- ANSWER CHECKING LOGIC ---
 
     function checkAnswers() {
-        clearInterval(timerInterval);
         let score = 0;
         let totalQuestions = 0;
 
         const questionsArea = document.getElementById('questions-area');
         if (!questionsArea) return;
 
-        questionsArea.querySelectorAll('input[type="text"], select').forEach(input => {
-            totalQuestions++;
-            const userAnswer = input.value.trim().toLowerCase();
-            const correctAnswer = input.dataset.answer.toLowerCase();
-            input.classList.remove('correct', 'incorrect');
-            
-            const oldHint = input.parentElement.querySelector('.correct-answer-text');
-            if (oldHint) oldHint.remove();
+        // Clear previous hints and explanations before re-checking
+        questionsArea.querySelectorAll('.correct-answer-text, .explanation-box').forEach(el => el.remove());
 
-            if (userAnswer === correctAnswer) {
-                input.classList.add('correct');
-                score++;
-            } else {
-                input.classList.add('incorrect');
-                const hint = document.createElement('span');
-                hint.className = 'correct-answer-text';
-                hint.textContent = `Correct: ${input.dataset.answer}`;
-                input.parentElement.appendChild(hint);
+        // Handle text inputs, selects, and their parent divs with explanations
+        questionsArea.querySelectorAll('div[data-explanation]').forEach(div => {
+            const input = div.querySelector('input[type="text"], select');
+            if (input) {
+                totalQuestions++;
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswer = input.dataset.answer.toLowerCase();
+                input.classList.remove('correct', 'incorrect');
+
+                if (userAnswer === correctAnswer) {
+                    input.classList.add('correct');
+                    score++;
+                } else {
+                    input.classList.add('incorrect');
+                    const hint = document.createElement('span');
+                    hint.className = 'correct-answer-text';
+                    hint.textContent = `Correct: ${input.dataset.answer}`;
+                    const label = div.querySelector('label');
+                    if (label) label.appendChild(hint);
+                }
+                
+                const explanation = div.dataset.explanation;
+                if (explanation) {
+                    const explanationBox = document.createElement('div');
+                    explanationBox.className = 'explanation-box';
+                    explanationBox.innerHTML = `<b>Explanation:</b> ${explanation}`;
+                    div.appendChild(explanationBox);
+                }
             }
         });
 
-        questionsArea.querySelectorAll('div[data-answer]').forEach(group => {
+        // Handle radio button groups
+        questionsArea.querySelectorAll('div[id^="q"][data-answer]').forEach(group => {
             if (group.querySelectorAll('input[type="radio"]').length > 0) {
                 totalQuestions++;
                 const correctAnswer = group.dataset.answer;
                 const selectedRadio = group.querySelector('input[type="radio"]:checked');
                 
-                group.querySelectorAll('label').forEach(label => label.classList.remove('text-green-600', 'text-red-600'));
+                group.querySelectorAll('label').forEach(label => label.classList.remove('text-green-600', 'text-red-600', 'font-bold'));
 
                 if (selectedRadio) {
                     if (selectedRadio.value === correctAnswer) {
                         score++;
-                        selectedRadio.parentElement.classList.add('text-green-600');
+                        selectedRadio.parentElement.classList.add('text-green-600', 'font-bold');
                     } else {
-                        selectedRadio.parentElement.classList.add('text-red-600');
+                        selectedRadio.parentElement.classList.add('text-red-600', 'font-bold');
                         const correctRadio = group.querySelector(`input[value="${correctAnswer}"]`);
-                        if(correctRadio) correctRadio.parentElement.classList.add('text-green-600');
+                        if(correctRadio) correctRadio.parentElement.classList.add('text-green-600', 'font-bold');
                     }
                 } else {
                      const correctRadio = group.querySelector(`input[value="${correctAnswer}"]`);
-                     if(correctRadio) correctRadio.parentElement.classList.add('text-green-600');
+                     if(correctRadio) correctRadio.parentElement.classList.add('text-green-600', 'font-bold');
+                }
+
+                const explanation = group.dataset.explanation;
+                if (explanation) {
+                    const explanationBox = document.createElement('div');
+                    explanationBox.className = 'explanation-box';
+                    explanationBox.innerHTML = `<b>Explanation:</b> ${explanation}`;
+                    group.appendChild(explanationBox);
                 }
             }
         });
@@ -594,6 +628,7 @@
     // --- INITIALIZATION ---
     window.onload = () => {
         switchPassage(1);
+        startTimer(); // Start the global timer on page load.
     };
 
 </script>
