@@ -110,6 +110,47 @@
             border-color: #4f46e5;
             box-shadow: 0 0 0 2px white;
         }
+        .vocab-word {
+            position: relative;
+            border-bottom: 1px dotted #4338ca;
+            cursor: help;
+            font-weight: 600;
+            color: #4338ca;
+        }
+        .vocab-word .vocab-tooltip {
+            visibility: hidden;
+            width: max-content;
+            max-width: 200px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 10;
+            bottom: 135%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 0.875rem;
+        }
+        .vocab-word:hover .vocab-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .vocab-word .vocab-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -176,9 +217,9 @@
                     <div class="exercise-box">
                         <h3>Example Exercise</h3>
                         <div class="passage-box mt-4" id="passage-ex1">
-                            <p>The main elements required for survival are food, fire, shelter and water. Their order of importance will depend upon where you happen to be. In the desert water will head the list; in polar regions shelter and fire will be the main concerns. Ordering your priorities is the first step to survival.</p>
-                            <p>It takes a healthy person quite a long time to die of starvation, for the body can use up its stored resources, but exposure to wind, rain and cold can be fatal even in mild climates and death comes in only minutes in the icy waters of the poles. Food is rarely the first priority. Even in those places where it is difficult to find, there are usually other problems to face first. Shelter will often be the prime necessity in extremes of climate or temperatures such as in the frozen polar regions or in the baking deserts. The need for fire is closely linked.</p>
-                            <p>Water is something that most people in the modern world take for granted. They are so used to turning on a tap that until an extreme drought causes water rationing they seldom think about it. Yet the survivor at sea, or after a flood, though surrounded by water, may be desperate for drinkable water. And there are many places where, unless it rains, no obvious water is available. Although there could be other survival necessities to deal with, water is always universally important.</p>
+                            <p>The main <span class="vocab-word" data-pos="n." data-translation="các yếu tố">elements</span> required for <span class="vocab-word" data-pos="n." data-translation="sự sống còn">survival</span> are food, fire, shelter and water. Their order of importance will <span class="vocab-word" data-pos="phr. v." data-translation="phụ thuộc vào">depend upon</span> where you happen to be. In the desert water will head the list; in <span class="vocab-word" data-pos="n. phr." data-translation="vùng cực">polar regions</span> shelter and fire will be the main <span class="vocab-word" data-pos="n." data-translation="mối quan tâm">concerns</span>. Ordering your <span class="vocab-word" data-pos="n." data-translation="sự ưu tiên">priorities</span> is the first step to survival.</p>
+                            <p>It takes a healthy person quite a long time to die of <span class="vocab-word" data-pos="n." data-translation="sự chết đói">starvation</span>, for the body can use up its stored <span class="vocab-word" data-pos="n." data-translation="tài nguyên">resources</span>, but <span class="vocab-word" data-pos="n." data-translation="sự phơi bày, tiếp xúc">exposure</span> to wind, rain and cold can be <span class="vocab-word" data-pos="adj." data-translation="gây chết người">fatal</span> even in mild <span class="vocab-word" data-pos="n." data-translation="khí hậu">climates</span> and death comes in only minutes in the icy waters of the poles. Food is rarely the first priority. Even in those places where it is difficult to find, there are usually other problems to face first. Shelter will often be the <span class="vocab-word" data-pos="n. phr." data-translation="nhu cầu thiết yếu hàng đầu">prime necessity</span> in <span class="vocab-word" data-pos="n." data-translation="sự khắc nghiệt">extremes</span> of climate or temperatures such as in the frozen polar regions or in the baking deserts. The need for fire is closely linked.</p>
+                            <p>Water is something that most people in the modern world <span class="vocab-word" data-pos="idiom" data-translation="coi là điều hiển nhiên">take for granted</span>. They are so used to turning on a tap that until an extreme <span class="vocab-word" data-pos="n." data-translation="hạn hán">drought</span> causes water <span class="vocab-word" data-pos="n." data-translation="sự phân phối, cấp hạn chế">rationing</span> they seldom think about it. Yet the survivor at sea, or after a flood, though surrounded by water, may be <span class="vocab-word" data-pos="adj." data-translation="tuyệt vọng, rất cần">desperate for</span> drinkable water. And there are many places where, unless it rains, no <span class="vocab-word" data-pos="adj." data-translation="rõ ràng, hiển nhiên">obvious</span> water is available. Although there could be other survival necessities to deal with, water is always <span class="vocab-word" data-pos="adv." data-translation="một cách phổ biến, toàn cầu">universally</span> important.</p>
                         </div>
                         <div class="mt-4 space-y-4" id="ex1">
                             <div>
@@ -209,10 +250,10 @@
                         <h3>Example Exercise</h3>
                         <div class="passage-box mt-4" id="passage-ex2">
                             <h4>The Peace Corps</h4>
-                            <p>On March 1, 1961, President John F. Kennedy issued an order creating the Peace Corps. Its mission was to promote world peace and friendship by providing qualified volunteers to interested countries. Today it sends an average of 6,000 U.S. citizens abroad each year.</p>
-                            <p>Volunteers live at a local level in their host countries. They are paid in local currency. Each month they receive a small sum of money that covers basic living expenses, and varies with the local economy. For example, volunteers in Micronesia make the equivalent of $300 per month, while those in Turkmenistan make $75. Most volunteers live with host families. This is a great chance to learn the language and the culture.</p>
-                            <p>For each month that they spend overseas, volunteers receive a sum of about $200. This money helps them to get back on their feet in the United States.</p>
-                            <p>Serving countries all over the world, the Peace Corps lives up to its promise as "the toughest job you'll ever love." Volunteers do everything from teaching English to sharing tips on growing food to providing preventive health care. However, the application process to become a Peace Corps volunteer is very competitive. You must be a U.S. citizen, at least eighteen years old, in good health, and willing to serve for two years. Nearly all volunteers have a bachelor's degree in their chosen field, and about 18 percent have their master's or doctorate degrees. Knowing a language, especially French and Spanish, helps.</p>
+                            <p>On March 1, 1961, President John F. Kennedy <span class="vocab-word" data-pos="v. phr." data-translation="ban hành một mệnh lệnh">issued an order</span> creating the Peace Corps. Its <span class="vocab-word" data-pos="n." data-translation="sứ mệnh">mission</span> was to <span class="vocab-word" data-pos="v." data-translation="thúc đẩy">promote</span> world peace and friendship by providing <span class="vocab-word" data-pos="n. phr." data-translation="tình nguyện viên đủ tiêu chuẩn">qualified volunteers</span> to interested countries. Today it sends an average of 6,000 U.S. citizens abroad each year.</p>
+                            <p>Volunteers live at a <span class="vocab-word" data-pos="n. phr." data-translation="cấp địa phương">local level</span> in their <span class="vocab-word" data-pos="n. phr." data-translation="các nước chủ nhà">host countries</span>. They are paid in local <span class="vocab-word" data-pos="n." data-translation="tiền tệ">currency</span>. Each month they receive a small sum of money that <span class="vocab-word" data-pos="v." data-translation="chi trả">covers</span> <span class="vocab-word" data-pos="n. phr." data-translation="chi phí sinh hoạt cơ bản">basic living expenses</span>, and <span class="vocab-word" data-pos="v. phr." data-translation="thay đổi tùy theo">varies with</span> the local economy. For example, volunteers in Micronesia make the <span class="vocab-word" data-pos="n. phr." data-translation="tương đương với">equivalent of</span> $300 per month, while those in Turkmenistan make $75. Most volunteers live with host families. This is a great chance to learn the language and the culture.</p>
+                            <p>For each month that they spend overseas, volunteers receive a sum of about $200. This money helps them to <span class="vocab-word" data-pos="idiom" data-translation="đứng vững trở lại (tài chính)">get back on their feet</span> in the United States.</p>
+                            <p>Serving countries all over the world, the Peace Corps <span class="vocab-word" data-pos="idiom" data-translation="thực hiện đúng lời hứa">lives up to its promise</span> as "the toughest job you'll ever love." Volunteers do everything from teaching English to sharing tips on growing food to providing <span class="vocab-word" data-pos="n. phr." data-translation="chăm sóc sức khỏe phòng ngừa">preventive health care</span>. However, the <span class="vocab-word" data-pos="n. phr." data-translation="quy trình nộp đơn">application process</span> to become a Peace Corps volunteer is very <span class="vocab-word" data-pos="adj." data-translation="cạnh tranh">competitive</span>. You must be a U.S. citizen, at least eighteen years old, in good health, and willing to serve for two years. Nearly all volunteers have a <span class="vocab-word" data-pos="n. phr." data-translation="bằng cử nhân">bachelor's degree</span> in their chosen field, and about 18 percent have their master's or doctorate degrees. Knowing a language, especially French and Spanish, helps.</p>
                         </div>
                         <div class="mt-4 space-y-4" id="ex2">
                             <p class="text-sm font-semibold">Answer with NO MORE THAN THREE WORDS from the passage.</p>
@@ -233,10 +274,10 @@
                         <h3>Example Exercise</h3>
                         <div class="passage-box mt-4" id="passage-ex3">
                              <h4>Solar Collector</h4>
-                            <p>Solar collectors absorb heat from the sun's rays. They can be used to effectively heat and cool buildings. The most common type of collector for space heating is a flat plate designed to absorb both radiation falling directly on it, as well as radiation scattered by the atmosphere.</p>
-                            <p>Collectors are usually panels of aluminium, copper, or steel. The panels are usually painted black. The black colouring inhibits reflection and encourages absorption. Insulation is placed behind the collector to prevent heat loss.</p>
-                            <p>The collector is covered with glass or plastic. This layer allows short-wave radiation or light to enter the collector. As the radiation passes through the glass or plastic, it is transformed from short-wave radiation to long-wave radiation - or heat. Long-wave radiation cannot pass through the glass or plastic back into the atmosphere. Therefore, the heat is trapped within the collector. Collectors are usually placed at an angle to maximise the amount of radiation falling on them.</p>
-                            <p>A transfer agent (air or water) is circulated through the collector and becomes heated. As it leaves the collector and travels through the heating ducts of a house, it warms the air inside the house or brings hot water to sinks, tubs, and appliances. With solar collectors, storage is a problem: great amounts of heat must be stored for nighttime use and for use during cloudy days.</p>
+                            <p>Solar collectors <span class="vocab-word" data-pos="v." data-translation="hấp thụ">absorb</span> heat from the sun's rays. They can be used to <span class="vocab-word" data-pos="adv." data-translation="một cách hiệu quả">effectively</span> heat and cool buildings. The most common type of collector for space heating is a flat plate designed to absorb both <span class="vocab-word" data-pos="n." data-translation="bức xạ">radiation</span> falling directly on it, as well as radiation <span class="vocab-word" data-pos="v." data-translation="phân tán">scattered</span> by the <span class="vocab-word" data-pos="n." data-translation="khí quyển">atmosphere</span>.</p>
+                            <p>Collectors are usually panels of aluminium, copper, or steel. The panels are usually painted black. The black colouring <span class="vocab-word" data-pos="v." data-translation="ngăn chặn, ức chế">inhibits</span> <span class="vocab-word" data-pos="n." data-translation="sự phản xạ">reflection</span> and <span class="vocab-word" data-pos="v." data-translation="khuyến khích">encourages</span> <span class="vocab-word" data-pos="n." data-translation="sự hấp thụ">absorption</span>. <span class="vocab-word" data-pos="n." data-translation="sự cách nhiệt">Insulation</span> is placed behind the collector to prevent heat loss.</p>
+                            <p>The collector is covered with glass or plastic. This layer allows short-wave radiation or light to enter the collector. As the radiation passes through the glass or plastic, it is <span class="vocab-word" data-pos="v." data-translation="biến đổi">transformed</span> from short-wave radiation to long-wave radiation - or heat. Long-wave radiation cannot pass through the glass or plastic back into the atmosphere. Therefore, the heat is <span class="vocab-word" data-pos="v." data-translation="bị giữ lại, bị bẫy">trapped</span> within the collector. Collectors are usually placed at an angle to <span class="vocab-word" data-pos="v." data-translation="tối đa hóa">maximise</span> the amount of radiation falling on them.</p>
+                            <p>A <span class="vocab-word" data-pos="n. phr." data-translation="chất tải (nhiệt)">transfer agent</span> (air or water) is <span class="vocab-word" data-pos="v." data-translation="được lưu thông">circulated</span> through the collector and becomes heated. As it leaves the collector and travels through the heating <span class="vocab-word" data-pos="n." data-translation="ống dẫn">ducts</span> of a house, it warms the air inside the house or brings hot water to sinks, tubs, and appliances. With solar collectors, storage is a problem: great amounts of heat must be stored for nighttime use and for use during cloudy days.</p>
                         </div>
                         <div class="mt-4 space-y-4" id="ex3">
                             <p class="text-sm font-semibold">Complete with NO MORE THAN THREE WORDS from the passage.</p>
@@ -257,12 +298,12 @@
                         <h3>Example Exercise</h3>
                         <div class="passage-box mt-4" id="passage-ex4">
                             <h4>How to Borrow Books</h4>
-                            <p>Most libraries require you to register before you are allowed to borrow any of their materials. This means you will probably be asked to fill out and sign a registration card. When you do this, you are not only giving the library your name and address for their files, you are also signing an agreement. The agreement says, basically, that you will obey the rules of the library. A parent or guardian is sometimes also required to sign the card.</p>
-                            <p>To be entitled to use your school library, you probably must only be enrolled in that school. Once you are registered, you will be issued a library or borrower's card. On this card will be your name and a number. Each time you check out, that is, officially borrow something from the library, you will have to present this card to the librarian.</p>
-                            <p>If your library is large enough, it may have film equipment that you may borrow. To do so, however, the library usually requires a separate registration. You may also have to take and pass a course the library gives on how to operate the different pieces of equipment.</p>
-                            <p>You usually check out and return borrowed materials at the same desk. The sign on this desk may read Circulation Desk, Check Out Here, or perhaps Charge Desk.</p>
-                            <p>The library staff member at this desk will take your card and stamp the book card with a date. This is the date by which you are expected to return the material to the library, so others can have the chance of borrowing it. Many libraries allow you to renew the book if it has not been requested by others.</p>
-                            <p>Some libraries charge a fine for each day a library book is overdue, kept out beyond the date stamped on the book card. There are also often fines for books returned damaged or written in. Should you lose a library book, you may be required to pay the library the amount it was worth. Not paying fines could result in your losing all library privileges.</p>
+                            <p>Most libraries require you to <span class="vocab-word" data-pos="v." data-translation="đăng ký">register</span> before you are allowed to borrow any of their <span class="vocab-word" data-pos="n." data-translation="tài liệu">materials</span>. This means you will probably be asked to fill out and sign a <span class="vocab-word" data-pos="n. phr." data-translation="thẻ đăng ký">registration card</span>. When you do this, you are not only giving the library your name and address for their files, you are also signing an <span class="vocab-word" data-pos="n." data-translation="hợp đồng, thỏa thuận">agreement</span>. The agreement says, basically, that you will <span class="vocab-word" data-pos="v." data-translation="tuân theo">obey</span> the rules of the library. A parent or <span class="vocab-word" data-pos="n." data-translation="người giám hộ">guardian</span> is sometimes also required to sign the card.</p>
+                            <p>To be <span class="vocab-word" data-pos="adj." data-translation="có quyền">entitled to</span> use your school library, you probably must only be <span class="vocab-word" data-pos="v." data-translation="đã ghi danh vào">enrolled in</span> that school. Once you are registered, you will be <span class="vocab-word" data-pos="v." data-translation="được cấp">issued</span> a library or borrower's card. On this card will be your name and a number. Each time you <span class="vocab-word" data-pos="phr. v." data-translation="mượn (sách)">check out</span>, that is, officially borrow something from the library, you will have to present this card to the librarian.</p>
+                            <p>If your library is large enough, it may have <span class="vocab-word" data-pos="n. phr." data-translation="thiết bị chiếu phim">film equipment</span> that you may borrow. To do so, however, the library usually requires a <span class="vocab-word" data-pos="adj." data-translation="riêng biệt">separate</span> registration. You may also have to take and pass a course the library gives on how to <span class="vocab-word" data-pos="v." data-translation="vận hành">operate</span> the different pieces of equipment.</p>
+                            <p>You usually check out and return borrowed materials at the same desk. The sign on this desk may read <span class="vocab-word" data-pos="n. phr." data-translation="quầy lưu hành">Circulation Desk</span>, Check Out Here, or perhaps Charge Desk.</p>
+                            <p>The library staff member at this desk will take your card and stamp the book card with a date. This is the date by which you are expected to return the material to the library, so others can have the chance of borrowing it. Many libraries allow you to <span class="vocab-word" data-pos="v." data-translation="gia hạn">renew</span> the book if it has not been requested by others.</p>
+                            <p>Some libraries charge a fine for each day a library book is <span class="vocab-word" data-pos="adj." data-translation="quá hạn">overdue</span>, kept out beyond the date stamped on the book card. There are also often <span class="vocab-word" data-pos="n." data-translation="tiền phạt">fines</span> for books returned damaged or written in. Should you lose a library book, you may be required to pay the library the amount it was worth. Not paying fines could result in your losing all library <span class="vocab-word" data-pos="n." data-translation="đặc quyền">privileges</span>.</p>
                         </div>
                         <div class="mt-4 space-y-4" id="ex4">
                             <p class="text-sm font-semibold">Complete the summary with NO MORE THAN THREE WORDS from the passage.</p>
@@ -587,8 +628,25 @@
         if (unitNum === 3) {
             populateAffixTable();
         }
+        
+        // Add vocabulary tooltips after content is loaded
+        addVocabTooltips();
     }
     
+    function addVocabTooltips() {
+        document.querySelectorAll('.vocab-word').forEach(word => {
+            // Prevent adding duplicate tooltips
+            if (word.querySelector('.vocab-tooltip')) return;
+
+            const tooltip = document.createElement('span');
+            tooltip.className = 'vocab-tooltip';
+            const pos = word.dataset.pos;
+            const translation = word.dataset.translation;
+            tooltip.innerHTML = `<em class="font-normal text-gray-400">(${pos})</em> ${translation}`;
+            word.appendChild(tooltip);
+        });
+    }
+
     function populateAffixTable() {
         const tableBody = document.querySelector('#affix-table tbody');
         if (!tableBody) return;
