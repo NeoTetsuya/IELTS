@@ -42,18 +42,6 @@
             transition: max-height 0.3s ease-out;
             overflow: hidden;
         }
-        /* Interactive Compass Styles */
-        .compass-dir {
-            cursor: pointer;
-            transition: fill 0.2s, font-weight 0.2s;
-        }
-        .compass-dir:hover {
-            fill: #6366f1; /* Lighter indigo on hover */
-        }
-        .compass-dir.active {
-            fill: #4338ca; /* Darker indigo when active */
-            font-weight: bold;
-        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -69,9 +57,12 @@
                 <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-location">2. Ngôn ngữ Vị trí</a>
                 <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-change">3. Ngôn ngữ Thay đổi</a>
                 <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-exercise1">4. Bài tập: Vị trí & Thay đổi</a>
-                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-islip">5. Ví dụ: Thị trấn Islip</a>
-                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-exercise3">6. Luyện tập: Trung tâm Y tế</a>
-                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-exercise4">7. Luyện tập: Khu vực Ashford</a>
+                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-practice">5. Luyện tập thêm: Hướng</a>
+                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-islip">6. Ví dụ: Thị trấn Islip</a>
+                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-exercise3">7. Luyện tập: Trung tâm Y tế</a>
+                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-exercise4">8. Luyện tập: Khu vực Ashford</a>
+                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-library">9. Luyện tập: Thư viện</a>
+                <a href="#" class="nav-link text-left px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-indigo-100" data-target="page-dam">10. Luyện tập: Đập thủy điện</a>
             </nav>
         </aside>
 
@@ -98,105 +89,126 @@
                     <h2 class="text-3xl font-bold mb-6 text-gray-700">2. Ngôn ngữ Vị trí (Directional Languages)</h2>
                     <p class="text-lg mb-6">Ngôn ngữ vị trí miêu tả vị trí trong không gian của các thành phần trong bản đồ.</p>
                     
-                    <h3 class="text-xl font-semibold mb-4 text-indigo-600">Các hướng cơ bản:</h3>
+                    <h3 class="text-xl font-semibold mb-4 text-indigo-600">2.1. Sử dụng La bàn (Compass Directions)</h3>
                     <div class="flex flex-col md:flex-row items-center gap-8 mb-8">
                         <div class="grid grid-cols-3 gap-4 text-center p-4 border rounded-lg bg-gray-50 flex-1">
                             <div>North-west</div><div>North</div><div>North-east</div>
                             <div>West</div><div class="font-bold">Center</div><div>East</div>
                             <div>South-west</div><div>South</div><div>South-east</div>
                         </div>
-                        <div class="flex-1 flex flex-col items-center">
+                        <div class="flex-1 flex justify-center">
                             <svg width="150" height="150" viewBox="0 0 100 100">
                                 <circle cx="50" cy="50" r="48" fill="white" stroke="#d1d5db" />
                                 <line x1="50" y1="10" x2="50" y2="90" stroke="#4b5563" stroke-width="1.5"/>
                                 <line x1="10" y1="50" x2="90" y2="50" stroke="#4b5563" stroke-width="1.5"/>
                                 <line x1="22" y1="22" x2="78" y2="78" stroke="#9ca3af" stroke-width="1"/>
                                 <line x1="22" y1="78" x2="78" y2="22" stroke="#9ca3af" stroke-width="1"/>
-                                <text x="50" y="8" font-size="8" class="compass-dir">N</text>
-                                <text x="50" y="98" font-size="8" class="compass-dir">S</text>
-                                <text x="5" y="54" font-size="8" class="compass-dir">W</text>
-                                <text x="95" y="54" font-size="8" class="compass-dir">E</text>
-                                <text x="18" y="20" font-size="7" class="compass-dir">NW</text>
-                                <text x="82" y="20" font-size="7" class="compass-dir">NE</text>
-                                <text x="18" y="84" font-size="7" class="compass-dir">SW</text>
-                                <text x="82" y="84" font-size="7" class="compass-dir">SE</text>
+                                <text x="50" y="8" font-size="8" font-weight="bold">N</text>
+                                <text x="50" y="98" font-size="8" font-weight="bold">S</text>
+                                <text x="5" y="54" font-size="8" font-weight="bold">W</text>
+                                <text x="95" y="54" font-size="8" font-weight="bold">E</text>
+                                <text x="18" y="20" font-size="7">NW</text>
+                                <text x="82" y="20" font-size="7">NE</text>
+                                <text x="18" y="84" font-size="7">SW</text>
+                                <text x="82" y="84" font-size="7">SE</text>
                             </svg>
-                            <div id="compass-display" class="mt-2 text-center text-lg font-semibold text-indigo-600 h-8">Click a direction</div>
                         </div>
                     </div>
 
-                    <h3 class="text-xl font-semibold mb-4 text-indigo-600">Ví dụ cụ thể:</h3>
-                    <div class="space-y-6">
-                         <!-- Example 1 -->
-                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-t border-b">
+                     <h3 class="text-xl font-semibold mb-4 text-indigo-600">2.2. Không sử dụng La bàn (Relative Positions)</h3>
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Example 1 -->
+                        <div class="flex flex-col items-center gap-4 p-4 border rounded-lg">
                             <div class="flex-shrink-0 flex items-center gap-2">
-                                <div class="w-20 h-12 bg-red-500 flex items-center justify-center text-white font-bold">A</div>
-                                <div class="w-20 h-12 bg-gray-400 flex items-center justify-center text-white font-bold">B</div>
+                                <div class="w-20 h-12 bg-blue-500 flex items-center justify-center text-white font-bold rounded-md">A</div>
+                                <div class="w-20 h-12 bg-gray-400 flex items-center justify-center text-white font-bold rounded-md">B</div>
                             </div>
-                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
-                                <ul class="list-disc list-inside">
-                                    <li>A is <span class="font-semibold">to the west/left of</span> B.</li>
-                                    <li>B is <span class="font-semibold">to the east/right of</span> A.</li>
-                                </ul>
+                            <div class="flex-1 bg-gray-100 p-3 rounded-lg w-full">
+                                <ul class="list-disc list-inside text-sm"><li>A is <span class="font-semibold">to the left of</span> B.</li><li>B is <span class="font-semibold">to the right of</span> A.</li></ul>
                             </div>
                         </div>
-                         <!-- Example 2 -->
-                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-b">
-                             <div class="flex-shrink-0 flex flex-col items-start gap-2">
-                                <div class="w-20 h-12 bg-gray-400 flex items-center justify-center text-white font-bold ml-10">B</div>
-                                <div class="w-20 h-12 bg-red-500 flex items-center justify-center text-white font-bold">A</div>
+                        <!-- Example 2 -->
+                        <div class="flex flex-col items-center gap-4 p-4 border rounded-lg">
+                            <div class="flex-shrink-0 flex items-center gap-2">
+                                <div class="w-20 h-12 bg-blue-500 flex items-center justify-center text-white font-bold rounded-md">A</div>
+                                <div class="w-1 h-12 bg-gray-300"></div>
+                                <div class="w-20 h-12 bg-gray-400 flex items-center justify-center text-white font-bold rounded-md">B</div>
                             </div>
-                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
-                                <ul class="list-disc list-inside">
-                                    <li>A is <span class="font-semibold">to the south-west of</span> B.</li>
-                                    <li>B is <span class="font-semibold">to the north-east of</span> A.</li>
-                                </ul>
+                            <div class="flex-1 bg-gray-100 p-3 rounded-lg w-full">
+                                <ul class="list-disc list-inside text-sm"><li>A and B are <span class="font-semibold">opposite</span> each other.</li></ul>
                             </div>
                         </div>
-                        <!-- Example 3 -->
-                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-b">
-                             <div class="flex-shrink-0 relative w-48 h-16 bg-red-500 flex items-center justify-center text-white font-bold">
-                                A
-                                <div class="absolute top-2 left-2 w-12 h-12 bg-gray-400 flex items-center justify-center text-white font-bold">B</div>
+                         <!-- Example 3 -->
+                        <div class="flex flex-col items-center gap-4 p-4 border rounded-lg">
+                            <div class="flex-shrink-0 relative w-48 h-16 bg-blue-500 flex items-center justify-center text-white font-bold rounded-md">A
+                                <div class="absolute top-2 left-2 w-12 h-12 bg-gray-400 flex items-center justify-center text-white font-bold rounded-md">B</div>
                             </div>
-                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
-                                <ul class="list-disc list-inside">
-                                    <li>B is <span class="font-semibold">in the east/on the left-hand side of</span> A.</li>
-                                </ul>
+                            <div class="flex-1 bg-gray-100 p-3 rounded-lg w-full">
+                                <ul class="list-disc list-inside text-sm"><li>B is <span class="font-semibold">in the top left-hand corner of</span> A.</li></ul>
                             </div>
                         </div>
                          <!-- Example 4 -->
-                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-b">
-                             <div class="flex-shrink-0 relative w-32 h-32 bg-red-500 flex items-center justify-center text-white font-bold">
-                                A
-                                <div class="absolute bottom-2 right-2 w-16 h-12 bg-gray-400 flex items-center justify-center text-white font-bold">B</div>
+                        <div class="flex flex-col items-center gap-4 p-4 border rounded-lg">
+                            <div class="flex-shrink-0 flex items-center gap-2">
+                               <div class="w-16 h-12 bg-gray-400 flex items-center justify-center text-white font-bold rounded-md">B</div>
+                               <div class="w-16 h-12 bg-blue-500 flex items-center justify-center text-white font-bold rounded-md">A</div>
+                               <div class="w-16 h-12 bg-teal-500 flex items-center justify-center text-white font-bold rounded-md">C</div>
                             </div>
-                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
-                                <ul class="list-disc list-inside">
-                                    <li>B is <span class="font-semibold">in the south-west/on the bottom right-hand corner of</span> A.</li>
-                                </ul>
+                            <div class="flex-1 bg-gray-100 p-3 rounded-lg w-full">
+                                <ul class="list-disc list-inside text-sm"><li>A is <span class="font-semibold">between</span> B and C.</li></ul>
                             </div>
                         </div>
-                        <!-- Example 5 -->
-                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 border-b">
-                             <div class="flex-shrink-0 relative w-48 h-24 bg-red-500 flex items-center justify-center text-white font-bold">
-                                A
-                                <div class="absolute bottom-0 left-0 w-full h-10 bg-gray-400 flex items-center justify-center text-white font-bold">B</div>
+                         <!-- Example 5 -->
+                        <div class="flex flex-col items-center gap-4 p-4 border rounded-lg">
+                            <div class="flex-shrink-0 relative">
+                                <div class="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+                                <div class="absolute -top-2 -left-2 w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold">C</div>
+                                <div class="absolute top-2 -right-4 w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold">C</div>
+                                <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold">C</div>
+                                <div class="absolute -bottom-4 left-4 w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold">C</div>
                             </div>
-                            <div class="flex-1 bg-gray-100 p-4 rounded-lg">
-                                <ul class="list-disc list-inside">
-                                    <li>B is <span class="font-semibold">in the south/at the bottom of</span> A.</li>
-                                </ul>
+                            <div class="flex-1 bg-gray-100 p-3 rounded-lg w-full">
+                                <ul class="list-disc list-inside text-sm"><li>A is <span class="font-semibold">surrounded by</span> C.</li></ul>
+                            </div>
+                        </div>
+                        <!-- Example 6 -->
+                         <div class="flex flex-col items-center gap-4 p-4 border rounded-lg">
+                            <div class="flex-shrink-0 relative w-32 h-32 flex items-center justify-center">
+                                <div class="w-4 h-32 bg-blue-500 absolute rounded"></div>
+                                <div class="w-32 h-4 bg-teal-500 absolute rounded"></div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 p-3 rounded-lg w-full">
+                                <ul class="list-disc list-inside text-sm"><li>The blue line is <span class="font-semibold">perpendicular to</span> the teal line.</li></ul>
+                            </div>
+                        </div>
+                        <!-- Example 7 -->
+                         <div class="flex flex-col items-center gap-4 p-4 border rounded-lg">
+                            <div class="flex-shrink-0 relative w-32 h-32 flex items-center justify-center">
+                                <div class="w-4 h-32 bg-blue-500 absolute left-8 rounded"></div>
+                                <div class="w-4 h-32 bg-teal-500 absolute right-8 rounded"></div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 p-3 rounded-lg w-full">
+                                <ul class="list-disc list-inside text-sm"><li>The blue line is <span class="font-semibold">parallel to</span> the teal line.</li></ul>
+                            </div>
+                        </div>
+                        <!-- Example 8 -->
+                         <div class="flex flex-col items-center gap-4 p-4 border rounded-lg">
+                            <div class="flex-shrink-0 relative w-32 h-32 flex items-center justify-center">
+                                <div class="w-12 h-12 bg-blue-500 rounded-full"></div>
+                                <div class="w-12 h-12 bg-teal-400 rounded-full absolute top-10 left-16"></div>
+                            </div>
+                            <div class="flex-1 bg-gray-100 p-3 rounded-lg w-full">
+                                <ul class="list-disc list-inside text-sm"><li>The two circles are <span class="font-semibold">in close proximity</span>.</li></ul>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="mt-8 p-4 bg-blue-50 border-l-4 border-blue-500">
+                    <div class="mt-8 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
                         <h4 class="font-bold text-lg text-blue-800">Một số chú ý:</h4>
                         <p class="mt-2 text-blue-700">Chú ý điểm khác nhau khi sử dụng các giới từ <span class="font-bold">to</span> và <span class="font-bold">in/on/at</span>. Dựa vào ví dụ minh họa ta thấy:</p>
                         <ul class="list-disc list-inside ml-4 mt-2 space-y-2 text-blue-700">
-                            <li>“B is <strong class="text-blue-900">to the west/left of</strong> A” có nghĩa là B ở phía Tây của A, nhưng <strong class="text-blue-900">KHÔNG NẰM TRONG A</strong>. (Vietnam is to the west of Laos)</li>
-                            <li>“B is <strong class="text-blue-900">in the south-west/on the bottom right-hand corner of</strong> A” có nghĩa là B ở phía Tây Nam của A, nhưng <strong class="text-blue-900">NẰM TRONG A</strong>. (Vietnam is in the south-east of Asia)</li>
+                            <li>“B is <strong class="text-blue-900">to the west of</strong> A” có nghĩa là B ở phía Tây của A, nhưng <strong class="text-blue-900">KHÔNG NẰM TRONG A</strong>. (Vietnam is to the west of Laos)</li>
+                            <li>“B is <strong class="text-blue-900">in the south-west of</strong> A” có nghĩa là B ở phía Tây Nam của A, nhưng <strong class="text-blue-900">NẰM TRONG A</strong>. (Vietnam is in the south-east of Asia)</li>
                         </ul>
                     </div>
                 </div>
@@ -247,8 +259,8 @@
                     <h2 class="text-3xl font-bold mb-6 text-gray-700">4. Bài tập: Vị trí & Thay đổi</h2>
                     <p class="mb-4">Dựa vào bản đồ dưới đây để hoàn thành các bài tập.</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <img src="https://i.postimg.cc/dVx19j2b/Exercise4-2005.png" alt="Map 2005" class="w-full rounded-lg shadow border">
-                        <img src="https://i.postimg.cc/0QgyT5HZ/Exercise4-2010.png" alt="Map 2010" class="w-full rounded-lg shadow border">
+                        <img src="https://i.postimg.cc/dVx19j2b/Exercise4-2005.png" alt="Map 2005" class="w-full rounded-lg shadow border" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/4a5568?text=Map+2005+Not+Found';">
+                        <img src="https://i.postimg.cc/0QgyT5HZ/Exercise4-2010.png" alt="Map 2010" class="w-full rounded-lg shadow border" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/4a5568?text=Map+2010+Not+Found';">
                     </div>
                     
                     <div id="exercise-container-1">
@@ -277,13 +289,79 @@
                         <button onclick="checkAnswers('exercise-container-2')" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Kiểm tra Bài 2</button>
                     </div>
                 </div>
+
+                <!-- Page 5: Additional Practice -->
+                <div id="page-practice" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">5. Luyện tập thêm: Miêu tả Hướng</h2>
+                    
+                    <!-- Exercise 3: With Compass -->
+                    <div id="exercise-container-3">
+                        <h3 class="text-xl font-semibold mb-4 text-indigo-600">Bài tập 3: Luyện tập với La bàn</h3>
+                        <p class="mb-4">Dựa vào bản đồ thành phố dưới đây để hoàn thành các câu sau.</p>
+                        <div class="w-full p-4 border rounded-lg bg-gray-50 mb-6 flex justify-center">
+                             <svg width="400" height="300" viewBox="0 0 250 180">
+                                <!-- Compass -->
+                                <line x1="235" y1="15" x2="235" y2="45" stroke="#374151" stroke-width="1"/>
+                                <line x1="220" y1="30" x2="250" y2="30" stroke="#374151" stroke-width="1"/>
+                                <text x="235" y="12" font-size="6" font-weight="bold">N</text>
+                                <text x="235" y="52" font-size="6" font-weight="bold">S</text>
+                                <text x="215" y="33" font-size="6" font-weight="bold">W</text>
+                                <text x="255" y="33" font-size="6" font-weight="bold">E</text>
+                                <!-- Map items -->
+                                <rect x="20" y="20" width="50" height="30" fill="#fecaca" rx="5"/><text x="45" y="38">Hospital</text>
+                                <rect x="100" y="20" width="50" height="30" fill="#dbeafe" rx="5"/><text x="125" y="38">School</text>
+                                <rect x="180" y="60" width="50" height="30" fill="#d1fae5" rx="5"/><text x="205" y="78">Park</text>
+                                <rect x="100" y="120" width="50" height="30" fill="#fef9c3" rx="5"/><text x="125" y="138">Library</text>
+                                <rect x="20" y="90" width="50" height="30" fill="#fee2e2" rx="5"/><text x="45" y="108">Museum</text>
+                            </svg>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center">1. The School is to the <input type="text" data-answer="east" class="answer-input mx-2 p-2 border rounded-md w-48"> of the Hospital. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">2. The Library is to the <input type="text" data-answer="south" class="answer-input mx-2 p-2 border rounded-md w-48"> of the School. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">3. The Hospital is to the <input type="text" data-answer="north-west" class="answer-input mx-2 p-2 border rounded-md w-48"> of the Library. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">4. The Park is to the <input type="text" data-answer="north-east" class="answer-input mx-2 p-2 border rounded-md w-48"> of the Museum. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">5. The Museum is to the <input type="text" data-answer="south-west" class="answer-input mx-2 p-2 border rounded-md w-48"> of the Park. <span class="answer-feedback"></span></div>
+                        </div>
+                        <button onclick="checkAnswers('exercise-container-3')" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Kiểm tra Bài 3</button>
+                    </div>
+
+                    <hr class="my-8">
+
+                    <!-- Exercise 4: Without Compass -->
+                    <div id="exercise-container-4">
+                        <h3 class="text-xl font-semibold mb-4 text-indigo-600">Bài tập 4: Luyện tập không có La bàn</h3>
+                        <p class="mb-4">Quan sát sơ đồ đường phố và hoàn thành các câu sau.</p>
+                        <div class="w-full p-4 border rounded-lg bg-gray-50 mb-6 flex justify-center">
+                            <svg width="450" height="250" viewBox="0 0 300 160">
+                                <!-- Road -->
+                                <rect x="10" y="75" width="280" height="10" fill="#d1d5db" />
+                                <text x="150" y="95" font-size="8">Main Street</text>
+                                <!-- Buildings North -->
+                                <rect x="20" y="20" width="60" height="40" fill="#a7f3d0" rx="5"/><text x="50" y="45">Bakery</text>
+                                <rect x="90" y="20" width="60" height="40" fill="#bfdbfe" rx="5"/><text x="120" y="45">Bookstore</text>
+                                <rect x="160" y="20" width="60" height="40" fill="#fde68a" rx="5"/><text x="190" y="45">Café</text>
+                                <!-- Buildings South -->
+                                <rect x="50" y="100" width="60" height="40" fill="#fecaca" rx="5"/><text x="80" y="125">Post Office</text>
+                                <rect x="120" y="100" width="60" height="40" fill="#e9d5ff" rx="5"/><text x="150" y="125">Bank</text>
+                            </svg>
+                        </div>
+                         <div class="space-y-4">
+                            <div class="flex items-center">1. The Bookstore is <input type="text" data-answer="between" class="answer-input mx-2 p-2 border rounded-md w-48"> the Bakery and the Café. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">2. The Bank is <input type="text" data-answer="opposite" class="answer-input mx-2 p-2 border rounded-md w-48"> the Bookstore. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">3. The Bakery is <input type="text" data-answer="on the left-hand side" class="answer-input mx-2 p-2 border rounded-md w-48"> of the street, next to the Bookstore. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">4. The Post Office is <input type="text" data-answer="to the left of" class="answer-input mx-2 p-2 border rounded-md w-48"> the Bank. <span class="answer-feedback"></span></div>
+                            <div class="flex items-center">5. The Café is <input type="text" data-answer="on the corner" class="answer-input mx-2 p-2 border rounded-md w-48"> of the street. <span class="answer-feedback"></span></div>
+                        </div>
+                        <button onclick="checkAnswers('exercise-container-4')" class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Kiểm tra Bài 4</button>
+                    </div>
+                </div>
                 
-                <!-- Page 5: Islip Example -->
+                <!-- Page 6: Islip Example -->
                 <div id="page-islip" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold mb-6 text-gray-700">5. Ví dụ: Thị trấn Islip (2005-2010)</h2>
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">6. Ví dụ: Thị trấn Islip (2005-2010)</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                         <img src="https://i.postimg.cc/2yGjLQjX/Islip-2005.png" alt="Islip 2005" class="w-full rounded-lg shadow border">
-                         <img src="https://i.postimg.cc/8PkzQ0t8/Islip-2010.png" alt="Islip 2010" class="w-full rounded-lg shadow border">
+                         <img src="https://i.postimg.cc/2yGjLQjX/Islip-2005.png" alt="Islip 2005" class="w-full rounded-lg shadow border" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/4a5568?text=Islip+2005+Not+Found';">
+                         <img src="https://i.postimg.cc/8PkzQ0t8/Islip-2010.png" alt="Islip 2010" class="w-full rounded-lg shadow border" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/4a5568?text=Islip+2010+Not+Found';">
                     </div>
                     <div class="space-y-6 mb-6">
                         <div>
@@ -350,11 +428,11 @@
                     </div>
                 </div>
 
-                <!-- Page 6: Health Centre Exercise -->
+                <!-- Page 7: Health Centre Exercise -->
                 <div id="page-exercise3" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold mb-6 text-gray-700">6. Luyện tập: Trung tâm Y tế (2005 - Hiện tại)</h2>
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">7. Luyện tập: Trung tâm Y tế (2005 - Hiện tại)</h2>
                     <div class="mb-6">
-                        <img src="https://i.postimg.cc/mgsfWzbP/healthcenter.png" alt="Health Centre Changes" class="w-full rounded-lg shadow border">
+                        <img src="https://i.postimg.cc/mgsfWzbP/healthcenter.png" alt="Health Centre Changes" class="w-full rounded-lg shadow border" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/4a5568?text=Health+Centre+Not+Found';">
                     </div>
                      <div class="space-y-6 mb-6">
                         <div>
@@ -405,11 +483,11 @@
                     </div>
                 </div>
 
-                <!-- Page 7: Ashford Exercise -->
+                <!-- Page 8: Ashford Exercise -->
                 <div id="page-exercise4" class="content-page bg-white p-8 rounded-xl shadow-lg">
-                    <h2 class="text-3xl font-bold mb-6 text-gray-700">7. Luyện tập: Khu vực Ashford (1965 - Hiện tại)</h2>
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">8. Luyện tập: Khu vực Ashford (1965 - Hiện tại)</h2>
                     <div class="mb-6">
-                        <img src="https://i.postimg.cc/K8DXGGzJ/Ashfordarea.png" alt="Ashford Area Changes" class="w-full rounded-lg shadow border">
+                        <img src="https://i.postimg.cc/K8DXGGzJ/Ashfordarea.png" alt="Ashford Area Changes" class="w-full rounded-lg shadow border" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/4a5568?text=Ashford+Area+Not+Found';">
                     </div>
                     <div class="space-y-6 mb-6">
                         <div>
@@ -459,6 +537,111 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Page 9: Library Example -->
+                <div id="page-library" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">9. Luyện tập: Thư viện (5 năm trước - Hiện tại)</h2>
+                    <div class="mb-6">
+                        <img src="https://i.postimg.cc/FFYfRG8f/library.png" alt="Library Changes" class="w-full rounded-lg shadow border" onerror="this.onerror=null;this.src='https://placehold.co/800x400/e2e8f0/4a5568?text=Library+Map+Not+Found';">
+                    </div>
+                    <div class="space-y-6 mb-6">
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 1: Phân tích bản đồ</h4>
+                            <p><strong>Thời gian:</strong> Bản đồ 1: 5 năm trước. Bản đồ 2: hiện tại => Thì được sử dụng chủ yếu là: <strong>Hiện tại hoàn thành</strong>.</p>
+                            <p><strong>Không gian:</strong> Có thể chia bố cục thư viện ra thành 3 phần:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>Phía Tây:</strong> Classroom → Recording studio; Borrowing and returning desk → Borrowing & Returning.</li>
+                                <li><strong>Trung tâm:</strong> Bookshelves → Desks for students’ laptops; 4 studying tables → 6 Private studying tables.</li>
+                                <li><strong>Phía Đông:</strong> Desk for computers → Desks for students’ laptops; Library Office → Conference room.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 2: Viết Introduction & Overview</h4>
+                             <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>The diagrams illustrate how the layout of a school library changed over a period of five years.
+                             <br><br>Overall, significant changes have been made in terms of the library’s interior design, especially on the western side of the library.</em></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 3: Lập dàn ý</h4>
+                            <p><strong>Thân bài 1:</strong> Miêu tả từ trái qua phải, bắt đầu từ phía Tây:</p>
+                             <ul class="list-['✓'] list-inside ml-6 mt-2 space-y-1">
+                                <li>Một phòng thu âm (recording studio) được xây để thế chỗ cho khu lớp học (classroom).</li>
+                                <li>Phòng họp (meeting room) vẫn giữ nguyên.</li>
+                                <li>Khu mượn/trả sách (borrowing and returning desk) được chia thành 2 phòng riêng biệt.</li>
+                            </ul>
+                            <p class="mt-4"><strong>Thân bài 2:</strong> Miêu tả khu trung tâm và phía Đông:</p>
+                             <ul class="list-['✓'] list-inside ml-6 mt-2 space-y-1">
+                                <li>Có nhiều bàn học riêng tư hơn (private study tables).</li>
+                                <li>Giá sách phía Nam và bàn máy tính phía Đông được chuyển thành bàn cho laptop.</li>
+                                <li>Văn phòng thư viện (library office) được thay thế bởi phòng hội đồng (conference room).</li>
+                             </ul>
+                        </div>
+                    </div>
+                     <button class="collapsible-trigger bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors mb-4">Hiện/Ẩn Bài viết hoàn chỉnh</button>
+                    <div class="collapsible-content p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                        <p class="text-base leading-relaxed">
+                            The diagrams illustrate how the layout of a school library changed over a period of five years.
+                            <br><br>
+                            Overall, significant changes have been made in terms of the library’s interior design, especially on the western side of the library.
+                            <br><br>
+                            A recording studio has been constructed to replace the classroom area. While the meeting room remains in the same place after five years, the space for the borrowing and returning desk has been separated into two different rooms.
+                            <br><br>
+                            In the center of the library, more private study tables have been set up for students to study at. Additionally, there were two areas for book shelves in the north and south of the library five years ago; however, the one in the south as well as the desk for computers on the eastern side of the room has been converted into desks for student’s laptops. Next to this, it can be seen that the library office has been removed to make way for a new conference room.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Page 10: Dam Example -->
+                <div id="page-dam" class="content-page bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-700">10. Luyện tập: Đập thủy điện (1990 - 2010)</h2>
+                    <div class="mb-6">
+                        <img src="https://i.postimg.cc/c1Pv8wGF/hydroelectric-power-dam.png" alt="Hydroelectric Dam Changes" class="w-full rounded-lg shadow border" onerror="this.onerror=null;this.src='https://placehold.co/800x400/e2e8f0/4a5568?text=Dam+Map+Not+Found';">
+                    </div>
+                    <div class="space-y-6 mb-6">
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 1: Phân tích bản đồ</h4>
+                            <p><strong>Thời gian:</strong> Bản đồ 1: 1990. Bản đồ 2: 2010 => Thì được sử dụng chủ yếu là: <strong>Quá khứ đơn</strong>.</p>
+                             <p><strong>Không gian:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Sự thay đổi lớn nhất là sự xuất hiện của một hồ nước lớn.</li>
+                                <li>Rừng, đất nông nghiệp, và các công trình cổ đã biến mất.</li>
+                                <li>Làng mạc được di dời, khách sạn và đập thủy điện được xây mới.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 2: Viết Introduction & Overview</h4>
+                             <p class="mt-2 p-4 bg-gray-50 rounded-lg border"><em>The pictures illustrate a number of important changes which took place in a town after the construction of a hydroelectric power dam.
+                             <br><br>From the maps, it is clear that the most noticeable change that occurred in the town was that of a huge lake. Additionally, the forest and farmlands had completely disappeared by 2010.</em></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-indigo-600 mb-2">Bước 3: Lập dàn ý</h4>
+                            <p><strong>Thân bài 1:</strong> Miêu tả những thay đổi ở nửa trên bản đồ (phía Tây và Đông của con sông cũ).</p>
+                             <ul class="list-['✓'] list-inside ml-6 mt-2 space-y-1">
+                                <li>Năm 1990, có một công trình cổ và một khu rừng ở phía Tây con sông, và đất nông nghiệp ở phía Đông.</li>
+                                <li>Sau khi xây đập, tất cả những thứ này đã biến mất dưới một hồ nước lớn, nơi cũng trở thành khu vực câu cá.</li>
+                            </ul>
+                            <p class="mt-4"><strong>Thân bài 2:</strong> Miêu tả những thay đổi ở nửa dưới bản đồ.</p>
+                             <ul class="list-['✓'] list-inside ml-6 mt-2 space-y-1">
+                                <li>Các ngọn núi vẫn còn tồn tại.</li>
+                                <li>Các ngôi làng ở phía xa Đông đã được di dời về phía Nam của dãy núi.</li>
+                                <li>Một khách sạn lớn được xây dựng vào vị trí cũ của các ngôi làng.</li>
+                                <li>Một đập thủy điện và các cột điện đã được xây dựng gần đó.</li>
+                             </ul>
+                        </div>
+                    </div>
+                     <button class="collapsible-trigger bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors mb-4">Hiện/Ẩn Bài viết hoàn chỉnh</button>
+                    <div class="collapsible-content p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                        <p class="text-base leading-relaxed">
+                            The pictures illustrate a number of important changes which took place in a town after the construction of a hydroelectric power dam.
+                            <br><br>
+                            From the maps, it is clear that the most noticeable change that occurred in the town was that of a huge lake. Additionally, the forest and farmlands had completely disappeared by 2010.
+                            <br><br>
+                            In 1990, there was an ancient structure and a forest with rare flora and fauna to the west of the river, and irrigated farmlands to the east. However, with the construction of a dam wall, those features disappeared beneath a large lake, which also became a fishing area in 2010.
+                            <br><br>
+                            Looking at the maps in more detail, while the mountains still existed, the villages in the far east were relocated further south of the mountains, and a large hotel was built in their place. Meanwhile, a hydroelectric power dam was constructed with a wide range of electricity pylons appearing nearby.
+                        </p>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -487,6 +670,7 @@
             });
         });
 
+        // Show the first page by default
         if (navLinks.length > 0) {
             navLinks[0].classList.add('active');
             showPage(navLinks[0].getAttribute('data-target'));
@@ -508,11 +692,11 @@
                 input.classList.remove('border-green-500', 'border-red-500');
 
                 if (userAnswer === correctAnswer) {
-                    feedbackSpan.textContent = '✓';
+                    feedbackSpan.textContent = '✓ Correct';
                     feedbackSpan.classList.add('correct');
                     input.classList.add('border-green-500');
                 } else {
-                    feedbackSpan.textContent = '✗';
+                    feedbackSpan.textContent = '✗ Incorrect';
                     feedbackSpan.classList.add('incorrect');
                     input.classList.add('border-red-500');
                 }
@@ -528,36 +712,6 @@
                     content.style.display = 'none';
                 } else {
                     content.style.display = 'block';
-                }
-            });
-        });
-
-        // --- Interactive Compass Logic ---
-        const compassDisplay = document.getElementById('compass-display');
-        const compassDirs = document.querySelectorAll('.compass-dir');
-        const directionMap = {
-            'N': 'North', 'S': 'South', 'E': 'East', 'W': 'West',
-            'NW': 'North-West', 'NE': 'North-East', 'SW': 'South-West', 'SE': 'South-East'
-        };
-
-        compassDirs.forEach(dir => {
-            dir.addEventListener('click', () => {
-                // Remove active class from all other directions
-                compassDirs.forEach(d => {
-                    if (d !== dir) {
-                        d.classList.remove('active');
-                    }
-                });
-
-                // Toggle active class on the clicked one
-                dir.classList.toggle('active');
-
-                // Update display
-                if(dir.classList.contains('active')) {
-                    const directionKey = dir.textContent;
-                    compassDisplay.textContent = directionMap[directionKey] || '';
-                } else {
-                    compassDisplay.textContent = 'Click a direction';
                 }
             });
         });
