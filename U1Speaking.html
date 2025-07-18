@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive English Worksheet - Unit 1: Family</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f8fafc;
+        }
+        .family-tree {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 320px;
+        }
+        .tree-level {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+        .person {
+            padding: 8px 16px;
+            border: 2px solid #9ca3af;
+            border-radius: 8px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            margin: 0 15px;
+            position: relative;
+            z-index: 10;
+        }
+        .person:hover {
+            background-color: #eef2ff;
+            border-color: #6366f1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .person.andrew {
+            border-color: #4f46e5;
+            background-color: #e0e7ff;
+            font-weight: 600;
+        }
+        .modal {
+            transition: opacity 0.25s ease;
+            z-index: 50;
+        }
+        /* Full-width input styling */
+        .full-width-input {
+             @apply mt-1 p-2 border border-gray-300 rounded-md w-full bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition;
+        }
+        /* Highlighted inline input styling */
+        .inline-input {
+             @apply px-2 py-1 rounded-md bg-indigo-50 border-b-2 border-indigo-200 focus:bg-white focus:border-indigo-500 outline-none transition-colors;
+        }
+        .section-card {
+             @apply bg-white p-6 sm:p-8 rounded-2xl shadow-lg;
+        }
+
+        /* Vocabulary Slider Styles */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+        .slider-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .slider-button:hover {
+            background-color: white;
+        }
+        .slider-button.prev {
+            left: 16px;
+        }
+        .slider-button.next {
+            right: 16px;
+        }
+    </style>
+</head>
+<body class="text-gray-700">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-indigo-600">Unit 1: Family</h1>
+                <p class="text-sm text-gray-500 hidden sm:block">Get Ready for IELTS: Speaking</p>
+            </div>
+            <nav class="flex items-center space-x-2 sm:space-x-4">
+                <a href="#part1" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Part 1</a>
+                <a href="#part2" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-purple-50 hover:text-purple-600 transition-colors">Part 2</a>
+                <a href="#part3" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors">Part 3</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <main class="space-y-16">
+
+            <!-- Part 1: Language Development -->
+            <section id="part1" class="section-card">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">Part 1: Language Development</h2>
+                
+                <div class="space-y-12">
+                    <!-- Vocabulary: Family -->
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-700 mb-4">Vocabulary: Family</h3>
+                        <div class="p-6 bg-gray-50/70 rounded-lg border">
+                            <div class="family-tree">
+                                <svg aria-hidden="true" class="absolute inset-0 w-full h-full" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet"><g fill="none" stroke="#a1a1aa" stroke-width="1.5"><path d="M 195,45 H 305" /><path d="M 250,45 V 80" /><path d="M 195,125 H 305" /><path d="M 250,125 V 190" /><path d="M 160,190 H 340" /><path d="M 160,190 V 215" /><path d="M 250,190 V 215" /><path d="M 340,190 V 215" /></g></svg>
+                                <div class="tree-level"><div class="person" onclick="showRelationship('Bill', 'Grandfather')">Bill</div><div class="person" onclick="showRelationship('Pat', 'Grandmother')">Pat</div></div>
+                                <div class="tree-level"><div class="person" onclick="showRelationship('Anna', 'Mother')">Anna</div><div class="person" onclick="showRelationship('Simon', 'Father')">Simon</div></div>
+                                <div class="tree-level mb-0"><div class="person andrew">Andrew</div><div class="person" onclick="showRelationship('Clare', 'Sister')">Clare</div><div class="person" onclick="showRelationship('Jon', 'Brother')">Jon</div></div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <p class="font-semibold mb-3">1. Look at Andrew's family tree. Complete the sentences with the words below.</p>
+                            <div class="p-2 bg-indigo-100 rounded-md text-center text-sm text-indigo-800 mb-4">brothers &bull; daughter &bull; grandparents &bull; husband &bull; mother &bull; parents &bull; sister &bull; sons &bull; wife</div>
+                            <ol class="list-decimal list-inside space-y-4 pl-2 leading-relaxed">
+                                <li>Clare is Andrew's <input type="text" class="inline-input w-24">.</li>
+                                <li>Andrew and Jon are Clare's <input type="text" class="inline-input w-24">.</li>
+                                <li>Andrew's <input type="text" class="inline-input w-24"> are called Simon and Anna.</li>
+                                <li>Anna is Andrew's <input type="text" class="inline-input w-24"> and Simon's <input type="text" class="inline-input w-24">.</li>
+                                <li>Simon and Anna have three children - one <input type="text" class="inline-input w-24"> and two <input type="text" class="inline-input w-24">.</li>
+                                <li>Pat and Bill are Andrew's <input type="text" class="inline-input w-24">. Bill is Pat's <input type="text" class="inline-input w-24">.</li>
+                            </ol>
+                        </div>
+                        <div class="mt-8">
+                            <p class="font-semibold mb-3">2. Complete the text about Andrew's family.</p>
+                            <p class="leading-relaxed">My name's Andrew. I've got one (1) <input type="text" class="inline-input w-24">. Her name is Clare. I've got one (2) <input type="text" class="inline-input w-24">. His name's Jon. He's a student. My (3) <input type="text" class="inline-input w-24">'s name is Anna and she's a teacher. My (4) <input type="text" class="inline-input w-24">'s name is Simon and he's a doctor.</p>
+                        </div>
+                    </div>
+
+                    <!-- Vocabulary: Describing People -->
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-700 mb-4">Vocabulary: Describing People</h3>
+                         <p class="font-semibold mb-3">6. Find nine personality adjectives.</p>
+                        <div class="p-4 bg-gray-100 rounded-lg text-xl font-mono tracking-wider text-center break-all mb-6 shadow-inner">
+                            bossycalmcleverconfidentcreativefriendlyfunnyhappykind
+                        </div>
+                        
+                        <div id="vocab-slider" class="slider-container shadow-lg">
+                            <div id="slider-track" class="slider-track"></div>
+                            <div class="slider-button prev" onclick="moveSlide(-1)"><i class="fas fa-chevron-left text-indigo-600"></i></div>
+                            <div class="slider-button next" onclick="moveSlide(1)"><i class="fas fa-chevron-right text-indigo-600"></i></div>
+                        </div>
+
+                        <div class="mt-8">
+                            <p class="font-semibold mb-3">7. Complete the descriptions below.</p>
+                             <ol class="list-decimal list-inside space-y-4 pl-2 leading-relaxed">
+                                <li>My mother understands new things quickly. She's very <input type="text" class="inline-input w-32">.</li>
+                                <li>My father is very <input type="text" class="inline-input w-32">. He tells me what to do every day.</li>
+                                <li>I'm <input type="text" class="inline-input w-32"> because I believe in my ability.</li>
+                                <li>My sister is never angry or worried. She's always <input type="text" class="inline-input w-32">.</li>
+                                <li>My brother is <input type="text" class="inline-input w-32">. He enjoys meeting people. He's <input type="text" class="inline-input w-32"> too.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Grammar: Possessive Adjectives -->
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-700 mb-4">Grammar: Possessive Adjectives</h3>
+                        <div>
+                            <p class="font-semibold mb-3">12. Complete the table below.</p>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="flex items-center gap-2"><span>I</span> &rarr; <input type="text" id="q-my" placeholder="Answer" class="full-width-input"></div>
+                                <div class="flex items-center gap-2"><span>you</span> &rarr; <input type="text" id="q-your" placeholder="Answer" class="full-width-input"></div>
+                                <div class="flex items-center gap-2"><span>he</span> &rarr; <input type="text" id="q-his" placeholder="Answer" class="full-width-input"></div>
+                                <div class="flex items-center gap-2"><span>she</span> &rarr; <input type="text" id="q-her" placeholder="Answer" class="full-width-input"></div>
+                                <div class="flex items-center gap-2"><span>it</span> &rarr; <input type="text" id="q-its" placeholder="Answer" class="full-width-input"></div>
+                                <div class="flex items-center gap-2"><span>we</span> &rarr; <input type="text" id="q-our" placeholder="Answer" class="full-width-input"></div>
+                                <div class="flex items-center gap-2"><span>they</span> &rarr; <input type="text" id="q-their" placeholder="Answer" class="full-width-input"></div>
+                            </div>
+                            <button onclick="checkPossessiveAdjectives()" class="mt-4 px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition">Check Answers</button>
+                        </div>
+                        <div class="mt-8">
+                            <p class="font-semibold mb-3">13. Answer the questions below. Write full sentences.</p>
+                            <div class="space-y-4">
+                                <div><label class="font-medium text-gray-800">1. Do you have any brothers or sisters? What are their names?</label><input type="text" class="full-width-input"></div>
+                                <div><label class="font-medium text-gray-800">2. What is your father's name?</label><input type="text" class="full-width-input"></div>
+                                <div><label class="font-medium text-gray-800">3. Who do you look like in your family? What is his/her name?</label><input type="text" class="full-width-input"></div>
+                                <div><label class="font-medium text-gray-800">4. Have you got a pet? What is its name?</label><input type="text" class="full-width-input"></div>
+                                <div><label class="font-medium text-gray-800">5. Who makes you laugh in your family?</label><input type="text" class="full-width-input"></div>
+                                <div><label class="font-medium text-gray-800">6. Is someone in your family bossy?</label><input type="text" class="full-width-input"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Part 2: Skills Development -->
+            <section id="part2" class="section-card">
+                 <h2 class="text-3xl font-bold text-gray-900 mb-8">Part 2: Skills Development</h2>
+                <div class="space-y-12">
+                    <div>
+                        <p class="font-semibold mb-3">1. Match each question with the correct topic.</p>
+                        <div class="space-y-3">
+                            <div class="md:flex items-center justify-between p-3 bg-gray-50/70 rounded-lg border"><span>1. Are you a student?</span><select class="p-2 border rounded-md mt-1 md:mt-0 w-full md:w-auto focus:ring-indigo-300 focus:border-indigo-500"><option>Select topic...</option><option value="d">a. Your country</option><option value="b">b. Your family</option><option value="c">c. Your hobbies</option><option value="a">d. Your studies</option><option value="e">e. Your work</option></select></div>
+                            <div class="md:flex items-center justify-between p-3 bg-gray-50/70 rounded-lg border"><span>2. Describe your family.</span><select class="p-2 border rounded-md mt-1 md:mt-0 w-full md:w-auto focus:ring-indigo-300 focus:border-indigo-500"><option>Select topic...</option><option value="a">a. Your country</option><option value="b">b. Your family</option><option value="c">c. Your hobbies</option><option value="d">d. Your studies</option><option value="e">e. Your work</option></select></div>
+                            <div class="md:flex items-center justify-between p-3 bg-gray-50/70 rounded-lg border"><span>3. Which country are you from?</span><select class="p-2 border rounded-md mt-1 md:mt-0 w-full md:w-auto focus:ring-indigo-300 focus:border-indigo-500"><option>Select topic...</option><option value="a">a. Your country</option><option value="b">b. Your family</option><option value="c">c. Your hobbies</option><option value="d">d. Your studies</option><option value="e">e. Your work</option></select></div>
+                            <div class="md:flex items-center justify-between p-3 bg-gray-50/70 rounded-lg border"><span>4. What do you do?</span><select class="p-2 border rounded-md mt-1 md:mt-0 w-full md:w-auto focus:ring-indigo-300 focus:border-indigo-500"><option>Select topic...</option><option value="a">a. Your country</option><option value="b">b. Your family</option><option value="c">c. Your hobbies</option><option value="d">d. Your studies</option><option value="e">e. Your work</option></select></div>
+                            <div class="md:flex items-center justify-between p-3 bg-gray-50/70 rounded-lg border"><span>5. Do you do any sports?</span><select class="p-2 border rounded-md mt-1 md:mt-0 w-full md:w-auto focus:ring-indigo-300 focus:border-indigo-500"><option>Select topic...</option><option value="a">a. Your country</option><option value="b">b. Your family</option><option value="c">c. Your hobbies</option><option value="d">d. Your studies</option><option value="e">e. Your work</option></select></div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font-semibold mb-3">2. Complete the gaps in the examiner's instructions.</p>
+                        <p class="leading-relaxed">Hello. My (1)<input type="text" class="inline-input w-20"> is Steve Smith. Could you tell me your (2)<input type="text" class="inline-input w-20">, please? Thank you. Can you show me your (3)<input type="text" class="inline-input w-20">, please? I'd now like to ask you some questions about yourself. Tell me about your (4)<input type="text" class="inline-input w-20">. What does your father (5)<input type="text" class="inline-input w-20">? (6)<input type="text" class="inline-input w-20"> much time do you spend with your family? Are people in your (7)<input type="text" class="inline-input w-20"> close to their family? Do you prefer to go out with your family or your (8)<input type="text" class="inline-input w-20">? Where do you (9)<input type="text" class="inline-input w-20"> at the moment?</p>
+                    </div>
+                </div>
+            </section>
+            <section id="part3" class="section-card">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">Part 3: Exam Practice</h2>
+                 <div class="space-y-12">
+                    <div>
+                        <p class="font-semibold mb-3">1. Answer the Part 1 questions.</p>
+                        <div class="space-y-4">
+                            <div><label class="font-medium text-gray-800">1. Which country are you from?</label><input type="text" class="full-width-input"></div>
+                            <div><label class="font-medium text-gray-800">2. Do you have a large family?</label><input type="text" class="full-width-input"></div>
+                            <div><label class="font-medium text-gray-800">3. What does your mother do?</label><input type="text" class="full-width-input"></div>
+                            <div><label class="font-medium text-gray-800">4. Do you live with your family?</label><input type="text" class="full-width-input"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-3">3. Progress Check</h3>
+                        <p class="text-gray-600">Assess your answers to the questions above. Do you...</p>
+                        <div class="mt-4 space-y-3">
+                            <label class="flex items-center p-3 bg-gray-50/70 rounded-lg border hover:bg-gray-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"> <span class="ml-3 text-gray-800">give a long answer?</span></label>
+                            <label class="flex items-center p-3 bg-gray-50/70 rounded-lg border hover:bg-gray-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"> <span class="ml-3 text-gray-800">speak at a normal speed?</span></label>
+                            <label class="flex items-center p-3 bg-gray-50/70 rounded-lg border hover:bg-gray-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"> <span class="ml-3 text-gray-800">use vocabulary for describing people?</span></label>
+                            <label class="flex items-center p-3 bg-gray-50/70 rounded-lg border hover:bg-gray-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"> <span class="ml-3 text-gray-800">use correct pronunciation?</span></label>
+                            <label class="flex items-center p-3 bg-gray-50/70 rounded-lg border hover:bg-gray-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"> <span class="ml-3 text-gray-800">use possessive adjectives correctly?</span></label>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="relationship-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 opacity-0 pointer-events-none"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center transform transition-all scale-95 opacity-0"><h3 id="modal-name" class="text-2xl font-bold mb-2"></h3><p id="modal-relationship" class="text-lg text-indigo-600 font-semibold"></p><button onclick="closeModal()" class="mt-6 bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition w-full">Close</button></div></div>
+    
+    <script>
+        const relationshipModal = document.getElementById('relationship-modal');
+        const relationshipModalContent = relationshipModal.querySelector('div');
+
+        function showModal(modal, content) {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95', 'opacity-0');
+        }
+
+        function showRelationship(name, relationship) { 
+            document.getElementById('modal-name').innerText = name; 
+            document.getElementById('modal-relationship').innerText = `Andrew's ${relationship}`; 
+            showModal(relationshipModal, relationshipModalContent); 
+        }
+        
+        function closeModal() {
+            relationshipModal.classList.add('opacity-0');
+            relationshipModal.querySelector('div').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => relationshipModal.classList.add('pointer-events-none'), 300);
+        }
+        
+        window.onclick = function(event) { if (event.target == relationshipModal) { closeModal(); } }
+
+        function speak(text) { if ('speechSynthesis' in window) { const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance); } else { alert('Sorry, your browser does not support text-to-speech.'); } }
+        
+        function checkPossessiveAdjectives() { const answers = { my: 'my', your: 'your', his: 'his', her: 'her', its: 'its', our: 'our', their: 'their' }; Object.keys(answers).forEach(key => { const input = document.getElementById(`q-${key}`); const value = input.value.trim().toLowerCase(); if (value === answers[key]) { input.classList.remove('border-red-400', 'border-2'); input.classList.add('border-green-400', 'border-2'); } else { input.classList.remove('border-green-400', 'border-2'); input.classList.add('border-red-400', 'border-2'); } }); }
+
+        // --- SLIDER SCRIPT ---
+        const vocabulary = [
+            { word: 'Bossy', ipa: '/ˈbɒsi/', pos: 'adjective', example1: 'My older sister is very bossy and always tells me what to do.', example2: 'He has a bossy attitude that his colleagues don\'t like.', imageUrl: 'https://images.saymedia-content.com/.image/t_share/MjA1MjQzMjQ0ODg2NTAwNDY1/getting-a-handle-on-the-bossy-individual.jpg' },
+            { word: 'Calm', ipa: '/kɑːm/', pos: 'adjective', example1: 'She has a very calm personality, even in stressful situations.', example2: 'The lake was calm and peaceful in the morning.', imageUrl: 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHdqNmVkOXdvN2E4NTByNW9ueHJpd3NmenZiYTY3c3A2MzdobTFxMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/anSiSGG5YaXeBn5gv4/giphy.gif' },
+            { word: 'Clever', ipa: '/ˈklɛvə/', pos: 'adjective', example1: 'She was clever enough to solve the puzzle quickly.', example2: 'That was a clever idea!', imageUrl: 'https://poetry4kids.com/wp-content/uploads/2008/05/im-clever-whenever.png' },
+            { word: 'Confident', ipa: '/ˈkɒnfɪdənt/', pos: 'adjective', example1: 'He is a confident speaker who is not afraid of large audiences.', example2: 'She feels more confident about her abilities now.', imageUrl: 'https://trangtamly.blog/wp-content/uploads/2024/05/6.-how-to-become-more-confident-at-work-1024x640.pngw3_.webp' },
+            { word: 'Creative', ipa: '/kriˈeɪtɪv/', pos: 'adjective', example1: 'The artist is very creative and always comes up with new ideas.', example2: 'This job requires a creative mind.', imageUrl: 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNjVuZzd0NHIxaXFxbHEyemZ0dzNhbDduOTBpeXp5d3pyNHVtYTJtdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oEduXdm2gjnrsJBOo/giphy.gif' },
+            { word: 'Friendly', ipa: '/ˈfrɛndli/', pos: 'adjective', example1: 'The local people are very friendly to tourists.', example2: 'He gave me a friendly smile.', imageUrl: 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzJheXJzODVyamNsdTIweXEyM2Uza2N5bm43MXFydGFjenMxZ2dyZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vRl8lTCwD0PAc/giphy.gif' },
+            { word: 'Funny', ipa: '/ˈfʌni/', pos: 'adjective', example1: 'My brother is very funny; he always makes me laugh.', example2: 'She told a funny story about her trip.', imageUrl: 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZmYycnZmeTh1b3FtZWNxbzdjanpoaTB2a3V3N3Q1a2hrZ3IwdzExYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SggILpMXO7Xt6/giphy.gif' },
+            { word: 'Happy', ipa: '/ˈhæpi/', pos: 'adjective', example1: 'She looks so happy with her new puppy.', example2: 'It was a very happy occasion.', imageUrl: 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW84c25nZnNrMGM3dGJjM3RkeG9kZ28zcmMxcHg0MTF1NDF3dGZscCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5GoVLqeAOo6PK/giphy.gif' },
+            { word: 'Kind', ipa: '/kaɪnd/', pos: 'adjective', example1: 'It was very kind of you to help me.', example2: 'She is a kind and generous person.', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvYPSPPgVE3wGYr8tP8a2PMQM7Cg0isYL_bQ&s' },
+        ];
+
+        const sliderTrack = document.getElementById('slider-track');
+        let currentSlide = 0;
+
+        vocabulary.forEach(item => {
+            const slide = document.createElement('div');
+            slide.className = 'slide p-6 bg-white';
+            slide.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div class="bg-gray-100 rounded-lg flex items-center justify-center h-80">
+                         <img src="${item.imageUrl}" alt="${item.word}" class="rounded-lg max-h-full max-w-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e5e7eb/a1a1aa?text=Image+Not+Found';">
+                    </div>
+                    <div class="space-y-4">
+                        <h4 class="text-3xl font-bold text-indigo-700">${item.word}</h4>
+                        <div class="text-gray-500">
+                            <span class="font-semibold">IPA:</span> ${item.ipa} | <span class="font-semibold">Part of Speech:</span> ${item.pos}
+                        </div>
+                        <div class="space-y-2 text-gray-700 leading-relaxed">
+                            <p><i class="fas fa-quote-left fa-xs mr-2 text-indigo-300"></i>${item.example1}</p>
+                            <p><i class="fas fa-quote-left fa-xs mr-2 text-indigo-300"></i>${item.example2}</p>
+                        </div>
+                         <button onclick="speak('${item.word}')" class="mt-2 text-indigo-600 hover:text-indigo-800 font-semibold">
+                            <i class="fas fa-volume-up mr-2"></i>Pronounce Word
+                        </button>
+                    </div>
+                </div>
+            `;
+            sliderTrack.appendChild(slide);
+        });
+
+        function moveSlide(direction) {
+            const totalSlides = vocabulary.length;
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            const offset = -currentSlide * 100;
+            sliderTrack.style.transform = `translateX(${offset}%)`;
+        }
+    </script>
+</body>
+</html>
