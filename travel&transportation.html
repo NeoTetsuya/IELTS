@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel & Transportation - Interactive Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            line-height: 1.65;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab {
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .tab.active {
+            border-bottom-color: #2563EB;
+            color: #1E40AF;
+            font-weight: 700;
+        }
+        .vocab-term-interactive {
+            background-color: #E0E7FF;
+            color: #3730A3;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid #A5B4FC;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .vocab-term-interactive:hover {
+            background-color: #C7D2FE;
+            border-color: #818CF8;
+        }
+        .answer-feedback {
+            display: none;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .correct {
+            color: #15803D;
+        }
+        .incorrect {
+            color: #B91C1C;
+        }
+        .question-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: box-shadow 0.2s;
+        }
+        .question-container:hover {
+             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        #vocab-popover {
+            position: absolute;
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            transform: translateY(10px);
+            z-index: 50;
+        }
+        #vocab-popover-content::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 24px;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent #1f2937 transparent;
+        }
+        .lang-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .lang-btn.active {
+            background-color: #2563EB;
+            color: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        .lang-vi, .lang-en {
+            display: none;
+        }
+        .action-btn {
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .form-input {
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            transition: ring 0.2s, border-color 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            border-color: #3B82F6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-700">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+        <header class="text-center mb-10">
+            <div class="flex justify-center space-x-2 mb-6">
+                <button id="lang-btn-vi" class="lang-btn px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Tiếng Việt</button>
+                <button id="lang-btn-en" class="lang-btn active px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">English</button>
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                <span class="lang-vi">Du lịch & Vận tải</span>
+                <span class="lang-en">Travel & Transportation</span>
+            </h1>
+        </header>
+
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="-mb-px flex flex-wrap justify-center sm:justify-start -mb-px space-x-6 sm:space-x-10" aria-label="Tabs">
+                <button class="tab active whitespace-nowrap pb-4 px-1 border-b-2 font-semibold text-base" data-tab="words">
+                    <span class="lang-vi">Từ vựng trong ngữ cảnh</span>
+                    <span class="lang-en">Words in Context</span>
+                </button>
+                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="explore">
+                    <span class="lang-vi">Khám phá kiến thức</span>
+                    <span class="lang-en">Explore Knowledge</span>
+                </button>
+                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="apply">
+                    <span class="lang-vi">Hiểu & Áp dụng</span>
+                    <span class="lang-en">Understanding & Applying</span>
+                </button>
+                 <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="essay">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </button>
+            </nav>
+        </div>
+
+        <div id="tab-contents">
+            <div id="words" class="tab-content active">
+                <div class="space-y-5 text-justify text-lg leading-relaxed">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                         <span class="lang-vi">Phương tiện cá nhân và công cộng</span>
+                         <span class="lang-en">Private and Public Transportation</span>
+                    </h2>
+                    <div class="lang-vi space-y-5">
+                        <p>Những tiến bộ công nghệ đã đóng góp rất nhiều cho <span class="vocab-term-interactive" data-definition="Ngành công nghiệp vận tải">the transport industry(1)</span> bằng việc giúp con người tạo ra nhiều <span class="vocab-term-interactive" data-definition="Các phương tiện đi lại">modern means of transport(2)</span>. Ngày nay mọi người có nhiều <span class="vocab-term-interactive" data-definition="Những sự lựa chọn phương tiện đi lại">choices of transport(3)</span> hơn, giúp cho <span class="vocab-term-interactive" data-definition="Việc đi lại hàng ngày">daily travel(4)</span> trở nên thuận tiện hơn. Trước đây, mọi người thường đi làm bằng <span class="vocab-term-interactive" data-definition="Các phương tiện cá nhân">private vehicles(5)</span> vì nó <span class="vocab-term-interactive" data-definition="Cho mọi người sự thoải mái và tiện lợi">offer people comfort and convenience(6)</span>. Tuy nhiên, với <span class="vocab-term-interactive" data-definition="Hệ thống giao thông công cộng">public transport systems(7)</span> tốt hơn, nhiều người đã chuyển sang dùng tàu hoặc xe buýt.</p>
+                        <p>Ở nhiều quốc gia, chính phủ luôn <span class="vocab-term-interactive" data-definition="Khuyến khích sự sử dụng phương tiện giao thông công cộng">promote the use of public transport(8)</span> nhằm <span class="vocab-term-interactive" data-definition="Cải thiện tình trạng tắc đường">ameliorate traffic congestion(9)</span> gây ra bởi <span class="vocab-term-interactive" data-definition="Lượng sử dụng xe hơi quá đà">excessive car usage(10)</span>. Lý do là vì xe buýt và tàu có <span class="vocab-term-interactive" data-definition="Sức chứa lớn">large capacities(11)</span>. Ngoài ra, nó còn giúp <span class="vocab-term-interactive" data-definition="Giảm thiểu tai nạn giao thông">reduce traffic accidents(12)</span>. Nhiều quốc gia cũng khuyến khích <span class="vocab-term-interactive" data-definition="Phương tiện đi lại thân thiện với môi trường">environmentally-friendly modes of transport(15)</span> như <span class="vocab-term-interactive" data-definition="xe điện">electric cars(16)</span> vì chúng thải ra ít khí thải hơn <span class="vocab-term-interactive" data-definition="Những phương tiện chạy bằng nhiên liệu hóa thạch">fossil fuel vehicles(17)</span>.</p>
+                    </div>
+                    <div class="lang-en space-y-5">
+                        <p>Technological advancements have contributed greatly to <span class="vocab-term-interactive" data-definition="Ngành công nghiệp vận tải">the transport industry(1)</span> by helping create many <span class="vocab-term-interactive" data-definition="Các phương tiện đi lại">modern means of transport(2)</span>. Today, people have more <span class="vocab-term-interactive" data-definition="Những sự lựa chọn phương tiện đi lại">choices of transport(3)</span>, making <span class="vocab-term-interactive" data-definition="Việc đi lại hàng ngày">daily travel(4)</span> more convenient. In the past, people often commuted using <span class="vocab-term-interactive" data-definition="Các phương tiện cá nhân">private vehicles(5)</span> because they <span class="vocab-term-interactive" data-definition="Cho mọi người sự thoải mái và tiện lợi">offer people comfort and convenience(6)</span>. However, with better <span class="vocab-term-interactive" data-definition="Hệ thống giao thông công cộng">public transport systems(7)</span>, many have switched to trains or buses.</p>
+                        <p>In many countries, governments always <span class="vocab-term-interactive" data-definition="Khuyến khích sự sử dụng phương tiện giao thông công cộng">promote the use of public transport(8)</span> to <span class="vocab-term-interactive" data-definition="Cải thiện tình trạng tắc đường">ameliorate traffic congestion(9)</span> caused by <span class="vocab-term-interactive" data-definition="Lượng sử dụng xe hơi quá đà">excessive car usage(10)</span>. The reason is that buses and trains have <span class="vocab-term-interactive" data-definition="Sức chứa lớn">large capacities(11)</span>. Additionally, it helps <span class="vocab-term-interactive" data-definition="Giảm thiểu tai nạn giao thông">reduce traffic accidents(12)</span>. Many countries also encourage <span class="vocab-term-interactive" data-definition="Phương tiện đi lại thân thiện với môi trường">environmentally-friendly modes of transport(15)</span> like <span class="vocab-term-interactive" data-definition="xe điện">electric cars(16)</span> because they emit fewer emissions than <span class="vocab-term-interactive" data-definition="Những phương tiện chạy bằng nhiên liệu hóa thạch">fossil fuel vehicles(17)</span>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="explore" class="tab-content">
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Phần 1: Đánh giá độ phù hợp</span>
+                    <span class="lang-en">Part 1: Assess Suitability</span>
+                </h2>
+                <div id="suitability-questions-travel" class="space-y-6"></div>
+
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 2: Hoàn thành câu</span>
+                    <span class="lang-en">Part 2: Complete the sentences</span>
+                </h2>
+                 <div id="complete-sentence-questions-travel" class="space-y-6"></div>
+            </div>
+
+            <div id="apply" class="tab-content">
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Phần 1: Mở rộng câu</span>
+                    <span class="lang-en">Part 1: Extend the Sentences</span>
+                </h2>
+                <div id="extend-sentence-questions-travel" class="space-y-6"></div>
+
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 2: Xây dựng câu</span>
+                    <span class="lang-en">Part 2: Build Sentences</span>
+                </h2>
+                 <div id="build-sentence-questions-travel" class="space-y-6"></div>
+                 
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 3: Viết đoạn văn ngắn</span>
+                    <span class="lang-en">Part 3: Write a short paragraph</span>
+                </h2>
+                <div id="paragraph-questions-travel" class="space-y-6"></div>
+            </div>
+            
+            <div id="essay" class="tab-content">
+                 <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </h2>
+                <div id="essay-prompts-travel" class="space-y-10"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vocab-popover" class="hidden">
+        <div id="vocab-popover-content" class="relative w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl border border-gray-700">
+            <h4 id="popover-term" class="font-bold text-lg text-blue-300"></h4>
+            <p id="popover-definition" class="mt-1"></p>
+        </div>
+    </div>
+
+    <script>
+        let langButtons;
+
+        const suitabilityDataTravel = [
+            { en: "<strong>Excessive car usage</strong> in many big cities may improve air quality in those cities.", vi: "<strong>Excessive car usage</strong> ở nhiều thành phố lớn có thể cải thiện chất lượng không khí ở những thành phố đó.", correct: false },
+            { en: "People living in urban areas have fewer <strong>choices of transport</strong> than those in rural areas.", vi: "Những người sống ở thành phố sẽ có ít <strong>choices of transport</strong> hơn những người sống ở nông thôn.", correct: false },
+            { en: "Staying near the workplace will help people’s <strong>daily travel</strong> become more convenient.", vi: "Sống ở gần nơi làm việc sẽ giúp <strong>daily travel</strong> của mọi người trở nên thuận lợi hơn.", correct: true },
+            { en: "To help <strong>ameliorate traffic congestion</strong>, people should be encouraged to go to work by private vehicles.", vi: "Để giúp <strong>ameliorate traffic congestion</strong>, mọi người nên được khuyến khích đi làm bàng phương tiện cá nhân.", correct: false },
+            { en: "Buses and subways have <strong>large capacities</strong> and therefore can help reduce <strong>traffic congestion</strong> when more people start using them instead of their personal vehicles for <strong>daily travel</strong>.", vi: "Xe buýt và tàu điện ngầm có <strong>large capacities</strong> và có thể giảm <strong>traffic congestion</strong> khi có nhiều người bắt đầu sử dụng chúng thay cho phương tiện cá nhân cho <strong>daily travel</strong>.", correct: true },
+            { en: "Drunk driving is one of main contributors to <strong>traffic accidents</strong> in Vietnam.", vi: "Lái xe sau khi uống rượu là một trong những nguyên nhân chính dẫn đến <strong>traffic accidents</strong> tại Việt Nam.", correct: true }
+        ];
+
+        const completeSentenceDataTravel = [
+            { en: "Travelling by a ___ is much more comfortable and time-saving than travelling by local bus and train.", vi: "Di chuyển bằng ___ thoái mái và tiết kiệm thời gian hơn di chuyển bẳng xe buýt hay tàu địa phương.", answer: "private vehicle" },
+            { en: "With more and more cars on the road today, ___ will occur more frequently, leading to longer journey times.", vi: "Với càng ngày càng nhiều ô tô trên đường ngày nay, ___ sẽ xảy ra thường xuyên hơn dẫn tới thời gian chuyến đi dài hơn.", answer: "traffic congestion" },
+            { en: "Electric cars and bicycles are considered to be ___ because they emit fewer exhaust fumes than fossil fuel vehicles.", vi: "Xe ô tô điện và xe đạp được đánh giá là các phương tiện ___ bởi vì chúng tạo ra ít khí thải hơn các phương tiện dùng nhiên liệu hoá thạch.", answer: "environmentally-friendly modes of transport" },
+            { en: "Speed cameras can deter people from driving too fast and therefore help improve ___.", vi: "Camera bắn tốc độ có thể giúp ngăn chăn mọi người lái xe quá nhanh và do đó giúp cải thiện ___.", answer: "road safety" },
+            { en: "The government can promote the use of bicycles for daily travel by building more ___ for cyclists.", vi: "Chính phủ có thể khuyến khích việc sử dụng xe đạp cho việc di chuyển hàng ngày bằng việc xây dựng thêm các ___ cho người đạp xe.", answer: "dedicated lanes" }
+        ];
+        
+        const extendSentenceDataTravel = [
+            { en: "The government should promote...", suggestions: "environmentally-friendly modes of transport, ameliorate traffic congestion, the use of public transport" },
+            { en: "Cities are getting more and more polluted because...", suggestions: "excessive car usage, environmentally-friendly modes of transport" },
+            { en: "Some people prefer...", suggestions: "electric cars, private vehicles, offer people comfort and convenience" },
+            { en: "In order to reduce traffic accidents,...", suggestions: "dedicated lanes, improve road safety, private vehicles" },
+            { en: "To reduce air pollution,...", suggestions: "promote the use of public transport, environmentally-friendly modes of transport, fossil fuel vehicles" }
+        ];
+
+        const buildSentenceDataTravel = [
+            { phrases: "The government, public transport, traffic congestion" },
+            { phrases: "Private cars, traffic jams, rush hours" },
+            { phrases: "Electric cars, environmentally-friendly modes of transport, the environment" },
+            { phrases: "Trains and buses, dedicated lanes, hundreds of passengers" }
+        ];
+        
+        const paragraphDataTravel = [
+             { en: "What are the impacts of tourism on the environment?", vi: "Du lịch có những tác động gì đến môi trường?", suggestions: "offer comfort and convenience, do not have to depend on anybody else’s schedules" },
+             { en: "One major disadvantage of private vehicles is that they are responsible for increasing traffic congestion in big cities.", vi: "Một nhược điểm lớn của phương tiện cá nhân là chúng gây ra tình trạng tắc nghẽn giao thông ngày càng tăng ở các thành phố lớn.", suggestions: "excessive car usage, rush hours" }
+        ];
+
+        const essayDataTravel = [
+            {
+                prompt: "Some people believe the government should spend money building train and subway lines to reduce traffic congestion. Others, however, think that building more and wider roads is a better way to reduce traffic congestion. Discuss both views and give your opinion.",
+                ideas: [
+                    { title: "Invest in Trains/Subways", points: ["Huge capacity reduces private vehicles", "Underground travel avoids traffic"], color: "blue" },
+                    { title: "Invest in Roads", points: ["Higher road capacity allows more vehicles", "A more permanent solution as car ownership rises"], color: "purple" }
+                ]
+            }
+        ];
+
+        function populateSuitability(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi}</em></p>
+                    <div class="mt-4">
+                        <button class="action-btn bg-blue-600 text-white hover:bg-blue-700" onclick="checkSuitability(this, ${q.correct})">
+                            <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                        </button>
+                        <span class="answer-feedback ml-4"></span>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateFillIn(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en.replace('___', '<input type="text" class="form-input p-1 mx-1 w-64" placeholder="Your answer...">')}</p>
+                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi.replace('___', '...')}</em></p>
+                    <div class="mt-4">
+                        <button class="action-btn bg-blue-600 text-white hover:bg-blue-700" onclick="checkFillIn(this, '${q.answer}')">
+                           <span class="lang-vi">Kiểm tra</span><span class="lang-en">Check</span>
+                        </button>
+                        <span class="answer-feedback ml-4"></span>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+        
+        function populateExtendSentence(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="text-sm text-blue-700 my-2"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Suggestions</span>:</strong> ${q.suggestions}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg form-input" rows="3" placeholder="Type your extended sentence here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateBuildSentence(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> <span class="lang-vi">Xây dựng câu với các cụm từ sau:</span><span class="lang-en">Build a sentence with the following phrases:</span></p>
+                    <p class="text-sm text-blue-700 my-2"><strong><span class="lang-vi">Cụm từ</span><span class="lang-en">Phrases</span>:</strong> ${q.phrases}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg form-input" rows="3" placeholder="Type your sentence here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateParagraphs(containerId, data) {
+             const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> <span class="lang-vi">${q.vi}</span><span class="lang-en">${q.en}</span></p>
+                    <p class="text-sm text-blue-700 my-2"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Suggestions</span>:</strong> ${q.suggestions}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg form-input" rows="5" placeholder="Start writing your paragraph here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateEssays(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            const colors = { red: 'red', green: 'green', blue: 'blue', purple: 'purple' };
+            data.forEach((q, index) => {
+                const ideasHTML = q.ideas.map(idea => `
+                    <div class="bg-${colors[idea.color]}-50 p-4 rounded-lg border border-${colors[idea.color]}-200">
+                        <h4 class="font-semibold text-${colors[idea.color]}-800">${idea.title}</h4>
+                        <ul class="mt-2 list-disc list-inside space-y-2 text-sm text-${colors[idea.color]}-700">
+                            ${idea.points.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>`).join('');
+
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <span class="lang-vi">Đề bài ${index + 1}</span>
+                        <span class="lang-en">Essay Prompt ${index + 1}</span>
+                    </h3>
+                    <p class="mt-2 text-gray-700 italic">"${q.prompt}"</p>
+                    <hr class="my-4">
+                    <h4 class="font-semibold text-gray-800">
+                        <span class="lang-vi">Gợi ý & Ý tưởng</span>
+                        <span class="lang-en">Brainstorming & Ideas</span>
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">${ideasHTML}</div>
+                    <textarea class="w-full mt-4 p-3 border border-gray-300 rounded-lg form-input" rows="10" placeholder="Start writing your essay here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function checkSuitability(button, isCorrect) {
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (isCorrect) {
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Đúng.</strong>' : '<strong>Correct.</strong>';
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Sai.</strong>' : '<strong>Incorrect.</strong>';
+            }
+        }
+
+        function checkFillIn(button, correctAnswer) {
+            const input = button.closest('.question-container').querySelector('input');
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (input.value.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                feedback.textContent = lang === 'vi' ? 'Đúng!' : 'Correct!';
+                feedback.className = 'answer-feedback correct';
+            } else {
+                feedback.textContent = lang === 'vi' ? `Sai. Đáp án đúng là: ${correctAnswer}` : `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'answer-feedback incorrect';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateSuitability('suitability-questions-travel', suitabilityDataTravel);
+            populateFillIn('complete-sentence-questions-travel', completeSentenceDataTravel);
+            populateExtendSentence('extend-sentence-questions-travel', extendSentenceDataTravel);
+            populateBuildSentence('build-sentence-questions-travel', buildSentenceDataTravel);
+            populateParagraphs('paragraph-questions-travel', paragraphDataTravel);
+            populateEssays('essay-prompts-travel', essayDataTravel);
+
+            langButtons = {
+                vi: document.getElementById('lang-btn-vi'),
+                en: document.getElementById('lang-btn-en')
+            };
+
+            function setLanguage(lang) {
+                document.querySelectorAll('.lang-vi, .lang-en').forEach(el => el.style.display = 'none');
+                document.querySelectorAll(`.lang-${lang}`).forEach(el => el.style.display = 'inline');
+                for (const key in langButtons) {
+                    langButtons[key].classList.remove('active');
+                }
+                langButtons[lang].classList.add('active');
+            }
+
+            langButtons.vi.addEventListener('click', () => setLanguage('vi'));
+            langButtons.en.addEventListener('click', () => setLanguage('en'));
+            setLanguage('en');
+
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+
+            const popover = document.getElementById('vocab-popover');
+            const popoverTerm = document.getElementById('popover-term');
+            const popoverDefinition = document.getElementById('popover-definition');
+            const vocabTerms = document.querySelectorAll('.vocab-term-interactive');
+            vocabTerms.forEach(term => {
+                term.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    popoverTerm.textContent = term.textContent;
+                    popoverDefinition.textContent = term.dataset.definition;
+                    const rect = term.getBoundingClientRect();
+                    popover.style.left = `${rect.left + window.scrollX}px`;
+                    popover.style.top = `${rect.bottom + window.scrollY + 10}px`;
+                    popover.classList.remove('hidden');
+                    setTimeout(() => {
+                        popover.style.opacity = '1';
+                        popover.style.transform = 'translateY(0)';
+                    }, 10);
+                });
+            });
+
+            document.addEventListener('click', () => {
+                if (!popover.classList.contains('hidden')) {
+                    popover.style.opacity = '0';
+                    popover.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        popover.classList.add('hidden');
+                    }, 200);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
