@@ -12,16 +12,21 @@
             background-color: #f3f4f6;
             line-height: 1.65;
         }
-        .tab-content {
+        .topic-content, .tab-content {
             display: none;
         }
-        .tab-content.active {
+        .topic-content.active, .tab-content.active {
             display: block;
         }
-        .tab {
-            transition: color 0.2s, border-color 0.2s;
+        .main-tab, .sub-tab {
+            transition: color 0.2s, border-color 0.2s, background-color 0.2s;
         }
-        .tab.active {
+        .main-tab.active {
+            background-color: #2563EB;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .sub-tab.active {
             border-bottom-color: #2563EB;
             color: #1E40AF;
             font-weight: 700;
@@ -128,90 +133,119 @@
             </h1>
         </header>
 
-        <div class="border-b border-gray-200 mb-8">
-            <nav class="-mb-px flex flex-wrap justify-center sm:justify-start -mb-px space-x-6 sm:space-x-10" aria-label="Tabs">
-                <button class="tab active whitespace-nowrap pb-4 px-1 border-b-2 font-semibold text-base" data-tab="words">
-                    <span class="lang-vi">Từ vựng trong ngữ cảnh</span>
-                    <span class="lang-en">Words in Context</span>
-                </button>
-                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="explore">
-                    <span class="lang-vi">Khám phá kiến thức</span>
-                    <span class="lang-en">Explore Knowledge</span>
-                </button>
-                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="apply">
-                    <span class="lang-vi">Hiểu & Áp dụng</span>
-                    <span class="lang-en">Understanding & Applying</span>
-                </button>
-                 <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="essay">
-                    <span class="lang-vi">Luyện viết luận</span>
-                    <span class="lang-en">Essay Practice</span>
-                </button>
-            </nav>
+        <!-- Main Topic Tabs -->
+        <div class="flex justify-center space-x-4 mb-8">
+            <button class="main-tab active text-lg font-bold py-3 px-6 rounded-lg" data-topic="travel">
+                <span class="lang-vi">Chủ đề: Du lịch</span>
+                <span class="lang-en">Topic: Travel</span>
+            </button>
+            <button class="main-tab text-lg font-bold py-3 px-6 rounded-lg bg-white" data-topic="transportation">
+                <span class="lang-vi">Chủ đề: Giao thông</span>
+                <span class="lang-en">Topic: Transportation</span>
+            </button>
         </div>
 
-        <div id="tab-contents">
-            <div id="words" class="tab-content active">
-                <div class="space-y-5 text-justify text-lg leading-relaxed">
-                    <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
-                         <span class="lang-vi">Phương tiện cá nhân và công cộng</span>
-                         <span class="lang-en">Private and Public Transportation</span>
-                    </h2>
-                    <div class="lang-vi space-y-5">
-                        <p>Những tiến bộ công nghệ đã đóng góp rất nhiều cho <span class="vocab-term-interactive" data-definition="Ngành công nghiệp vận tải">the transport industry(1)</span> bằng việc giúp con người tạo ra nhiều <span class="vocab-term-interactive" data-definition="Các phương tiện đi lại">modern means of transport(2)</span>. Ngày nay mọi người có nhiều <span class="vocab-term-interactive" data-definition="Những sự lựa chọn phương tiện đi lại">choices of transport(3)</span> hơn, giúp cho <span class="vocab-term-interactive" data-definition="Việc đi lại hàng ngày">daily travel(4)</span> trở nên thuận tiện hơn. Trước đây, mọi người thường đi làm bằng <span class="vocab-term-interactive" data-definition="Các phương tiện cá nhân">private vehicles(5)</span> vì nó <span class="vocab-term-interactive" data-definition="Cho mọi người sự thoải mái và tiện lợi">offer people comfort and convenience(6)</span>. Tuy nhiên, với <span class="vocab-term-interactive" data-definition="Hệ thống giao thông công cộng">public transport systems(7)</span> tốt hơn, nhiều người đã chuyển sang dùng tàu hoặc xe buýt.</p>
-                        <p>Ở nhiều quốc gia, chính phủ luôn <span class="vocab-term-interactive" data-definition="Khuyến khích sự sử dụng phương tiện giao thông công cộng">promote the use of public transport(8)</span> nhằm <span class="vocab-term-interactive" data-definition="Cải thiện tình trạng tắc đường">ameliorate traffic congestion(9)</span> gây ra bởi <span class="vocab-term-interactive" data-definition="Lượng sử dụng xe hơi quá đà">excessive car usage(10)</span>. Lý do là vì xe buýt và tàu có <span class="vocab-term-interactive" data-definition="Sức chứa lớn">large capacities(11)</span>. Ngoài ra, nó còn giúp <span class="vocab-term-interactive" data-definition="Giảm thiểu tai nạn giao thông">reduce traffic accidents(12)</span>. Nhiều quốc gia cũng khuyến khích <span class="vocab-term-interactive" data-definition="Phương tiện đi lại thân thiện với môi trường">environmentally-friendly modes of transport(15)</span> như <span class="vocab-term-interactive" data-definition="xe điện">electric cars(16)</span> vì chúng thải ra ít khí thải hơn <span class="vocab-term-interactive" data-definition="Những phương tiện chạy bằng nhiên liệu hóa thạch">fossil fuel vehicles(17)</span>.</p>
+        <!-- Topic Content Area -->
+        <div id="topic-contents">
+            <!-- Travel Topic -->
+            <div id="travel" class="topic-content active">
+                <div class="border-b border-gray-200 mb-8">
+                    <nav class="-mb-px flex flex-wrap justify-center sm:justify-start -mb-px space-x-6 sm:space-x-10" aria-label="Tabs">
+                        <button class="sub-tab active whitespace-nowrap pb-4 px-1 border-b-2 font-semibold text-base" data-tab="travel-words">Words in Context</button>
+                        <button class="sub-tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="travel-explore">Explore Knowledge</button>
+                        <button class="sub-tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="travel-apply">Understanding & Applying</button>
+                        <button class="sub-tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="travel-essay">Essay Practice</button>
+                    </nav>
+                </div>
+                <div id="travel-tab-contents">
+                    <div id="travel-words" class="tab-content active">
+                        <div class="space-y-5 text-justify text-lg leading-relaxed">
+                            <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                                 <span class="lang-vi">Phương tiện cá nhân và công cộng</span>
+                                 <span class="lang-en">Private and Public Transportation</span>
+                            </h2>
+                            <div class="lang-vi space-y-5">
+                                <p>Những tiến bộ công nghệ đã đóng góp rất nhiều cho <span class="vocab-term-interactive" data-definition="Ngành công nghiệp vận tải">the transport industry(1)</span> bằng việc giúp con người tạo ra nhiều <span class="vocab-term-interactive" data-definition="Các phương tiện đi lại">modern means of transport(2)</span>. Ngày nay mọi người có nhiều <span class="vocab-term-interactive" data-definition="Những sự lựa chọn phương tiện đi lại">choices of transport(3)</span> hơn, giúp cho <span class="vocab-term-interactive" data-definition="Việc đi lại hàng ngày">daily travel(4)</span> trở nên thuận tiện hơn. Trước đây, mọi người thường đi làm bằng <span class="vocab-term-interactive" data-definition="Các phương tiện cá nhân">private vehicles(5)</span> vì nó <span class="vocab-term-interactive" data-definition="Cho mọi người sự thoải mái và tiện lợi">offer people comfort and convenience(6)</span>. Tuy nhiên, với <span class="vocab-term-interactive" data-definition="Hệ thống giao thông công cộng">public transport systems(7)</span> tốt hơn, nhiều người đã chuyển sang dùng tàu hoặc xe buýt.</p>
+                                <p>Ở nhiều quốc gia, chính phủ luôn <span class="vocab-term-interactive" data-definition="Khuyến khích sự sử dụng phương tiện giao thông công cộng">promote the use of public transport(8)</span> nhằm <span class="vocab-term-interactive" data-definition="Cải thiện tình trạng tắc đường">ameliorate traffic congestion(9)</span> gây ra bởi <span class="vocab-term-interactive" data-definition="Lượng sử dụng xe hơi quá đà">excessive car usage(10)</span>. Lý do là vì xe buýt và tàu có <span class="vocab-term-interactive" data-definition="Sức chứa lớn">large capacities(11)</span>. Ngoài ra, nó còn giúp <span class="vocab-term-interactive" data-definition="Giảm thiểu tai nạn giao thông">reduce traffic accidents(12)</span>. Nhiều quốc gia cũng khuyến khích <span class="vocab-term-interactive" data-definition="Phương tiện đi lại thân thiện với môi trường">environmentally-friendly modes of transport(15)</span> như <span class="vocab-term-interactive" data-definition="xe điện">electric cars(16)</span> vì chúng thải ra ít khí thải hơn <span class="vocab-term-interactive" data-definition="Những phương tiện chạy bằng nhiên liệu hóa thạch">fossil fuel vehicles(17)</span>.</p>
+                            </div>
+                            <div class="lang-en space-y-5">
+                                <p>Technological advancements have contributed greatly to <span class="vocab-term-interactive" data-definition="The transport industry">the transport industry(1)</span> by helping create many <span class="vocab-term-interactive" data-definition="Modern means of transport">modern means of transport(2)</span>. Today, people have more <span class="vocab-term-interactive" data-definition="Choices of transport">choices of transport(3)</span>, making <span class="vocab-term-interactive" data-definition="Daily travel">daily travel(4)</span> more convenient. In the past, people often commuted using <span class="vocab-term-interactive" data-definition="Private vehicles">private vehicles(5)</span> because they <span class="vocab-term-interactive" data-definition="Offer people comfort and convenience">offer people comfort and convenience(6)</span>. However, with better <span class="vocab-term-interactive" data-definition="Public transport systems">public transport systems(7)</span>, many have switched to trains or buses.</p>
+                                <p>In many countries, governments always <span class="vocab-term-interactive" data-definition="Promote the use of public transport">promote the use of public transport(8)</span> to <span class="vocab-term-interactive" data-definition="Ameliorate traffic congestion">ameliorate traffic congestion(9)</span> caused by <span class="vocab-term-interactive" data-definition="Excessive car usage">excessive car usage(10)</span>. The reason is that buses and trains have <span class="vocab-term-interactive" data-definition="Large capacities">large capacities(11)</span>. Additionally, it helps <span class="vocab-term-interactive" data-definition="Reduce traffic accidents">reduce traffic accidents(12)</span>. Many countries also encourage <span class="vocab-term-interactive" data-definition="Environmentally-friendly modes of transport">environmentally-friendly modes of transport(15)</span> like <span class="vocab-term-interactive" data-definition="Electric cars">electric cars(16)</span> because they emit fewer emissions than <span class="vocab-term-interactive" data-definition="Fossil fuel vehicles">fossil fuel vehicles(17)</span>.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="lang-en space-y-5">
-                        <p>Technological advancements have contributed greatly to <span class="vocab-term-interactive" data-definition="Ngành công nghiệp vận tải">the transport industry(1)</span> by helping create many <span class="vocab-term-interactive" data-definition="Các phương tiện đi lại">modern means of transport(2)</span>. Today, people have more <span class="vocab-term-interactive" data-definition="Những sự lựa chọn phương tiện đi lại">choices of transport(3)</span>, making <span class="vocab-term-interactive" data-definition="Việc đi lại hàng ngày">daily travel(4)</span> more convenient. In the past, people often commuted using <span class="vocab-term-interactive" data-definition="Các phương tiện cá nhân">private vehicles(5)</span> because they <span class="vocab-term-interactive" data-definition="Cho mọi người sự thoải mái và tiện lợi">offer people comfort and convenience(6)</span>. However, with better <span class="vocab-term-interactive" data-definition="Hệ thống giao thông công cộng">public transport systems(7)</span>, many have switched to trains or buses.</p>
-                        <p>In many countries, governments always <span class="vocab-term-interactive" data-definition="Khuyến khích sự sử dụng phương tiện giao thông công cộng">promote the use of public transport(8)</span> to <span class="vocab-term-interactive" data-definition="Cải thiện tình trạng tắc đường">ameliorate traffic congestion(9)</span> caused by <span class="vocab-term-interactive" data-definition="Lượng sử dụng xe hơi quá đà">excessive car usage(10)</span>. The reason is that buses and trains have <span class="vocab-term-interactive" data-definition="Sức chứa lớn">large capacities(11)</span>. Additionally, it helps <span class="vocab-term-interactive" data-definition="Giảm thiểu tai nạn giao thông">reduce traffic accidents(12)</span>. Many countries also encourage <span class="vocab-term-interactive" data-definition="Phương tiện đi lại thân thiện với môi trường">environmentally-friendly modes of transport(15)</span> like <span class="vocab-term-interactive" data-definition="xe điện">electric cars(16)</span> because they emit fewer emissions than <span class="vocab-term-interactive" data-definition="Những phương tiện chạy bằng nhiên liệu hóa thạch">fossil fuel vehicles(17)</span>.</p>
+                    <div id="travel-explore" class="tab-content">
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">Part 1: Assess Suitability</h2>
+                        <div id="suitability-questions-travel" class="space-y-6"></div>
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">Part 2: Complete the sentences</h2>
+                        <div id="complete-sentence-questions-travel" class="space-y-6"></div>
+                    </div>
+                    <div id="travel-apply" class="tab-content">
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">Part 1: Extend the Sentences</h2>
+                        <div id="extend-sentence-questions-travel" class="space-y-6"></div>
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">Part 2: Build Sentences</h2>
+                        <div id="build-sentence-questions-travel" class="space-y-6"></div>
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">Part 3: Write a short paragraph</h2>
+                        <div id="paragraph-questions-travel" class="space-y-6"></div>
+                    </div>
+                    <div id="travel-essay" class="tab-content">
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">Essay Practice</h2>
+                        <div id="essay-prompts-travel" class="space-y-10"></div>
                     </div>
                 </div>
             </div>
 
-            <div id="explore" class="tab-content">
-                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
-                    <span class="lang-vi">Phần 1: Đánh giá độ phù hợp</span>
-                    <span class="lang-en">Part 1: Assess Suitability</span>
-                </h2>
-                <div id="suitability-questions-travel" class="space-y-6"></div>
-
-                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
-                    <span class="lang-vi">Phần 2: Hoàn thành câu</span>
-                    <span class="lang-en">Part 2: Complete the sentences</span>
-                </h2>
-                 <div id="complete-sentence-questions-travel" class="space-y-6"></div>
-            </div>
-
-            <div id="apply" class="tab-content">
-                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
-                    <span class="lang-vi">Phần 1: Mở rộng câu</span>
-                    <span class="lang-en">Part 1: Extend the Sentences</span>
-                </h2>
-                <div id="extend-sentence-questions-travel" class="space-y-6"></div>
-
-                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
-                    <span class="lang-vi">Phần 2: Xây dựng câu</span>
-                    <span class="lang-en">Part 2: Build Sentences</span>
-                </h2>
-                 <div id="build-sentence-questions-travel" class="space-y-6"></div>
-                 
-                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
-                    <span class="lang-vi">Phần 3: Viết đoạn văn ngắn</span>
-                    <span class="lang-en">Part 3: Write a short paragraph</span>
-                </h2>
-                <div id="paragraph-questions-travel" class="space-y-6"></div>
-            </div>
-            
-            <div id="essay" class="tab-content">
-                 <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
-                    <span class="lang-vi">Luyện viết luận</span>
-                    <span class="lang-en">Essay Practice</span>
-                </h2>
-                <div id="essay-prompts-travel" class="space-y-10"></div>
+            <!-- Transportation Topic -->
+            <div id="transportation" class="topic-content">
+                 <div class="border-b border-gray-200 mb-8">
+                    <nav class="-mb-px flex flex-wrap justify-center sm:justify-start -mb-px space-x-6 sm:space-x-10" aria-label="Tabs">
+                        <button class="sub-tab active whitespace-nowrap pb-4 px-1 border-b-2 font-semibold text-base" data-tab="transportation-words">Words in Context</button>
+                        <button class="sub-tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="transportation-explore">Explore Knowledge</button>
+                        <button class="sub-tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="transportation-apply">Understanding & Applying</button>
+                        <button class="sub-tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="transportation-essay">Essay Practice</button>
+                    </nav>
+                </div>
+                 <div id="transportation-tab-contents">
+                    <div id="transportation-words" class="tab-content active">
+                        <div class="space-y-5 text-justify text-lg leading-relaxed">
+                            <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                                 <span class="lang-vi">Các vấn đề giao thông</span>
+                                 <span class="lang-en">Transport Problems</span>
+                            </h2>
+                            <div class="lang-vi space-y-5">
+                                <p><span class="vocab-term-interactive" data-definition="Sự phát triển nhanh chóng của xe hơi cá nhân">The proliferation of private cars(1)</span> trên đường phố trong khi <span class="vocab-term-interactive" data-definition="Cơ sở hạ tầng đường xá">road infrastructure(2)</span> chưa đủ để đáp ứng nhu cầu đi lại đang ngày càng tăng lên đã dẫn đến rất nhiều vấn đề nghiêm trọng. Việc sử dụng quá nhiều phương tiện đi lại cá nhân được đánh giá là một trong những tác nhân quan trọng dẫn đến <span class="vocab-term-interactive" data-definition="Ách tắc giao thông">traffic congestion(3)</span> ở hầu hết các thành phố trên thế giới. Quá nhiều người đi làm vào giờ cao điểm làm cho <span class="vocab-term-interactive" data-definition="Mạng lưới giao thông">transport networks(4)</span> không thể đối phó được với số lượng lớn phương tiện và dẫn đến tình trạng ùn ứ kéo dài.</p>
+                                <p><span class="vocab-term-interactive" data-definition="Cơ sở hạ tầng giao thông vận tải nghèo nàn">Inadequate transport infrastructure(5)</span> được coi là nguyên nhân chính của rất nhiều <span class="vocab-term-interactive" data-definition="Tai nạn giao thông">traffic accidents(6)</span>. Ngoài ra, tai nạn giao thông cũng được gây ra bởi <span class="vocab-term-interactive" data-definition="Những thói quen lái xe vô trách nhiệm">irresponsible driving habits(7)</span>. Nhiều người thường <span class="vocab-term-interactive" data-definition="Vi phạm luật giao thông">violate traffic laws(8)</span> khi tham gia giao thông như là <span class="vocab-term-interactive" data-definition="Lái xe vượt quá tốc độ cho phép">speeding(9)</span>, <span class="vocab-term-interactive" data-definition="Lái xe khi đang uống hoặc đang chịu tác động của rượu bia">driving under the influence of alcohol(10)</span> hay <span class="vocab-term-interactive" data-definition="Lỗi vượt đèn đỏ khi tham gia giao thông">running a red light(11)</span> gây ảnh hưởng nghiêm trọng đến an toàn giao thông.</p>
+                            </div>
+                            <div class="lang-en space-y-5">
+                                <p><span class="vocab-term-interactive" data-definition="The proliferation of private cars">The proliferation of private cars(1)</span> on the streets while the <span class="vocab-term-interactive" data-definition="Road infrastructure">road infrastructure(2)</span> is not sufficient to meet the increasing travel demand has led to many serious problems. The excessive use of private vehicles is considered one of the important factors leading to <span class="vocab-term-interactive" data-definition="Traffic congestion">traffic congestion(3)</span> in most cities around the world. Too many people commuting during rush hours makes it impossible for <span class="vocab-term-interactive" data-definition="Transport networks">transport networks(4)</span> to cope with the large number of vehicles, leading to prolonged congestion.</p>
+                                <p><span class="vocab-term-interactive" data-definition="Inadequate transport infrastructure">Inadequate transport infrastructure(5)</span> is considered the main cause of many <span class="vocab-term-interactive" data-definition="Traffic accidents">traffic accidents(6)</span>. In addition, traffic accidents are also caused by <span class="vocab-term-interactive" data-definition="Irresponsible driving habits">irresponsible driving habits(7)</span>. Many people often <span class="vocab-term-interactive" data-definition="Violate traffic laws">violate traffic laws(8)</span> when participating in traffic, such as <span class="vocab-term-interactive" data-definition="Speeding">speeding(9)</span>, <span class="vocab-term-interactive" data-definition="Driving under the influence of alcohol">driving under the influence of alcohol(10)</span>, or <span class="vocab-term-interactive" data-definition="Running a red light">running a red light(11)</span>, which seriously affects traffic safety.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="transportation-explore" class="tab-content">
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">Part 1: Assess Suitability</h2>
+                        <div id="suitability-questions-transportation" class="space-y-6"></div>
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">Part 2: Complete the sentences</h2>
+                        <div id="complete-sentence-questions-transportation" class="space-y-6"></div>
+                    </div>
+                    <div id="transportation-apply" class="tab-content">
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">Part 1: Extend the Sentences</h2>
+                        <div id="extend-sentence-questions-transportation" class="space-y-6"></div>
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">Part 2: Build Sentences</h2>
+                        <div id="build-sentence-questions-transportation" class="space-y-6"></div>
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">Part 3: Write a short paragraph</h2>
+                        <div id="paragraph-questions-transportation" class="space-y-6"></div>
+                    </div>
+                    <div id="transportation-essay" class="tab-content">
+                        <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">Essay Practice</h2>
+                        <div id="essay-prompts-transportation" class="space-y-10"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="vocab-popover" class="hidden">
+    <div id="vocab-popover" class="hidden opacity-0">
         <div id="vocab-popover-content" class="relative w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl border border-gray-700">
             <h4 id="popover-term" class="font-bold text-lg text-blue-300"></h4>
             <p id="popover-definition" class="mt-1"></p>
@@ -221,6 +255,7 @@
     <script>
         let langButtons;
 
+        // --- Data for Travel Topic ---
         const suitabilityDataTravel = [
             { en: "<strong>Excessive car usage</strong> in many big cities may improve air quality in those cities.", vi: "<strong>Excessive car usage</strong> ở nhiều thành phố lớn có thể cải thiện chất lượng không khí ở những thành phố đó.", correct: false },
             { en: "People living in urban areas have fewer <strong>choices of transport</strong> than those in rural areas.", vi: "Những người sống ở thành phố sẽ có ít <strong>choices of transport</strong> hơn những người sống ở nông thôn.", correct: false },
@@ -229,7 +264,6 @@
             { en: "Buses and subways have <strong>large capacities</strong> and therefore can help reduce <strong>traffic congestion</strong> when more people start using them instead of their personal vehicles for <strong>daily travel</strong>.", vi: "Xe buýt và tàu điện ngầm có <strong>large capacities</strong> và có thể giảm <strong>traffic congestion</strong> khi có nhiều người bắt đầu sử dụng chúng thay cho phương tiện cá nhân cho <strong>daily travel</strong>.", correct: true },
             { en: "Drunk driving is one of main contributors to <strong>traffic accidents</strong> in Vietnam.", vi: "Lái xe sau khi uống rượu là một trong những nguyên nhân chính dẫn đến <strong>traffic accidents</strong> tại Việt Nam.", correct: true }
         ];
-
         const completeSentenceDataTravel = [
             { en: "Travelling by a ___ is much more comfortable and time-saving than travelling by local bus and train.", vi: "Di chuyển bằng ___ thoái mái và tiết kiệm thời gian hơn di chuyển bẳng xe buýt hay tàu địa phương.", answer: "private vehicle" },
             { en: "With more and more cars on the road today, ___ will occur more frequently, leading to longer journey times.", vi: "Với càng ngày càng nhiều ô tô trên đường ngày nay, ___ sẽ xảy ra thường xuyên hơn dẫn tới thời gian chuyến đi dài hơn.", answer: "traffic congestion" },
@@ -237,7 +271,6 @@
             { en: "Speed cameras can deter people from driving too fast and therefore help improve ___.", vi: "Camera bắn tốc độ có thể giúp ngăn chăn mọi người lái xe quá nhanh và do đó giúp cải thiện ___.", answer: "road safety" },
             { en: "The government can promote the use of bicycles for daily travel by building more ___ for cyclists.", vi: "Chính phủ có thể khuyến khích việc sử dụng xe đạp cho việc di chuyển hàng ngày bằng việc xây dựng thêm các ___ cho người đạp xe.", answer: "dedicated lanes" }
         ];
-        
         const extendSentenceDataTravel = [
             { en: "The government should promote...", suggestions: "environmentally-friendly modes of transport, ameliorate traffic congestion, the use of public transport" },
             { en: "Cities are getting more and more polluted because...", suggestions: "excessive car usage, environmentally-friendly modes of transport" },
@@ -245,19 +278,16 @@
             { en: "In order to reduce traffic accidents,...", suggestions: "dedicated lanes, improve road safety, private vehicles" },
             { en: "To reduce air pollution,...", suggestions: "promote the use of public transport, environmentally-friendly modes of transport, fossil fuel vehicles" }
         ];
-
         const buildSentenceDataTravel = [
             { phrases: "The government, public transport, traffic congestion" },
             { phrases: "Private cars, traffic jams, rush hours" },
             { phrases: "Electric cars, environmentally-friendly modes of transport, the environment" },
             { phrases: "Trains and buses, dedicated lanes, hundreds of passengers" }
         ];
-        
         const paragraphDataTravel = [
              { en: "What are the impacts of tourism on the environment?", vi: "Du lịch có những tác động gì đến môi trường?", suggestions: "offer comfort and convenience, do not have to depend on anybody else’s schedules" },
              { en: "One major disadvantage of private vehicles is that they are responsible for increasing traffic congestion in big cities.", vi: "Một nhược điểm lớn của phương tiện cá nhân là chúng gây ra tình trạng tắc nghẽn giao thông ngày càng tăng ở các thành phố lớn.", suggestions: "excessive car usage, rush hours" }
         ];
-
         const essayDataTravel = [
             {
                 prompt: "Some people believe the government should spend money building train and subway lines to reduce traffic congestion. Others, however, think that building more and wider roads is a better way to reduce traffic congestion. Discuss both views and give your opinion.",
@@ -268,6 +298,56 @@
             }
         ];
 
+        // --- Data for Transportation Topic ---
+        const suitabilityDataTransportation = [
+            { en: "Failing to carry out <strong>regular road maintenance</strong> will reduce road safety.", vi: "Không thực hiện việc <strong>regular road maintenance</strong> sẽ giảm an toàn đường bộ.", correct: true },
+            { en: "One of the feasible solutions to reduce traffic congestion is promoting the use of <strong>private vehicles</strong> in major cities.", vi: "Một trong những giải pháp khả thi để giảm tắc đường đó là khuyến khích việc sử dụng <strong>private vehicles</strong> ở những thành phố lớn.", correct: false },
+            { en: "If the government introduce stricter <strong>traffic laws</strong>, the number of people who <strong>violate traffic laws</strong> is likely to increase.", vi: "Nếu chính phủ ban hành <strong>traffic laws</strong> nghiêm khắc hơn, số lượng người <strong>violate traffic laws</strong> có khả năng sẽ tăng.", correct: false },
+            { en: "Developed countries are witnessing an increase in <strong>traffic accidents</strong> due to <strong>inadequate transport infrastructure</strong>.", vi: "Nhiều quốc gia phát triển đang phải chứng kiến <strong>traffic accidents</strong> tăng lên vì <strong>inadequate transport infrastructure</strong>.", correct: false },
+            { en: "Imposing stricter punishments on people who have <strong>irresponsible driving habits</strong> can be an effective way to improve road safety.", vi: "Ban hành hình phạt nghiêm khắc hơn vào những người có <strong>irresponsible driving habits</strong> có thể là một cách hiệu quả để cải thiện an toàn giao thông.", correct: true },
+            { en: "<strong>Driving under the influence of alcohol</strong> is one of main contributors to traffic accidents in Vietnam.", vi: "<strong>Driving under the influence of alcohol</strong> là một trong những nguyên nhân chính của tai nạn giao thông tại Việt Nam.", correct: true }
+        ];
+        const completeSentenceDataTransportation = [
+            { en: "The excessive use of private cars during rush hours is considered one of the main causes of ___.", vi: "Việc sử dụng quá mức ô tô cá nhân trong giờ cao điểm được đánh giá là một trong những nguyên nhân chính của ___.", answer: "traffic congestion" },
+            { en: "Speeding, drink driving or running a red light are major causes of ___, resulting in thousands of injuries and deaths every year.", vi: "Lái xe vượt quá tốc độ, uống rượu khi lái xe hoặc vượt đèn đỏ là những nguyên nhân chính của ___, dẫn đến hàng ngàn người bị thương và thiệt mạng hàng năm.", answer: "traffic accidents" },
+            { en: "People who violate ___ such as running a red light should be severely punished so as to protect other people's lives.", vi: "Những người vi phạm ___ như là lái xe vượt đèn đỏ nên bị phạt thật nghiêm khắc để bảo vệ mạng sống của người khác.", answer: "traffic laws" },
+            { en: "The honking from vehicles with high volume contributes directly to ___, one of the biggest annoyances city dwellers have to face every day.", vi: "Tiếng còi từ các phương tiện giao thông với độ ồn lớn đóng góp trực tiếp vào ___, một trong những khó chịu lớn nhất mà người dân thành phố phải đối mặt hàng ngày.", answer: "noise pollution" },
+            { en: "___ such as imposing heavier fines would encourage people to drive more safely.", vi: "___ như là phạt nhiều tiền hơn sẽ giúp khuyến khích người dân lái xe an toàn hơn.", answer: "Stricter punishments" }
+        ];
+        const extendSentenceDataTransportation = [
+            { en: "The government has invested heavily in improving...", suggestions: "Road infrastructure, transport networks, regular road maintenance" },
+            { en: "The government announced stricter punishments against people who...", suggestions: "violate traffic laws, driving under the influence of alcohol, running a red light" },
+            { en: "The number of traffic accidents has been reduced because...", suggestions: "stricter punishments, improve road safety, irresponsible driving habits" },
+            { en: "Although there have been stricter laws against...", suggestions: "irresponsible driving habits, traffic accidents, driving offenses" },
+            { en: "One of the most effective methods to improve road safety is...", suggestions: "Road infrastructure, transport networks, regular road maintenance" }
+        ];
+        const buildSentenceDataTransportation = [
+            { phrases: "Commute to work, public transport, traffic congestion" },
+            { phrases: "Driving under the influence of alcohol, poor road infrastructure, traffic accidents" },
+            { phrases: "Private vehicles, exhaust fumes, air pollution" },
+            { phrases: "Stricter punishments, act as a deterrent, driving offenders" }
+        ];
+        const paragraphDataTransportation = [
+             { en: "What are some of the causes of increasing road accidents?", vi: "Nguyên nhân của việc gia tăng tai nạn giao thông là gì?", suggestions: "Irresponsible driving behavior, inadequate transport infrastructure, heavy traffic" }
+        ];
+        const essayDataTransportation = [
+            {
+                prompt: "Some people think it is more important to spend money on roads and motorways than on public transport systems. To what extent do you agree or disagree?",
+                ideas: [
+                    { title: "Invest in Road Systems", points: ["Increase road safety", "Reduce traffic congestion"], color: "blue" },
+                    { title: "Invest in Public Transport", points: ["Cause less damage to the environment", "A long-term solution to traffic congestion"], color: "purple" }
+                ]
+            },
+            {
+                prompt: "The only way to improve safety on our roads is to give much stricter punishments for driving offenses. To what extent do you agree or disagree?",
+                ideas: [
+                    { title: "Stricter Punishments", points: ["Instill fear and deter people from violating traffic laws", "Prevent law-breakers from re-committing driving offenses"], color: "red" },
+                    { title: "Other Ways", points: ["Education about proper driving behavior", "Increasing the legal driving age"], color: "green" }
+                ]
+            }
+        ];
+
+        // --- Generic Functions ---
         function populateSuitability(containerId, data) {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -276,8 +356,7 @@
                 const div = document.createElement('div');
                 div.className = 'question-container';
                 div.innerHTML = `
-                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
-                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi}</em></p>
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> <span class="lang-en">${q.en}</span><span class="lang-vi">${q.vi}</span></p>
                     <div class="mt-4">
                         <button class="action-btn bg-blue-600 text-white hover:bg-blue-700" onclick="checkSuitability(this, ${q.correct})">
                             <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
@@ -287,7 +366,6 @@
                 container.appendChild(div);
             });
         }
-
         function populateFillIn(containerId, data) {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -296,8 +374,7 @@
                 const div = document.createElement('div');
                 div.className = 'question-container';
                 div.innerHTML = `
-                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en.replace('___', '<input type="text" class="form-input p-1 mx-1 w-64" placeholder="Your answer...">')}</p>
-                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi.replace('___', '...')}</em></p>
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> <span class="lang-en">${q.en.replace('___', '<input type="text" class="form-input p-1 mx-1 w-64" placeholder="Your answer...">')}</span><span class="lang-vi">${q.vi.replace('___', '...')}</span></p>
                     <div class="mt-4">
                         <button class="action-btn bg-blue-600 text-white hover:bg-blue-700" onclick="checkFillIn(this, '${q.answer}')">
                            <span class="lang-vi">Kiểm tra</span><span class="lang-en">Check</span>
@@ -307,7 +384,6 @@
                 container.appendChild(div);
             });
         }
-        
         function populateExtendSentence(containerId, data) {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -322,7 +398,6 @@
                 container.appendChild(div);
             });
         }
-
         function populateBuildSentence(containerId, data) {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -337,7 +412,6 @@
                 container.appendChild(div);
             });
         }
-
         function populateParagraphs(containerId, data) {
              const container = document.getElementById(containerId);
             if (!container) return;
@@ -352,7 +426,6 @@
                 container.appendChild(div);
             });
         }
-
         function populateEssays(containerId, data) {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -385,7 +458,6 @@
                 container.appendChild(div);
             });
         }
-
         function checkSuitability(button, isCorrect) {
             const feedback = button.nextElementSibling;
             feedback.style.display = 'inline';
@@ -401,7 +473,6 @@
                 feedback.innerHTML = lang === 'vi' ? '<strong>Sai.</strong>' : '<strong>Incorrect.</strong>';
             }
         }
-
         function checkFillIn(button, correctAnswer) {
             const input = button.closest('.question-container').querySelector('input');
             const feedback = button.nextElementSibling;
@@ -417,51 +488,81 @@
             }
         }
 
+        // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
+            // Populate all sections on load
             populateSuitability('suitability-questions-travel', suitabilityDataTravel);
             populateFillIn('complete-sentence-questions-travel', completeSentenceDataTravel);
             populateExtendSentence('extend-sentence-questions-travel', extendSentenceDataTravel);
             populateBuildSentence('build-sentence-questions-travel', buildSentenceDataTravel);
             populateParagraphs('paragraph-questions-travel', paragraphDataTravel);
             populateEssays('essay-prompts-travel', essayDataTravel);
+            
+            populateSuitability('suitability-questions-transportation', suitabilityDataTransportation);
+            populateFillIn('complete-sentence-questions-transportation', completeSentenceDataTransportation);
+            populateExtendSentence('extend-sentence-questions-transportation', extendSentenceDataTransportation);
+            populateBuildSentence('build-sentence-questions-transportation', buildSentenceDataTransportation);
+            populateParagraphs('paragraph-questions-transportation', paragraphDataTransportation);
+            populateEssays('essay-prompts-transportation', essayDataTransportation);
 
+            // Language switcher
             langButtons = {
                 vi: document.getElementById('lang-btn-vi'),
                 en: document.getElementById('lang-btn-en')
             };
-
             function setLanguage(lang) {
                 document.querySelectorAll('.lang-vi, .lang-en').forEach(el => el.style.display = 'none');
                 document.querySelectorAll(`.lang-${lang}`).forEach(el => el.style.display = 'inline');
-                for (const key in langButtons) {
-                    langButtons[key].classList.remove('active');
-                }
+                Object.values(langButtons).forEach(btn => btn.classList.remove('active'));
                 langButtons[lang].classList.add('active');
             }
-
             langButtons.vi.addEventListener('click', () => setLanguage('vi'));
             langButtons.en.addEventListener('click', () => setLanguage('en'));
-            setLanguage('en');
+            setLanguage('en'); // Set initial language
 
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => {
+            // Main Topic Tabs
+            const mainTabs = document.querySelectorAll('.main-tab');
+            const topicContents = document.querySelectorAll('.topic-content');
+            mainTabs.forEach(tab => {
                 tab.addEventListener('click', () => {
-                    tabs.forEach(item => item.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
+                    mainTabs.forEach(item => {
+                        item.classList.remove('active');
+                        item.classList.add('bg-white');
+                    });
+                    topicContents.forEach(content => content.classList.remove('active'));
+
                     tab.classList.add('active');
-                    document.getElementById(tab.dataset.tab).classList.add('active');
+                    tab.classList.remove('bg-white');
+                    document.getElementById(tab.dataset.topic).classList.add('active');
                 });
             });
 
+            // Sub-Tabs for each topic
+            function setupSubTabs(topicId) {
+                const subTabs = document.querySelectorAll(`#${topicId} .sub-tab`);
+                const tabContents = document.querySelectorAll(`#${topicId}-tab-contents .tab-content`);
+                subTabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        subTabs.forEach(item => item.classList.remove('active'));
+                        tabContents.forEach(content => content.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.getElementById(tab.dataset.tab).classList.add('active');
+                    });
+                });
+            }
+            setupSubTabs('travel');
+            setupSubTabs('transportation');
+
+
+            // Vocabulary Popover
             const popover = document.getElementById('vocab-popover');
             const popoverTerm = document.getElementById('popover-term');
             const popoverDefinition = document.getElementById('popover-definition');
-            const vocabTerms = document.querySelectorAll('.vocab-term-interactive');
-            vocabTerms.forEach(term => {
-                term.addEventListener('click', (event) => {
+            document.body.addEventListener('click', (event) => {
+                if (event.target.classList.contains('vocab-term-interactive')) {
                     event.stopPropagation();
-                    popoverTerm.textContent = term.textContent;
+                    const term = event.target;
+                    popoverTerm.textContent = term.textContent.replace(/\(\d+\)/, '').trim();
                     popoverDefinition.textContent = term.dataset.definition;
                     const rect = term.getBoundingClientRect();
                     popover.style.left = `${rect.left + window.scrollX}px`;
@@ -471,18 +572,20 @@
                         popover.style.opacity = '1';
                         popover.style.transform = 'translateY(0)';
                     }, 10);
-                });
-            });
-
-            document.addEventListener('click', () => {
-                if (!popover.classList.contains('hidden')) {
-                    popover.style.opacity = '0';
-                    popover.style.transform = 'translateY(10px)';
-                    setTimeout(() => {
-                        popover.classList.add('hidden');
-                    }, 200);
+                } else {
+                    if (!popover.classList.contains('hidden')) {
+                         hidePopover();
+                    }
                 }
             });
+            
+            function hidePopover() {
+                popover.style.opacity = '0';
+                popover.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    popover.classList.add('hidden');
+                }, 200);
+            }
         });
     </script>
 
