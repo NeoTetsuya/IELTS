@@ -113,27 +113,69 @@
         #nextBtn {
             right: 2rem;
         }
+        /* Styles for Venn Diagram */
+        .venn-container {
+            position: relative;
+            width: 450px;
+            height: 350px;
+            margin: 1rem auto;
+        }
+        .venn-circle {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: rgba(0,0,0,0.7);
+        }
+        .venn-label {
+            position: absolute;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-gray-200">
 
     <!-- Slide 1: Title -->
-    <section id="slide1" class="slide active bg-blue-100">
+    <section id="slide1" class="slide active bg-gray-100">
         <div class="slide-content justify-center text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Understanding TPACK</h1>
-            <p class="text-xl md:text-2xl text-gray-600 mb-10">A Framework for Technology-Integrated Teaching</p>
-            <div class="flex justify-center items-center gap-4">
-                <div class="w-32 h-32 md:w-40 md:h-40 bg-red-300 rounded-full flex items-center justify-center text-center p-2"><span class="font-semibold text-red-800">Content (CK)</span></div>
-                <div class="text-4xl font-thin text-gray-400">+</div>
-                <div class="w-32 h-32 md:w-40 md:h-40 bg-blue-300 rounded-full flex items-center justify-center text-center p-2"><span class="font-semibold text-blue-800">Pedagogy (PK)</span></div>
-                <div class="text-4xl font-thin text-gray-400">+</div>
-                <div class="w-32 h-32 md:w-40 md:h-40 bg-yellow-300 rounded-full flex items-center justify-center text-center p-2"><span class="font-semibold text-yellow-800">Technology (TK)</span></div>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Understanding TPACK</h1>
+            <p class="text-lg md:text-xl text-gray-600 mb-6">A Framework for Technology-Integrated Teaching</p>
+            
+            <div class="relative w-full flex justify-center items-center" style="height: 380px;">
+                <!-- Contexts Background -->
+                <div class="absolute w-full max-w-xl h-80 bg-gray-300/80 rounded-[3rem] shadow-lg flex items-end justify-center pb-2">
+                     <span class="font-bold text-xl text-gray-700">Contexts</span>
+                </div>
+
+                <!-- Venn Diagram -->
+                <div class="venn-container">
+                    <!-- Circles -->
+                    <div class="venn-circle bg-yellow-300/70" style="top: 0; left: 50%; transform: translateX(-50%);">C</div>
+                    <div class="venn-circle bg-cyan-300/70" style="top: 80px; left: 0;">P</div>
+                    <div class="venn-circle bg-pink-300/70" style="top: 80px; right: 0;">T</div>
+
+                    <!-- Labels -->
+                    <div class="venn-label" style="top: -15px; left: 50%; transform: translateX(-50%);">Content Knowledge</div>
+                    <div class="venn-label" style="top: 60px; left: 10px;">Pedagogical Knowledge</div>
+                    <div class="venn-label" style="top: 60px; right: 10px;">Technological Knowledge</div>
+                    <div class="venn-label" style="top: 285px; left: 50%; transform: translateX(-50%);">Technological Knowledge</div>
+
+                    <!-- Intersection Labels -->
+                    <div class="venn-label" style="top: 70px; left: 140px;">PCK</div>
+                    <div class="venn-label" style="top: 70px; right: 140px;">TCK</div>
+                    <div class="venn-label" style="top: 200px; left: 50%; transform: translateX(-50%);">TPK</div>
+                    <div class="font-bold" style="position: absolute; top: 140px; left: 50%; transform: translateX(-50%);">TPACK</div>
+                </div>
             </div>
-             <div class="flex justify-center items-center mt-6">
-                <div class="text-4xl font-thin text-gray-400">=</div>
-                <div class="ml-4 px-6 py-3 bg-purple-500 text-white font-bold text-2xl rounded-lg">TPACK</div>
-            </div>
-            <p class="mt-8 text-gray-500">Click "Next" to begin.</p>
+
+            <p class="mt-4 text-gray-500">Click "Next" to begin.</p>
         </div>
     </section>
 
