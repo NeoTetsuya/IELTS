@@ -114,14 +114,14 @@
         /* Styles for Venn Diagram */
         .venn-container {
             position: relative;
-            width: 650px; /* Increased width */
-            height: 350px;
-            margin: 1rem auto;
+            width: 600px; 
+            height: 420px; /* Increased height for better spacing */
+            margin: auto;
         }
         .venn-circle {
             position: absolute;
-            width: 250px; /* Increased circle size */
-            height: 250px; /* Increased circle size */
+            width: 280px; /* Adjusted size */
+            height: 280px; /* Adjusted size */
             border-radius: 50%;
         }
         .venn-label {
@@ -131,6 +131,7 @@
             font-weight: 600;
             text-align: center;
             color: #1f2937;
+            pointer-events: none; /* Make labels non-interactive */
         }
     </style>
 </head>
@@ -142,9 +143,9 @@
             <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Understanding TPACK</h1>
             <p class="text-lg md:text-xl text-gray-600 mb-6">A Framework for Technology-Integrated Teaching</p>
             
-            <div class="relative w-full flex justify-center items-center" style="height: 380px;">
+            <div class="relative w-full flex justify-center items-center" style="height: 420px;">
                 <!-- Contexts Background -->
-                <div class="absolute w-full max-w-3xl h-80 bg-gray-300/80 rounded-[3rem] shadow-lg flex items-end justify-center pb-2">
+                <div class="absolute w-full max-w-3xl h-full bg-gray-300/80 rounded-[3rem] shadow-lg flex items-end justify-center pb-2">
                      <span class="font-bold text-xl text-gray-700">Contexts</span>
                 </div>
 
@@ -152,18 +153,18 @@
                 <div class="venn-container">
                     <!-- Circles -->
                     <div class="venn-circle bg-yellow-300/70" style="top: 0; left: 50%; transform: translateX(-50%);"></div>
-                    <div class="venn-circle bg-cyan-300/70" style="top: 60px; left: 60px;"></div>
-                    <div class="venn-circle bg-pink-300/70" style="top: 60px; right: 60px;"></div>
+                    <div class="venn-circle bg-cyan-300/70" style="bottom: 0; left: 40px;"></div>
+                    <div class="venn-circle bg-pink-300/70" style="bottom: 0; right: 40px;"></div>
 
                     <!-- Labels inside the diagram -->
                     <div class="venn-label" style="top: 60px; left: 50%; transform: translateX(-50%); width: 120px;">Content<br>Knowledge<br>(CK)</div>
-                    <div class="venn-label" style="top: 165px; left: 110px; width: 120px;">Pedagogical<br>Knowledge<br>(PK)</div>
-                    <div class="venn-label" style="top: 165px; right: 110px; width: 120px;">Technological<br>Knowledge<br>(TK)</div>
+                    <div class="venn-label" style="top: 280px; left: 120px; width: 120px;">Pedagogical<br>Knowledge<br>(PK)</div>
+                    <div class="venn-label" style="top: 280px; right: 120px; width: 120px;">Technological<br>Knowledge<br>(TK)</div>
                     
-                    <div class="venn-label" style="top: 110px; left: 225px; width: 90px;">Pedagogical Content<br>Knowledge (PCK)</div>
-                    <div class="venn-label" style="top: 110px; right: 225px; width: 90px;">Technological Content<br>Knowledge (TCK)</div>
-                    <div class="venn-label" style="top: 240px; left: 50%; transform: translateX(-50%); width: 120px;">Technological Pedagogical<br>Knowledge (TPK)</div>
-                    <div class="venn-label font-extrabold text-black" style="top: 165px; left: 50%; transform: translateX(-50%); width: 60px;">TPACK</div>
+                    <div class="venn-label" style="top: 155px; left: 180px; width: 90px;">Pedagogical Content<br>Knowledge (PCK)</div>
+                    <div class="venn-label" style="top: 155px; right: 180px; width: 90px;">Technological Content<br>Knowledge (TCK)</div>
+                    <div class="venn-label" style="bottom: 45px; left: 50%; transform: translateX(-50%); width: 120px;">Technological Pedagogical<br>Knowledge (TPK)</div>
+                    <div class="venn-label font-extrabold text-black" style="top: 200px; left: 50%; transform: translateX(-50%); width: 60px;">TPACK</div>
                 </div>
             </div>
 
