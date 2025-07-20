@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPACK Interactive Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevent scrolling the main body */
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .slide-content {
+            background-color: white;
+            width: 100%;
+            height: 100%;
+            max-width: 120vh; /* Control max size */
+            max-height: 90vh;
+            aspect-ratio: 4 / 3;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow-y: auto; /* Allow scrolling within the slide content */
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+        }
+        @media (max-width: 768px) {
+            .slide-content {
+                aspect-ratio: auto;
+                height: 90vh;
+                padding: 1.5rem;
+            }
+        }
+
+        .tpack-circle {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .tpack-circle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 2rem;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 0.75rem;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .nav-button {
+            position: fixed;
+            bottom: 1rem;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            z-index: 50;
+            transition: background-color 0.3s ease;
+        }
+        .nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        #prevBtn {
+            left: 2rem;
+        }
+        #nextBtn {
+            right: 2rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+    <!-- Slide 1: Title -->
+    <section id="slide1" class="slide active bg-blue-100">
+        <div class="slide-content justify-center text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Understanding TPACK</h1>
+            <p class="text-xl md:text-2xl text-gray-600 mb-10">A Framework for Technology-Integrated Teaching</p>
+            <div class="flex justify-center items-center gap-4">
+                <div class="w-32 h-32 md:w-40 md:h-40 bg-red-300 rounded-full flex items-center justify-center text-center p-2"><span class="font-semibold text-red-800">Content (CK)</span></div>
+                <div class="text-4xl font-thin text-gray-400">+</div>
+                <div class="w-32 h-32 md:w-40 md:h-40 bg-blue-300 rounded-full flex items-center justify-center text-center p-2"><span class="font-semibold text-blue-800">Pedagogy (PK)</span></div>
+                <div class="text-4xl font-thin text-gray-400">+</div>
+                <div class="w-32 h-32 md:w-40 md:h-40 bg-yellow-300 rounded-full flex items-center justify-center text-center p-2"><span class="font-semibold text-yellow-800">Technology (TK)</span></div>
+            </div>
+             <div class="flex justify-center items-center mt-6">
+                <div class="text-4xl font-thin text-gray-400">=</div>
+                <div class="ml-4 px-6 py-3 bg-purple-500 text-white font-bold text-2xl rounded-lg">TPACK</div>
+            </div>
+            <p class="mt-8 text-gray-500">Click "Next" to begin.</p>
+        </div>
+    </section>
+
+    <!-- Slide 2: What is TPACK? -->
+    <section id="slide2" class="slide bg-yellow-100">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-4 flex-shrink-0">What is TPACK?</h2>
+            <p class="text-center text-lg text-gray-600 mb-8 flex-shrink-0">TPACK is an extension of Shulman's Pedagogical Content Knowledge (PCK), adding the technological dimension. Click on each core component to learn more.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center flex-shrink-0">
+                <div class="tpack-circle p-6 bg-gray-50 rounded-xl shadow-md cursor-pointer" onclick="showModal('modal-ck')">
+                    <h3 class="text-2xl font-bold text-red-600 mb-2">CK</h3>
+                    <p class="font-semibold text-lg text-gray-700">Content Knowledge</p>
+                </div>
+                <div class="tpack-circle p-6 bg-gray-50 rounded-xl shadow-md cursor-pointer" onclick="showModal('modal-pk')">
+                    <h3 class="text-2xl font-bold text-blue-600 mb-2">PK</h3>
+                    <p class="font-semibold text-lg text-gray-700">Pedagogical Knowledge</p>
+                </div>
+                <div class="tpack-circle p-6 bg-gray-50 rounded-xl shadow-md cursor-pointer" onclick="showModal('modal-tk')">
+                    <h3 class="text-2xl font-bold text-yellow-600 mb-2">TK</h3>
+                    <p class="font-semibold text-lg text-gray-700">Technological Knowledge</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-10 flex-shrink-0">
+                <button onclick="showModal('modal-tpack-all')" class="bg-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors">
+                    Explore all 7 Components
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: How is it Used? -->
+    <section id="slide3" class="slide bg-green-100">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-6">How is TPACK Used?</h2>
+            <div class="space-y-4 text-gray-700 text-base">
+                <p>According to Koehler and Mishra (2009), TPACK is a conceptual tool to guide teachers in integrating technology in pedagogically sound and content-appropriate ways. It is used to:</p>
+                <ul class="list-disc list-inside bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-2">
+                    <li><strong>Design and deliver effective instruction</strong> by helping educators select technologies that align with the subject matter and teaching strategies.</li>
+                    <li><strong>Evaluate and reflect on teaching practice</strong>, enabling teachers to assess how well they are integrating digital tools.</li>
+                    <li><strong>Inform teacher training and professional development</strong> by identifying knowledge gaps for meaningful technology use.</li>
+                </ul>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2 text-green-800">Example: In Online or Hybrid Teaching</h3>
+                    <p>In an online IELTS speaking class, students might use Flipgrid to record answers (technology). This allows for asynchronous practice and peer feedback (pedagogy) while targeting specific exam preparation goals (content).</p>
+                </div>
+                <blockquote class="border-l-4 border-green-500 pl-4 italic text-gray-600">
+                    <p>"Effective teaching with technology requires an understanding of the representation of concepts using technologies; pedagogical techniques that use technologies in constructive ways to teach content; [and] knowledge of what makes concepts difficult or easy to learn and how technology can help redress some of the problems that students face."</p>
+                    <cite class="mt-2 block text-right not-italic">- Koehler & Mishra (2009, p. 67)</cite>
+                </blockquote>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Slide 4: Case Study -->
+    <section id="slide4" class="slide bg-cyan-100">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-6">Case Study: GSP in Mathematics</h2>
+            <div class="space-y-4 text-gray-700 text-base">
+                <p>GSP is a dynamic geometry software that allows users to construct and manipulate mathematical objects. In one study, pre-service secondary mathematics teachers used GSP to:</p>
+                 <ul class="list-none space-y-3">
+                    <li class="bg-white p-3 rounded-lg shadow-sm"><strong>Explore and construct geometric objects:</strong> Drawing regular polygons, lines, circles, graphs of functions, etc.</li>
+                    <li class="bg-white p-3 rounded-lg shadow-sm"><strong>Design inquiry-based learning activities:</strong> Students could drag points and shapes to observe patterns (e.g., see that the sum of angles in a triangle is always 180°).</li>
+                    <li class="bg-white p-3 rounded-lg shadow-sm"><strong>Teach lessons using visual and interactive elements:</strong> Dynamically demonstrating concepts instead of drawing static figures on a board.</li>
+                </ul>
+                <div class="mt-4 pt-4 border-t">
+                    <h3 class="font-bold text-lg text-cyan-800">The Goal: Developing TPACK</h3>
+                    <p>This approach helped pre-service teachers develop the three core knowledge areas in an integrated way:</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li><strong>Content Knowledge (CK):</strong> Knowing the subject (mathematics).</li>
+                        <li><strong>Pedagogical Knowledge (PK):</strong> Knowing how to teach (inquiry-based methods).</li>
+                        <li><strong>Technological Knowledge (TK):</strong> Knowing how to use the tech tool (GSP).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Call to Action -->
+    <section id="slide5" class="slide bg-indigo-100">
+        <div class="slide-content">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6 text-center">Your Role as a TESOL Teacher</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-lg text-indigo-800">Master the 3 Core Knowledge Areas</h3>
+                    <ul class="list-disc list-inside mt-2 text-gray-600 space-y-1">
+                        <li><strong>Content (What you teach?):</strong> Deepen your understanding of English language systems.</li>
+                        <li><strong>Pedagogy (How you teach?):</strong> Use methods like communicative language teaching, task-based learning, etc.</li>
+                        <li><strong>Technology (Which tools you use?):</strong> Learn how and when to use tools like Quizizz, Padlet, or ChatGPT effectively.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-lg text-indigo-800">Integrate Technology Purposefully</h3>
+                    <p class="text-gray-600 mt-2">Use applications based on learners’ needs and lesson objectives. Select appropriate tools to develop particular skills. For example, use Elsa Speak to allow shy students to practice speaking at home.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-lg text-indigo-800">Design Lessons at the Intersection of TPACK</h3>
+                    <p class="text-gray-600 mt-2">Intentionally connect the three core components (CK, PK, TK) when designing tasks and activities.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-lg text-indigo-800">Reflect and Adapt</h3>
+                    <p class="text-gray-600 mt-2">Continuously update and adapt tools to be suitable for different students (ages, proficiency levels) and learning contexts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modals -->
+    <div id="modal-ck" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeAllModals()">&times;</span>
+            <h3 class="text-2xl font-bold text-red-600 mb-4">Content Knowledge (CK)</h3>
+            <p class="text-lg text-gray-700">This is the teacher's expertise in the subject matter itself. For TESOL, it includes a deep understanding of grammar, phonology, vocabulary, syntax, and language skills.</p>
+        </div>
+    </div>
+    <div id="modal-pk" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeAllModals()">&times;</span>
+            <h3 class="text-2xl font-bold text-blue-600 mb-4">Pedagogical Knowledge (PK)</h3>
+            <p class="text-lg text-gray-700">This refers to the teacher's knowledge about how students learn and how to teach. It includes understanding teaching methods (e.g., task-based learning), assessment strategies, and error correction, as well as how to organize students, manage behavior, and use time efficiently.</p>
+        </div>
+    </div>
+    <div id="modal-tk" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeAllModals()">&times;</span>
+            <h3 class="text-2xl font-bold text-yellow-600 mb-4">Technological Knowledge (TK)</h3>
+            <p class="text-lg text-gray-700">This is a teacher's familiarity with digital tools and resources. It's not just knowing *about* tools like Zoom, Kahoot!, or Padlet, but also knowing *how* to operate them effectively.</p>
+        </div>
+    </div>
+    <div id="modal-tpack-all" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeAllModals()">&times;</span>
+            <h3 class="text-2xl font-bold text-purple-700 mb-6">The 7 Components of TPACK</h3>
+            <div class="space-y-3 text-left">
+                <p><strong>CK (Content Knowledge):</strong> Subject matter expertise (e.g., grammar, phonology, vocabulary).</p>
+                <p><strong>PK (Pedagogical Knowledge):</strong> Understanding how students learn and how to teach (e.g., task-based learning, error correction).</p>
+                <p><strong>TK (Technological Knowledge):</strong> Familiarity with digital tools (e.g., Zoom, Kahoot!, Quizlet, Padlet).</p>
+                <hr>
+                <p><strong>PCK (Pedagogical Content Knowledge):</strong> How to teach the subject effectively.</p>
+                <p><strong>TCK (Technological Content Knowledge):</strong> How technology can change the way the subject is taught.</p>
+                <p><strong>TPK (Technological Pedagogical Knowledge):</strong> How teaching changes with tech tools (e.g., flipped classroom, blended learning).</p>
+                <hr>
+                <p><strong>TPACK (Technological Pedagogical Content Knowledge):</strong> The integration of all three knowledge domains to create effective, technology-supported teaching.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <button id="prevBtn" class="nav-button" onclick="changeSlide(-1)">Prev</button>
+    <button id="nextBtn" class="nav-button" onclick="changeSlide(1)">Next</button>
+
+    <script>
+        // --- Slide Navigation ---
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            document.getElementById('slide' + n).classList.add('active');
+            
+            // Update nav button visibility
+            document.getElementById('prevBtn').style.display = (n === 1) ? 'none' : 'block';
+            document.getElementById('nextBtn').style.display = (n === totalSlides) ? 'none' : 'block';
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            if (currentSlide > totalSlides) {
+                currentSlide = totalSlides;
+            }
+            if (currentSlide < 1) {
+                currentSlide = 1;
+            }
+            showSlide(currentSlide);
+        }
+        
+        // Initialize first slide
+        showSlide(currentSlide);
+
+        // --- Modal Logic ---
+        function showModal(modalId) {
+            closeAllModals(); // Close any open modals first
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex'; // Use flex for centering
+        }
+
+        function closeAllModals() {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+
+        // Close modal if clicking outside of it
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
