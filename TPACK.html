@@ -125,18 +125,14 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: bold;
-            color: rgba(0,0,0,0.7);
         }
         .venn-label {
             position: absolute;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
+            line-height: 1.2;
             font-weight: 600;
             text-align: center;
+            color: #1f2937;
         }
     </style>
 </head>
@@ -157,21 +153,19 @@
                 <!-- Venn Diagram -->
                 <div class="venn-container">
                     <!-- Circles -->
-                    <div class="venn-circle bg-yellow-300/70" style="top: 0; left: 50%; transform: translateX(-50%);">C</div>
-                    <div class="venn-circle bg-cyan-300/70" style="top: 80px; left: 0;">P</div>
-                    <div class="venn-circle bg-pink-300/70" style="top: 80px; right: 0;">T</div>
+                    <div class="venn-circle bg-yellow-300/70" style="top: 0; left: 50%; transform: translateX(-50%);"></div>
+                    <div class="venn-circle bg-cyan-300/70" style="top: 80px; left: 0;"></div>
+                    <div class="venn-circle bg-pink-300/70" style="top: 80px; right: 0;"></div>
 
-                    <!-- Labels -->
-                    <div class="venn-label" style="top: -15px; left: 50%; transform: translateX(-50%);">Content Knowledge</div>
-                    <div class="venn-label" style="top: 60px; left: 10px;">Pedagogical Knowledge</div>
-                    <div class="venn-label" style="top: 60px; right: 10px;">Technological Knowledge</div>
-                    <div class="venn-label" style="top: 285px; left: 50%; transform: translateX(-50%);">Technological Knowledge</div>
-
-                    <!-- Intersection Labels -->
-                    <div class="venn-label" style="top: 70px; left: 140px;">PCK</div>
-                    <div class="venn-label" style="top: 70px; right: 140px;">TCK</div>
-                    <div class="venn-label" style="top: 200px; left: 50%; transform: translateX(-50%);">TPK</div>
-                    <div class="font-bold" style="position: absolute; top: 140px; left: 50%; transform: translateX(-50%);">TPACK</div>
+                    <!-- Labels inside the diagram -->
+                    <div class="venn-label" style="top: 50px; left: 50%; transform: translateX(-50%); width: 120px;">Content<br>Knowledge<br>(CK)</div>
+                    <div class="venn-label" style="top: 155px; left: 35px; width: 120px;">Pedagogical<br>Knowledge<br>(PK)</div>
+                    <div class="venn-label" style="top: 155px; right: 35px; width: 120px;">Technological<br>Knowledge<br>(TK)</div>
+                    
+                    <div class="venn-label" style="top: 90px; left: 140px; width: 90px;">Pedagogical Content<br>Knowledge (PCK)</div>
+                    <div class="venn-label" style="top: 90px; right: 140px; width: 90px;">Technological Content<br>Knowledge (TCK)</div>
+                    <div class="venn-label" style="top: 215px; left: 50%; transform: translateX(-50%); width: 120px;">Technological Pedagogical<br>Knowledge (TPK)</div>
+                    <div class="venn-label font-extrabold text-black" style="top: 155px; left: 50%; transform: translateX(-50%); width: 60px;">TPACK</div>
                 </div>
             </div>
 
