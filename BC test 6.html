@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Reading Practice Test 6</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for better readability and feel */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .prose {
+            line-height: 1.7;
+        }
+        .prose p {
+            margin-bottom: 1em;
+        }
+        .lg\:sticky {
+            align-self: flex-start;
+        }
+        /* Styles for active and inactive tabs */
+        .tab-button.active {
+            border-color: #3b82f6; /* blue-500 */
+            color: #2563eb; /* blue-600 */
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <div id="app" class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto">
+            <header class="bg-white p-4 rounded-xl shadow-md mb-8 border border-gray-200">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">IELTS Academic Reading Practice Test</h1>
+                        <p class="text-gray-500">Time limit: 60 minutes</p>
+                    </div>
+                    <div id="timer" class="font-mono text-xl font-bold p-2 rounded-lg text-gray-700">60:00</div>
+                </div>
+            </header>
+
+            <div id="final-score-container" class="hidden bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-6 rounded-lg shadow-md mb-8">
+                <h2 class="text-2xl font-bold mb-2">Test Complete!</h2>
+                <p class="text-xl">Your final score is: <span id="final-score" class="font-bold">0 / 40</span></p>
+                <button id="reset-button" class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    Try Again
+                </button>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="mb-6 border-b border-gray-300">
+                <nav id="tab-nav" class="-mb-px flex space-x-6" aria-label="Tabs">
+                    <button data-target="#section-1-panel" class="tab-button active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg transition-colors">
+                        Section 1 <span id="score-section-1" class="ml-2 text-sm font-semibold text-gray-500"></span>
+                    </button>
+                    <button data-target="#section-2-panel" class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg transition-colors">
+                        Section 2 <span id="score-section-2" class="ml-2 text-sm font-semibold text-gray-500"></span>
+                    </button>
+                    <button data-target="#section-3-panel" class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg transition-colors">
+                        Section 3 <span id="score-section-3" class="ml-2 text-sm font-semibold text-gray-500"></span>
+                    </button>
+                </nav>
+            </div>
+
+            <div id="sections-container">
+                <!-- Tab Panels will be dynamically generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const passages = {
+          1: {
+            title: "Sending money home: the economics of migrant remittances",
+            paragraphs: [
+              { id: 'A', content: "Every year millions of migrants travel vast distances using borrowed money for their airfares and taking little or no cash with them. They seek a decent job to support themselves with money left over that they can send home to their families in developing countries. These remittances exceeded $400 billion last year. It is true that the actual rate per person is only about $200 per month but it all adds up to about triple the amount officially spent on development aid." },
+              { id: 'B', content: "In some of the poorer, unstable or conflict-torn countries, these sums of money are a lifeline - the only salvation for those left behind. The decision to send money home is often inspired by altruism - an unselfish desire to help others. Then again, the cash might simply be an exchange for earlier services rendered by the recipients or it could be intended for investment by the recipients. Often it will be repayment of a loan used to finance the migrant's travel and resettlement." },
+              { id: 'C', content: "At the first sign of trouble, political or financial upheaval, these personal sources of support do not suddenly dry up like official investment monies. Actually, they increase in order to ease the hardship and suffering of the migrants' families and, unlike development aid, which is channelled through government or other official agencies, remittances go straight to those in need. Thus, they serve an insurance role, responding in a countercyclical way to political and economic crises." },
+              { id: 'D', content: "This flow of migrant money has a huge economic and social impact on the receiving countries. It provides cash for food, housing and necessities. It funds education and healthcare and contributes towards the upkeep of the elderly. Extra money is sent for special events such as weddings, funerals or urgent medical procedures and other emergencies. Occasionally it becomes the capital for starting up a small enterprise." },
+              { id: 'E', content: "Unfortunately, recipients hardly ever receive the full value of the money sent back home because of exorbitant transfer fees. Many money transfer companies and banks operate on a fixed fee, which is unduly harsh for those sending small sums at a time. Others charge a percentage, which varies from around 8% to 20% or more dependent on the recipient country. There are some countries where there is a low fixed charge per transaction; however, these cheaper fees are not applied internationally because of widespread concern over money laundering. Whether this is a genuine fear or just an excuse is hard to say. If the recipients live in a small village somewhere, usually the only option is to obtain their money through the local post office. Regrettably, many governments allow post offices to have an exclusive affiliation with one particular money transfer operator so there is no alternative but to pay the extortionate charge." },
+              { id: 'F', content: "The sums of money being discussed here might seem negligible on an individual basis but they are substantial in totality. If the transfer cost could be reduced to no more than one per cent, that would release another $30 billion dollars annually - approximately the total aid budget of the USA, the largest donor worldwide - directly into the hands of the world's poorest. If this is not practicable, governments could at least acknowledge that small remittances do not come from organised crime networks, and ease regulations accordingly. They should put an end to restrictive alliances between post offices and money transfer operators or at least open up the system to competition. Alternately, a non-government humanitarian organisation, which would have the expertise to navigate the elaborate red tape, could set up a non-profit remittance platform for migrants to send money home for little or no cost." },
+              { id: 'G', content: "Whilst contemplating the best system for transmission of migrant earnings to the home country, one should consider the fact that migrants often manage to save reasonable amounts of money in their adopted country. More often than not, that money is in the form of bank deposits earning a tiny percentage of interest, none at all or even a negative rate of interest." },
+              { id: 'H', content: "If a developing country or a large charitable society could sell bonds with a guaranteed return of three or four per cent on the premise that the invested money would be used to build infrastructure in that country, there would be a twofold benefit. Migrants would make a financial gain and see their savings put to work in the development of their country of origin. The ideal point of sale for these bonds would be the channel used for money transfers so that, when migrants show up to make their monthly remittance, they could buy bonds as well. Advancing the idea one step further, why not make this transmission hub the conduit for affluent migrants to donate to worthy causes in their homeland so they may share their prosperity with their compatriots on a larger scale?" }
+            ]
+          },
+          2: {
+            title: "Angelo Mosso's Pioneering Work in the Study of Human Physiology",
+            paragraphs: [
+              { id: 'A', content: "Scientists in the late nineteenth century were beginning to investigate the functions of blood circulation, trying to tease out the reasons for variations in pulse and pressure, and to understand the delivery of energy to the functioning parts of our bodies. Angelo Mosso (1846-1910) was one such pioneer, an Italian physiologist who progressed to become a professor of both pharmacology and physiology at the University of Turin. As was true of many of his enlightened, well-educated contemporaries, Mosso was concerned about the effect of the industrial revolution on the poorer working classes. Hard physical labour and an excessively long working day shortened lives, created conditions conducive to accidents, and crippled the children who were forced into such work at a very early age. One of his most influential contributions to society came from his work and writings on fatigue." },
+              { id: 'B', content: "Early experimenters in any field find themselves having to construct previously unknown equipment to investigate fields of study as yet unexplored. Mosso had reviewed the work of fellow scientists who had worked on isolated muscles, such as those extracted from frogs, and who had observed movement and fatigue when these were stimulated electrically. He found two major issues with their methodolgy: there was a lack of evidence both that the findings would be relevant to the human body, and that the dynamometers used to measure the strength of movement could give accurate results. He therefore became determined to construct an instrument to measure human muscular effort and record the effects of fatigue with greater precision." },
+              { id: 'C', content: "His device was named an ergograph, meaning \"work recorder\". To modern eyes it seems remarkably simple, but such is true of many inventions when viewed with hindsight. It allowed the measurement of the work done by a finger as it was repetitively curled up and straightened. There were basically two parts. One held the hand in position, palm up, by strapping down the arm to a wooden base; this was important to prevent any unintentional movement of the hand while the experiment was taking place. The other part was a recording device that drew the movements of the finger vertically on a paper cylinder which revolved by tiny increments as the experiment proceeded. The index and ring fingers of the hand were each inserted into a brass tube to hold them still. The middle finger was encircled with a leather ring tied to a wire which was connected to a weight after passing through a pulley. The finger had to raise and lower the weight, with the length and speed of these flexions recorded on the paper by a stylus. In this way, he not only learned the fatigue profiles of his subjects but could observe a relationship between performance, tiredness and the emotional state of his subjects." },
+              { id: 'D', content: "Mosso's interest in the interaction between psychology and physiology led to another machine and further groundbreaking research. He was intrigued to observe the pulsing of circulating blood in patients who had suffered traumatic damage to the skull, or cranium. In these patients, a lack of bone covering the brain allowed the strength of the heart's pumping to be seen beneath the skin. He carried out experiments to see whether certain intellectual activities, such as reading or solving a problem, or emotional responses, such as to a sudden noise, would affect the supply of blood to the brain. He detected some changes in blood supply, and then wanted to find out if the same would be true of individuals with no cranial damage." },
+              { id: 'E', content: "His solution was to design another instrument to measure brain activity in uninjured subjects. He designed a wooden table-top for the human subject to lie on, which was placed over another table, balanced on a fulcrum (rather like a seesaw) that would allow the subject to tilt, with head a little higher than feet, or vice versa. Heavy weights beneath the table maintained the stability of the whole unit as the intention was to measure very tiny variations in the balance of the person. Once the upper table was adjusted to be perfectly horizontal, only the breathing created a slight regular oscillation. This breathing and pulses measured in the hands and feet were also recorded." },
+              { id: 'F', content: "Once all was in equilibrium, Mosso would ring a bell, while out of sight of the subject. His hypothesis was that this aural stimulus would have to be interpreted by the brain, and that an increased blood flow would result in a slight head-down tilt of the table. Mosso followed the bell-ringing with a wide range of intellectual stimuli, such as reading from a newspaper, a novel, or a university text. He was no doubt well satisfied to observe that the tilting of the table increased proportionately to the difficulty of the subject matter and the intellectual requirements of the task. Mosso's experiments indicated a direct link between mental effort and an increased volume of blood in the brain. This research was one of the first attempts to 'image' the brain, which is now performed by technology such as MRI (magnetic resonance imaging), commonly used in making medical diagnoses today." }
+            ]
+          },
+          3: {
+            title: "Who Wrote Shakespeare?",
+            content: "William Shakespeare is the Western world's most famous playwright - but did he really write the plays and poems that are attributed to him?\n\nThere has been controversy over the authorship of the works of Shakespeare since the nineteenth century. The initial impetus for this debate came from the fact that nineteenth century critics, poets and readers were puzzled and displeased when they were presented with the few remaining scraps of evidence about the life of \"Shakspere\", as his name was most commonly spelled. The author they admired and loved must have been scholarly and intellectual, linguistically gifted, knowledgeable about the lifestyle of those who lived in royal courts, and he appeared to have travelled in Europe.\n\nThese critics felt that the son of a Stratford glove-maker, whose only definite recorded dealings concerned buying property, some minor legal action over a debt, tax records, and the usual entries for birth, marriage and death, could not possibly have written poetry based on Classical models. Nor could he have been responsible for the wide-ranging intellectually and emotionally challenging plays for which he is so famous, because, in the nineteenth century world-view, writers inevitably called upon their own experiences for the content of their work.\n\nBy compiling the various bits and pieces of surviving evidence, most Shakespearian scholars have satisfied themselves that the man from Stratford is indeed the legitimate author of all the works published under his name. A man called William Shakespeare did become a member of the Lord Chamberlain's Men, the dramatic company that owned the Globe and Blackfriars Theatres, and he enjoyed exclusive rights to the publication and performance of the dramatic works. There are 23 extant contemporary documents that indicate that he was a well-known poet or playwright. Publication and even production of plays had to be approved by government officials, who are recorded as having met with Shakespeare to discuss authorship and licensing of some of the plays, for example, 'King Lear'.\n\nHowever, two Elizabethans who are still strongly defended as the true Shakespeare are Christopher Marlowe and Edward de Vere, both of whom would have benefited from writing under the secrecy of an assumed name.\n\nMarlowe's writing is acknowledged by all as the precursor of Shakespeare's dramatic verse style: declamatory blank verse that lifted and ennobled the content of the plays. The records indicate that he was accused of being an atheist: denying the existence of God would have been punishable by the death penalty. He is recorded as having 'died' in a street fight before Shakespeare's greatest works were written, and therefore it is suggested that he may have continued producing literary works while in hiding from the authorities.\n\nDe Vere was Earl of Oxford and an outstanding Classical scholar as a child. He was a strong supporter of the arts, including literature, music and acting. He is also recorded as being a playwright, although no works bearing his name still exist. However, in 16th century England it was not acceptable for an aristocrat to publish verse for ordinary people, nor to have any personal dealings with the low-class denizens of popular theatre.\n\nTo strengthen the case for their respective alternatives, literary detectives have looked for relationships between the biographies of their chosen authors and the published works of Shakespeare. However, during the sixteenth and seventeenth centuries, there was no tradition of basing plays on the author's own life experiences, and therefore, the focus of this part of the debate has shifted to the sonnets. These individual poems of sixteen lines are sincerely felt reactions to emotionally charged situations such as love and death, a goldmine for the biographically inclined researcher.\n\nThe largest group of these poems express love and admiration and, interestingly, they are written to a \"Mr W.H.\" This person is clearly a nobleman, yet he is sometimes given forthright advice by the poet, suggesting that the writing comes from a mature father figure. How can de Vere or Marlowe be established as the author of the sonnets?\n\nAs the son of a tradesman, Marlowe had no aristocratic status; unlike Shakespeare, however, he did attend and excel at Cambridge University where he mingled with the wealthy. Any low-born artist needed a rich patron, and such is the argument for his authorship of the sonnets. The possible recipient of these sonnets is Will Hatfield, a minor noble who was wealthy and could afford to contribute to the arts; this young man's friendship would have assisted a budding poet and playwright. Marlowe's defenders contend that expressions of love between men were common at this time and had none of the homosexual connotations that Westerners of the twenty-first century may ascribe to them.\n\nThe Earl of Oxford had no need of a wealthy patron. The object of De Vere's sonnets, it is suggested, is Henry Wriothesley, Earl of Southampton, whose name only fits the situation if one accepts that it is not uncommon to reverse the first and surnames on formal occasions. De Vere was a rash and careless man and, because of his foolish behaviour, he fell out of favour with Queen Elizabeth herself. He needed, not an artistic patron, but someone like Henry to put in a good word for him in the complex world of the royal court. This, coupled with a genuine affection for the young man, may have inspired the continuing creation of poems addressed to him. Some even postulate that the mix of love and stern advice may stem from the fact that Henry was de Vere's illegitimate son, though there is no convincing evidence of this fact."
+          }
+        };
+
+        const questions = {
+          section1: [
+            {
+              id: 'q1-7', type: 'MatchingHeadings', title: 'Questions 1-7',
+              instructions: 'Reading Passage 1 has seven paragraphs, A-H. Choose the correct heading for the paragraphs from the list of headings below.',
+              questionNumbers: [1, 2, 3, 4, 5, 6, 7],
+              headings: [
+                { id: 'i', text: 'Stability of remittances in difficult times' }, { id: 'ii', text: 'Effect of cutback in transaction fees' },
+                { id: 'iii', text: 'Targeted investments and contributions' }, { id: 'iv', text: 'Remittances for business investment' },
+                { id: 'v', text: 'How to lower transmission fees' }, { id: 'vi', text: 'Motivations behind remittances' },
+                { id: 'vii', text: 'Losses incurred during transmission' }, { id: 'viii', text: 'Remittances worth more than official aid' },
+                { id: 'ix', text: 'How recipients utilise remittances' }, { id: 'x', text: 'Frequency and size of remittances' },
+              ],
+              prompts: [
+                { number: 1, paragraph: 'A' }, { number: 2, paragraph: 'B' }, { number: 3, paragraph: 'C' },
+                { number: 4, paragraph: 'D' }, { number: 5, paragraph: 'E' }, { number: 6, paragraph: 'F' },
+                { number: 7, paragraph: 'H' },
+              ]
+            },
+            {
+              id: 'q8-13', type: 'FillInTheBlanks', title: 'Questions 8-13',
+              instructions: 'Complete the summary below. Choose NO MORE THAN TWO WORDS from the passage for each answer.',
+              questionNumbers: [8, 9, 10, 11, 12, 13],
+              text: [
+                { type: 'text', content: 'Countries are unwilling to enforce lower transaction fees as they are worried about ' }, { type: 'blank', number: 8 },
+                { type: 'text', content: ' and villagers lose out when post offices have a special relationship with one particular money transfer agency. Each remittance might be small but the total cost of remittance fees is huge. Governments should ' }, { type: 'blank', number: 9 },
+                { type: 'text', content: ' on small amounts and end the current post office system or make it more competitive. Another idea would be for a large non-profit association, capable of handling complicated ' }, { type: 'blank', number: 10 },
+                { type: 'text', content: ' to take charge of migrant remittances. Migrants who send money home are able to save money, too, but it receives little or no interest from ' }, { type: 'blank', number: 11 },
+                { type: 'text', content: '. If a country or organisation sold bonds that earned a reasonable rate of interest for the investor, that money could fund the development of homeland ' }, { type: 'blank', number: 12 },
+                { type: 'text', content: '. The bonds could be sold at the remittance centre, which could also take donations from ' }, { type: 'blank', number: 13 },
+                { type: 'text', content: ' to fund charitable projects in their home country.' },
+              ]
+            }
+          ],
+          section2: [
+            {
+              id: 'q14-19', type: 'MatchingHeadings', title: 'Questions 14-19',
+              instructions: 'Reading Passage 2 has six paragraphs, A-F. Choose the correct heading for paragraphs A-F from the list of headings below.',
+              questionNumbers: [14, 15, 16, 17, 18, 19],
+              headings: [
+                { id: 'i', text: 'A finely balanced measuring machine' }, { id: 'ii', text: 'Head injuries are a window into the brain' },
+                { id: 'iii', text: 'Measuring changes in body weight' }, { id: 'iv', text: 'Measuring fatigue through finger movements' },
+                { id: 'v', text: 'Reasons for the development of the ergograph' }, { id: 'vi', text: 'Effects of fatigue on young factory workers' },
+                { id: 'vii', text: 'Reasons behind early physiological research' }, { id: 'viii', text: 'Estimating the difficulty of reading tasks' },
+                { id: 'ix', text: 'Mosso\'s theory supported by experimental results' },
+              ],
+              prompts: [
+                { number: 14, paragraph: 'A' }, { number: 15, paragraph: 'B' }, { number: 16, paragraph: 'C' },
+                { number: 17, paragraph: 'D' }, { number: 18, paragraph: 'E' }, { number: 19, paragraph: 'F' },
+              ]
+            },
+            {
+              id: 'q20', type: 'MultipleChoice', title: 'Question 20', questionNumbers: [20],
+              instructions: 'Choose the correct letter, A, B, C or D.',
+              prompt: {
+                number: 20, question: 'The text suggests that Mosso undertook his original research because he wanted to',
+                options: [
+                  { letter: 'A', text: 'support previous researchers\' results.' }, { letter: 'B', text: 'make a more accurate measuring device.' },
+                  { letter: 'C', text: 'rebuild an existing machine.' }, { letter: 'D', text: 'study the movement of frog muscles.' }
+                ]
+              }
+            },
+            {
+                id: 'q21-25', type: 'LabelDiagram', title: 'Questions 21-25', questionNumbers: [21, 22, 23, 24, 25],
+                instructions: 'Label the diagram below. Choose NO MORE THAN TWO WORDS from the passage for each answer.',
+                image: 'https://i.postimg.cc/MKGQz2FH/ergograph-test6.png',
+                prompts: [ { number: 21 }, { number: 22 }, { number: 23 }, { number: 24 }, { number: 25 } ]
+            },
+            {
+                id: 'q26', type: 'MultipleChoice', title: 'Question 26', questionNumbers: [26],
+                instructions: 'Choose the correct letter, A, B, C or D.',
+                prompt: {
+                    number: 26, question: 'What is the writer\'s overall purpose in writing this article?',
+                    options: [
+                        { letter: 'A', text: 'to describe Mosso\'s early research into human physiology' }, { letter: 'B', text: 'to argue that Angelo Mosso was an original designer' },
+                        { letter: 'C', text: 'to discuss differences between Mosso and other early researchers' }, { letter: 'D', text: 'to link Mosso\'s experiments to modern brain imaging technology' }
+                    ]
+                }
+            }
+          ],
+          section3: [
+            {
+                id: 'q27-29', type: 'MultipleChoiceMultipleAnswers', title: 'Questions 27-29', questionNumbers: [27, 28, 29],
+                instructions: 'Choose THREE letters A - G. Which THREE of the following are given as reasons for the arguments that someone else wrote Shakespeare\'s works?',
+                options: [
+                    { letter: 'A', text: 'Shakespeare did not come from Stratford.' }, { letter: 'B', text: 'We have little information about Shakespeare\'s life.' },
+                    { letter: 'C', text: 'We know that Shakespeare did not go overseas.' }, { letter: 'D', text: 'Shakespeare went to prison for owing money.' },
+                    { letter: 'E', text: 'Shakespeare spoke only the English language.' }, { letter: 'F', text: 'Shakespeare\'s life appears to have been limited.' },
+                    { letter: 'G', text: 'The plays suggest that the writer was familiar with a high-class lifestyle.' },
+                ]
+            },
+            {
+                id: 'q30-35', type: 'TableCompletion', title: 'Questions 30-35', questionNumbers: [30, 31, 32, 33, 34, 35],
+                instructions: 'Complete the table below. Choose NO MORE THAN TWO WORDS from the passage for each answer.',
+                headers: ['Author', 'Evidence'],
+                rows: [
+                    { author: 'Shakespeare', evidence: ['He was an actor.', 'He had 30: ___ for printing and putting on the plays.', '31: ___ consulted Shakespeare before approving performance of the plays.'] },
+                    { author: 'Marlowe', evidence: ['The plays use his writing style.', 'He was in trouble because some people said he was an 32: ___.', 'He may have faked his own death in a 33: ___.', 'He needed to write in secrecy.'] },
+                    { author: 'De Vere', evidence: ['He was an excellent student.', 'He supported other writers, musicians and actors.', 'He may have been a 34: ___.', 'As a member of the upper class he could not write for 35: ___.'] }
+                ]
+            },
+            {
+                id: 'q36', type: 'MultipleChoice', title: 'Question 36', questionNumbers: [36],
+                instructions: 'Choose the correct letter, A, B, C or D.',
+                prompt: {
+                    number: 36, question: 'The sonnets are useful for researchers because they are',
+                    options: [
+                        { letter: 'A', text: 'shorter and easier than the plays.' }, { letter: 'B', text: 'all written to the same person.' },
+                        { letter: 'C', text: 'more personal than the plays.' }, { letter: 'D', text: 'addressed to a lower-class person.' }
+                    ]
+                }
+            },
+            {
+                id: 'q37-40', type: 'MatchingEndings', title: 'Questions 37-40', questionNumbers: [37, 38, 39, 40],
+                instructions: 'Complete each sentence with the correct ending, A-G, below.',
+                beginnings: [
+                    { number: 37, text: 'W.H. was probably a young man because' }, { number: 38, text: 'W.H. could have been Marlowe\'s friend because' },
+                    { number: 39, text: 'W.H.\'s name could have been Henry Wriothesley because' }, { number: 40, text: 'W.H. could have been De Vere\'s friend because' },
+                ],
+                endings: [
+                    { letter: 'A', text: 'W.H. had some influence with important people.' }, { letter: 'B', text: 'the poems are addressed to the writer\'s child.' },
+                    { letter: 'C', text: 'the content of the poems strongly suggests this.' }, { letter: 'D', text: 'W.H. was able to provide financial support.' },
+                    { letter: 'E', text: 'W.H. had been to Cambridge University.' }, { letter: 'F', text: 'W.H. had a lot of high-class enemies.' },
+                    { letter: 'G', text: 'the poet may have changed the order of his initials.' },
+                ]
+            }
+          ]
+        };
+
+        const correctAnswers = {
+          1: { text: 'viii', explanation: 'Paragraph A states remittances add up to "about triple the amount officially spent on development aid".' },
+          2: { text: 'vi', explanation: 'Paragraph B describes the motivations for sending money, such as "altruism", "exchange for...services", "investment", or "repayment of a loan".' },
+          3: { text: 'i', explanation: 'Paragraph C explains that remittances "do not suddenly dry up" during crises and actually increase, showing their stability.' },
+          4: { text: 'ix', explanation: 'Paragraph D lists how recipients use the money: for "food, housing and necessities", "education and healthcare", etc.' },
+          5: { text: 'vii', explanation: 'Paragraph E details how recipients "hardly ever receive the full value" due to "exorbitant transfer fees".' },
+          6: { text: 'v', explanation: 'Paragraph F suggests ways to lower costs, such as easing regulations and ending restrictive alliances to "open up the system to competition".' },
+          7: { text: 'iii', explanation: 'Paragraph H proposes selling bonds for "infrastructure" development and using the hub for donations to "worthy causes".' },
+          8: { text: 'money laundering', explanation: 'The passage says cheaper fees are not applied internationally because of "widespread concern over money laundering".' },
+          9: { text: 'ease regulations', explanation: 'The passage suggests governments could "ease regulations accordingly" for small remittances.' },
+          10: { text: 'red tape', explanation: 'A non-government organisation would have the "expertise to navigate the elaborate red tape".' },
+          11: { text: 'bank deposits', explanation: 'Migrants\' savings are often in the form of "bank deposits earning a tiny percentage of interest".' },
+          12: { text: 'infrastructure', explanation: 'Invested money from bonds would be "used to build infrastructure in that country".' },
+          13: { text: 'affluent migrants', explanation: 'The hub could be a conduit for "affluent migrants to donate to worthy causes".' },
+          14: { text: 'vii', explanation: 'Paragraph A discusses Mosso\'s concern about the "effect of the industrial revolution on the poorer working classes" as a motivation for his research on fatigue.' },
+          15: { text: 'v', explanation: 'Paragraph B explains Mosso found issues with existing methods and became "determined to construct an instrument... with greater precision".' },
+          16: { text: 'iv', explanation: 'Paragraph C describes the ergograph, which "allowed the measurement of the work done by a finger as it was repetitively curled up and straightened".' },
+          17: { text: 'ii', explanation: 'Paragraph D describes Mosso\'s intrigue with patients who had "suffered traumatic damage to the skull", allowing him to observe blood flow to the brain.' },
+          18: { text: 'i', explanation: 'Paragraph E describes the design of a tilting table "balanced on a fulcrum" to "measure very tiny variations in the balance of the person".' },
+          19: { text: 'ix', explanation: 'Paragraph F states Mosso was "well satisfied to observe that the tilting of the table increased proportionately to the difficulty" of tasks, supporting his hypothesis.' },
+          20: { text: 'B', explanation: 'The passage states he found issues with existing dynamometers and wanted to "construct an instrument to measure human muscular effort... with greater precision".' },
+          21: { text: 'wooden base', explanation: 'The arm was strapped "down the arm to a wooden base".' },
+          22: { text: 'paper cylinder', explanation: 'Movements were drawn "vertically on a paper cylinder".' },
+          23: { text: 'brass tube', explanation: 'The index and ring fingers were "inserted into a brass tube to hold them still".' },
+          24: { text: 'weight', explanation: 'A wire was "connected to a weight after passing through a pulley".' },
+          25: { text: 'stylus', explanation: 'Flexions were "recorded on the paper by a stylus".' },
+          26: { text: 'A', explanation: 'The article details Mosso\'s key experiments and inventions related to fatigue and brain activity, which falls under the study of human physiology.' },
+          27: { text: 'B', explanation: 'The text mentions critics were "puzzled and displeased when they were presented with the few remaining scraps of evidence about the life of \'Shakspere\'".' },
+          28: { text: 'F', explanation: 'The author is described as the "son of a Stratford glove-maker, whose only definite recorded dealings concerned buying property, some minor legal action over a debt, tax records...", suggesting a limited life experience for such grand works.' },
+          29: { text: 'G', explanation: 'The author they admired must have been "knowledgeable about the lifestyle of those who lived in royal courts, and he appeared to have travelled in Europe", which contrasted with the evidence of Shakespeare\'s life.' },
+          30: { text: 'exclusive rights', explanation: 'Shakespeare "enjoyed exclusive rights to the publication and performance of the dramatic works".' },
+          31: { text: 'government officials', explanation: 'Publication had to be approved by "government officials, who are recorded as having met with Shakespeare".' },
+          32: { text: 'an atheist', explanation: 'Marlowe "was accused of being an atheist".' },
+          33: { text: 'street fight', explanation: 'He is recorded as having "\'died\' in a street fight".' },
+          34: { text: 'playwright', explanation: 'De Vere is "also recorded as being a playwright, although no works bearing his name still exist".' },
+          35: { text: 'ordinary people', explanation: 'It was not acceptable for an aristocrat to "publish verse for ordinary people".' },
+          36: { text: 'C', explanation: 'The sonnets are described as "sincerely felt reactions to emotionally charged situations such as love and death", making them more personal.' },
+          37: { text: 'C', explanation: 'The advice given to W.H. suggests the writing comes "from a mature father figure", implying W.H. is younger.' },
+          38: { text: 'D', explanation: 'Marlowe needed a "rich patron", and W.H. (Will Hatfield) was a "minor noble who was wealthy and could afford to contribute to the arts".' },
+          39: { text: 'G', explanation: 'The name Henry Wriothesley fits if one accepts "it is not uncommon to reverse the first and surnames on formal occasions" (H.W. becoming W.H.).' },
+          40: { text: 'A', explanation: 'De Vere needed someone like Henry "to put in a good word for him in the complex world of the royal court", implying W.H. had influence.' }
+        };
+
+        // --- APP STATE ---
+        let state = {
+            answers: {},
+            checkedQuestions: new Set(),
+            score: 0,
+            timerId: null
+        };
+
+        // --- DOM ELEMENTS ---
+        const app = document.getElementById('app');
+        const sectionsContainer = document.getElementById('sections-container');
+        const timerEl = document.getElementById('timer');
+        const finalScoreContainer = document.getElementById('final-score-container');
+        const finalScoreEl = document.getElementById('final-score');
+        const resetButton = document.getElementById('reset-button');
+
+        // --- RENDER FUNCTIONS ---
+
+        function createQuestionBlock(q, questionContentHTML) {
+            const isBlockChecked = q.questionNumbers.every(n => state.checkedQuestions.has(n));
+            return `
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
+                    <h3 class="font-bold text-lg text-gray-800 border-b pb-2 mb-4">${q.title}</h3>
+                    <p class="text-sm text-gray-600 mb-4 italic">${q.instructions}</p>
+                    <div class="mb-6">${questionContentHTML}</div>
+                    ${!isBlockChecked ? `<button data-question-numbers="${q.questionNumbers.join(',')}" class="check-button bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors w-full">Check this exercise</button>` : ''}
+                </div>
+            `;
+        }
+        
+        function createExplanation(number, isCorrect) {
+            if (isCorrect) {
+                return `<span class="text-xs text-green-600 font-semibold">✅ Correct</span>`;
+            }
+            const ca = correctAnswers[number];
+            return `
+                <div class="mt-2 p-2 bg-red-50 rounded-md border border-red-200 text-xs text-gray-700">
+                    <p><strong class="font-semibold text-red-700">Correct Answer:</strong> ${ca.text}</p>
+                    ${ca.explanation ? `<p class="mt-1"><strong class="font-semibold">Explanation:</strong> ${ca.explanation}</p>` : ''}
+                </div>
+            `;
+        }
+
+        function renderAll() {
+            const allSections = [
+                { id: 1, title: 'Section 1', passage: passages[1], questions: questions.section1 },
+                { id: 2, title: 'Section 2', passage: passages[2], questions: questions.section2 },
+                { id: 3, title: 'Section 3', passage: passages[3], questions: questions.section3 },
+            ];
+
+            let sectionsHTML = '';
+            allSections.forEach((sec, index) => {
+                const isHidden = index > 0 ? 'hidden' : '';
+                sectionsHTML += `
+                    <div id="section-${sec.id}-panel" class="tab-panel ${isHidden}">
+                        <main class="grid grid-cols-1 lg:grid-cols-5 lg:gap-8">
+                            <aside class="lg:col-span-3 lg:sticky top-8 self-start bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8 lg:mb-0 max-h-[85vh] overflow-y-auto">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">${sec.passage.title}</h3>
+                                <div class="prose prose-sm max-w-none">
+                                    ${sec.passage.paragraphs 
+                                        ? sec.passage.paragraphs.map(p => `<p><strong class="font-bold text-gray-500 mr-2">[${p.id}]</strong>${p.content}</p>`).join('')
+                                        : sec.passage.content.split('\n\n').map(p => `<p>${p}</p>`).join('')
+                                    }
+                                </div>
+                            </aside>
+                            <section class="lg:col-span-2">
+                                ${sec.questions.map(q => renderQuestion(q)).join('')}
+                            </section>
+                        </main>
+                    </div>
+                `;
+            });
+            sectionsContainer.innerHTML = sectionsHTML;
+            addEventListeners();
+            updateScoreAndFinalMessage();
+        }
+
+        function renderQuestion(q) {
+            let contentHTML = '';
+            switch (q.type) {
+                case 'MatchingHeadings':
+                    contentHTML = `
+                        <div class="space-y-4">
+                            ${q.prompts.map(p => {
+                                const isChecked = state.checkedQuestions.has(p.number);
+                                const isCorrect = isChecked && state.answers[p.number]?.toLowerCase() === correctAnswers[p.number]?.text.toLowerCase();
+                                const bgColor = isChecked ? (isCorrect ? 'bg-green-100 border-green-400' : 'bg-red-100 border-red-400') : 'bg-gray-50 border-gray-300';
+                                return `
+                                    <div>
+                                        <div class="flex items-center gap-4">
+                                            <label for="q-${p.number}" class="font-semibold w-40">Question ${p.number} (Para ${p.paragraph})</label>
+                                            <div class="flex-grow">
+                                                <select id="q-${p.number}" data-question-number="${p.number}" class="answer-input w-full p-2 border rounded-md transition-colors duration-200 ${bgColor}" ${isChecked ? 'disabled' : ''}>
+                                                    <option value="" ${!state.answers[p.number] ? 'selected' : ''} disabled>Select a heading...</option>
+                                                    ${q.headings.map(h => `<option value="${h.id}" ${state.answers[p.number] === h.id ? 'selected' : ''}>${h.id}. ${h.text}</option>`).join('')}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        ${isChecked ? `<div class="pl-44">${createExplanation(p.number, isCorrect)}</div>` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                    break;
+                
+                case 'FillInTheBlanks':
+                    let blankIndex = 0;
+                    contentHTML = `<div class="text-gray-700 leading-relaxed">${q.text.map(part => {
+                        if (part.type === 'text') return `<span>${part.content}</span>`;
+                        const p = part;
+                        const isChecked = state.checkedQuestions.has(p.number);
+                        const isCorrect = isChecked && state.answers[p.number]?.toLowerCase().trim() === correctAnswers[p.number]?.text.toLowerCase().trim();
+                        const bgColor = isChecked ? (isCorrect ? 'bg-green-100 border-green-400' : 'bg-red-100 border-red-400') : 'bg-gray-50 border-gray-300';
+                        return `
+                            <div class="inline-block w-48 mx-1 align-top">
+                                <input type="text" id="q-${p.number}" data-question-number="${p.number}" value="${state.answers[p.number] || ''}" class="answer-input w-full p-2 border rounded-md ${bgColor}" ${isChecked ? 'disabled' : ''}>
+                                ${isChecked ? createExplanation(p.number, isCorrect) : ''}
+                            </div>
+                        `;
+                    }).join('')}</div>`;
+                    break;
+
+                case 'MultipleChoice':
+                    const pMC = q.prompt;
+                    const isCheckedMC = state.checkedQuestions.has(pMC.number);
+                    const selectedAnswerMC = state.answers[pMC.number];
+                    const isCorrectMC = isCheckedMC && selectedAnswerMC === correctAnswers[pMC.number].text;
+                    contentHTML = `
+                        <p class="font-semibold mb-3">${pMC.number}. ${pMC.question}</p>
+                        <div class="space-y-2">
+                            ${pMC.options.map(opt => {
+                                const isSelected = selectedAnswerMC === opt.letter;
+                                const isCorrectOption = correctAnswers[pMC.number].text === opt.letter;
+                                let bgClass = 'bg-white';
+                                if (isCheckedMC) {
+                                    if (isCorrectOption) bgClass = 'bg-green-100';
+                                    else if (isSelected && !isCorrectOption) bgClass = 'bg-red-100';
+                                }
+                                return `
+                                    <label class="flex items-center p-3 rounded-lg border cursor-pointer transition-all ${bgClass} ${isSelected && !isCheckedMC ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}">
+                                        <input type="radio" name="q-${pMC.number}" value="${opt.letter}" data-question-number="${pMC.number}" class="answer-input mr-3 h-4 w-4 text-blue-600" ${isSelected ? 'checked' : ''} ${isCheckedMC ? 'disabled' : ''}>
+                                        <span class="font-bold mr-2">${opt.letter}</span>
+                                        <span>${opt.text}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        ${isCheckedMC && !isCorrectMC ? `<div class="mt-2">${createExplanation(pMC.number, isCorrectMC)}</div>` : ''}
+                    `;
+                    break;
+                
+                case 'LabelDiagram':
+                    contentHTML = `
+                        <div class="flex flex-col lg:flex-row gap-8">
+                            <div class="lg:w-1/2"><img src="${q.image}" alt="Ergograph diagram" class="rounded-lg border border-gray-300 p-2 bg-white"/></div>
+                            <div class="lg:w-1/2 space-y-2">
+                                ${q.prompts.map(p => {
+                                    const isChecked = state.checkedQuestions.has(p.number);
+                                    const isCorrect = isChecked && state.answers[p.number]?.toLowerCase().trim().replace(/^(a|the)\s/,'') === correctAnswers[p.number]?.text.toLowerCase().trim().replace(/^(a|the)\s/,'');
+                                    const bgColor = isChecked ? (isCorrect ? 'bg-green-100 border-green-400' : 'bg-red-100 border-red-400') : 'bg-gray-50 border-gray-300';
+                                    return `
+                                        <div>
+                                            <div class="flex items-center gap-3">
+                                                <label for="q-${p.number}" class="font-semibold w-24">No. ${p.number}</label>
+                                                <div class="flex-grow">
+                                                    <input type="text" id="q-${p.number}" data-question-number="${p.number}" value="${state.answers[p.number] || ''}" class="answer-input w-full p-2 border rounded-md ${bgColor}" ${isChecked ? 'disabled' : ''}>
+                                                </div>
+                                            </div>
+                                            ${isChecked ? createExplanation(p.number, isCorrect) : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'MultipleChoiceMultipleAnswers':
+                    const isBlockCheckedMCMA = q.questionNumbers.every(n => state.checkedQuestions.has(n));
+                    const correctGroupMCMA = q.questionNumbers.map(n => correctAnswers[n].text);
+                    contentHTML = `
+                        <div class="grid grid-cols-1 gap-2">
+                            ${q.options.map(opt => {
+                                const selectedAnswers = q.questionNumbers.map(n => state.answers[n]).filter(Boolean);
+                                const isSelected = selectedAnswers.includes(opt.letter);
+                                const isCorrect = correctGroupMCMA.includes(opt.letter);
+                                let bgClass = 'bg-white';
+                                if (isBlockCheckedMCMA) {
+                                    if (isCorrect) bgClass = 'bg-green-100';
+                                    else if (isSelected && !isCorrect) bgClass = 'bg-red-100';
+                                }
+                                return `
+                                    <label class="flex items-center p-3 rounded-lg border cursor-pointer transition-all ${bgClass} ${isSelected && !isBlockCheckedMCMA ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}">
+                                        <input type="checkbox" value="${opt.letter}" data-question-group="${q.questionNumbers.join(',')}" class="answer-input-checkbox mr-3 h-4 w-4 text-blue-600 rounded" ${isSelected ? 'checked' : ''} ${isBlockCheckedMCMA || (selectedAnswers.length >= 3 && !isSelected) ? 'disabled' : ''}>
+                                        <span class="font-bold mr-2">${opt.letter}</span>
+                                        <span>${opt.text}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        ${isBlockCheckedMCMA ? `
+                            <div class="mt-4 p-2 bg-gray-50 rounded-md border border-gray-200 text-xs text-gray-700">
+                                <p><strong class="font-semibold">Correct Answers:</strong> ${correctGroupMCMA.join(', ')}</p>
+                                <p class="mt-1"><strong class="font-semibold">Explanation:</strong> The passage mentions there were "few remaining scraps of evidence" (B), that Shakespeare's life as a "son of a Stratford glove-maker" seemed limited (F), and that the author must have been "knowledgeable about the lifestyle of those who lived in royal courts" (G).</p>
+                            </div>
+                        ` : ''}
+                    `;
+                    break;
+                
+                case 'TableCompletion':
+                    contentHTML = `<div class="overflow-x-auto">
+                        <table class="min-w-full border-collapse border border-gray-300">
+                            <thead><tr><th class="border border-gray-300 p-3 bg-gray-100 text-left text-sm font-semibold text-gray-700" colSpan="2">Evidence for Different Authors</th></tr></thead>
+                            <tbody>
+                                ${q.rows.map(row => `
+                                    <tr>
+                                        <td class="border border-gray-300 p-3 bg-gray-50 font-semibold align-top w-1/4">${row.author}</td>
+                                        <td class="border border-gray-300 p-3 align-top">
+                                            <ul class="list-disc list-inside space-y-2">
+                                                ${row.evidence.map(item => `<li>${item.split(/(\d+:\s*_+)/).map(part => {
+                                                    const match = part.match(/(\d+):/);
+                                                    if (!match) return `<span>${part}</span>`;
+                                                    const number = parseInt(match[1], 10);
+                                                    const isChecked = state.checkedQuestions.has(number);
+                                                    const isCorrect = isChecked && state.answers[number]?.toLowerCase().trim() === correctAnswers[number]?.text.toLowerCase().trim();
+                                                    const bgColor = isChecked ? (isCorrect ? 'bg-green-100 border-green-400' : 'bg-red-100 border-red-400') : 'bg-gray-50 border-gray-300';
+                                                    return `<div class="inline-block w-48 mx-1 align-top">
+                                                        <input type="text" id="q-${number}" data-question-number="${number}" value="${state.answers[number] || ''}" class="answer-input w-full p-2 border rounded-md ${bgColor}" ${isChecked ? 'disabled' : ''}>
+                                                        ${isChecked ? createExplanation(number, isCorrect) : ''}
+                                                    </div>`;
+                                                }).join('')}</li>`).join('')}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+                    break;
+                
+                case 'MatchingEndings':
+                    contentHTML = `
+                        <div class="flex flex-col lg:flex-row gap-8">
+                            <div class="lg:w-1/2 space-y-4">
+                                ${q.beginnings.map(b => {
+                                    const isChecked = state.checkedQuestions.has(b.number);
+                                    const isCorrect = isChecked && state.answers[b.number] === correctAnswers[b.number].text;
+                                    const bgColor = isChecked ? (isCorrect ? 'bg-green-100 border-green-400' : 'bg-red-100 border-red-400') : 'bg-gray-50 border-gray-300';
+                                    return `
+                                        <div>
+                                            <div class="flex items-start gap-3">
+                                                <div class="font-semibold pt-2">${b.number}.</div>
+                                                <div class="flex-grow">
+                                                    <p class="mb-2">${b.text}</p>
+                                                    <select id="q-${b.number}" data-question-number="${b.number}" class="answer-input w-full p-2 border rounded-md ${bgColor}" ${isChecked ? 'disabled' : ''}>
+                                                        <option value="" ${!state.answers[b.number] ? 'selected' : ''} disabled>Select...</option>
+                                                        ${q.endings.map(e => `<option value="${e.letter}" ${state.answers[b.number] === e.letter ? 'selected' : ''}>${e.letter}</option>`).join('')}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            ${isChecked ? `<div class="pl-6">${createExplanation(b.number, isCorrect)}</div>` : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div class="lg:w-1/2 p-4 bg-gray-50 rounded-lg border">
+                                <h4 class="font-semibold mb-2 text-gray-700">List of Endings</h4>
+                                <ul class="space-y-1 text-sm">
+                                    ${q.endings.map(e => `<li><span class="font-mono font-bold">${e.letter}</span> ${e.text}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            return createQuestionBlock(q, contentHTML);
+        }
+
+        // --- EVENT HANDLERS & LOGIC ---
+
+        function handleInputChange(e) {
+            const el = e.target;
+            if (el.matches('.answer-input')) {
+                const qNum = parseInt(el.dataset.questionNumber, 10);
+                state.answers[qNum] = el.value;
+            } else if (el.matches('.answer-input-checkbox')) {
+                const group = el.dataset.questionGroup.split(',').map(Number);
+                const value = el.value;
+                const currentSelections = group.map(n => state.answers[n]).filter(Boolean);
+                
+                // Clear old values for the group
+                group.forEach(n => delete state.answers[n]);
+                
+                // Set new values
+                let newSelections = [];
+                if (el.checked) {
+                    newSelections = [...currentSelections, value].filter((v, i, a) => a.indexOf(v) === i).slice(0, 3);
+                } else {
+                    newSelections = currentSelections.filter(v => v !== value);
+                }
+                
+                group.forEach((n, i) => {
+                    if (newSelections[i]) {
+                        state.answers[n] = newSelections[i];
+                    }
+                });
+                renderAll(); // Re-render to update checkbox states
+            }
+        }
+
+        function handleCheckButtonClick(e) {
+            const el = e.target;
+            if (el.matches('.check-button')) {
+                const questionNumbers = el.dataset.questionNumbers.split(',').map(Number);
+                questionNumbers.forEach(n => state.checkedQuestions.add(n));
+                renderAll();
+            }
+        }
+        
+        function handleTabClick(e) {
+            const button = e.target.closest('.tab-button');
+            if (!button) return;
+
+            const targetPanelId = button.dataset.target;
+            
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            button.classList.add('active', 'border-blue-500', 'text-blue-600');
+            button.classList.remove('border-transparent', 'text-gray-500');
+
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+
+            document.querySelector(targetPanelId).classList.remove('hidden');
+        }
+
+        function updateScoreAndFinalMessage() {
+            let totalScore = 0;
+            const sectionScores = { 1: { score: 0, total: 13, checked: 0 }, 2: { score: 0, total: 13, checked: 0 }, 3: { score: 0, total: 14, checked: 0 } };
+
+            const calculateScore = (qNum) => {
+                const userAnswer = state.answers[qNum]?.toString().toLowerCase().trim().replace(/^(a|the)\s/, '');
+                const correctAnswer = correctAnswers[qNum]?.text.toString().toLowerCase().trim().replace(/^(a|the)\s/, '');
+                return (userAnswer && userAnswer === correctAnswer) ? 1 : 0;
+            };
+
+            for (let i = 1; i <= 40; i++) {
+                if (state.checkedQuestions.has(i)) {
+                    if (i <= 13) {
+                        sectionScores[1].score += calculateScore(i);
+                        sectionScores[1].checked++;
+                    } else if (i <= 26) {
+                        sectionScores[2].score += calculateScore(i);
+                        sectionScores[2].checked++;
+                    } else {
+                        if (i >= 27 && i <= 29) continue; // Skip individual multi-choice
+                        sectionScores[3].score += calculateScore(i);
+                        sectionScores[3].checked++;
+                    }
+                }
+            }
+            
+            // Handle special multi-choice group for section 3
+            const multiChoiceGroup = [27, 28, 29];
+            const isMultiChoiceChecked = multiChoiceGroup.every(n => state.checkedQuestions.has(n));
+            if(isMultiChoiceChecked) {
+                const correctGroup = multiChoiceGroup.map(n => correctAnswers[n].text);
+                const answeredGroup = multiChoiceGroup.map(n => state.answers[n]).filter(Boolean);
+                answeredGroup.forEach(ans => {
+                    if (correctGroup.includes(ans)) {
+                        sectionScores[3].score++;
+                    }
+                });
+                sectionScores[3].checked += 3;
+            }
+
+
+            // Update UI for section scores
+            for (let i = 1; i <= 3; i++) {
+                const scoreEl = document.getElementById(`score-section-${i}`);
+                if (scoreEl && sectionScores[i].checked > 0) {
+                    scoreEl.textContent = `(${sectionScores[i].score}/${sectionScores[i].total})`;
+                } else if (scoreEl) {
+                    scoreEl.textContent = '';
+                }
+            }
+
+            totalScore = sectionScores[1].score + sectionScores[2].score + sectionScores[3].score;
+            state.score = totalScore;
+            
+            if (state.checkedQuestions.size >= 40) {
+                finalScoreEl.textContent = `${state.score} / 40`;
+                finalScoreContainer.classList.remove('hidden');
+            } else {
+                finalScoreContainer.classList.add('hidden');
+            }
+        }
+
+        function startTimer(duration) {
+            let timer = duration;
+            state.timerId = setInterval(() => {
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+                timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                if (minutes < 10) {
+                    timerEl.classList.add('text-red-600');
+                }
+                if (--timer < 0) {
+                    clearInterval(state.timerId);
+                    // Auto-check all questions when time is up
+                    const allQNumbers = Array.from({length: 40}, (_, i) => i + 1);
+                    allQNumbers.forEach(n => state.checkedQuestions.add(n));
+                    renderAll();
+                }
+            }, 1000);
+        }
+
+        function resetTest() {
+            clearInterval(state.timerId);
+            state = {
+                answers: {},
+                checkedQuestions: new Set(),
+                score: 0,
+                timerId: null
+            };
+            timerEl.classList.remove('text-red-600');
+            timerEl.textContent = '60:00';
+            renderAll();
+            startTimer(3600);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function addEventListeners() {
+            app.removeEventListener('input', handleInputChange);
+            app.removeEventListener('change', handleInputChange);
+            app.removeEventListener('click', handleCheckButtonClick);
+            
+            app.addEventListener('input', handleInputChange);
+            app.addEventListener('change', handleInputChange); // For selects and radios
+            app.addEventListener('click', handleCheckButtonClick);
+
+            const tabNav = document.getElementById('tab-nav');
+            tabNav.removeEventListener('click', handleTabClick);
+            tabNav.addEventListener('click', handleTabClick);
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            resetButton.addEventListener('click', resetTest);
+            renderAll();
+            startTimer(3600);
+        });
+
+    </script>
+</body>
+</ht
