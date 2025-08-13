@@ -757,37 +757,106 @@
                 return score;
             },
 
+            getListeningBandScore(score) {
+                if (score >= 39) return 9.0;
+                if (score >= 37) return 8.5;
+                if (score >= 35) return 8.0;
+                if (score >= 32) return 7.5;
+                if (score >= 30) return 7.0;
+                if (score >= 26) return 6.5;
+                if (score >= 23) return 6.0;
+                if (score >= 18) return 5.5;
+                if (score >= 16) return 5.0;
+                if (score >= 13) return 4.5;
+                if (score >= 10) return 4.0;
+                if (score >= 6) return 3.5;
+                if (score >= 4) return 3.0;
+                if (score >= 2) return 2.5;
+                return 0;
+            },
+
+            getReadingBandScore(score) {
+                if (score >= 39) return 9.0;
+                if (score >= 37) return 8.5;
+                if (score >= 35) return 8.0;
+                if (score >= 33) return 7.5;
+                if (score >= 30) return 7.0;
+                if (score >= 27) return 6.5;
+                if (score >= 23) return 6.0;
+                if (score >= 19) return 5.5;
+                if (score >= 15) return 5.0;
+                if (score >= 13) return 4.5;
+                if (score >= 10) return 4.0;
+                if (score >= 8) return 3.5;
+                if (score >= 6) return 3.0;
+                if (score >= 4) return 2.5;
+                return 0;
+            },
+
             displayResults(userAnswers, listeningScore, readingScore) {
+                const listeningBand = this.getListeningBandScore(listeningScore);
+                const readingBand = this.getReadingBandScore(readingScore);
+
                 let resultsHTML = `
-                    <div class="text-center mb-6">
-                        <p class="text-lg">Overall Score: <span class="font-bold text-2xl text-blue-600">${listeningScore + readingScore} / 80</span></p>
-                        <div class="flex justify-around mt-4">
-                            <p>Listening: <span class="font-bold">${listeningScore} / 40</span></p>
-                            <p>Reading: <span class="font-bold">${readingScore} / 40</span></p>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-bold border-b pb-2">Answer Key</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Listening Results -->
+                        <div class="border rounded-lg p-4">
+                            <h3 class="text-xl font-bold border-b pb-2 mb-3 text-center">Listening Results</h3>
+                            <div class="text-center mb-4">
+                                <p class="text-lg">Raw Score: <span class="font-bold">${listeningScore} / 40</span></p>
+                                <p class="text-2xl font-bold text-blue-600 mt-1">Band Score: ${listeningBand.toFixed(1)}</p>
+                            </div>
+                            <div class="space-y-2 text-sm">
                 `;
 
-                for (let i = 1; i <= 80; i++) {
+                for (let i = 1; i <= 40; i++) {
                      const qId = `q${i}`;
                      const userAnswer = userAnswers[qId];
                      const correctAnswer = answers[qId];
                      const isCorrect = correctAnswer.split('/').includes(userAnswer);
-                     
                      resultsHTML += `
-                        <div class="flex justify-between items-center text-sm p-2 rounded ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
-                            <span class="font-semibold">Question ${i}:</span>
+                        <div class="flex justify-between items-center p-1 rounded ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
+                            <span class="font-semibold">Q${i}:</span>
                             <div>
                                 <span class="${isCorrect ? 'answer-key-correct' : 'answer-key-incorrect'}">${userAnswer || 'No Answer'}</span>
                                 ${!isCorrect ? `<span class="ml-2 text-green-700 font-semibold">(${correctAnswer.replace('/', ' / ')})</span>` : ''}
                             </div>
+                        </div>`;
+                }
+                
+                resultsHTML += `
+                            </div>
                         </div>
-                     `;
+                        <!-- Reading Results -->
+                        <div class="border rounded-lg p-4">
+                            <h3 class="text-xl font-bold border-b pb-2 mb-3 text-center">Reading Results</h3>
+                            <div class="text-center mb-4">
+                                <p class="text-lg">Raw Score: <span class="font-bold">${readingScore} / 40</span></p>
+                                <p class="text-2xl font-bold text-blue-600 mt-1">Band Score: ${readingBand.toFixed(1)}</p>
+                            </div>
+                            <div class="space-y-2 text-sm">
+                `;
+
+                for (let i = 41; i <= 80; i++) {
+                     const qId = `q${i}`;
+                     const userAnswer = userAnswers[qId];
+                     const correctAnswer = answers[qId];
+                     const isCorrect = correctAnswer.split('/').includes(userAnswer);
+                     resultsHTML += `
+                        <div class="flex justify-between items-center p-1 rounded ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
+                            <span class="font-semibold">Q${i}:</span>
+                            <div>
+                                <span class="${isCorrect ? 'answer-key-correct' : 'answer-key-incorrect'}">${userAnswer || 'No Answer'}</span>
+                                ${!isCorrect ? `<span class="ml-2 text-green-700 font-semibold">(${correctAnswer.replace('/', ' / ')})</span>` : ''}
+                            </div>
+                        </div>`;
                 }
 
-                resultsHTML += `</div>`;
+                resultsHTML += `
+                            </div>
+                        </div>
+                    </div>
+                `;
                 this.resultsContent.innerHTML = resultsHTML;
                 this.resultsOverlay.classList.remove('hidden');
             },
