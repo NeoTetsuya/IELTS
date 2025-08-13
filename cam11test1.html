@@ -598,6 +598,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const app = {
             // State
+            userAnswers: {},
             currentTab: 'listening',
             currentSection: 0,
             timerInterval: null,
@@ -628,6 +629,32 @@
                     btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
                 });
                 this.submitBtn.addEventListener('click', () => this.submitTest());
+                this.rightPane.addEventListener('input', (e) => this.saveAnswer(e));
+            },
+
+            saveAnswer(e) {
+                if (e.target.id || e.target.name) {
+                    const id = e.target.id || e.target.name;
+                    this.userAnswers[id] = e.target.value;
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    const radioInputs = document.querySelectorAll(`input[name="${qId}"]`);
+
+                    if (textInput) {
+                        textInput.value = value;
+                    } else if (radioInputs.length > 0) {
+                        radioInputs.forEach(radio => {
+                            if (radio.value === value) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                }
             },
 
             startTimer() {
@@ -715,34 +742,16 @@
                         }
                     }, { once: true });
                 });
+
+                this.restoreAnswers();
             },
 
             submitTest() {
                 clearInterval(this.timerInterval);
-                const userAnswers = {};
-                const totalQuestions = Object.keys(answers).length;
-                
-                // Collect all answers
-                for (let i = 1; i <= totalQuestions; i++) {
-                    const qId = `q${i}`;
-                    const radioInput = document.querySelector(`input[name="${qId}"]:checked`);
-                    const textInput = document.getElementById(qId);
-
-                    if (radioInput) {
-                        userAnswers[qId] = radioInput.value.trim().toLowerCase();
-                    } else if (textInput) {
-                        userAnswers[qId] = textInput.value.trim().toLowerCase();
-                    } else {
-                         userAnswers[qId] = "";
-                    }
-                }
-
-                // Calculate scores
-                const listeningScore = this.calculateScore(userAnswers, 1, 40);
-                const readingScore = this.calculateScore(userAnswers, 41, 80);
-                
-                // Display results
-                this.displayResults(userAnswers, listeningScore, readingScore);
+                // The this.userAnswers object is already populated by the 'input' event listener
+                const listeningScore = this.calculateScore(this.userAnswers, 1, 40);
+                const readingScore = this.calculateScore(this.userAnswers, 41, 80);
+                this.displayResults(this.userAnswers, listeningScore, readingScore);
             },
 
             calculateScore(userAnswers, startQ, endQ) {
@@ -750,7 +759,7 @@
                 for (let i = startQ; i <= endQ; i++) {
                     const qId = `q${i}`;
                     const correctAnswers = answers[qId].split('/');
-                    if (userAnswers[qId] && correctAnswers.includes(userAnswers[qId])) {
+                    if (userAnswers[qId] && correctAnswers.includes(userAnswers[qId].toLowerCase().trim())) {
                         score++;
                     }
                 }
@@ -811,9 +820,9 @@
 
                 for (let i = 1; i <= 40; i++) {
                      const qId = `q${i}`;
-                     const userAnswer = userAnswers[qId];
+                     const userAnswer = userAnswers[qId] || "";
                      const correctAnswer = answers[qId];
-                     const isCorrect = correctAnswer.split('/').includes(userAnswer);
+                     const isCorrect = correctAnswer.split('/').includes(userAnswer.toLowerCase().trim());
                      resultsHTML += `
                         <div class="flex justify-between items-center p-1 rounded ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
                             <span class="font-semibold">Q${i}:</span>
@@ -839,9 +848,9 @@
 
                 for (let i = 41; i <= 80; i++) {
                      const qId = `q${i}`;
-                     const userAnswer = userAnswers[qId];
+                     const userAnswer = userAnswers[qId] || "";
                      const correctAnswer = answers[qId];
-                     const isCorrect = correctAnswer.split('/').includes(userAnswer);
+                     const isCorrect = correctAnswer.split('/').includes(userAnswer.toLowerCase().trim());
                      resultsHTML += `
                         <div class="flex justify-between items-center p-1 rounded ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
                             <span class="font-semibold">Q${i}:</span>
