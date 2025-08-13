@@ -142,7 +142,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="content-panes">
+    <main id="content-panes" class="content-panes">
         <!-- Left Pane: Passages / Instructions -->
         <div id="left-pane" class="pane bg-white">
             <!-- Content will be loaded here by JS -->
@@ -213,7 +213,7 @@
                         </div>
                     `,
                     questions: `
-                        <h4 class="font-bold mb-2">Questions 1-10</h4>
+                        <h4 class="font-bold mb-2 mt-6">Questions 1-10</h4>
                         <p class="mb-4">Complete the notes below. Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
                         <div class="space-y-3 p-4 border rounded-lg bg-white">
                             <h5 class="font-bold text-center text-lg">HIRING A PUBLIC ROOM</h5>
@@ -262,10 +262,9 @@
                             </button>
                             <p class="text-sm mt-2 text-gray-600">The audio can only be played once.</p>
                         </div>
-                        <div class="mt-4"><img src="https://i.postimg.cc/28ZHGGZM/listeningsection2.png" alt="Map of Fiddy Working Heritage Farm" class="w-full rounded-lg border"></div>
                     `,
                     questions: `
-                        <h4 class="font-bold mb-2">Questions 11-14</h4>
+                        <h4 class="font-bold mb-2 mt-6">Questions 11-14</h4>
                         <p class="mb-4">Complete the notes below. Write <strong>ONE WORD</strong> for each answer.</p>
                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
                             <h5 class="font-bold text-center text-lg">Fiddy Working Heritage Farm</h5>
@@ -278,7 +277,8 @@
                                 <li>not bring <strong>14</strong> <input type="text" id="q14" data-q="14"> into the farm, with certain exceptions</li>
                             </ul>
                         </div>
-                        <h4 class="font-bold mb-2">Questions 15-20</h4>
+                        <div class="mt-4"><img src="https://i.postimg.cc/28ZHGGZM/listeningsection2.png" alt="Map of Fiddy Working Heritage Farm" class="w-full rounded-lg border"></div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 15-20</h4>
                         <p class="mb-4">Label the map. Write the correct letter <strong>A-I</strong> next to Questions 15-20.</p>
                         <div class="space-y-3 p-4 border rounded-lg bg-white">
                             <p><strong>15</strong> Scarecrow <input type="text" maxlength="1" class="w-10 text-center" id="q15" data-q="15"></p>
@@ -306,7 +306,7 @@
                         </div>
                     `,
                     questions: `
-                        <h4 class="font-bold mb-2">Questions 21-30</h4>
+                        <h4 class="font-bold mb-2 mt-6">Questions 21-30</h4>
                         <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
                         <div class="space-y-4 p-4 border rounded-lg bg-white">
                             <div class="q-item">
@@ -388,7 +388,7 @@
                         </div>
                     `,
                     questions: `
-                        <h4 class="font-bold mb-2">Questions 31-40</h4>
+                        <h4 class="font-bold mb-2 mt-6">Questions 31-40</h4>
                         <p class="mb-4">Complete the notes below. Write <strong>ONE WORD ONLY</strong> for each answer.</p>
                         <div class="space-y-3 p-4 border rounded-lg bg-white">
                             <h5 class="font-bold text-center text-lg">Ocean Biodiversity</h5>
@@ -604,8 +604,10 @@
             totalTime: 5400, // 90 minutes total (30 listening + 60 reading)
 
             // Elements
+            contentPanes: document.getElementById('content-panes'),
             leftPane: document.getElementById('left-pane'),
             rightPane: document.getElementById('right-pane'),
+            splitter: document.getElementById('splitter'),
             sectionTabsContainer: document.getElementById('section-tabs'),
             timerEl: document.getElementById('timer'),
             submitBtn: document.getElementById('submit-btn'),
@@ -664,9 +666,29 @@
                 const data = testData[this.currentTab];
                 const sectionData = data.sections[this.currentSection];
 
-                // Load content into panes
-                this.leftPane.innerHTML = sectionData.passage || sectionData.instructions;
-                this.rightPane.innerHTML = sectionData.questions;
+                if (this.currentTab === 'listening') {
+                    // --- Single Column Layout for Listening ---
+                    this.contentPanes.style.gridTemplateColumns = '1fr';
+                    this.leftPane.style.display = 'none';
+                    this.splitter.style.display = 'none';
+                    
+                    // Combine instructions and questions into the single visible pane (right pane)
+                    this.rightPane.innerHTML = `
+                        <div class="max-w-4xl mx-auto">
+                            ${sectionData.instructions}
+                            ${sectionData.questions}
+                        </div>
+                    `;
+                } else { // 'reading' tab
+                    // --- Two Column Layout for Reading ---
+                    this.contentPanes.style.gridTemplateColumns = '1fr 5px 1fr';
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+
+                    // Load content into separate panes
+                    this.leftPane.innerHTML = sectionData.passage || sectionData.instructions;
+                    this.rightPane.innerHTML = sectionData.questions;
+                }
 
                 // Generate section buttons
                 this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
@@ -681,7 +703,6 @@
                 // Add event listeners for audio buttons
                 document.querySelectorAll('.play-audio-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        // Use currentTarget to ensure we get the button element
                         const button = e.currentTarget;
                         const audioId = button.dataset.audioId;
                         const audioEl = document.getElementById(audioId);
@@ -692,7 +713,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 animate-spin" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zM2 10a8 8 0 1116 0 8 8 0 01-16 0z" clip-rule="evenodd" /><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /></svg>
                                 Audio Playing...`;
                         }
-                    }, { once: true }); // Ensure the listener only fires once
+                    }, { once: true });
                 });
             },
 
@@ -772,10 +793,9 @@
             },
 
             initSplitter() {
-                const splitter = document.getElementById('splitter');
                 let isDragging = false;
 
-                splitter.addEventListener('mousedown', (e) => {
+                this.splitter.addEventListener('mousedown', (e) => {
                     e.preventDefault();
                     isDragging = true;
                 });
@@ -783,11 +803,11 @@
                 document.addEventListener('mousemove', (e) => {
                     if (!isDragging) return;
                     e.preventDefault();
-                    const containerRect = splitter.parentElement.getBoundingClientRect();
+                    const containerRect = this.contentPanes.getBoundingClientRect();
                     const newLeftWidth = e.clientX - containerRect.left;
                     if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
                         const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
-                        splitter.parentElement.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                        this.contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
                     }
                 });
 
@@ -803,7 +823,6 @@
 
                     if (selectedText.length > 0) {
                         const range = selection.getRangeAt(0);
-                        // Ensure selection is within a pane
                         if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
                            this.highlightTooltip.style.display = 'none';
                            return;
@@ -815,11 +834,9 @@
                         this.highlightTooltip.style.display = 'block';
 
                         this.highlightTooltip.onclick = () => {
-                            // Check if selection crosses paragraph boundaries
                             const container = range.commonAncestorContainer;
-                            if (container.nodeType === 3) { // Text node
+                            if (container.nodeType === 3) { 
                                 if (range.startContainer.parentElement !== range.endContainer.parentElement) {
-                                    // This check is simple and might not cover all edge cases, but it's a good start.
                                     this.highlightTooltip.style.display = 'none';
                                     return;
                                 }
@@ -829,8 +846,7 @@
                             try {
                                 range.surroundContents(mark);
                             } catch (ex) {
-                                // This can happen if the selection is invalid (e.g., across different block elements)
-                                // We can just ignore the error and not highlight.
+                                // Ignore error
                             } finally {
                                 selection.removeAllRanges();
                                 this.highlightTooltip.style.display = 'none';
