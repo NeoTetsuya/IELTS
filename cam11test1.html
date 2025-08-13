@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        .play-audio-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2563eb;
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-audio-btn:hover {
+            background-color: #1d4ed8;
+        }
+        .play-audio-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .results-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .answer-key-correct {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .answer-key-incorrect {
+            color: #dc2626;
+            font-weight: bold;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator</h1>
+        <div class="flex items-center space-x-4">
+            <div id="timer" class="text-lg font-semibold bg-gray-200 px-4 py-2 rounded-md">90:00</div>
+            <button id="submit-btn" class="bg-green-600 text-white font-bold py-2 px-6 rounded-md hover:bg-green-700 transition-colors">Submit</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <!-- Questions will be loaded here by JS -->
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="listening">Listening</button>
+                <button class="tab-btn" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Results Modal -->
+<div id="results-overlay" class="results-overlay hidden">
+    <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl h-5/6 flex flex-col">
+        <div class="p-6 border-b">
+            <h2 class="text-2xl font-bold text-center">Test Results</h2>
+        </div>
+        <div id="results-content" class="p-6 overflow-y-auto">
+            <!-- Results will be injected here -->
+        </div>
+        <div class="p-4 bg-gray-100 border-t mt-auto">
+             <button onclick="window.location.reload()" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-md hover:bg-blue-700 transition-colors">Take Test Again</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- DATA ---
+    const testData = {
+        listening: {
+            duration: 1800, // 30 minutes
+            sections: [
+                {
+                    title: "Section 1",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 1</h3>
+                        <p class="mb-4">You will hear a telephone conversation between a woman who wants to hire a public room and a man from the council.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                             <audio id="audio-sec1" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/IELTS11_Test1_Section1.mp3"></audio>
+                            <button data-audio-id="audio-sec1" class="play-audio-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                Play Section 1 Audio
+                            </button>
+                            <p class="text-sm mt-2 text-gray-600">The audio can only be played once.</p>
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-10</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <h5 class="font-bold text-center text-lg">HIRING A PUBLIC ROOM</h5>
+                            <p><strong>Example:</strong> the Main Hall - seats 200</p>
+                            <p><strong>Room and cost</strong></p>
+                            <ul>
+                                <li>the <strong>1</strong> <input type="text" id="q1" data-q="1"> Room - seats 100</li>
+                                <li>Cost of Main Hall for Saturday evening: <strong>2</strong> £<input type="text" id="q2" data-q="2"> + £250 deposit</li>
+                                <li>(<strong>3</strong> <input type="text" id="q3" data-q="3"> payment is required)</li>
+                                <li>Cost includes use of tables and chairs and also <strong>4</strong> <input type="text" id="q4" data-q="4"></li>
+                                <li>Additional charge for use of the kitchen: £25</li>
+                            </ul>
+                            <p><strong>Before the event</strong></p>
+                             <ul>
+                                <li>Will need a <strong>5</strong> <input type="text" id="q5" data-q="5"> licence</li>
+                                <li>Need to contact caretaker (Mr Evans) in advance to arrange <strong>6</strong> <input type="text" id="q6" data-q="6"></li>
+                            </ul>
+                            <p><strong>During the event</strong></p>
+                            <ul>
+                                <li>The building is no smoking</li>
+                                <li>The band should use the <strong>7</strong> <input type="text" id="q7" data-q="7"> door at the back</li>
+                                <li>Don't touch the system that controls the volume</li>
+                                <li>For microphones, contact the caretaker</li>
+                            </ul>
+                            <p><strong>After the event</strong></p>
+                            <ul>
+                                <li>Need to know the <strong>8</strong> <input type="text" id="q8" data-q="8"> for the cleaning cupboard</li>
+                                <li>The <strong>9</strong> <input type="text" id="q9" data-q="9"> must be washed and rubbish placed in black bags</li>
+                                <li>All <strong>10</strong> <input type="text" id="q10" data-q="10"> must be taken down</li>
+                                <li>Chairs and tables must be piled up</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 2",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 2</h3>
+                        <p class="mb-4">You will hear a talk about a holiday farm.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg mb-4">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec2" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/IELTS11_Test1_Section2.mp3"></audio>
+                            <button data-audio-id="audio-sec2" class="play-audio-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                Play Section 2 Audio
+                            </button>
+                            <p class="text-sm mt-2 text-gray-600">The audio can only be played once.</p>
+                        </div>
+                        <div class="mt-4"><img src="https://i.postimg.cc/28ZHGGZM/listeningsection2.png" alt="Map of Fiddy Working Heritage Farm" class="w-full rounded-lg border"></div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 11-14</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-center text-lg">Fiddy Working Heritage Farm</h5>
+                            <p><strong>Advice about visiting the farm</strong></p>
+                            <p>Visitors should</p>
+                            <ul>
+                                <li>take care not to harm any <strong>11</strong> <input type="text" id="q11" data-q="11"></li>
+                                <li>not touch any <strong>12</strong> <input type="text" id="q12" data-q="12"></li>
+                                <li>wear <strong>13</strong> <input type="text" id="q13" data-q="13"></li>
+                                <li>not bring <strong>14</strong> <input type="text" id="q14" data-q="14"> into the farm, with certain exceptions</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 15-20</h4>
+                        <p class="mb-4">Label the map. Write the correct letter <strong>A-I</strong> next to Questions 15-20.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>15</strong> Scarecrow <input type="text" maxlength="1" class="w-10 text-center" id="q15" data-q="15"></p>
+                            <p><strong>16</strong> Maze <input type="text" maxlength="1" class="w-10 text-center" id="q16" data-q="16"></p>
+                            <p><strong>17</strong> Café <input type="text" maxlength="1" class="w-10 text-center" id="q17" data-q="17"></p>
+                            <p><strong>18</strong> Black Barn <input type="text" maxlength="1" class="w-10 text-center" id="q18" data-q="18"></p>
+                            <p><strong>19</strong> Covered picnic area <input type="text" maxlength="1" class="w-10 text-center" id="q19" data-q="19"></p>
+                            <p><strong>20</strong> Fiddy House <input type="text" maxlength="1" class="w-10 text-center" id="q20" data-q="20"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 3",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 3</h3>
+                        <p class="mb-4">You will hear a conversation between two students, Greg and Lisa, about a project on gender in physics.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec3" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/IELTS11_Test1_Section3.mp3"></audio>
+                            <button data-audio-id="audio-sec3" class="play-audio-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                Play Section 3 Audio
+                            </button>
+                            <p class="text-sm mt-2 text-gray-600">The audio can only be played once.</p>
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 21-30</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white">
+                            <div class="q-item">
+                                <p><strong>21</strong> The students in Akira Miyake's study were all majoring in</p>
+                                <label class="block"><input type="radio" name="q21" value="A"> A physics.</label>
+                                <label class="block"><input type="radio" name="q21" value="B"> B psychology or physics.</label>
+                                <label class="block"><input type="radio" name="q21" value="C"> C science, technology, engineering or mathematics.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>22</strong> The aim of Miyake's study was to investigate</p>
+                                <label class="block"><input type="radio" name="q22" value="A"> A what kind of women choose to study physics.</label>
+                                <label class="block"><input type="radio" name="q22" value="B"> B a way of improving women's performance in physics.</label>
+                                <label class="block"><input type="radio" name="q22" value="C"> C whether fewer women than men study physics at college.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>23</strong> The female physics students were wrong to believe that</p>
+                                <label class="block"><input type="radio" name="q23" value="A"> A the teachers marked them in an unfair way.</label>
+                                <label class="block"><input type="radio" name="q23" value="B"> B the male students expected them to do badly.</label>
+                                <label class="block"><input type="radio" name="q23" value="C"> C their test results were lower than the male students'.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>24</strong> Miyake's team asked the students to write about</p>
+                                <label class="block"><input type="radio" name="q24" value="A"> A what they enjoyed about studying physics.</label>
+                                <label class="block"><input type="radio" name="q24" value="B"> B the successful experiences of other people.</label>
+                                <label class="block"><input type="radio" name="q24" value="C"> C something that was important to them personally.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>25</strong> What was the aim of the writing exercise done by the subjects?</p>
+                                <label class="block"><input type="radio" name="q25" value="A"> A to reduce stress</label>
+                                <label class="block"><input type="radio" name="q25" value="B"> B to strengthen verbal ability</label>
+                                <label class="block"><input type="radio" name="q25" value="C"> C to encourage logical thinking</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>26</strong> What surprised the researchers about the study?</p>
+                                <label class="block"><input type="radio" name="q26" value="A"> A how few students managed to get A grades</label>
+                                <label class="block"><input type="radio" name="q26" value="B"> B the positive impact it had on physics results for women</label>
+                                <label class="block"><input type="radio" name="q26" value="C"> C the difference between male and female performance</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>27</strong> Greg and Lisa think Miyake's results could have been affected by</p>
+                                <label class="block"><input type="radio" name="q27" value="A"> A the length of the writing task.</label>
+                                <label class="block"><input type="radio" name="q27" value="B"> B the number of students who took part.</label>
+                                <label class="block"><input type="radio" name="q27" value="C"> C the information the students were given.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>28</strong> Greg and Lisa decide that in their own project, they will compare the effects of</p>
+                                <label class="block"><input type="radio" name="q28" value="A"> A two different writing tasks.</label>
+                                <label class="block"><input type="radio" name="q28" value="B"> B a writing task with an oral task.</label>
+                                <label class="block"><input type="radio" name="q28" value="C"> C two different oral tasks.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>29</strong> The main finding of Smolinsky's research was that class teamwork activities</p>
+                                <label class="block"><input type="radio" name="q29" value="A"> A were most effective when done by all-women groups.</label>
+                                <label class="block"><input type="radio" name="q29" value="B"> B had no effect on the performance of men or women.</label>
+                                <label class="block"><input type="radio" name="q29" value="C"> C improved the results of men more than of women.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>30</strong> What will Lisa and Greg do next?</p>
+                                <label class="block"><input type="radio" name="q30" value="A"> A talk to a professor</label>
+                                <label class="block"><input type="radio" name="q30" value="B"> B observe a science class</label>
+                                <label class="block"><input type="radio" name="q30" value="C"> C look at the science timetable</label>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 4",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 4</h3>
+                        <p class="mb-4">You will hear a lecture on ocean biodiversity.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec4" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/IELTS11_Test1_Section4.mp3"></audio>
+                            <button data-audio-id="audio-sec4" class="play-audio-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                Play Section 4 Audio
+                            </button>
+                            <p class="text-sm mt-2 text-gray-600">The audio can only be played once.</p>
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 31-40</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <h5 class="font-bold text-center text-lg">Ocean Biodiversity</h5>
+                            <p><strong>Biodiversity hotspots</strong></p>
+                            <ul>
+                                <li>areas containing many different species</li>
+                                <li>important for locating targets for <strong>31</strong> <input type="text" id="q31" data-q="31"></li>
+                                <li>at first only identified on land</li>
+                            </ul>
+                            <p><strong>Boris Worm, 2005</strong></p>
+                            <ul>
+                                <li>identified hotspots for large ocean predators, e.g. sharks</li>
+                                <li>found that ocean hotspots:</li>
+                                <ul>
+                                    <li>were not always rich in <strong>32</strong> <input type="text" id="q32" data-q="32"></li>
+                                    <li>had higher temperatures at the <strong>33</strong> <input type="text" id="q33" data-q="33"></li>
+                                    <li>had sufficient <strong>34</strong> <input type="text" id="q34" data-q="34"> in the water</li>
+                                </ul>
+                            </ul>
+                             <p><strong>Lisa Ballance, 2007</strong></p>
+                            <ul>
+                                <li>looked for hotspots for marine <strong>35</strong> <input type="text" id="q35" data-q="35"></li>
+                                <li>found these were all located where ocean currents meet</li>
+                            </ul>
+                             <p><strong>Census of Marine Life</strong></p>
+                            <ul>
+                                <li>found new ocean species living:</li>
+                                 <ul>
+                                    <li>under the <strong>36</strong> <input type="text" id="q36" data-q="36"></li>
+                                    <li>near volcanoes on the ocean floor</li>
+                                </ul>
+                            </ul>
+                            <p><strong>Global Marine Species Assessment</strong></p>
+                            <ul>
+                                <li>want to list endangered ocean species, considering:</li>
+                                <ul>
+                                    <li>population size</li>
+                                    <li>geographical distribution</li>
+                                    <li>rate of <strong>37</strong> <input type="text" id="q37" data-q="37"></li>
+                                </ul>
+                                <li>Aim: to assess 20,000 species and make a distribution <strong>38</strong> <input type="text" id="q38" data-q="38"> for each one</li>
+                            </ul>
+                            <p><strong>Recommendations to retain ocean biodiversity</strong></p>
+                            <ul>
+                                <li>increase the number of ocean reserves</li>
+                                <li>establish <strong>39</strong> <input type="text" id="q39" data-q="39"> corridors (e.g. for turtles)</li>
+                                <li>reduce fishing quotas</li>
+                                <li>catch fish only for the purpose of <strong>40</strong> <input type="text" id="q40" data-q="40"></li>
+                            </ul>
+                        </div>
+                    `
+                }
+            ]
+        },
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Crop-growing skyscrapers</h3>
+                        <p class="mb-4">By the year 2050, nearly 80% of the Earth's population will live in urban centres. Applying the most conservative estimates to current demographic trends, the human population will increase by about three billion people by then. An estimated 10<sup>9</sup> hectares of new land (about 20% larger than Brazil) will be needed to grow enough food to feed them, if traditional farming methods continue as they are practised today. At present, throughout the world, over 80% of the land that is suitable for raising crops is in use. Historically, some 15% of that has been laid waste by poor management practices. What can be done to ensure enough food for the world's population to live on?</p>
+                        <p class="mb-4">The concept of indoor farming is not new, since hothouse production of tomatoes and other produce has been in vogue for some time. What is new is the urgent need to scale up this technology to accommodate another three billion people. Many believe an entirely new approach to indoor farming is required, employing cutting-edge technologies. One such proposal is for the 'Vertical Farm'. The concept is of multi-storey buildings in which food crops are grown in environmentally controlled conditions. Situated in the heart of urban centres, they would drastically reduce the amount of transportation required to bring food to consumers. Vertical farms would need to be efficient, cheap to construct and safe to operate. If successfully implemented, proponents claim, vertical farms offer the promise of urban renewal, sustainable production of a safe and varied food supply (through year-round production of all crops), and the eventual repair of ecosystems that have been sacrificed for horizontal farming.</p>
+                        <p class="mb-4">It took humans 10,000 years to learn how to grow most of the crops we now take for granted. Along the way, we despoiled most of the land we worked, often turning verdant, natural ecozones into semi-arid deserts. Within that same time frame, we evolved into an urban species, in which 60% of the human population now lives vertically in cities. This means that, for the majority, we humans have shelter from the elements, yet we subject our food-bearing plants to the rigours of the great outdoors and can do no more than hope for a good weather year. However, more often than not now, due to a rapidly changing climate, that is not what happens. Massive floods, long droughts, hurricanes and severe monsoons take their toll each year, destroying millions of tons of valuable crops.</p>
+                        <p class="mb-4">The supporters of vertical farming claim many potential advantages for the system. For instance, crops would be produced all year round, as they would be kept in artificially controlled, optimum growing conditions. There would be no weather-related crop failures due to droughts, floods or pests. All the food could be grown organically, eliminating the need for herbicides, pesticides and fertilisers. The system would greatly reduce the incidence of many infectious diseases that are acquired at the agricultural interface. Although the system would consume energy, it would return energy to the grid via methane generation from composting non-edible parts of plants. It would also dramatically reduce fossil fuel use, by cutting out the need for tractors, ploughs and shipping.</p>
+                        <p class="mb-4">A major drawback of vertical farming, however, is that the plants would require artificial light. Without it, those plants nearest the windows would be exposed to more sunlight and grow more quickly, reducing the efficiency of the system. Single-storey greenhouses have the benefit of natural overhead light: even so, many still need artificial lighting. A multi-storey facility with no natural overhead light would require far more. Generating enough light could be prohibitively expensive, unless cheap, renewable energy is available, and this appears to be rather a future aspiration than a likelihood for the near future.</p>
+                        <p class="mb-4">One variation on vertical farming that has been developed is to grow plants in stacked trays that move on rails. Moving the trays allows the plants to get enough sunlight. This system is already in operation, and works well within a single-storey greenhouse with light reaching it from above: it is not certain, however, that it can be made to work without that overhead natural light.</p>
+                        <p class="mb-4">Vertical farming is an attempt to address the undoubted problems that we face in producing enough food for a growing population. At the moment, though, more needs to be done to reduce the detrimental impact it would have on the environment, particularly as regards the use of energy. While it is possible that much of our food will be grown in skyscrapers in future, most experts currently believe it is far more likely that we will simply use the space available on urban rooftops.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-7</h4>
+                        <p class="mb-4">Complete the sentences below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>1</strong> Some food plants, including <input type="text" id="q41" data-q="41">, are already grown indoors.</p>
+                            <p><strong>2</strong> Vertical farms would be located in <input type="text" id="q42" data-q="42">, meaning that there would be less need to take them long distances to customers.</p>
+                            <p><strong>3</strong> Vertical farms could use methane from plants and animals to produce <input type="text" id="q43" data-q="43">.</p>
+                            <p><strong>4</strong> The consumption of <input type="text" id="q44" data-q="44"> would be cut because agricultural vehicles would be unnecessary.</p>
+                            <p><strong>5</strong> The fact that vertical farms would need <input type="text" id="q45" data-q="45"> light is a disadvantage.</p>
+                            <p><strong>6</strong> One form of vertical farming involves planting in <input type="text" id="q46" data-q="46"> which are not fixed.</p>
+                            <p><strong>7</strong> The most probable development is that food will be grown on <input type="text" id="q47" data-q="47"> in towns and cities.</p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 8-13</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>8</strong> Methods for predicting the Earth's population have recently changed. <input type="text" id="q48" data-q="48"></p>
+                            <p><strong>9</strong> Human beings are responsible for some of the destruction to food-producing land. <input type="text" id="q49" data-q="49"></p>
+                            <p><strong>10</strong> The crops produced in vertical farms will depend on the season. <input type="text" id="q50" data-q="50"></p>
+                            <p><strong>11</strong> Some damage to food crops is caused by climate change. <input type="text" id="q51" data-q="51"></p>
+                            <p><strong>12</strong> Fertilisers will be needed for certain crops in vertical farms. <input type="text" id="q52" data-q="52"></p>
+                            <p><strong>13</strong> Vertical farming will make plants less likely to be affected by infectious diseases. <input type="text" id="q53" data-q="53"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">THE FALKIRK WHEEL</h3>
+                        <p class="mb-4">A unique engineering achievement</p>
+                        <p class="mb-4">The Falkirk Wheel in Scotland is the world's first and only rotating boat lift. Opened in 2002, it is central to the ambitious £84.5m Millennium Link project to restore navigability across Scotland by reconnecting the historic waterways of the Forth & Clyde and Union Canals.</p>
+                        <p class="mb-4">The major challenge of the project lay in the fact that the Forth & Clyde Canal is situated 35 metres below the level of the Union Canal. Historically, the two canals had been joined near the town of Falkirk by a sequence of 11 locks - enclosed sections of canal in which the water level could be raised or lowered - that stepped down across a distance of 1.5 km. This had been dismantled in 1933, thereby breaking the link. When the project was launched in 1994, the British Waterways authority were keen to create a dramatic twenty-first-century landmark which would not only be a fitting commemoration of the Millennium, but also a lasting symbol of the economic regeneration of the region.</p>
+                        <p class="mb-4">Numerous ideas were submitted for the project, including concepts ranging from rolling eggs to tilting tanks, from giant see-saws to overhead monorails. The eventual winner was a plan for the huge rotating steel boat lift which was to become The Falkirk Wheel. The unique shape of the structure is claimed to have been inspired by various sources, both manmade and natural, most notably a Celtic double-headed axe, but also the vast turning propeller of a ship, the ribcage of a whale or the spine of a fish.</p>
+                        <p class="mb-4">The various parts of The Falkirk Wheel were all constructed and assembled, like one giant toy building set, at Butterley Engineering's Steelworks in Derbyshire, some 400 km from Falkirk. A team there carefully assembled the 1,200 tonnes of steel, painstakingly fitting the pieces together to an accuracy of just 10 mm to ensure a perfect final fit. In the summer of 2001, the structure was then dismantled and transported on 35 lorries to Falkirk, before all being bolted back together again on the ground, and finally lifted into position in five large sections by crane. The Wheel would need to withstand immense and constantly changing stresses as it rotated, so to make the structure more robust, the steel sections were bolted rather than welded together. Over 45,000 bolt holes were matched with their bolts, and each bolt was hand-tightened.</p>
+                        <p class="mb-4">The Wheel consists of two sets of opposing axe-shaped arms, attached about 25 metres apart to a fixed central spine. Two diametrically opposed water-filled 'gondolas', each with a capacity of 360,000 litres, are fitted between the ends of the arms. These gondolas always weigh the same, whether or not they are carrying boats. This is because, according to Archimedes' principle of displacement, floating objects displace their own weight in water. So when a boat enters a gondola, the amount of water leaving the gondola weighs exactly the same as the boat. This keeps the Wheel balanced and so, despite its enormous mass, it rotates through 180° in five and a half minutes while using very little power. It takes just 1.5 kilowatt-hours (5.4 MJ) of energy to rotate the Wheel - roughly the same as boiling eight small domestic kettles of water.</p>
+                        <p class="mb-4">Boats needing to be lifted up enter the canal basin at the level of the Forth & Clyde Canal and then enter the lower gondola of the Wheel. Two hydraulic steel gates are raised, so as to seal the gondola off from the water in the canal basin. The water between the gates is then pumped out. A hydraulic clamp, which prevents the arms of the Wheel moving while the gondola is docked, is removed, allowing the Wheel to turn. In the central machine room an array of ten hydraulic motors then begins to rotate the central axle. The axle connects to the outer arms of the Wheel, which begin to rotate at a speed of 1/8 of a revolution per minute. As the wheel rotates, the gondolas are kept in the upright position by a simple gearing system. Two eight-metre-wide cogs orbit a fixed inner cog of the same width, connected by two smaller cogs travelling in the opposite direction to the outer cogs - so ensuring that the gondolas always remain level. When the gondola reaches the top, the boat passes straight onto the aqueduct situated 24 metres above the canal basin.</p>
+                        <p class="mb-4">The remaining 11 metres of lift needed to reach the Union Canal is achieved by means of a pair of locks. The Wheel could not be constructed to elevate boats over the full 35-metre difference between the two canals, owing to the presence of the historically important Antonine Wall, which was built by the Romans in the second century AD. Boats travel under this wall via a tunnel, then through the locks, and finally on to the Union Canal.</p>
+                        <div class="mt-4"><img src="https://i.postimg.cc/Gh8fNrZM/readingpassage2.png" alt="Diagram of the Falkirk Wheel" class="w-full rounded-lg border"></div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-19</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 2? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> The Falkirk Wheel has linked the Forth & Clyde Canal with the Union Canal for the first time in their history. <input type="text" id="q54" data-q="54"></p>
+                            <p><strong>15</strong> There was some opposition to the design of the Falkirk Wheel at first. <input type="text" id="q55" data-q="55"></p>
+                            <p><strong>16</strong> The Falkirk Wheel was initially put together at the location where its components were manufactured. <input type="text" id="q56" data-q="56"></p>
+                            <p><strong>17</strong> The Falkirk Wheel is the only boat lift in the world which has steel sections bolted together by hand. <input type="text" id="q57" data-q="57"></p>
+                            <p><strong>18</strong> The weight of the gondolas varies according to the size of boat being carried. <input type="text" id="q58" data-q="58"></p>
+                            <p><strong>19</strong> The construction of the Falkirk Wheel site took into account the presence of a nearby ancient monument. <input type="text" id="q59" data-q="59"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 20-26</h4>
+                        <p class="mb-4">Label the diagram below. Choose <strong>ONE WORD</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>20</strong> A pair of <input type="text" id="q60" data-q="60"> are lifted in order to shut out water from canal basin.</p>
+                            <p><strong>21</strong> A <input type="text" id="q61" data-q="61"> is taken out, enabling Wheel to rotate.</p>
+                            <p><strong>22</strong> Hydraulic motors drive <input type="text" id="q62" data-q="62">.</p>
+                            <p><strong>23</strong> A range of different-sized <input type="text" id="q63" data-q="63"> ensures boat keeps upright.</p>
+                            <p><strong>24</strong> Boat reaches top Wheel, then moves directly onto <input type="text" id="q64" data-q="64">.</p>
+                            <p><strong>25</strong> Boat travels through tunnel beneath Roman <input type="text" id="q65" data-q="65">.</p>
+                            <p><strong>26</strong> <input type="text" id="q66" data-q="66"> raise boat 11m to level of Union Canal.</p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Reducing the Effects of Climate Change</h3>
+                        <p class="mb-4">Mark Rowe reports on the increasingly ambitious geo-engineering projects being explored by scientists</p>
+                        <p class="mb-4"><strong>A</strong> Such is our dependence on fossil fuels, and such is the volume of carbon dioxide already released into the atmosphere, that many experts agree that significant global warming is now inevitable. They believe that the best we can do is keep it at a reasonable level, and at present the only serious option for doing this is cutting back on our carbon emissions. But while a few countries are making major strides in this regard, the majority are having great difficulty even stemming the rate of increase, let alone reversing it. Consequently, an increasing number of scientists are beginning to explore the alternative of geo-engineering - a term which generally refers to the intentional large-scale manipulation of the environment. According to its proponents, geo-engineering is the equivalent of a backup generator: if Plan A - reducing our dependency on fossil fuels - fails, we require a Plan B, employing grand schemes to slow down or reverse the process of global warming.</p>
+                        <p class="mb-4"><strong>B</strong> Geo-engineering has been shown to work, at least on a small localised scale. For decades, May Day parades in Moscow have taken place under clear blue skies, aircraft having deposited dry ice, silver iodide and cement powder to disperse clouds. Many of the schemes now suggested look to do the opposite, and reduce the amount of sunlight reaching the planet. The most eye-catching idea of all is suggested by Professor Roger Angel of the University of Arizona. His scheme would employ up to 16 trillion minute spacecraft, each weighing about one gram, to form a transparent, sunlight-refracting sunshade in an orbit 1.5 million km above the Earth. This could, argues Angel, reduce the amount of light reaching the Earth by two per cent.</p>
+                        <p class="mb-4"><strong>C</strong> The majority of geo-engineering projects so far carried out - which include planting forests in deserts and depositing iron in the ocean to stimulate the growth of algae - have focused on achieving a general cooling of the Earth. But some look specifically at reversing the melting at the poles, particularly the Arctic. The reasoning is that if you replenish the ice sheets and frozen waters of the high latitudes, more light will be reflected back into space, so reducing the warming of the oceans and atmosphere.</p>
+                        <p class="mb-4"><strong>D</strong> The concept of releasing aerosol sprays into the stratosphere above the Arctic has been proposed by several scientists. This would involve using sulphur or hydrogen sulphide aerosols so that sulphur dioxide would form clouds, which would, in turn, lead to a global dimming. The idea is modelled on historic volcanic explosions, such as that of Mount Pinatubo in the Philippines in 1991, which led to a short-term cooling of global temperatures by 0.5°C. Scientists have also scrutinised whether it's possible to preserve the ice sheets of Greenland with reinforced high-tension cables, preventing icebergs from moving into the sea. Meanwhile in the Russian Arctic, geo-engineering plans include the planting of millions of birch trees. Whereas the region's native evergreen pines shade the snow and absorb radiation, birches would shed their leaves in winter, thus enabling radiation to be reflected by the snow. Re-routing Russian rivers to increase cold water flow to ice-forming areas could also be used to slow down warming, say some climate scientists.</p>
+                        <p class="mb-4"><strong>E</strong> But will such schemes ever be implemented? Generally speaking, those who are most cautious about geo-engineering are the scientists involved in the research. Angel says that his plan is 'no substitute for developing renewable energy: the only permanent solution'. And Dr Phil Rasch of the US-based Pacific Northwest National Laboratory is equally guarded about the role of geo-engineering: 'I think all of us agree that if we were to end geo-engineering on a given day, then the planet would return to its pre-engineered condition very rapidly, and probably within ten to twenty years. That's certainly something to worry about.'</p>
+                        <p class="mb-4"><strong>F</strong> The US National Center for Atmospheric Research has already suggested that the proposal to inject sulphur into the atmosphere might affect rainfall patterns across the tropics and the Southern Ocean. 'Geo-engineering plans to inject stratospheric aerosols or to seed clouds would act to cool the planet, and act to increase the extent of sea ice,' says Rasch. 'But all the models suggest some impact on the distribution of precipitation.'</p>
+                        <p class="mb-4"><strong>G</strong> 'A further risk with geo-engineering projects is that you can "overshoot",' says Dr Dan Lunt, from the University of Bristol's School of Geophysical Sciences, who has studied the likely impacts of the sunshade and aerosol schemes on the climate. 'You may bring global temperatures back to pre-industrial levels, but the risk is that the poles will still be warmer than they should be and the tropics will be cooler than before industrialisation.' To avoid such a scenario, Lunt says Angel's project would have to operate at half strength; all of which reinforces his view that the best option is to avoid the need for geo-engineering altogether.</p>
+                        <p class="mb-4"><strong>H</strong> The main reason why geo-engineering is supported by many in the scientific community is that most researchers have little faith in the ability of politicians to agree - and then bring in - the necessary carbon cuts. Even leading conservation organisations see the value of investigating the potential of geo-engineering. According to Dr Martin Sommerkorn, climate change advisor for the World Wildlife Fund's International Arctic Programme, 'Human-induced climate change has brought humanity to a position where we shouldn't exclude thinking thoroughly about this topic and its possibilities.'</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-29</h4>
+                        <p class="mb-4">Which paragraph contains the following information? Write the correct letter <strong>A-H</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>27</strong> mention of a geo-engineering project based on an earlier natural phenomenon <input type="text" maxlength="1" class="w-10 text-center" id="q67" data-q="67"></p>
+                            <p><strong>28</strong> an example of a successful use of geo-engineering <input type="text" maxlength="1" class="w-10 text-center" id="q68" data-q="68"></p>
+                            <p><strong>29</strong> a common definition of geo-engineering <input type="text" maxlength="1" class="w-10 text-center" id="q69" data-q="69"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 30-36</h4>
+                        <p class="mb-4">Complete the table below. Choose <strong>ONE WORD</strong> from the passage for each answer.</p>
+                        <div class="p-4 border rounded-lg bg-white mb-6">
+                            <table class="w-full text-left">
+                                <thead class="border-b"><tr><th class="py-2">Procedure</th><th class="py-2">Aim</th></tr></thead>
+                                <tbody>
+                                    <tr class="border-b"><td class="py-2">put a large number of tiny spacecraft into orbit far above Earth</td><td class="py-2">to create a <strong>30</strong> <input type="text" id="q70" data-q="70"> that would reduce the amount of light reaching Earth</td></tr>
+                                    <tr class="border-b"><td class="py-2">place <strong>31</strong> <input type="text" id="q71" data-q="71"> in the sea</td><td class="py-2">to encourage <strong>32</strong> <input type="text" id="q72" data-q="72"> to form</td></tr>
+                                    <tr class="border-b"><td class="py-2">release aerosol sprays into the stratosphere</td><td class="py-2">to create <strong>33</strong> <input type="text" id="q73" data-q="73"> that would reduce the amount of light reaching Earth</td></tr>
+                                    <tr class="border-b"><td class="py-2">fix strong <strong>34</strong> <input type="text" id="q74" data-q="74"> to Greenland ice sheets</td><td class="py-2">to prevent icebergs moving into the sea</td></tr>
+                                    <tr class="border-b"><td class="py-2">plant trees in Russian Arctic that would lose their leaves in winter</td><td class="py-2">to allow the <strong>35</strong> <input type="text" id="q75" data-q="75"> to reflect radiation</td></tr>
+                                    <tr class="border-b"><td class="py-2">change the direction of <strong>36</strong> <input type="text" id="q76" data-q="76"></td><td class="py-2">to bring more cold water into ice-forming areas</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 37-40</h4>
+                        <p class="mb-4">Match each statement with the correct scientist, <strong>A-D</strong>.</p>
+                        <div class="p-4 border rounded-lg bg-white">
+                            <p><strong>37</strong> The effects of geo-engineering may not be long-lasting. <input type="text" maxlength="1" class="w-10 text-center" id="q77" data-q="77"></p>
+                            <p><strong>38</strong> Geo-engineering is a topic worth exploring. <input type="text" maxlength="1" class="w-10 text-center" id="q78" data-q="78"></p>
+                            <p><strong>39</strong> It may be necessary to limit the effectiveness of geo-engineering projects. <input type="text" maxlength="1" class="w-10 text-center" id="q79" data-q="79"></p>
+                            <p><strong>40</strong> Research into non-fossil-based fuels cannot be replaced by geo-engineering. <input type="text" maxlength="1" class="w-10 text-center" id="q80" data-q="80"></p>
+                            <div class="mt-4 p-2 bg-gray-100 rounded">
+                                <p class="font-bold">List of Scientists</p>
+                                <p><strong>A</strong> Roger Angel</p>
+                                <p><strong>B</strong> Phil Rasch</p>
+                                <p><strong>C</strong> Dan Lunt</p>
+                                <p><strong>D</strong> Martin Sommerkorn</p>
+                            </div>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        // Listening - Updated from image
+        q1: "charlton", q2: "115", q3: "cash", q4: "parking", q5: "music", q6: "entry", q7: "stage", q8: "code", q9: "floor", q10: "decorations",
+        q11: "animals", q12: "tools", q13: "shoes", q14: "dogs", q15: "f", q16: "g", q17: "d", q18: "h", q19: "c", q20: "a",
+        q21: "c", q22: "b", q23: "b", q24: "c", q25: "a", q26: "b", q27: "c", q28: "a", q29: "b", q30: "a",
+        q31: "conservation", q32: "food", q33: "surface", q34: "oxygen", q35: "mammals", q36: "ice", q37: "decline", q38: "map", q39: "migration", q40: "consumption",
+        // Reading - Updated from image
+        q41: "tomatoes", q42: "urban centres", q43: "energy", q44: "fossil fuel", q45: "artificial", q46: "stacked trays", q47: "urban rooftops",
+        q48: "not given", q49: "true", q50: "false", q51: "true", q52: "false", q53: "true",
+        q54: "false", q55: "not given", q56: "true", q57: "not given", q58: "false", q59: "true",
+        q60: "gates", q61: "clamp", q62: "axle", q63: "cogs", q64: "aqueduct", q65: "wall", q66: "locks",
+        q67: "d", q68: "b", q69: "a", q70: "sunshade", q71: "iron", q72: "algae", q73: "clouds", q74: "cables", q75: "snow", q76: "rivers",
+        q77: "b", q78: "d", q79: "c", q80: "a"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            currentTab: 'listening',
+            currentSection: 0,
+            timerInterval: null,
+            totalTime: 5400, // 90 minutes total (30 listening + 60 reading)
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            timerEl: document.getElementById('timer'),
+            submitBtn: document.getElementById('submit-btn'),
+            resultsOverlay: document.getElementById('results-overlay'),
+            resultsContent: document.getElementById('results-content'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.startTimer();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                this.submitBtn.addEventListener('click', () => this.submitTest());
+            },
+
+            startTimer() {
+                this.updateTimerDisplay();
+                this.timerInterval = setInterval(() => {
+                    this.totalTime--;
+                    this.updateTimerDisplay();
+                    if (this.totalTime <= 0) {
+                        clearInterval(this.timerInterval);
+                        this.submitTest();
+                    }
+                }, 1000);
+            },
+
+            updateTimerDisplay() {
+                const minutes = Math.floor(this.totalTime / 60);
+                const seconds = this.totalTime % 60;
+                this.timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                const sectionData = data.sections[this.currentSection];
+
+                // Load content into panes
+                this.leftPane.innerHTML = sectionData.passage || sectionData.instructions;
+                this.rightPane.innerHTML = sectionData.questions;
+
+                // Generate section buttons
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                // Add event listeners to new section buttons
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex)));
+                });
+                
+                // Add event listeners for audio buttons
+                document.querySelectorAll('.play-audio-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        // Use currentTarget to ensure we get the button element
+                        const button = e.currentTarget;
+                        const audioId = button.dataset.audioId;
+                        const audioEl = document.getElementById(audioId);
+                        if (audioEl) {
+                            audioEl.play();
+                            button.disabled = true;
+                            button.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 animate-spin" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zM2 10a8 8 0 1116 0 8 8 0 01-16 0z" clip-rule="evenodd" /><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /></svg>
+                                Audio Playing...`;
+                        }
+                    }, { once: true }); // Ensure the listener only fires once
+                });
+            },
+
+            submitTest() {
+                clearInterval(this.timerInterval);
+                const userAnswers = {};
+                const totalQuestions = Object.keys(answers).length;
+                
+                // Collect all answers
+                for (let i = 1; i <= totalQuestions; i++) {
+                    const qId = `q${i}`;
+                    const radioInput = document.querySelector(`input[name="${qId}"]:checked`);
+                    const textInput = document.getElementById(qId);
+
+                    if (radioInput) {
+                        userAnswers[qId] = radioInput.value.trim().toLowerCase();
+                    } else if (textInput) {
+                        userAnswers[qId] = textInput.value.trim().toLowerCase();
+                    } else {
+                         userAnswers[qId] = "";
+                    }
+                }
+
+                // Calculate scores
+                const listeningScore = this.calculateScore(userAnswers, 1, 40);
+                const readingScore = this.calculateScore(userAnswers, 41, 80);
+                
+                // Display results
+                this.displayResults(userAnswers, listeningScore, readingScore);
+            },
+
+            calculateScore(userAnswers, startQ, endQ) {
+                let score = 0;
+                for (let i = startQ; i <= endQ; i++) {
+                    const qId = `q${i}`;
+                    const correctAnswers = answers[qId].split('/');
+                    if (userAnswers[qId] && correctAnswers.includes(userAnswers[qId])) {
+                        score++;
+                    }
+                }
+                return score;
+            },
+
+            displayResults(userAnswers, listeningScore, readingScore) {
+                let resultsHTML = `
+                    <div class="text-center mb-6">
+                        <p class="text-lg">Overall Score: <span class="font-bold text-2xl text-blue-600">${listeningScore + readingScore} / 80</span></p>
+                        <div class="flex justify-around mt-4">
+                            <p>Listening: <span class="font-bold">${listeningScore} / 40</span></p>
+                            <p>Reading: <span class="font-bold">${readingScore} / 40</span></p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold border-b pb-2">Answer Key</h3>
+                `;
+
+                for (let i = 1; i <= 80; i++) {
+                     const qId = `q${i}`;
+                     const userAnswer = userAnswers[qId];
+                     const correctAnswer = answers[qId];
+                     const isCorrect = correctAnswer.split('/').includes(userAnswer);
+                     
+                     resultsHTML += `
+                        <div class="flex justify-between items-center text-sm p-2 rounded ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
+                            <span class="font-semibold">Question ${i}:</span>
+                            <div>
+                                <span class="${isCorrect ? 'answer-key-correct' : 'answer-key-incorrect'}">${userAnswer || 'No Answer'}</span>
+                                ${!isCorrect ? `<span class="ml-2 text-green-700 font-semibold">(${correctAnswer.replace('/', ' / ')})</span>` : ''}
+                            </div>
+                        </div>
+                     `;
+                }
+
+                resultsHTML += `</div>`;
+                this.resultsContent.innerHTML = resultsHTML;
+                this.resultsOverlay.classList.remove('hidden');
+            },
+
+            initSplitter() {
+                const splitter = document.getElementById('splitter');
+                let isDragging = false;
+
+                splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = splitter.parentElement.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        splitter.parentElement.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            },
+            
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        // Ensure selection is within a pane
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        const rect = range.getBoundingClientRect();
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            // Check if selection crosses paragraph boundaries
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { // Text node
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    // This check is simple and might not cover all edge cases, but it's a good start.
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                                // This can happen if the selection is invalid (e.g., across different block elements)
+                                // We can just ignore the error and not highlight.
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
