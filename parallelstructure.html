@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Parallel Structure Worksheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-btn.active {
+            border-color: #4f46e5;
+            background-color: #eef2ff;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="max-w-4xl mx-auto p-4 sm:p-6 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">Parallel Structure Practice</h1>
+            <p class="mt-2 text-lg text-slate-600">Making your sentences balanced and clear!</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="border-b border-slate-200 mb-6">
+            <nav class="flex -mb-px space-x-4" aria-label="Tabs">
+                <button id="lesson-tab-btn" class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="switchTab('lesson')">
+                    🧠 The Lesson
+                </button>
+                <button id="exercises-tab-btn" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700 hover:border-slate-300" onclick="switchTab('exercises')">
+                    ✏️ Exercises
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <main>
+            <!-- Lesson Tab -->
+            <div id="lesson-content" class="tab-content active">
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h2 class="text-2xl font-semibold text-slate-800 mb-3">What is Parallel Structure?</h2>
+                        <p class="text-slate-600 leading-relaxed">
+                            Parallel structure means using the same pattern of words to show that two or more ideas have the same level of importance. This happens in lists or series. When you keep the structure parallel, your writing is smoother and easier to read.
+                        </p>
+                        <div class="mt-4 bg-indigo-50 border-l-4 border-indigo-400 p-4 rounded-r-lg">
+                            <p class="font-semibold text-indigo-800">💡 The "Matching Outfits" Analogy</p>
+                            <p class="text-indigo-700 mt-1">
+                                Think of the items in your list as people getting dressed for an event. If the first person wears a verb ending in "-ing", everyone else in the list should too. They all need matching grammatical outfits!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Examples Section -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-4">Examples in Action</h3>
+                        
+                        <!-- Word Level -->
+                        <div class="mb-6 border-b pb-6 border-slate-200">
+                            <h4 class="font-semibold text-lg">At the Word Level</h4>
+                            <div class="mt-2 space-y-3">
+                                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                                    <p class="font-medium text-red-700">❌ Not Parallel:</p>
+                                    <p class="mt-1">Mary likes hiking, swimming, and <span class="bg-red-200 px-1 rounded">to ride a bicycle</span>.</p>
+                                </div>
+                                <button onclick="toggleCorrection('word', this)" class="bg-indigo-100 text-indigo-700 font-semibold px-4 py-2 rounded-md hover:bg-indigo-200 transition-colors text-sm">Show Correction</button>
+                                <div id="correction-word" class="hidden space-y-3">
+                                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                        <p class="font-medium text-green-700">✅ Parallel:</p>
+                                        <p class="mt-1">Mary likes <span class="bg-green-200 px-1 rounded">hiking</span>, <span class="bg-green-200 px-1 rounded">swimming</span>, and <span class="bg-green-200 px-1 rounded">riding a bicycle</span>.</p>
+                                    </div>
+                                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                                        <p class="font-semibold text-yellow-800">Why it was wrong:</p>
+                                        <p class="text-yellow-700 mt-1">The original sentence mixed different verb forms: two "-ing" words ('hiking', 'swimming') and one infinitive ('to ride').</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phrase Level -->
+                        <div class="mb-6 border-b pb-6 border-slate-200">
+                            <h4 class="font-semibold text-lg">At the Phrase Level</h4>
+                            <div class="mt-2 space-y-3">
+                                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                                    <p class="font-medium text-red-700">❌ Not Parallel:</p>
+                                    <p class="mt-1">The teacher said he was a poor student because he waited until the last minute, completed his lab problems in a careless manner, and <span class="bg-red-200 px-1 rounded">his motivation was low</span>.</p>
+                                </div>
+                                <button onclick="toggleCorrection('phrase', this)" class="bg-indigo-100 text-indigo-700 font-semibold px-4 py-2 rounded-md hover:bg-indigo-200 transition-colors text-sm">Show Correction</button>
+                                <div id="correction-phrase" class="hidden space-y-3">
+                                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                        <p class="font-medium text-green-700">✅ Parallel:</p>
+                                        <p class="mt-1">The teacher said he was a poor student because he <span class="bg-green-200 px-1 rounded">waited</span> until the last minute, <span class="bg-green-200 px-1 rounded">completed</span> his lab problems in a careless manner, and <span class="bg-green-200 px-1 rounded">lacked</span> motivation.</p>
+                                    </div>
+                                     <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                                        <p class="font-semibold text-yellow-800">Why it was wrong:</p>
+                                        <p class="text-yellow-700 mt-1">The original sentence mixed two verb phrases ('waited...', 'completed...') with a clause ('his motivation was low').</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Clause Level -->
+                        <div>
+                            <h4 class="font-semibold text-lg">At the Clause Level</h4>
+                            <div class="mt-2 space-y-3">
+                                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                                    <p class="font-medium text-red-700">❌ Not Parallel:</p>
+                                    <p class="mt-1">The coach told the players that they should get a lot of sleep, that they should not eat too much, and <span class="bg-red-200 px-1 rounded">to do some warm-up exercises</span>.</p>
+                                </div>
+                                <button onclick="toggleCorrection('clause', this)" class="bg-indigo-100 text-indigo-700 font-semibold px-4 py-2 rounded-md hover:bg-indigo-200 transition-colors text-sm">Show Correction</button>
+                                <div id="correction-clause" class="hidden space-y-3">
+                                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                        <p class="font-medium text-green-700">✅ Parallel:</p>
+                                        <p class="mt-1">The coach told the players <span class="bg-green-200 px-1 rounded">that they should get</span> a lot of sleep, <span class="bg-green-200 px-1 rounded">that they should not eat</span> too much, and <span class="bg-green-200 px-1 rounded">that they should do</span> some warm-up exercises.</p>
+                                    </div>
+                                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                                        <p class="font-semibold text-yellow-800">Why it was wrong:</p>
+                                        <p class="text-yellow-700 mt-1">The original sentence mixed two "that" clauses with an infinitive phrase ('to do...').</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h2 class="text-2xl font-semibold text-slate-800 mb-3">How to Check for Parallelism</h2>
+                        <p class="text-slate-600 leading-relaxed">
+                            A quick way to check your work is to scan your paper for the coordinating conjunctions: <strong>and, but, or</strong>. When you find one, pause and look at the grammatical structure on each side of it. Do they match? If not, you've found a spot to fix!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercises Tab -->
+            <div id="exercises-content" class="tab-content">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-semibold text-slate-800 mb-1">Let's Practice!</h2>
+                    <p class="text-slate-600 mb-6">Rewrite the sentences that lack parallel structure. If a sentence is already correct, you can write "Correct".</p>
+                    <div id="exercise-container" class="space-y-8">
+                        <!-- Exercises will be injected here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const exercises = [
+            { // #1
+                sentence: "Rafael delivered his speech with confidence and enthusiastically.",
+                hint: "The items in the list are 'with confidence' (a prepositional phrase) and 'enthusiastically' (an adverb). Make them match!",
+                answers: ["Rafael delivered his speech with confidence and enthusiasm.", "Rafael delivered his speech confidently and enthusiastically."],
+                isCorrect: false
+            },
+            { // #2
+                sentence: "Being compassionate and because she knows a lot about animals, Jessica will make a good veterinarian.",
+                hint: "The sentence starts with 'Being compassionate' (a phrase) but then switches to 'because she knows...' (a clause). Make the two parts match.",
+                answers: ["Because she is compassionate and knows a lot about animals, Jessica will make a good veterinarian."],
+                isCorrect: false
+            },
+            { // #3
+                sentence: "Mrs. Shapiro had heard about the new hockey league but not that there would be a team in Greensboro.",
+                hint: "Check the structure after 'heard'. 'about the new hockey league' vs 'that there would be a team'.",
+                answers: ["Mrs. Shapiro had heard that there would be a new hockey league but not that there would be a team in Greensboro."],
+                isCorrect: false
+            },
+            { // #4
+                sentence: "The selection at the downtown CD store is better than going to the mall.",
+                hint: "We are comparing 'The selection' (a noun phrase) with 'going to the mall' (a gerund phrase). Compare a thing with a thing, or an action with an action.",
+                answers: ["The selection at the downtown CD store is better than the selection at the mall."],
+                isCorrect: false
+            },
+            { // #5
+                sentence: "I have traveled by bus, by train, and by subway, but never by boat.",
+                hint: "Are all the items in the list presented in the same way?",
+                answers: ["Correct"],
+                isCorrect: true
+            },
+            { // #6
+                sentence: "Thelma likes playing the clarinet, to march in the band, and watching the football games.",
+                hint: "Look at the verbs: 'playing', 'to march', 'watching'. One of these is not like the others.",
+                answers: ["Thelma likes playing the clarinet, marching in the band, and watching the football games."],
+                isCorrect: false
+            },
+            { // #7
+                sentence: "The advertisement claims that this toothpaste kills more germs and prevents more cavities than any other toothpaste.",
+                hint: "Check the verbs connected by 'and': 'kills' and 'prevents'. Do they match?",
+                answers: ["Correct"],
+                isCorrect: true
+            }
+        ];
+
+        function switchTab(tabName) {
+            // Hide all tab content
+            document.getElementById('lesson-content').classList.remove('active');
+            document.getElementById('exercises-content').classList.remove('active');
+            
+            // Deactivate all tab buttons
+            document.getElementById('lesson-tab-btn').classList.remove('active');
+            document.getElementById('exercises-tab-btn').classList.remove('active');
+
+            // Show the selected tab content and activate the button
+            document.getElementById(tabName + '-content').classList.add('active');
+            document.getElementById(tabName + '-tab-btn').classList.add('active');
+        }
+
+        function toggleCorrection(level, button) {
+            const correctionDiv = document.getElementById(`correction-${level}`);
+            const isHidden = correctionDiv.classList.contains('hidden');
+
+            if (isHidden) {
+                correctionDiv.classList.remove('hidden');
+                button.textContent = 'Hide Correction';
+            } else {
+                correctionDiv.classList.add('hidden');
+                button.textContent = 'Show Correction';
+            }
+        }
+
+        function createExercises() {
+            const container = document.getElementById('exercise-container');
+            container.innerHTML = ''; // Clear previous exercises
+            exercises.forEach((exercise, index) => {
+                const exerciseDiv = document.createElement('div');
+                exerciseDiv.className = 'exercise-item border-t border-slate-200 pt-6';
+                exerciseDiv.innerHTML = `
+                    <p class="font-medium text-slate-700">${index + 1}. ${exercise.sentence}</p>
+                    <div class="mt-3">
+                        <textarea id="input-${index}" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" rows="2" placeholder="Rewrite the sentence here..."></textarea>
+                    </div>
+                    <div class="mt-3 flex items-center space-x-3">
+                        <button onclick="checkAnswer(${index})" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors text-sm">Check Answer</button>
+                        <button onclick="showHint(${index})" class="bg-slate-100 text-slate-700 font-semibold px-4 py-2 rounded-md hover:bg-slate-200 transition-colors text-sm">Show Hint</button>
+                    </div>
+                    <div id="feedback-${index}" class="mt-4 hidden"></div>
+                `;
+                container.appendChild(exerciseDiv);
+            });
+        }
+
+        function showHint(index) {
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            feedbackDiv.innerHTML = `
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                    <p class="font-semibold text-yellow-800">Hint:</p>
+                    <p class="text-yellow-700 mt-1">${exercises[index].hint}</p>
+                </div>
+            `;
+            feedbackDiv.classList.remove('hidden');
+        }
+
+        function checkAnswer(index) {
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            const exercise = exercises[index];
+            
+            let answerHTML = exercise.answers.map(ans => `<li class="mt-1">${ans}</li>`).join('');
+
+            if (exercise.isCorrect) {
+                 feedbackDiv.innerHTML = `
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                        <p class="font-semibold text-green-800">✅ Correct!</p>
+                        <p class="text-green-700 mt-1">This sentence already has parallel structure. The items in the list are balanced.</p>
+                    </div>
+                `;
+            } else {
+                 feedbackDiv.innerHTML = `
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                        <p class="font-semibold text-blue-800">Possible Answer(s):</p>
+                        <ul class="list-disc list-inside text-blue-700 mt-1">
+                           ${answerHTML}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            feedbackDiv.classList.remove('hidden');
+        }
+
+        // Initialize the exercises when the page loads
+        document.addEventListener('DOMContentLoaded', createExercises);
+    </script>
+</body>
+</html>
