@@ -13,12 +13,8 @@
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
         }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         .tab.active {
             border-color: #4f46e5;
             color: #4f46e5;
@@ -42,18 +38,17 @@
             border-color: #1e293b;
             transform: scale(1.2);
         }
-        ::selection {
-            background: transparent;
-        }
+        ::selection { background: transparent; }
         .highlighted-yellow { background-color: rgba(250, 204, 21, 0.4); }
         .highlighted-green { background-color: rgba(74, 222, 128, 0.4); }
         .highlighted-blue { background-color: rgba(96, 165, 250, 0.4); }
         .highlighted-pink { background-color: rgba(244, 114, 182, 0.4); }
         .highlighted-purple { background-color: rgba(167, 139, 250, 0.4); }
-        /* Added cursor pointer for highlighted text */
-        [class*="highlighted-"] {
-            cursor: pointer;
-        }
+        [class*="highlighted-"] { cursor: pointer; }
+        .feedback-correct { color: #16a34a; }
+        .feedback-incorrect { color: #dc2626; }
+        .input-correct { border-color: #16a34a !important; }
+        .input-incorrect { border-color: #dc2626 !important; }
     </style>
 </head>
 <body class="text-slate-800">
@@ -66,13 +61,11 @@
         <div class="color-box rounded-full bg-pink-400" data-color="pink" title="Highlight Pink"></div>
         <div class="color-box rounded-full bg-purple-400" data-color="purple" title="Highlight Purple"></div>
         <div id="clear-highlight" class="color-box rounded-full flex items-center justify-center bg-slate-200" title="Clear Highlight on Selection">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eraser-fill" viewBox="0 0 16 16">
-                <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eraser-fill" viewBox="0 0 16 16"><path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/></svg>
         </div>
     </div>
 
-    <!-- Main container with max-width for better readability on wide screens -->
+    <!-- Main container -->
     <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
         <header class="text-center mb-8">
             <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Interactive IELTS Reading Practice</h1>
@@ -94,21 +87,20 @@
             <div id="unit4-p1" class="tab-content active">
                 <h2 class="text-2xl font-bold mb-4 text-indigo-600">Unit 4: Reading Practice (1) - Passage One</h2>
                 <div class="space-y-6">
-                    <section>
+                     <section>
                         <h3 class="text-xl font-semibold mb-3 border-b pb-2">Pre-Reading Strategies</h3>
                         <ol class="list-decimal list-inside space-y-2 text-slate-700">
                             <li>Skim through the passage below to find out roughly what it is about and how it is organised. Pay attention to the words in boldface as well as the italicised words.</li>
                             <li>Use your previous knowledge of the subject to think about the following questions before you read the passage for detailed information.
                                 <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
-                                    <li>Have you ever read a notice about fire procedures in a hotel?</li>
-                                    <li>What is the notice about?</li>
-                                    <li>What do you do if the hotel where you stay in is on fire?</li>
+                                    <li>A. Have you ever read a notice about fire procedures in a hotel?</li>
+                                    <li>B. What is the notice about?</li>
+                                    <li>C. What do you do if the hotel where you stay in is on fire?</li>
                                 </ul>
                             </li>
                             <li>Look at the different types of questions after the passage to get a general idea about the range of questions and about the kinds of information you need to look for in the passage.</li>
                         </ol>
                     </section>
-
                     <section class="reading-passage bg-slate-50 p-6 rounded-lg border">
                         <h3 class="text-xl font-bold text-center mb-4">CROWNE PLAZA - Los Angeles Airport</h3>
                         <h4 class="text-lg font-semibold text-center mb-6">Emergency Fire Procedures</h4>
@@ -123,84 +115,33 @@
                         </ul>
                         <p class="mt-6 font-semibold text-center text-indigo-700">It is important to remember that in any emergency situations your ability to STAY CALM during the evacuation process is the key to success.</p>
                     </section>
-                    
                     <section class="exercises space-y-6">
                         <h3 class="text-xl font-semibold mb-3 border-b pb-2">Exercises</h3>
-                        <!-- Exercise 1 -->
-                        <div class="p-4 border rounded-lg">
+                        <div id="u4p1ex1" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 1: Word Use</h4>
-                            <p class="mb-4">Decide which of the following choices is closest in meaning to the underlined word in the sentence.</p>
+                            <p class="mb-4">Decide which of the following choices is closest in meaning to the underlined word in the sentence and write down the corresponding letter.</p>
                             <div class="space-y-4">
-                                <div>
-                                    <p>1. If you <u>detect</u> a fire, call emergency, 1999, and the Fire Department, 9+911.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="q1"> A. see</label>
-                                        <label><input type="radio" name="q1"> B. hear</label>
-                                        <label><input type="radio" name="q1"> C. both of the above</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>2. ...and <u>activate</u> the nearest emergency alarm.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="q2"> A. run fast to</label>
-                                        <label><input type="radio" name="q2"> B. shake with all might</label>
-                                        <label><input type="radio" name="q2"> C. bring into use</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>3. ...take your room key and <u>proceed</u> to the exit nearest to you.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="q3"> A. check carefully</label>
-                                        <label><input type="radio" name="q3"> B. move forward to</label>
-                                        <label><input type="radio" name="q3"> C. look for</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>4. Block all openings, such as <u>vents</u> and under the door, with wet towels.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="q4"> A. holes that smoke can come through</label>
-                                        <label><input type="radio" name="q4"> B. places that can hold back water</label>
-                                        <label><input type="radio" name="q4"> C. places that can block the smoke</label>
-                                    </div>
-                                </div>
+                                <div data-q="1"><p>1. If you <u>detect</u> a fire, call emergency, 1999, and the Fire Department, 9+911.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p1q1" value="A"> A. see</label><label><input type="radio" name="u4p1q1" value="B"> B. hear</label><label><input type="radio" name="u4p1q1" value="C"> C. both of the above</label></div></div>
+                                <div data-q="2"><p>2. If a fire is detected inside the room, exit the room immediately, close the door, and <u>activate</u> the nearest emergency alarm.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p1q2" value="A"> A. run fast to</label><label><input type="radio" name="u4p1q2" value="B"> B. shake with all might</label><label><input type="radio" name="u4p1q2" value="C"> C. bring into use</label></div></div>
+                                <div data-q="3"><p>3. Once you have determined it is safe, take your room key and <u>proceed</u> to the exit nearest to you.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p1q3" value="A"> A. check carefully</label><label><input type="radio" name="u4p1q3" value="B"> B. move forward to</label><label><input type="radio" name="u4p1q3" value="C"> C. look for</label></div></div>
+                                <div data-q="4"><p>4. Block all openings, such as <u>vents</u> and under the door, with wet towels.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p1q4" value="A"> A. holes that smoke can come through</label><label><input type="radio" name="u4p1q4" value="B"> B. places that can hold back water</label><label><input type="radio" name="u4p1q4" value="C"> C. places that can block the smoke</label></div></div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u4p1ex1')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
-                        <!-- Exercise 2 -->
-                        <div class="p-4 border rounded-lg">
+                        <div id="u4p1ex2" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 2: Multiple-Choice & Sentence Completion</h4>
-                            <p class="mb-4">Complete with NO MORE THAN THREE WORDS from the passage.</p>
+                            <p class="mb-4">Refer to Emergency Fire Procedures and choose one answer from the choices given or complete the following sentences with NO MORE THAN THREE WORDS taken from the passage.</p>
                             <div class="space-y-4">
-                                <div>
-                                    <p>5. Which one of the following steps may NOT be correct when the hotel you stay in is on fire?</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="q5"> A. Activate the emergency alarm.</label>
-                                        <label><input type="radio" name="q5"> B. Run to the nearest elevator.</label>
-                                        <label><input type="radio" name="q5"> C. Block the space between the floor and the door.</label>
-                                        <label><input type="radio" name="q5"> D. Take the room key.</label>
-                                        <label><input type="radio" name="q5"> E. Fill the sink with water.</label>
-                                    </div>
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="q6" class="mr-2">6. When you decide it is safe to leave your room, run quickly to the nearest</label>
-                                    <input type="text" id="q6" class="border rounded px-2 py-1 w-48">.
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="q7" class="mr-2">7. When you don't feel it is safe to leave the room, call the hotel staff to tell them about</label>
-                                    <input type="text" id="q7" class="border rounded px-2 py-1 w-48">.
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="q8" class="mr-2">8. If you detect heavy smoke in your room, cover your mouth with</label>
-                                    <input type="text" id="q8" class="border rounded px-2 py-1 w-48">.
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="q9" class="mr-2">9. Unless necessary it is not suggested to</label>
-                                    <input type="text" id="q9" class="border rounded px-2 py-1 w-48">.
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="q10" class="mr-2">10. The key to success in all emergency situations is</label>
-                                    <input type="text" id="q10" class="border rounded px-2 py-1 w-48">.
-                                </div>
+                                <div data-q="5"><p>5. Which one of the following steps may NOT be correct when the hotel you stay in is on fire?</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p1q5" value="A"> A. Activate the emergency alarm.</label><label><input type="radio" name="u4p1q5" value="B"> B. Run to the nearest elevator.</label><label><input type="radio" name="u4p1q5" value="C"> C. Block the space between the floor and the door.</label><label><input type="radio" name="u4p1q5" value="D"> D. Take the room key.</label><label><input type="radio" name="u4p1q5" value="E"> E. Fill the sink with water.</label></div></div>
+                                <div data-q="6"><label for="u4p1q6">6. When you decide it is safe to leave your room, run quickly to the nearest</label> <input type="text" id="u4p1q6" class="border rounded px-2 py-1 w-48">.</div>
+                                <div data-q="7"><label for="u4p1q7">7. When you don't feel it is safe to leave the room, call the hotel staff to tell them about</label> <input type="text" id="u4p1q7" class="border rounded px-2 py-1 w-48">.</div>
+                                <div data-q="8"><label for="u4p1q8">8. If you detect heavy smoke in your room, cover your mouth with</label> <input type="text" id="u4p1q8" class="border rounded px-2 py-1 w-48">.</div>
+                                <div data-q="9"><label for="u4p1q9">9. Unless necessary it is not suggested to</label> <input type="text" id="u4p1q9" class="border rounded px-2 py-1 w-48">.</div>
+                                <div data-q="10"><label for="u4p1q10">10. The key to success in all emergency situations is</label> <input type="text" id="u4p1q10" class="border rounded px-2 py-1 w-48">.</div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u4p1ex2')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
                     </section>
                 </div>
@@ -216,18 +157,17 @@
                             <li>Skim through the passage on the next page to find out roughly what it is about and how it is organised. Can you guess what the title means?</li>
                             <li>Use your previous knowledge of the subject to think about the following questions before you read the passage for detailed information.
                                 <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
-                                    <li>Why are lots of wild animals being killed?</li>
-                                    <li>What kinds of animals are being killed?</li>
-                                    <li>Is it illegal to kill wild animals?</li>
-                                    <li>What should people do about the illegal killing?</li>
+                                    <li>A. Why are lots of wild animals being killed?</li>
+                                    <li>B. What kinds of animals are being killed?</li>
+                                    <li>C. Is it illegal to kill wild animals?</li>
+                                    <li>D. What should people do about the illegal killing?</li>
                                 </ul>
                             </li>
                             <li>Look at the different types of questions after the passage to get a general idea about the range of questions and about the kinds of information you need to look for in the passage.</li>
                         </ol>
                     </section>
-
                     <section class="reading-passage bg-slate-50 p-6 rounded-lg border">
-                        <h3 class="text-xl font-bold text-center mb-6">Out of the Wild, into Our Homes</h3>
+                         <h3 class="text-xl font-bold text-center mb-6">Out of the Wild, into Our Homes</h3>
                         <div class="space-y-4 text-slate-700">
                             <p>Many of the earth's creatures die because of choices humans make. These choices have nothing to do with food or shelter or anything else that helps humans survive. What kills these millions of animals from all over the world is human greed - the desire for money.</p>
                             <p>People use parts of animals for everything from hats to handbags, from ornamental jewellery and ashtrays to powders that supposedly improve a person's life. Declaring a species endangered and protecting it by laws is not always enough. Poachers, people who kill wildlife illegally, rarely get caught.</p>
@@ -238,91 +178,47 @@
                             <p>In the 2010s, the protests and the publicity will probably turn to some other endangered species. Plenty of them urgently need attention. During this time, will the elephants be forgotten?</p>
                         </div>
                     </section>
-                    
                     <section class="exercises space-y-6">
                         <h3 class="text-xl font-semibold mb-3 border-b pb-2">Exercises</h3>
-                        <!-- Exercise 1 -->
-                        <div class="p-4 border rounded-lg">
+                         <div id="u4p2ex1" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 1: Word Use</h4>
+                            <p class="mb-4">Decide which of the following choices is closest in meaning to the underlined word in the sentence and write down the corresponding letter.</p>
                             <div class="space-y-4">
-                                <div>
-                                    <p>1. Declaring a species <u>endangered</u> and protecting it by laws is not always enough.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u4p2q1"> A. in danger</label>
-                                        <label><input type="radio" name="u4p2q1"> B. out of danger</label>
-                                        <label><input type="radio" name="u4p2q1"> C. causing danger</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>2. These groups also proved that certain populations of elephants were <u>dwindling</u>.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u4p2q2"> A. becoming more</label>
-                                        <label><input type="radio" name="u4p2q2"> B. becoming smaller</label>
-                                        <label><input type="radio" name="u4p2q2"> C. becoming weaker</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>3. However, concern for a certain species tends to <u>fade</u> after a while.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u4p2q3"> A. strengthen</label>
-                                        <label><input type="radio" name="u4p2q3"> B. disappear</label>
-                                        <label><input type="radio" name="u4p2q3"> C. change</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>4. Everyone was shocked at the sight of pups being <u>clubbed</u> to death in their icy habitat.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u4p2q4"> A. shot</label>
-                                        <label><input type="radio" name="u4p2q4"> B. kicked</label>
-                                        <label><input type="radio" name="u4p2q4"> C. beaten</label>
-                                    </div>
-                                </div>
+                                <div data-q="1"><p>1. Declaring a species <u>endangered</u> and protecting it by laws is not always enough.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p2q1" value="A"> A. in danger</label><label><input type="radio" name="u4p2q1" value="B"> B. out of danger</label><label><input type="radio" name="u4p2q1" value="C"> C. causing danger</label></div></div>
+                                <div data-q="2"><p>2. These groups also proved that certain populations of elephants were <u>dwindling</u>.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p2q2" value="A"> A. becoming more</label><label><input type="radio" name="u4p2q2" value="B"> B. becoming smaller</label><label><input type="radio" name="u4p2q2" value="C"> C. becoming weaker</label></div></div>
+                                <div data-q="3"><p>3. However, concern for a certain species tends to <u>fade</u> after a while.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p2q3" value="A"> A. strengthen</label><label><input type="radio" name="u4p2q3" value="B"> B. disappear</label><label><input type="radio" name="u4p2q3" value="C"> C. change</label></div></div>
+                                <div data-q="4"><p>4. Everyone was shocked at the sight of pups being <u>clubbed</u> to death in their icy habitat.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u4p2q4" value="A"> A. shot</label><label><input type="radio" name="u4p2q4" value="B"> B. kicked</label><label><input type="radio" name="u4p2q4" value="C"> C. beaten</label></div></div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u4p2ex1')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
-                        <!-- Exercise 2 -->
-                        <div class="p-4 border rounded-lg">
+                        <div id="u4p2ex2" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 2: Short-Answer Questions</h4>
-                             <p class="mb-4">Answer with NO MORE THAN THREE WORDS from the passage.</p>
+                            <p class="mb-4">Read the passage Out of the Wild, into Our Homes and answer the following questions with NO MORE THAN THREE WORDS taken from the passage.</p>
                             <div class="space-y-4">
-                                <div class="flex items-center">
-                                    <label for="u4p2q5" class="mr-2">5. What do people use to make things that people think can improve their lives?</label>
-                                    <input type="text" id="u4p2q5" class="border rounded px-2 py-1 w-48">
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="u4p2q6" class="mr-2">6. What do people kill elephants and cut their faces off for?</label>
-                                    <input type="text" id="u4p2q6" class="border rounded px-2 py-1 w-48">
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="u4p2q7" class="mr-2">7. What animal is mentioned after elephants as a victim of humans?</label>
-                                    <input type="text" id="u4p2q7" class="border rounded px-2 py-1 w-48">
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="u4p2q8" class="mr-2">8. Whom do some animal protection movements want to protect dolphins from?</label>
-                                    <input type="text" id="u4p2q8" class="border rounded px-2 py-1 w-48">
-                                </div>
+                                <div data-q="5"><label for="u4p2q5">5. According to the passage, what do people use to make things that people think can improve their lives?</label> <input type="text" id="u4p2q5" class="border rounded px-2 py-1 w-48"></div>
+                                <div data-q="6"><label for="u4p2q6">6. What do people kill elephants and cut their faces off for?</label> <input type="text" id="u4p2q6" class="border rounded px-2 py-1 w-48"></div>
+                                <div data-q="7"><label for="u4p2q7">7. What animal is mentioned after elephants as a victim of humans?</label> <input type="text" id="u4p2q7" class="border rounded px-2 py-1 w-48"></div>
+                                <div data-q="8"><label for="u4p2q8">8. Whom do some animal protection movements want to protect dolphins from?</label> <input type="text" id="u4p2q8" class="border rounded px-2 py-1 w-48"></div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u4p2ex2')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
-                        <!-- Exercise 3 -->
-                        <div class="p-4 border rounded-lg">
-                            <h4 class="font-bold mb-2">Exercise 3: True/False/Not Given</h4>
+                        <div id="u4p2ex3" class="p-4 border rounded-lg">
+                            <h4 class="font-bold mb-2">Exercise 3: True/False/Not Given Questions</h4>
+                             <p class="mb-4">Refer to the reading passage Out of the Wild, into Our Homes and look at the following statements. Write TRUE, FALSE or NOT GIVEN.</p>
                             <div class="space-y-3">
-                                <p>9. Many of the animals on Earth die because humans have to survive.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u4p2q9"> T</label><label><input type="radio" name="u4p2q9"> F</label><label><input type="radio" name="u4p2q9"> NG</label></div>
-                                <p>10. It is normally enough when an animal species is declared endangered and protected by laws.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u4p2q10"> T</label><label><input type="radio" name="u4p2q10"> F</label><label><input type="radio" name="u4p2q10"> NG</label></div>
-                                <p>11. People who kill animals illegally often get away without being caught.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u4p2q11"> T</label><label><input type="radio" name="u4p2q11"> F</label><label><input type="radio" name="u4p2q11"> NG</label></div>
-                                <p>12. Wildlife protection groups proved that the number of some elephant species is decreasing.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u4p2q12"> T</label><label><input type="radio" name="u4p2q12"> F</label><label><input type="radio" name="u4p2q12"> NG</label></div>
-                                <p>13. Poachers are severely punished if they kill the endangered species such as elephants.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u4p2q13"> T</label><label><input type="radio" name="u4p2q13"> F</label><label><input type="radio" name="u4p2q13"> NG</label></div>
-                                <p>14. In the late 1980s, people killed more seal pups than they did in the late 1970s.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u4p2q14"> T</label><label><input type="radio" name="u4p2q14"> F</label><label><input type="radio" name="u4p2q14"> NG</label></div>
-                                <p>15. The whale population is finally increasing because of stricter laws.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u4p2q15"> T</label><label><input type="radio" name="u4p2q15"> F</label><label><input type="radio" name="u4p2q15"> NG</label></div>
-                                <p>16. In the 2010s, people may not be so concerned about elephants as before.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u4p2q16"> T</label><label><input type="radio" name="u4p2q16"> F</label><label><input type="radio" name="u4p2q16"> NG</label></div>
+                                <div data-q="9"><p>9. Many of the animals on Earth die because humans have to survive.</p><div class="flex space-x-4"><label><input type="radio" name="u4p2q9" value="T"> T</label><label><input type="radio" name="u4p2q9" value="F"> F</label><label><input type="radio" name="u4p2q9" value="NG"> NG</label></div></div>
+                                <div data-q="10"><p>10. It is normally enough when an animal species is declared endangered and protected by laws.</p><div class="flex space-x-4"><label><input type="radio" name="u4p2q10" value="T"> T</label><label><input type="radio" name="u4p2q10" value="F"> F</label><label><input type="radio" name="u4p2q10" value="NG"> NG</label></div></div>
+                                <div data-q="11"><p>11. People who kill animals illegally often get away without being caught.</p><div class="flex space-x-4"><label><input type="radio" name="u4p2q11" value="T"> T</label><label><input type="radio" name="u4p2q11" value="F"> F</label><label><input type="radio" name="u4p2q11" value="NG"> NG</label></div></div>
+                                <div data-q="12"><p>12. Wildlife protection groups proved that the number of some elephant species is decreasing.</p><div class="flex space-x-4"><label><input type="radio" name="u4p2q12" value="T"> T</label><label><input type="radio" name="u4p2q12" value="F"> F</label><label><input type="radio" name="u4p2q12" value="NG"> NG</label></div></div>
+                                <div data-q="13"><p>13. Poachers are severely punished if they kill the endangered species such as elephants.</p><div class="flex space-x-4"><label><input type="radio" name="u4p2q13" value="T"> T</label><label><input type="radio" name="u4p2q13" value="F"> F</label><label><input type="radio" name="u4p2q13" value="NG"> NG</label></div></div>
+                                <div data-q="14"><p>14. In the late 1980s, people killed more seal pups than they did in the late 1970s.</p><div class="flex space-x-4"><label><input type="radio" name="u4p2q14" value="T"> T</label><label><input type="radio" name="u4p2q14" value="F"> F</label><label><input type="radio" name="u4p2q14" value="NG"> NG</label></div></div>
+                                <div data-q="15"><p>15. The whale population is finally increasing because of stricter laws.</p><div class="flex space-x-4"><label><input type="radio" name="u4p2q15" value="T"> T</label><label><input type="radio" name="u4p2q15" value="F"> F</label><label><input type="radio" name="u4p2q15" value="NG"> NG</label></div></div>
+                                <div data-q="16"><p>16. In the 2010s, people may not be so concerned about elephants as before.</p><div class="flex space-x-4"><label><input type="radio" name="u4p2q16" value="T"> T</label><label><input type="radio" name="u4p2q16" value="F"> F</label><label><input type="radio" name="u4p2q16" value="NG"> NG</label></div></div>
                             </div>
+                             <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u4p2ex3')">Check Answers</button>
+                             <div class="feedback mt-2"></div>
                         </div>
                     </section>
                 </div>
@@ -332,80 +228,94 @@
             <div id="unit5-p1" class="tab-content">
                 <h2 class="text-2xl font-bold mb-4 text-indigo-600">Unit 5: Reading Practice (2) - Passage One</h2>
                 <div class="space-y-6">
+                    <section>
+                        <h3 class="text-xl font-semibold mb-3 border-b pb-2">Pre-Reading Strategies</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-slate-700">
+                           <li>Skim through the passage on the next page to find out roughly what it is about and how it is organised. Pay attention to the words in boldface.</li>
+                           <li>Use your previous knowledge of the subject to think about the following questions before you read the passage for detailed information.
+                                <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
+                                    <li>A. Have you ever stayed in a hotel?</li>
+                                    <li>B. What types of services do hotels normally offer?</li>
+                                    <li>C. How to get the hotel services?</li>
+                                </ul>
+                           </li>
+                           <li>Look at the different types of questions after the passage to get a general idea about the range of questions and about the kinds of information you need to look for in the passage.</li>
+                        </ol>
+                    </section>
                     <section class="reading-passage bg-slate-50 p-6 rounded-lg border">
                         <h3 class="text-xl font-bold text-center mb-6">Hotel Directory of Services</h3>
                         <div class="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
-                            <div><span class="font-semibold">ATM CASH MACHINE</span> - 1880 Lobby Level</div>
-                            <div><span class="font-semibold">CASHIER/FRONT DESK</span> - 1884 For information about your account, check cashing and credit.</div>
-                            <div><span class="font-semibold">CATERING</span> - 1840</div>
-                            <div><span class="font-semibold">CHECK-OUT TIME</span> (at 12 noon)</div>
-                            <div><span class="font-semibold">CROWNE PLAZA CLUB LEVEL</span> - Located on 16, this unique floor with its own private lounge features special amenities and services. Contact our Concierge at 1884 for more information, or a tour of the floor.</div>
-                            <div><span class="font-semibold">DRY CLEANING & LAUNDRY</span> - 1884 Same day dry cleaning and laundry service available Monday through Saturday. Articles given to Bellmen by 9:30 a.m. will be returned by 6:30 p.m.. In addition, we provide overnight dry cleaning and laundry service. Articles left at Bell Desk 11 p.m. returned 7 a.m. next day, Monday through Friday only. Call for information or pick up.</div>
-                            <div><span class="font-semibold">DIALLING PROCEDURES</span><br>Local Calls: 9+Number<br>Long Distance: 9+1+Area Code+Number<br>Credit Card or Collect: 9+0+Area Code+Number<br>International: 9+011+Country Code+Number+"#"<br>Local Information: 9+411<br>Long Distance Information: 9+1+Area Code+555-1212<br>Room to Room, Floors 3-9: 7+Room Number<br>Room to Room, Floors 10-15: Room Number</div>
-                            <div><span class="font-semibold">EMERGENCY</span> - 1999 Fire-Police Medical</div>
-                            <div><span class="font-semibold">EXERCISE ROOM</span> - 1882 2nd floor 5 a.m.-11 p.m. Children must be accompanied by an adult.</div>
-                            <div><span class="font-semibold">FOREIGN CURRENCY EXCHANGE</span> - During business hours, available for selected currencies at prevailing exchange rate.</div>
-                            <div><span class="font-semibold">FORGET SOMETHING?</span> - 1884 Contact our Bell Desk if you have forgotten any essential toiletries. Several complimentary items are available and will be delivered to your door.</div>
-                            <div><span class="font-semibold">HOUSEKEEPING</span> - 1806 Our Housekeeping Department will assist you with extra room supplies, or special needs such as a bedboard.</div>
-                            <div><span class="font-semibold">ICE MACHINES</span> - Ice and soda machines are located on floors 3-16 near the elevators.</div>
-                            <div><span class="font-semibold">LAUNDROMAT</span> - A coin-operated laundry facility is located on the 15th floor near the ice and soda machines. Laundry supplies are available in the Laundromat. See Front Desk for key.</div>
-                            <div><span class="font-semibold">MESSAGES</span> - 89 A voice-messaging system is installed in the hotel for your convenience and privacy. When the message light is on, you may retrieve your messages by dialling 89.</div>
-                            <div><span class="font-semibold">NEWSSTAND</span> - 1887 Lobby Level 7 a.m.-11 p.m.</div>
-                            <div><span class="font-semibold">PARKING</span> - 1889 Valet service is available for a fee at the front entrance of the hotel. Our self-parking facility is located adjacent to the hotel. Contact the Front Desk for an in/out pass. (hotel guests only)</div>
-                            <div><span class="font-semibold">PLAZA PREFERRED LEVEL BUSINESS FLOORS</span> - Located on 15, 14, 12, 11 and 10, these private access floors feature special amenities for the business traveller. Contact our Manager on Duty (extension 1888), or Hotel Operator for more information, or a tour of these floors.</div>
-                            <div><span class="font-semibold">RESTAURANTS</span><br>Pascaline's-Fine Dining: Lobby Level. Dinner 6 p.m. - 10:30 p.m. Monday - Saturday<br>Strings Lounge: 11 a.m. - 1 a.m. daily.</div>
-                            <div><span class="font-semibold">SAFE DEPOSIT BOXES</span> - 1880 Safe deposit boxes are provided at the Front Desk at no charge. Please do not leave valuables in your room. We cannot assume responsibility for losses, unless valuables are secured in safe deposit boxes.</div>
-                            <div><span class="font-semibold">SECURITY</span> - 1874 For your safety, please: Double lock your door, Use the viewpoint, Use safety latch, Utilise safe deposit boxes at Front Desk, Notify security if assistance is needed.</div>
-                            <div><span class="font-semibold">SHOESHINE</span> - 1875 Lobby Level Mon - Fri</div>
-                            <div><span class="font-semibold">THEATRE/CONCERTS</span> - 1884 For information and tickets assistance, contact our Concierge.</div>
-                            <div><span class="font-semibold">VOICEMAIL</span><br>From Inside Your Room: Lift the handset - Touch 89 - Listen to your messages<br>From Outside Your Room: Inside the hotel, touch 0 - Outside the hotel (310)645-7500. The Operator will connect you to voicemail.</div>
+                            <div><p><span class="font-semibold">ATM CASH MACHINE</span>-- 1880 Lobby Level</p></div>
+                            <div><p><span class="font-semibold">CASHIER/FRONT DESK</span>- -1884 For information about your account, check cashing and credit.</p></div>
+                            <div><p><span class="font-semibold">CATERING</span>.... --1840</p></div>
+                            <div><p><span class="font-semibold">CHECK-OUT TIME</span> (at 12 noon)</p></div>
+                            <div><p><span class="font-semibold">CROWNE PLAZA CLUB LEVEL</span> Located on 16, this unique floor with its own private lounge features special amenities and services. Contact our Concierge at 1884 for more information, or a tour of the floor.</p></div>
+                            <div><p><span class="font-semibold">DRY CLEANING & LAUNDRY</span>..... -1884 Same day dry cleaning and laundry service available Monday through Saturday. Articles given to Bellmen by 9:30 a.m. will be returned by 6:30 p.m.. In addition, we provide overnight dry cleaning and laundry service. Articles left at Bell Desk 11 p.m. returned 7 a.m. next day, Monday through Friday only. Call for information or pick up.</p></div>
+                            <div><p><span class="font-semibold">DIALLING PROCEDURES</span><br>Local Calls- -9+Number<br>Long Distance --9+1+Area Code+Number<br>Credit Card or Collect 9+0+Area Code+Number<br>International 9+011+Country Code+Number+""#""<br>Local Information 9+411<br>Long Distance Information 9+1+Area Code+555-1212<br>Room to Room, Floors 3-9 7+Room Number<br>Room to Room, Floors 10-15-Room Number</p></div>
+                            <div><p><span class="font-semibold">EMERGENCY</span>- -1999 Fire-Police Medical</p></div>
+                            <div><p><span class="font-semibold">EXERCISE ROOM</span>- 1882 2nd floor 5 a.m.-11 p.m. Children must be accompanied by an adult.</p></div>
+                            <div><p><span class="font-semibold">FOREIGN CURRENCY EXCHANGE</span> During business hours, available for selected currencies at prevailing exchange rate.</p></div>
+                            <div><p><span class="font-semibold">FORGET SOMETHING?</span> -1884 Contact our Bell Desk if you have forgotten any essential toiletries. Several complimentary items are available and will be delivered to your door.</p></div>
+                            <div><p><span class="font-semibold">HOUSEKEEPING</span>- -1806 Our Housekeeping Department will assist you with extra room supplies, or special needs such as a bedboard.</p></div>
+                            <div><p><span class="font-semibold">ICE MACHINES</span> Ice and soda machines are located on floors 3-16 near the elevators.</p></div>
+                            <div><p><span class="font-semibold">LAUNDROMAT</span> A coin-operated laundry facility is located on the 15th floor near the ice and soda machines. Laundry supplies are available in the Laundromat. See Front Desk for key.</p></div>
+                            <div><p><span class="font-semibold">MESSAGES</span>--- 89 A voice-messaging system is installed in the hotel for your convenience and privacy. When the message light is on, you may retrieve your messages by dialling 89.</p></div>
+                            <div><p><span class="font-semibold">NEWSSTAND</span>- ---1887 Lobby Level 7 a.m.11 p.m.</p></div>
+                            <div><p><span class="font-semibold">PARKING</span>... 1889 Valet service is available for a fee at the front entrance of the hotel. Our self-parking facility is located adjacent to the hotel. Contact the Front Desk for an in/out pass. (hotel guests only)</p></div>
+                            <div><p><span class="font-semibold">PLAZA PREFERRED LEVEL BUSINESS FLOORS</span> Located on 15, 14, 12, 11 and 10, these private access floors feature special amenities for the business traveller. Contact our Manager on Duty (extension 1888), or Hotel Operator for more information, or a tour of these floors.</p></div>
+                            <div><p><span class="font-semibold">RESTAURANTS</span><br>Pascaline's-Fine Dining Lobby Level. Our Fine Dining Room offers California Cuisine and superb service. Dinner 6 p.m. 10:30 p.m. Monday - Saturday<br>Strings Lounge Enjoy your favourite beverage and sporting events. 11 a.m. -1 a.m. daily.</p></div>
+                            <div><p><span class="font-semibold">SAFE DEPOSIT BOXES</span>- 1880 Safe deposit boxes are provided at the Front Desk at no charge. Please do not leave valuables in your room. We cannot assume responsibility for losses, unless valuables are secured in safe deposit boxes.</p></div>
+                            <div><p><span class="font-semibold">SECURITY</span> 1874 For your safety, please: Double lock your door, Use the viewpoint, Use safety latch, Utilise safe deposit boxes at Front Desk, Notify security if assistance is needed</p></div>
+                            <div><p><span class="font-semibold">SHOESHINE</span>-- 1875 Lobby Level Mon - Fri</p></div>
+                            <div><p><span class="font-semibold">THEATRE/CONCERTS</span>- 1884 For information and tickets assistance, contact our Concierge.</p></div>
+                            <div><p><span class="font-semibold">VOICEMAIL</span><br>From Inside Your Room: Lift the handset - Touch 89-Listen to your messages<br>From Outside Your Room: - Inside the hotel, touch 0- Outside the hotel (310)645-7500. The Operator will connect you to voicemail.</p></div>
                         </div>
                     </section>
                     <section class="exercises space-y-6">
                         <h3 class="text-xl font-semibold mb-3 border-b pb-2">Exercises</h3>
-                        <div class="p-4 border rounded-lg">
+                         <div id="u5p1ex1" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 1: Word Use</h4>
+                            <p class="mb-4">Match the following words with the definitions.</p>
                              <div class="space-y-2">
-                                <p>1. laundry <input type="text" class="border rounded px-1 w-8 text-center"> A. necessary</p>
-                                <p>2. lounge <input type="text" class="border rounded px-1 w-8 text-center"> B. a public room for waiting</p>
-                                <p>3. essential <input type="text" class="border rounded px-1 w-8 text-center"> C. to recover or regain</p>
-                                <p>4. prevailing <input type="text" class="border rounded px-1 w-8 text-center"> D. something that is worth a lot of money</p>
-                                <p>5. valuable <input type="text" class="border rounded px-1 w-8 text-center"> E. most common or general</p>
-                                <p>6. retrieve <input type="text" class="border rounded px-1 w-8 text-center"> F. a place where clothes are washed and ironed</p>
+                                <div data-q="1"><p>1. laundry <input type="text" class="border rounded px-1 w-8 text-center" id="u5p1q1"> A. necessary</p></div>
+                                <div data-q="2"><p>2. lounge <input type="text" class="border rounded px-1 w-8 text-center" id="u5p1q2"> B. a public room for waiting</p></div>
+                                <div data-q="3"><p>3. essential <input type="text" class="border rounded px-1 w-8 text-center" id="u5p1q3"> C. to recover or regain</p></div>
+                                <div data-q="4"><p>4. prevailing <input type="text" class="border rounded px-1 w-8 text-center" id="u5p1q4"> D. something that is worth a lot of money</p></div>
+                                <div data-q="5"><p>5. valuable <input type="text" class="border rounded px-1 w-8 text-center" id="u5p1q5"> E. most common or general</p></div>
+                                <div data-q="6"><p>6. retrieve <input type="text" class="border rounded px-1 w-8 text-center" id="u5p1q6"> F. a place where clothes are washed and ironed</p></div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u5p1ex1')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
-                        <div class="p-4 border rounded-lg">
+                        <div id="u5p1ex2" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 2: Short-Answer Questions</h4>
+                            <p class="mb-4">Refer to the Hotel Directory of Services and write down the telephone numbers you can dial for the following services in the hotel.</p>
                             <div class="space-y-3">
-                                <p>7. If you want to call Room 408, Floor 4: <input type="text" class="border rounded px-2 py-1 w-24"></p>
-                                <p>8. If you are interested in concerts: <input type="text" class="border rounded px-2 py-1 w-24"></p>
-                                <p>9. If you detect a fire in the corridor: <input type="text" class="border rounded px-2 py-1 w-24"></p>
-                                <p>10. If you need an extra pillow: <input type="text" class="border rounded px-2 py-1 w-24"></p>
-                                <p>11. If you wish to have a tour of the 11th and 12th floors: <input type="text" class="border rounded px-2 py-1 w-24"></p>
+                                <div data-q="7"><p>7. If you want to call Room 408, Floor 4: <input type="text" id="u5p1q7" class="border rounded px-2 py-1 w-24"></p></div>
+                                <div data-q="8"><p>8. If you are interested in concerts: <input type="text" id="u5p1q8" class="border rounded px-2 py-1 w-24"></p></div>
+                                <div data-q="9"><p>9. If you detect a fire in the corridor: <input type="text" id="u5p1q9" class="border rounded px-2 py-1 w-24"></p></div>
+                                <div data-q="10"><p>10. If you need an extra pillow: <input type="text" id="u5p1q10" class="border rounded px-2 py-1 w-24"></p></div>
+                                <div data-q="11"><p>11. If you wish to have a tour of the 11th and 12th floors: <input type="text" id="u5p1q11" class="border rounded px-2 py-1 w-24"></p></div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u5p1ex2')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
-                         <div class="p-4 border rounded-lg">
-                            <h4 class="font-bold mb-2">Exercise 3: Yes/No/Not Given</h4>
+                         <div id="u5p1ex3" class="p-4 border rounded-lg">
+                            <h4 class="font-bold mb-2">Exercise 3: Yes/No/Not Given Questions</h4>
+                            <p class="mb-4">Read the Hotel Directory of Services and look at the following statements. Write YES, NO, or NOT GIVEN.</p>
                             <div class="space-y-3">
-                                <p>12. You can go to the Lobby Level when you want to read newspapers.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q12"> Y</label><label><input type="radio" name="u5p1q12"> N</label><label><input type="radio" name="u5p1q12"> NG</label></div>
-                                <p>13. Overnight laundry service is provided every day in the hotel.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q13"> Y</label><label><input type="radio" name="u5p1q13"> N</label><label><input type="radio" name="u5p1q13"> NG</label></div>
-                                <p>14. You have to pay if the call you make rings more than half a minute.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q14"> Y</label><label><input type="radio" name="u5p1q14"> N</label><label><input type="radio" name="u5p1q14"> NG</label></div>
-                                <p>15. The hotel is responsible for losses only if you inform the Front Desk that you have valuables in your room.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q15"> Y</label><label><input type="radio" name="u5p1q15"> N</label><label><input type="radio" name="u5p1q15"> NG</label></div>
-                                <p>16. There is a parking lot outside the hotel with space for more than 30 cars.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q16"> Y</label><label><input type="radio" name="u5p1q16"> N</label><label><input type="radio" name="u5p1q16"> NG</label></div>
-                                <p>17. If your friend comes at 10:35 p.m. on Saturday, you will still be able to take him to Pascaline's for a meal.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q17"> Y</label><label><input type="radio" name="u5p1q17"> N</label><label><input type="radio" name="u5p1q17"> NG</label></div>
-                                <p>18. When you hear a busy tone after you dial a local number, you may try dialling again by adding 1 between 9 and the number.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q18"> Y</label><label><input type="radio" name="u5p1q18"> N</label><label><input type="radio" name="u5p1q18"> NG</label></div>
-                                <p>19. From outside the hotel you can leave a message on the voicemail by dialling 89.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q19"> Y</label><label><input type="radio" name="u5p1q19"> N</label><label><input type="radio" name="u5p1q19"> NG</label></div>
-                                <p>20. It is suggested that you should notify the guards when leaving the hotel.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p1q20"> Y</label><label><input type="radio" name="u5p1q20"> N</label><label><input type="radio" name="u5p1q20"> NG</label></div>
+                                <div data-q="12"><p>12. You can go to the Lobby Level when you want to read newspapers.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q12" value="Y"> Y</label><label><input type="radio" name="u5p1q12" value="N"> N</label><label><input type="radio" name="u5p1q12" value="NG"> NG</label></div></div>
+                                <div data-q="13"><p>13. Overnight laundry service is provided every day in the hotel.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q13" value="Y"> Y</label><label><input type="radio" name="u5p1q13" value="N"> N</label><label><input type="radio" name="u5p1q13" value="NG"> NG</label></div></div>
+                                <div data-q="14"><p>14. You have to pay if the call you make rings more than half a minute.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q14" value="Y"> Y</label><label><input type="radio" name="u5p1q14" value="N"> N</label><label><input type="radio" name="u5p1q14" value="NG"> NG</label></div></div>
+                                <div data-q="15"><p>15. The hotel is responsible for losses only if you inform the Front Desk that you have valuables in your room.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q15" value="Y"> Y</label><label><input type="radio" name="u5p1q15" value="N"> N</label><label><input type="radio" name="u5p1q15" value="NG"> NG</label></div></div>
+                                <div data-q="16"><p>16. There is a parking lot outside the hotel with space for more than 30 cars.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q16" value="Y"> Y</label><label><input type="radio" name="u5p1q16" value="N"> N</label><label><input type="radio" name="u5p1q16" value="NG"> NG</label></div></div>
+                                <div data-q="17"><p>17. If your friend comes at 10:35 p.m. on Saturday, you will still be able to take him to Pascaline's for a meal.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q17" value="Y"> Y</label><label><input type="radio" name="u5p1q17" value="N"> N</label><label><input type="radio" name="u5p1q17" value="NG"> NG</label></div></div>
+                                <div data-q="18"><p>18. When you hear a busy tone after you dial a local number, you may try dialling again by adding 1 between 9 and the number.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q18" value="Y"> Y</label><label><input type="radio" name="u5p1q18" value="N"> N</label><label><input type="radio" name="u5p1q18" value="NG"> NG</label></div></div>
+                                <div data-q="19"><p>19. From outside the hotel you can leave a message on the voicemail by dialling 89.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q19" value="Y"> Y</label><label><input type="radio" name="u5p1q19" value="N"> N</label><label><input type="radio" name="u5p1q19" value="NG"> NG</label></div></div>
+                                <div data-q="20"><p>20. It is suggested that you should notify the guards when leaving the hotel.</p><div class="flex space-x-4"><label><input type="radio" name="u5p1q20" value="Y"> Y</label><label><input type="radio" name="u5p1q20" value="N"> N</label><label><input type="radio" name="u5p1q20" value="NG"> NG</label></div></div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u5p1ex3')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
                     </section>
                 </div>
@@ -413,8 +323,22 @@
 
             <!-- Unit 5, Passage 2 -->
             <div id="unit5-p2" class="tab-content">
-                <h2 class="text-2xl font-bold mb-4 text-indigo-600">Unit 5: Reading Practice (2) - Passage Two</h2>
+                 <h2 class="text-2xl font-bold mb-4 text-indigo-600">Unit 5: Reading Practice (2) - Passage Two</h2>
                 <div class="space-y-6">
+                     <section>
+                        <h3 class="text-xl font-semibold mb-3 border-b pb-2">Pre-Reading Strategies</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-slate-700">
+                           <li>Skim through the passage on the next page to find out roughly what it is about and how it is organised.</li>
+                           <li>Use your previous knowledge of the subject to think about the following questions before you read the passage for detailed information.
+                                <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
+                                    <li>A. Why do many animal species gradually disappear?</li>
+                                    <li>B. What do human beings do to the natural habitats?</li>
+                                    <li>C. Is the situation getting any better?</li>
+                                </ul>
+                           </li>
+                           <li>Look at the different types of questions after the passage to get a general idea about the range of questions and about the kinds of information you need to look for in the passage.</li>
+                        </ol>
+                    </section>
                     <section class="reading-passage bg-slate-50 p-6 rounded-lg border">
                         <h3 class="text-xl font-bold text-center mb-6">What Is Happening to Our Planet?</h3>
                         <div class="space-y-4 text-slate-700">
@@ -428,118 +352,63 @@
                     </section>
                     <section class="exercises space-y-6">
                         <h3 class="text-xl font-semibold mb-3 border-b pb-2">Exercises</h3>
-                        <!-- Exercise 1 -->
-                        <div class="p-4 border rounded-lg">
+                        <div id="u5p2ex1" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 1: Word Use</h4>
+                            <p class="mb-4">Decide which of the following choices is closest in meaning to the underlined word in the sentence and write down the corresponding letter.</p>
                             <div class="space-y-4">
-                                <div>
-                                    <p>1. ...as many as two hundred known species of birds and mammals have <u>vanished</u>.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u5p2q1"> A. changed</label>
-                                        <label><input type="radio" name="u5p2q1"> B. disappeared</label>
-                                        <label><input type="radio" name="u5p2q1"> C. decreased</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>2. The Earth's rainforests are being destroyed, along with their <u>inhabitants</u>.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u5p2q2"> A. animals which live in a particular place</label>
-                                        <label><input type="radio" name="u5p2q2"> B. animals which are being destroyed</label>
-                                        <label><input type="radio" name="u5p2q2"> C. animals which move to other places</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>3. ...the Global 2000 Report to the President provided <u>startling</u> warnings...</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u5p2q3"> A. shocking</label>
-                                        <label><input type="radio" name="u5p2q3"> B. serious</label>
-                                        <label><input type="radio" name="u5p2q3"> C. terrible</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>4. This report strongly <u>urged</u> the government to take immediate action.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u5p2q4"> A. forced</label>
-                                        <label><input type="radio" name="u5p2q4"> B. supported</label>
-                                        <label><input type="radio" name="u5p2q4"> C. encouraged</label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>5. ...a global report now would be even <u>bleaker</u> than the one published after the 1970s.</p>
-                                    <div class="flex flex-col space-y-1 mt-2 ml-4">
-                                        <label><input type="radio" name="u5p2q5"> A. more discouraging</label>
-                                        <label><input type="radio" name="u5p2q5"> B. more shocking</label>
-                                        <label><input type="radio" name="u5p2q5"> C. more encouraging</label>
-                                    </div>
-                                </div>
+                                <div data-q="1"><p>1. The result: in less than one hundred years, as many as two hundred known species of birds and mammals have <u>vanished</u>.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u5p2q1" value="A"> A. changed</label><label><input type="radio" name="u5p2q1" value="B"> B. disappeared</label><label><input type="radio" name="u5p2q1" value="C"> C. decreased</label></div></div>
+                                <div data-q="2"><p>2. The Earth's rainforests are being destroyed, along with their <u>inhabitants</u>.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u5p2q2" value="A"> A. animals which live in a particular place</label><label><input type="radio" name="u5p2q2" value="B"> B. animals which are being destroyed</label><label><input type="radio" name="u5p2q2" value="C"> C. animals which move to other places</label></div></div>
+                                <div data-q="3"><p>3. Published in 1980, the Global 2000 Report to the President provided <u>startling</u> warnings and predictions about the fate of the Earth if we do not make changes in the way we treat it.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u5p2q3" value="A"> A. shocking</label><label><input type="radio" name="u5p2q3" value="B"> B. serious</label><label><input type="radio" name="u5p2q3" value="C"> C. terrible</label></div></div>
+                                <div data-q="4"><p>4. This report strongly <u>urged</u> the government to take immediate action.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u5p2q4" value="A"> A. forced</label><label><input type="radio" name="u5p2q4" value="B"> B. supported</label><label><input type="radio" name="u5p2q4" value="C"> C. encouraged</label></div></div>
+                                <div data-q="5"><p>5. It is likely that a global report now would be even <u>bleaker</u> than the one published after the 1970s.</p><div class="flex flex-col space-y-1 mt-2 ml-4"><label><input type="radio" name="u5p2q5" value="A"> A. more discouraging</label><label><input type="radio" name="u5p2q5" value="B"> B. more shocking</label><label><input type="radio" name="u5p2q5" value="C"> C. more encouraging</label></div></div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u5p2ex1')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
-                        <!-- Exercise 2 -->
-                        <div class="p-4 border rounded-lg">
+                        <div id="u5p2ex2" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 2: Sentence Completion</h4>
-                             <p class="mb-4">Complete with NO MORE THAN THREE WORDS from the passage.</p>
+                            <p class="mb-4">Refer to the passage What Is Happening to Our Planet? and choose from the passage NO MORE THAN THREE WORDS to complete the following sentences.</p>
                             <div class="space-y-4">
-                                <div class="flex items-center">
-                                    <label for="u5p2q6" class="mr-2">6. Humans kill animals indirectly because industries need more and more of the</label>
-                                    <input type="text" id="u5p2q6" class="border rounded px-2 py-1 w-48"> on the Earth.
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="u5p2q7" class="mr-2">7. The changes in the Earth's</label>
-                                    <input type="text" id="u5p2q7" class="border rounded px-2 py-1 w-48"> as well as its climate are harmful to all animals.
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="u5p2q8" class="mr-2">8. The official study of the environment in 1977 was directed by</label>
-                                    <input type="text" id="u5p2q8" class="border rounded px-2 py-1 w-48">.
-                                </div>
-                                <div class="flex items-center">
-                                    <label for="u5p2q9" class="mr-2">9. One of the difficulties which humans were warned of by the report is</label>
-                                    <input type="text" id="u5p2q9" class="border rounded px-2 py-1 w-48">.
-                                </div>
+                                <div data-q="6"><label for="u5p2q6">6. Humans kill animals indirectly because industries need more and more of the</label> <input type="text" id="u5p2q6" class="border rounded px-2 py-1 w-48"> on the Earth.</div>
+                                <div data-q="7"><label for="u5p2q7">7. The changes in the Earth's</label> <input type="text" id="u5p2q7" class="border rounded px-2 py-1 w-48"> as well as its climate are harmful to all animals.</div>
+                                <div data-q="8"><label for="u5p2q8">8. The official study of the environment in 1977 was directed by</label> <input type="text" id="u5p2q8" class="border rounded px-2 py-1 w-48">.</div>
+                                <div data-q="9"><label for="u5p2q9">9. One of the difficulties which humans were warned of by the report is</label> <input type="text" id="u5p2q9" class="border rounded px-2 py-1 w-48">.</div>
                             </div>
+                             <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u5p2ex2')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
-                        <!-- Exercise 3 -->
-                        <div class="p-4 border rounded-lg">
+                        <div id="u5p2ex3" class="p-4 border rounded-lg">
                             <h4 class="font-bold mb-2">Exercise 3: True/False/Not Given</h4>
+                            <p class="mb-4">Read the passage headed What Is Happening to Our Planet? and look at the following statements. Write TRUE, FALSE, or NOT GIVEN.</p>
                             <div class="space-y-3">
-                                <p>10. The increase of human population and the needs of industries result in the death of lots of birds and mammals.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p2q10"> T</label><label><input type="radio" name="u5p2q10"> F</label><label><input type="radio" name="u5p2q10"> NG</label></div>
-                                <p>11. In 1977, President Jimmy Carter believed that the present trends would continue.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p2q11"> T</label><label><input type="radio" name="u5p2q11"> F</label><label><input type="radio" name="u5p2q11"> NG</label></div>
-                                <p>12. According to the report, more than 2 million species on earth would disappear by 2000.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p2q12"> T</label><label><input type="radio" name="u5p2q12"> F</label><label><input type="radio" name="u5p2q12"> NG</label></div>
-                                <p>13. Ronald Reagan was elected president after the study was completed.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p2q13"> T</label><label><input type="radio" name="u5p2q13"> F</label><label><input type="radio" name="u5p2q13"> NG</label></div>
-                                <p>14. Ronald Reagan's administration didn't think that the report was necessary.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p2q14"> T</label><label><input type="radio" name="u5p2q14"> F</label><label><input type="radio" name="u5p2q14"> NG</label></div>
-                                <p>15. It is possible that it will be too late when we stop the destruction of the Earth.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p2q15"> T</label><label><input type="radio" name="u5p2q15"> F</label><label><input type="radio" name="u5p2q15"> NG</label></div>
-                                <p>16. The environmentalists don't think that humans are masters of the Earth.</p>
-                                <div class="flex space-x-4"><label><input type="radio" name="u5p2q16"> T</label><label><input type="radio" name="u5p2q16"> F</label><label><input type="radio" name="u5p2q16"> NG</label></div>
+                                <div data-q="10"><p>10. The increase of human population and the needs of industries result in the death of lots of birds and mammals.</p><div class="flex space-x-4"><label><input type="radio" name="u5p2q10" value="T"> T</label><label><input type="radio" name="u5p2q10" value="F"> F</label><label><input type="radio" name="u5p2q10" value="NG"> NG</label></div></div>
+                                <div data-q="11"><p>11. In 1977, President Jimmy Carter believed that the present trends would continue.</p><div class="flex space-x-4"><label><input type="radio" name="u5p2q11" value="T"> T</label><label><input type="radio" name="u5p2q11" value="F"> F</label><label><input type="radio" name="u5p2q11" value="NG"> NG</label></div></div>
+                                <div data-q="12"><p>12. According to the report, more than 2 million species on earth would disappear by 2000.</p><div class="flex space-x-4"><label><input type="radio" name="u5p2q12" value="T"> T</label><label><input type="radio" name="u5p2q12" value="F"> F</label><label><input type="radio" name="u5p2q12" value="NG"> NG</label></div></div>
+                                <div data-q="13"><p>13. Ronald Reagan was elected president after the study was completed.</p><div class="flex space-x-4"><label><input type="radio" name="u5p2q13" value="T"> T</label><label><input type="radio" name="u5p2q13" value="F"> F</label><label><input type="radio" name="u5p2q13" value="NG"> NG</label></div></div>
+                                <div data-q="14"><p>14. Ronald Reagan's administration didn't think that the report was necessary.</p><div class="flex space-x-4"><label><input type="radio" name="u5p2q14" value="T"> T</label><label><input type="radio" name="u5p2q14" value="F"> F</label><label><input type="radio" name="u5p2q14" value="NG"> NG</label></div></div>
+                                <div data-q="15"><p>15. It is possible that it will be too late when we stop the destruction of the Earth.</p><div class="flex space-x-4"><label><input type="radio" name="u5p2q15" value="T"> T</label><label><input type="radio" name="u5p2q15" value="F"> F</label><label><input type="radio" name="u5p2q15" value="NG"> NG</label></div></div>
+                                <div data-q="16"><p>16. The environmentalists don't think that humans are masters of the Earth.</p><div class="flex space-x-4"><label><input type="radio" name="u5p2q16" value="T"> T</label><label><input type="radio" name="u5p2q16" value="F"> F</label><label><input type="radio" name="u5p2q16" value="NG"> NG</label></div></div>
                             </div>
+                            <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswers('u5p2ex3')">Check Answers</button>
+                            <div class="feedback mt-2"></div>
                         </div>
                     </section>
                 </div>
             </div>
-
         </main>
     </div>
 
     <script>
         // --- Tab Navigation Logic ---
         function openTab(evt, tabName) {
-            // Get all elements with class="tab-content" and hide them
             const tabcontent = document.getElementsByClassName("tab-content");
             for (let i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
-
-            // Get all elements with class="tab" and remove the "active" class
             const tablinks = document.getElementsByClassName("tab");
             for (let i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-
-            // Show the current tab, and add an "active" class to the button that opened the tab
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
@@ -548,35 +417,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             const toolbar = document.getElementById('highlight-toolbar');
             const mainContent = document.getElementById('main-content');
-            let selectedColor = 'yellow'; // Default color
+            let selectedColor = 'yellow';
 
-            // Event listener for color selection in the toolbar
             toolbar.addEventListener('click', (e) => {
                 if (e.target.classList.contains('color-box')) {
-                    // Handle color selection
                     if (e.target.dataset.color) {
-                        const currentSelected = toolbar.querySelector('.selected');
-                        if (currentSelected) {
-                            currentSelected.classList.remove('selected');
-                        }
+                        toolbar.querySelector('.selected')?.classList.remove('selected');
                         e.target.classList.add('selected');
                         selectedColor = e.target.dataset.color;
-                    } 
-                    // Handle clearing highlights with eraser on selection
-                    else if (e.target.id === 'clear-highlight' || e.target.closest('#clear-highlight')) {
+                    } else if (e.target.closest('#clear-highlight')) {
                         const selection = window.getSelection();
                         if (selection.rangeCount > 0 && !selection.isCollapsed) {
-                            const range = selection.getRangeAt(0);
-                            let parent = range.commonAncestorContainer;
-                            if (parent.nodeType !== 1) {
-                                parent = parent.parentNode;
-                            }
+                            let parent = selection.getRangeAt(0).commonAncestorContainer;
+                            parent = parent.nodeType === 1 ? parent : parent.parentNode;
                             if (parent.closest('.reading-passage')) {
-                                const highlightedSpans = parent.closest('.reading-passage').querySelectorAll(`[class*="highlighted-"]`);
-                                highlightedSpans.forEach(span => {
-                                    if (selection.containsNode(span, true)) {
-                                        unwrapSpan(span);
-                                    }
+                                parent.closest('.reading-passage').querySelectorAll(`[class*="highlighted-"]`).forEach(span => {
+                                    if (selection.containsNode(span, true)) unwrapSpan(span);
                                 });
                             }
                         }
@@ -585,23 +441,17 @@
                 }
             });
 
-            // NEW: Event listener to remove highlight on a simple click
             mainContent.addEventListener('click', (e) => {
                 if (e.target.tagName === 'SPAN' && e.target.className.includes('highlighted-')) {
                     unwrapSpan(e.target);
                 }
             });
 
-            // Event listener for text selection (to create highlights)
             mainContent.addEventListener('mouseup', (e) => {
-                // Prevent highlighting when clicking to un-highlight
-                if (e.target.tagName === 'SPAN' && e.target.className.includes('highlighted-')) {
-                    return;
-                }
+                if (e.target.tagName === 'SPAN' && e.target.className.includes('highlighted-')) return;
                 const selection = window.getSelection();
                 if (!selection.isCollapsed && selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0);
-                    const parentElement = range.commonAncestorContainer.parentElement;
+                    const parentElement = selection.getRangeAt(0).commonAncestorContainer.parentElement;
                     if (parentElement.closest('.reading-passage')) {
                         highlightSelection(selection, selectedColor);
                     }
@@ -609,28 +459,80 @@
             });
 
             function highlightSelection(selection, color) {
-                const range = selection.getRangeAt(0);
                 const span = document.createElement('span');
                 span.className = `highlighted-${color}`;
                 try {
-                    range.surroundContents(span);
-                } catch (err) {
-                    console.warn("Could not highlight selection across block elements.", err);
-                }
+                    selection.getRangeAt(0).surroundContents(span);
+                } catch (err) { console.warn("Highlight failed:", err); }
                 selection.removeAllRanges();
             }
 
-            // Helper function to unwrap a span
             function unwrapSpan(span) {
                 const parent = span.parentNode;
-                while (span.firstChild) {
-                    parent.insertBefore(span.firstChild, span);
-                }
+                while (span.firstChild) parent.insertBefore(span.firstChild, span);
                 parent.removeChild(span);
-                parent.normalize(); // Merges adjacent text nodes
+                parent.normalize();
             }
         });
-    </script>
 
+        // --- Answer Checking Logic ---
+        const answers = {
+            'u4p1ex1': { 1: 'C', 2: 'C', 3: 'B', 4: 'A' },
+            'u4p1ex2': { 5: 'B', 6: 'exit', 7: 'your location', 8: 'a wet towel', 9: 'break any windows', 10: 'stay calm' },
+            'u4p2ex1': { 1: 'A', 2: 'B', 3: 'B', 4: 'C' },
+            'u4p2ex2': { 5: 'powders', 6: 'their ivory tusks', 7: 'seal pups', 8: 'tuna fishermen' },
+            'u4p2ex3': { 9: 'F', 10: 'F', 11: 'T', 12: 'T', 13: 'NG', 14: 'T', 15: 'NG', 16: 'T' },
+            'u5p1ex1': { 1: 'F', 2: 'B', 3: 'A', 4: 'E', 5: 'D', 6: 'C' },
+            'u5p1ex2': { 7: '7+408', 8: '1884', 9: '1999', 10: '1806', 11: '1888' },
+            'u5p1ex3': { 12: 'Y', 13: 'N', 14: 'Y', 15: 'N', 16: 'NG', 17: 'N', 18: 'Y', 19: 'N', 20: 'NG' },
+            'u5p2ex1': { 1: 'B', 2: 'A', 3: 'A', 4: 'C', 5: 'A' },
+            'u5p2ex2': { 6: 'natural resources', 7: 'ozone layer', 8: 'Dr. Gerald Barney', 9: 'starvation' },
+            'u5p2ex3': { 10: 'T', 11: 'NG', 12: 'F', 13: 'T', 14: 'NG', 15: 'T', 16: 'F' }
+        };
+
+        function checkAnswers(exerciseId) {
+            const exerciseDiv = document.getElementById(exerciseId);
+            const feedbackDiv = exerciseDiv.querySelector('.feedback');
+            const correctAnswers = answers[exerciseId];
+            let score = 0;
+            let total = 0;
+            
+            const questions = exerciseDiv.querySelectorAll('[data-q]');
+            
+            questions.forEach(qDiv => {
+                total++;
+                const qNum = qDiv.dataset.q;
+                const correctAnswer = correctAnswers[qNum];
+                
+                // Reset styles
+                qDiv.classList.remove('feedback-correct', 'feedback-incorrect');
+                const textInput = qDiv.querySelector('input[type="text"]');
+                if (textInput) textInput.classList.remove('input-correct', 'input-incorrect');
+
+                // Check radio buttons
+                const radioInput = qDiv.querySelector('input[type="radio"]:checked');
+                if (radioInput) {
+                    if (radioInput.value.toUpperCase() === correctAnswer.toUpperCase()) {
+                        score++;
+                        qDiv.classList.add('feedback-correct');
+                    } else {
+                        qDiv.classList.add('feedback-incorrect');
+                    }
+                }
+                
+                // Check text inputs
+                if (textInput) {
+                    if (textInput.value.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                        score++;
+                        textInput.classList.add('input-correct');
+                    } else {
+                        textInput.classList.add('input-incorrect');
+                    }
+                }
+            });
+
+            feedbackDiv.innerHTML = `You got <strong class="text-indigo-700">${score}</strong> out of <strong class="text-indigo-700">${total}</strong> correct.`;
+        }
+    </script>
 </body>
 </html>
