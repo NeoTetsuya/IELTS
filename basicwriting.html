@@ -59,7 +59,19 @@
         .exercise-item {
             margin-bottom: 1rem;
         }
-        .exercise-input {
+        .exercise-input-inline {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            background-color: #f9fafb;
+        }
+        .exercise-input-inline:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px #c7d2fe;
+        }
+         .exercise-input-full {
             width: 100%;
             margin-top: 0.5rem;
             padding: 0.5rem 0.75rem;
@@ -67,7 +79,7 @@
             border-radius: 0.375rem;
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
-        .exercise-input:focus {
+        .exercise-input-full:focus {
             outline: none;
             border-color: #4f46e5;
             box-shadow: 0 0 0 2px #c7d2fe;
@@ -76,7 +88,7 @@
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-4xl mx-auto">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800">Basic Writing Interactive Worksheet</h1>
             <p class="text-lg text-gray-600 mt-2">Select a day to begin your lesson.</p>
@@ -134,21 +146,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Check-up</h3>
                     <p class="mb-4 text-gray-600">Dịch cụm từ sang tiếng Anh và điền vào chỗ trống.</p>
                     <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">Trở thành một phần trong nhóm bạn cùng trang lứa rất quan trọng đối với sự tự tin của thanh thiếu niên.<br>Being part of a <input type="text" class="exercise-input" placeholder="..."> is important for a teenager's confidence.</div></li>
-                        <li><div class="exercise-item">Những đứa trẻ không ngủ đủ giấc thường có xu hướng bị điểm kém.<br>Children who do not get enough sleep tend to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Quy định bắt buộc phải đến trường không phải lúc nào cũng khiến thành tích học tập của học sinh tốt hơn.<br><input type="text" class="exercise-input" placeholder="..."> policies do not always result in better student performance.</div></li>
-                        <li><div class="exercise-item">Một số sinh viên có thể gặp khó khăn trong việc đi du học do vấn đề tài chính.<br>It can be financially difficult for some students to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Nghiên cứu cho thấy việc phát triển nhân cách có thể kéo dài đến tuổi trưởng thành.<br>Research shows that <input type="text" class="exercise-input" placeholder="..."> can continue into adulthood.</div></li>
-                        <li><div class="exercise-item">Hầu hết các sinh viên năm cuối đều thích sống ngoài khuôn viên trường.<br>Most college seniors prefer to live <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Một số nhà phê bình cho rằng việc có được tấm bằng không còn đáng với chi phí bỏ ra nữa.<br>Some critics argue that <input type="text" class="exercise-input" placeholder="..."> is not worth the expense anymore.</div></li>
-                        <li><div class="exercise-item">Những người làm việc chăm chỉ thường có nhiều tiềm năng hơn những người đơn giản chỉ là thông minh.<br>People who are hard-working have more <input type="text" class="exercise-input" placeholder="..."> than those who are simply smart.</div></li>
-                        <li><div class="exercise-item">Tham gia làm bài tập nhóm dạy học sinh về sự hợp tác và thỏa hiệp.<br>Taking part in a <input type="text" class="exercise-input" placeholder="..."> teaches students collaboration and compromise.</div></li>
-                        <li><div class="exercise-item">Học phí của sinh viên quốc tế cao hơn học phí của sinh viên trong nước.<br><input type="text" class="exercise-input" placeholder="..."> for international students are higher than those for domestic students.</div></li>
-                        <li><div class="exercise-item">Việc học nghề sẽ cung cấp hoạt động đào tạo cho từng nghề cụ thể.<br>A <input type="text" class="exercise-input" placeholder="..."> offers training for a specific career.</div></li>
-                        <li><div class="exercise-item">Khen ngợi giúp trẻ nhỏ xây dựng hình ảnh tích cực về bản thân.<br>Complimenting young children helps them to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Giáo viên phải luôn thúc đẩy sự sáng tạo của học sinh.<br>Teachers should always <input type="text" class="exercise-input" placeholder="..."> in their students.</div></li>
-                        <li><div class="exercise-item">Việc lên lịch trình có thể giúp các sinh viên có đầu óc tổ chức kém hoàn thành bài đúng hạn.<br>Making a schedule can help unorganized students <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Chia sẻ ý tưởng là một trong những lợi ích chính của việc học nhóm.<br><input type="text" class="exercise-input" placeholder="..."> is one of the main benefits of studying in groups.</div></li>
+                        <li><span>Being part of a <input type="text" class="exercise-input-inline" size="12"> is important for a teenager's confidence.</span></li>
+                        <li><span>Children who do not get enough sleep tend to <input type="text" class="exercise-input-inline" size="15">.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="20"> policies do not always result in better student performance.</span></li>
+                        <li><span>It can be financially difficult for some students to <input type="text" class="exercise-input-inline" size="12">.</span></li>
+                        <li><span>Research shows that <input type="text" class="exercise-input-inline" size="25"> can continue into adulthood.</span></li>
+                        <li><span>Most college seniors prefer to live <input type="text" class="exercise-input-inline" size="10">.</span></li>
+                        <li><span>Some critics argue that <input type="text" class="exercise-input-inline" size="15"> is not worth the expense anymore.</span></li>
+                        <li><span>People who are hard-working have more <input type="text" class="exercise-input-inline" size="10"> than those who are simply smart.</span></li>
+                        <li><span>Taking part in a <input type="text" class="exercise-input-inline" size="18"> teaches students collaboration and compromise.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="12"> for international students are higher than those for domestic students.</span></li>
+                        <li><span>A <input type="text" class="exercise-input-inline" size="20"> offers training for a specific career.</span></li>
+                        <li><span>Complimenting young children helps them to <input type="text" class="exercise-input-inline" size="30">.</span></li>
+                        <li><span>Teachers should always <input type="text" class="exercise-input-inline" size="18"> in their students.</span></li>
+                        <li><span>Making a schedule can help unorganized students <input type="text" class="exercise-input-inline" size="15">.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="15"> is one of the main benefits of studying in groups.</span></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d1-1')">Show/Hide Answers</button>
                     <div id="answers-d1-1" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -176,21 +188,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Test</h3>
                     <p class="mb-4 text-gray-600">Dịch các câu sau sang tiếng Anh.</p>
                     <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">chúng ta có thể học được những kỹ năng quý báu / từ thành công và thất bại<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">hầu hết các công ty đều tổ chức hội thảo cho nhân viên / để xây dựng tinh thần làm việc theo nhóm<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nghệ thuật, ngoại ngữ và thể thao đều là một phần / của giáo dục toàn diện<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">công nghệ đang ảnh hưởng đáng kể đến / quá trình học tập<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">hoạt động ngoại khóa / là một phần quan trọng / trong việc học tập của trẻ em<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nhiều chương trình học / hiện đã dễ tiếp cận / đối với các công dân lớn tuổi<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">học sinh phải nỗ lực rất nhiều / để đạt điểm cao / để nhập học ở các trường đại học danh giá<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">chính phủ cần đưa ra quy định / học sinh phải học ngôn ngữ thứ hai / ở trường<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">gia cảnh của một người ảnh hưởng đến / sự phát triển nhân cách của họ<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nhiều học viên cao học thực hiện phần lớn nghiên cứu của họ / bên ngoài trường học<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">một số công ty ưu tiên / tuyển dụng những người có bằng cấp / về khoa học máy tính<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các khóa học / yêu cầu sinh viên chia sẻ ý kiến với nhau / có thể giúp họ hiểu / giá trị của sự hợp tác<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các nhà phê bình cho rằng / thanh thiếu niên không thể xây dựng hình ảnh tích cực về bản thân / vì mạng xã hội<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">tham gia các lớp học mỹ thuật và âm nhạc / có thể thúc đẩy sự sáng tạo<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">mọi người có thể thu thập kiến thức / về các vấn đề xã hội / thông qua việc đọc tin tức<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">chúng ta có thể học được những kỹ năng quý báu / từ thành công và thất bại<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">hầu hết các công ty đều tổ chức hội thảo cho nhân viên / để xây dựng tinh thần làm việc theo nhóm<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nghệ thuật, ngoại ngữ và thể thao đều là một phần / của giáo dục toàn diện<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">công nghệ đang ảnh hưởng đáng kể đến / quá trình học tập<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">hoạt động ngoại khóa / là một phần quan trọng / trong việc học tập của trẻ em<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nhiều chương trình học / hiện đã dễ tiếp cận / đối với các công dân lớn tuổi<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">học sinh phải nỗ lực rất nhiều / để đạt điểm cao / để nhập học ở các trường đại học danh giá<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">chính phủ cần đưa ra quy định / học sinh phải học ngôn ngữ thứ hai / ở trường<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">gia cảnh của một người ảnh hưởng đến / sự phát triển nhân cách của họ<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nhiều học viên cao học thực hiện phần lớn nghiên cứu của họ / bên ngoài trường học<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">một số công ty ưu tiên / tuyển dụng những người có bằng cấp / về khoa học máy tính<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các khóa học / yêu cầu sinh viên chia sẻ ý kiến với nhau / có thể giúp họ hiểu / giá trị của sự hợp tác<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các nhà phê bình cho rằng / thanh thiếu niên không thể xây dựng hình ảnh tích cực về bản thân / vì mạng xã hội<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">tham gia các lớp học mỹ thuật và âm nhạc / có thể thúc đẩy sự sáng tạo<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">mọi người có thể thu thập kiến thức / về các vấn đề xã hội / thông qua việc đọc tin tức<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d1-2')">Show/Hide Answers</button>
                     <div id="answers-d1-2" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -297,21 +309,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Check-up</h3>
                      <p class="mb-4 text-gray-600">Dịch cụm từ sang tiếng Anh và điền vào chỗ trống.</p>
                     <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">Thẩm phán không được phân biệt đối xử với một cá nhân theo xuất thân của họ.<br>A judge should not <input type="text" class="exercise-input" placeholder="..."> a person based on their background.</div></li>
-                        <li><div class="exercise-item">Chính quyền địa phương phải chi tiền để thúc đẩy sản xuất hàng hóa công cộng.<br>Local governments must spend money to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Không rõ việc tăng hình phạt có thể ngăn chặn được tình trạng tải dữ liệu bất hợp pháp hay không.<br>It is unclear whether <input type="text" class="exercise-input" placeholder="..."> can prevent illegal downloading.</div></li>
-                        <li><div class="exercise-item">Chính sách của chính phủ không bao giờ được xâm phạm quyền của người dân.<br>Government policies should never <input type="text" class="exercise-input" placeholder="..."> of the people.</div></li>
-                        <li><div class="exercise-item">Thực hiện các biện pháp thích hợp để bảo vệ môi trường là việc làm cần thiết.<br>It is essential to <input type="text" class="exercise-input" placeholder="..."> to protect the environment.</div></li>
-                        <li><div class="exercise-item">Công viên thành phố là tài sản công và mở cửa chào đón tất cả mọi người.<br>City parks are <input type="text" class="exercise-input" placeholder="..."> and are open to everyone.</div></li>
-                        <li><div class="exercise-item">Phúc lợi xã hội có thể gặp rủi ro do tình trạng bất bình đẳng thu nhập không ngừng gia tăng.<br><input type="text" class="exercise-input" placeholder="..."> is at risk due to the continued rise in income inequality.</div></li>
-                        <li><div class="exercise-item">Tất cả các quốc gia phải tìm ra giải pháp để ngăn chặn hiện tượng ấm lên trên toàn cầu.<br>All nations must <input type="text" class="exercise-input" placeholder="..."> to stop the increase in global temperatures.</div></li>
-                        <li><div class="exercise-item">Một số công ty áp đặt các quy định nghiêm ngặt cấm nhân viên chia sẻ dữ liệu.<br>Some companies <input type="text" class="exercise-input" placeholder="..."> that prohibit employees from sharing data.</div></li>
-                        <li><div class="exercise-item">Thảo luận về những vấn đề gây tranh cãi là việc rất quan trọng để mọi người cùng nhận thức về chúng.<br>It is important to discuss <input type="text" class="exercise-input" placeholder="..."> so that people are aware of them.</div></li>
-                        <li><div class="exercise-item">Chính phủ phải lập ngân sách chỉ cho dịch vụ y tế.<br>The government should <input type="text" class="exercise-input" placeholder="..."> for spending on healthcare.</div></li>
-                        <li><div class="exercise-item">Cơ sở hạ tầng quốc gia đóng vai trò quan trọng trong tăng trưởng kinh tế.<br>A <input type="text" class="exercise-input" placeholder="..."> plays a crucial role in its economic progress.</div></li>
-                        <li><div class="exercise-item">Các công ty phải tiến hành biểu quyết đối với những quyết định ảnh hưởng đến tất cả nhân viên.<br>Companies should <input type="text" class="exercise-input" placeholder="..."> on decisions that affect all staff members.</div></li>
-                        <li><div class="exercise-item">Tổ chức đấu giá là một cách để các tổ chức từ thiện có thể gây quỹ.<br>Holding an auction is one way that charitable organizations can <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Không tiếp cận được nguồn nước uống sạch vẫn là vấn đề ở nhiều nước đang phát triển.<br>Not having access to clean drinking water is still a problem in many <input type="text" class="exercise-input" placeholder="...">.</div></li>
+                        <li><span>A judge should not <input type="text" class="exercise-input-inline" size="20"> a person based on their background.</span></li>
+                        <li><span>Local governments must spend money to <input type="text" class="exercise-input-inline" size="25">.</span></li>
+                        <li><span>It is unclear whether <input type="text" class="exercise-input-inline" size="25"> can prevent illegal downloading.</span></li>
+                        <li><span>Government policies should never <input type="text" class="exercise-input-inline" size="15"> of the people.</span></li>
+                        <li><span>It is essential to <input type="text" class="exercise-input-inline" size="20"> to protect the environment.</span></li>
+                        <li><span>City parks are <input type="text" class="exercise-input-inline" size="15"> and are open to everyone.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="15"> is at risk due to the continued rise in income inequality.</span></li>
+                        <li><span>All nations must <input type="text" class="exercise-input-inline" size="22"> to stop the increase in global temperatures.</span></li>
+                        <li><span>Some companies <input type="text" class="exercise-input-inline" size="18"> that prohibit employees from sharing data.</span></li>
+                        <li><span>It is important to discuss <input type="text" class="exercise-input-inline" size="22"> so that people are aware of them.</span></li>
+                        <li><span>The government should <input type="text" class="exercise-input-inline" size="12"> for spending on healthcare.</span></li>
+                        <li><span>A <input type="text" class="exercise-input-inline" size="25"> plays a crucial role in its economic progress.</span></li>
+                        <li><span>Companies should <input type="text" class="exercise-input-inline" size="10"> on decisions that affect all staff members.</span></li>
+                        <li><span>Holding an auction is one way that charitable organizations can <input type="text" class="exercise-input-inline" size="12">.</span></li>
+                        <li><span>Not having access to clean drinking water is still a problem in many <input type="text" class="exercise-input-inline" size="20">.</span></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d2-1')">Show/Hide Answers</button>
                     <div id="answers-d2-1" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -339,21 +351,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Test</h3>
                     <p class="mb-4 text-gray-600">Dịch các câu sau sang tiếng Anh.</p>
                      <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">cung cấp thêm việc làm / cho người trẻ / sẽ thúc đẩy tăng trưởng kinh tế<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">có thể rất khó / tìm ra giải pháp / mà mọi người đều đồng thuận<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">ngày nay, hầu hết mọi người / cập nhật các vấn đề thời sự / thông qua Internet<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">tỷ lệ tội phạm giảm đáng kể / nhờ tăng cường thêm lực lượng cảnh sát<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các chính sách an ninh sân bay mới đã được áp dụng / để bảo vệ người dân / khỏi những mối đe dọa có thể xảy ra<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các nhà lãnh đạo không nên / áp dụng chính sách / mà không có sự chấp thuận của công chúng<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">cung cấp thông tin cá nhân / qua điện thoại / có thể dẫn đến / việc đánh cắp danh tính<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">tiền thuế phải được sử dụng / để phát triển xã hội<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">điều cần thiết là / người dân phải thông báo cho cảnh sát / nếu họ chứng kiến ai đó / phạm tội<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">người đứng đầu chính phủ đang thực hiện các biện pháp thích hợp / để củng cố / an ninh mạng quốc gia<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">chúng ta phải giúp / các nước đang phát triển lớn mạnh / vì điều này sẽ có lợi cho / cộng đồng toàn cầu<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">phạt tiền cao hơn / có thể ngăn mọi người / phá hoại tài sản công<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">trước khi mọi người tiến hành bỏ phiếu / chính sách mới, / họ nên nghiên cứu kỹ / trước<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các giao dịch trực tuyến rất thuận tiện / nhưng chúng cũng có thể trở thành / mối đe dọa đến quyền riêng tư<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nhiều nhóm từ thiện tự gây quỹ / thay vì dựa vào chính phủ<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">cung cấp thêm việc làm / cho người trẻ / sẽ thúc đẩy tăng trưởng kinh tế<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">có thể rất khó / tìm ra giải pháp / mà mọi người đều đồng thuận<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">ngày nay, hầu hết mọi người / cập nhật các vấn đề thời sự / thông qua Internet<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">tỷ lệ tội phạm giảm đáng kể / nhờ tăng cường thêm lực lượng cảnh sát<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các chính sách an ninh sân bay mới đã được áp dụng / để bảo vệ người dân / khỏi những mối đe dọa có thể xảy ra<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các nhà lãnh đạo không nên / áp dụng chính sách / mà không có sự chấp thuận của công chúng<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">cung cấp thông tin cá nhân / qua điện thoại / có thể dẫn đến / việc đánh cắp danh tính<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">tiền thuế phải được sử dụng / để phát triển xã hội<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">điều cần thiết là / người dân phải thông báo cho cảnh sát / nếu họ chứng kiến ai đó / phạm tội<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">người đứng đầu chính phủ đang thực hiện các biện pháp thích hợp / để củng cố / an ninh mạng quốc gia<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">chúng ta phải giúp / các nước đang phát triển lớn mạnh / vì điều này sẽ có lợi cho / cộng đồng toàn cầu<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">phạt tiền cao hơn / có thể ngăn mọi người / phá hoại tài sản công<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">trước khi mọi người tiến hành bỏ phiếu / chính sách mới, / họ nên nghiên cứu kỹ / trước<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các giao dịch trực tuyến rất thuận tiện / nhưng chúng cũng có thể trở thành / mối đe dọa đến quyền riêng tư<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nhiều nhóm từ thiện tự gây quỹ / thay vì dựa vào chính phủ<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d2-2')">Show/Hide Answers</button>
                     <div id="answers-d2-2" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -462,21 +474,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Check-up</h3>
                      <p class="mb-4 text-gray-600">Dịch cụm từ sang tiếng Anh và điền vào chỗ trống.</p>
                     <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">Các nước phát triển có xu hướng có tỷ lệ sinh thấp hơn các nước đang phát triển.<br>Developed countries tend to have lower <input type="text" class="exercise-input" placeholder="..."> than developing countries.</div></li>
-                        <li><div class="exercise-item">Việc nhà là hình thức vận động thường bị bỏ qua.<br><input type="text" class="exercise-input" placeholder="..."> are an often overlooked form of exercise.</div></li>
-                        <li><div class="exercise-item">Số lượng gia đình đơn thân đang tăng lên.<br>The number of <input type="text" class="exercise-input" placeholder="..."> is on the rise.</div></li>
-                        <li><div class="exercise-item">Khoảng cách thế hệ giữa cha mẹ và con cái có thể gây ra những bất đồng.<br>The <input type="text" class="exercise-input" placeholder="..."> between parents and children can cause disagreements.</div></li>
-                        <li><div class="exercise-item">Một số người lựa chọn sống với ông bà để tiết kiệm tiền.<br>Some people choose to <input type="text" class="exercise-input" placeholder="..."> to save money.</div></li>
-                        <li><div class="exercise-item">Ở một số quốc gia, không có đủ người để chăm sóc người già.<br>In some countries, there are not enough people to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Yoga có thể giảm căng thẳng và cải thiện sức khỏe.<br>Yoga can <input type="text" class="exercise-input" placeholder="..."> and lead to better health.</div></li>
-                        <li><div class="exercise-item">Các chuyên gia y tế cảnh báo rằng căng thẳng quá mức có thể làm giảm tuổi thọ trung bình của một người.<br>Medical experts warn that extreme stress can lower a person's <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Phần Lan cung cấp dịch vụ chăm sóc y tế rộng rãi cho mọi người dân.<br>Finland offers generous <input type="text" class="exercise-input" placeholder="..."> to all of its citizens.</div></li>
-                        <li><div class="exercise-item">Trường tiểu học cần dạy cho học sinh về tầm quan trọng của chế độ ăn uống cân bằng.<br>Elementary schools should teach students the importance of a <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Lên sẵn thực đơn cẩn thận không chỉ giúp tiết kiệm mà còn tốt cho sức khỏe.<br><input type="text" class="exercise-input" placeholder="..."> carefully is not only economical but also healthy.</div></li>
-                        <li><div class="exercise-item">Các bác sĩ được kỳ vọng sẽ làm gương cho bệnh nhân bằng cách thực hành lối sống lành mạnh.<br>Doctors are expected to <input type="text" class="exercise-input" placeholder="..."> for their patients by practicing a healthy lifestyle.</div></li>
-                        <li><div class="exercise-item">Ăn chay có thể giúp bạn giảm nguy cơ mắc bệnh tim.<br><input type="text" class="exercise-input" placeholder="..."> can lower your risk of heart disease.</div></li>
-                        <li><div class="exercise-item">Người tập thể dục thường xuyên thường sống lâu hơn những người không tập.<br>People who <input type="text" class="exercise-input" placeholder="..."> tend to live longer than those who do not.</div></li>
-                        <li><div class="exercise-item">Béo phì ở trẻ em là mối quan tâm lớn ở nhiều nước phát triển.<br><input type="text" class="exercise-input" placeholder="..."> is a major concern in many developed countries.</div></li>
+                        <li><span>Developed countries tend to have lower <input type="text" class="exercise-input-inline" size="10"> than developing countries.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="18"> are an often overlooked form of exercise.</span></li>
+                        <li><span>The number of <input type="text" class="exercise-input-inline" size="22"> is on the rise.</span></li>
+                        <li><span>The <input type="text" class="exercise-input-inline" size="15"> between parents and children can cause disagreements.</span></li>
+                        <li><span>Some people choose to <input type="text" class="exercise-input-inline" size="28"> to save money.</span></li>
+                        <li><span>In some countries, there are not enough people to <input type="text" class="exercise-input-inline" size="20">.</span></li>
+                        <li><span>Yoga can <input type="text" class="exercise-input-inline" size="15"> and lead to better health.</span></li>
+                        <li><span>Medical experts warn that extreme stress can lower a person's <input type="text" class="exercise-input-inline" size="18">.</span></li>
+                        <li><span>Finland offers generous <input type="text" class="exercise-input-inline" size="15"> to all of its citizens.</span></li>
+                        <li><span>Elementary schools should teach students the importance of a <input type="text" class="exercise-input-inline" size="20">.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="15"> carefully is not only economical but also healthy.</span></li>
+                        <li><span>Doctors are expected to <input type="text" class="exercise-input-inline" size="18"> for their patients by practicing a healthy lifestyle.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="22"> can lower your risk of heart disease.</span></li>
+                        <li><span>People who <input type="text" class="exercise-input-inline" size="18"> tend to live longer than those who do not.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="18"> is a major concern in many developed countries.</span></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d3-1')">Show/Hide Answers</button>
                     <div id="answers-d3-1" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -504,21 +516,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Test</h3>
                     <p class="mb-4 text-gray-600">Dịch các câu sau sang tiếng Anh.</p>
                      <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">mọi người nên dành nhiều thời gian hơn / để chăm sóc người già<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các bậc phụ huynh đang đi làm nhờ cậy / người khác / chăm sóc con cái của họ<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">ví dụ, / tỷ lệ sinh rất cao / ở Ai-len / trong những năm 1970<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">ngày nay, / số lượng trẻ em / sống với ông bà / đã đạt tới / mức thấp nhất<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">điều quan trọng là / giáo viên làm gương / cho học sinh<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">tuổi thọ trung bình đã tăng lên / ở nhiều nước / trên thế giới<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">dịch vụ chăm sóc y tế / là một vấn đề chính trị gây tranh cãi / ở Mỹ / ngày nay<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các bậc phụ huynh phải lưu ý đến / mối nguy từ việc hút thuốc thụ động<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nhiều người trưởng thành không thể ăn theo / chế độ ăn uống lành mạnh / vì họ quá bận<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">thiếu hoạt động thể chất / là nguyên nhân chính gây béo phì / ở người trẻ<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">mọi người có những cách khác nhau / để giảm căng thẳng<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">việc cấm quảng cáo thức ăn nhanh / sẽ cải thiện sức khỏe cộng đồng<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">một số người tin rằng / ăn chay là bước quan trọng / nhằm cải thiện sức khỏe<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">không ai muốn / gặp phải các vấn đề sức khỏe / vào lúc nào đó / trong cuộc đời<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các chuyên gia y tế khuyến khích / tập thể dục thường xuyên / để duy trì sức khỏe<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">mọi người nên dành nhiều thời gian hơn / để chăm sóc người già<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các bậc phụ huynh đang đi làm nhờ cậy / người khác / chăm sóc con cái của họ<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">ví dụ, / tỷ lệ sinh rất cao / ở Ai-len / trong những năm 1970<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">ngày nay, / số lượng trẻ em / sống với ông bà / đã đạt tới / mức thấp nhất<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">điều quan trọng là / giáo viên làm gương / cho học sinh<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">tuổi thọ trung bình đã tăng lên / ở nhiều nước / trên thế giới<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">dịch vụ chăm sóc y tế / là một vấn đề chính trị gây tranh cãi / ở Mỹ / ngày nay<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các bậc phụ huynh phải lưu ý đến / mối nguy từ việc hút thuốc thụ động<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nhiều người trưởng thành không thể ăn theo / chế độ ăn uống lành mạnh / vì họ quá bận<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">thiếu hoạt động thể chất / là nguyên nhân chính gây béo phì / ở người trẻ<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">mọi người có những cách khác nhau / để giảm căng thẳng<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">việc cấm quảng cáo thức ăn nhanh / sẽ cải thiện sức khỏe cộng đồng<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">một số người tin rằng / ăn chay là bước quan trọng / nhằm cải thiện sức khỏe<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">không ai muốn / gặp phải các vấn đề sức khỏe / vào lúc nào đó / trong cuộc đời<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các chuyên gia y tế khuyến khích / tập thể dục thường xuyên / để duy trì sức khỏe<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d3-2')">Show/Hide Answers</button>
                     <div id="answers-d3-2" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -626,21 +638,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Check-up</h3>
                      <p class="mb-4 text-gray-600">Dịch cụm từ sang tiếng Anh và điền vào chỗ trống.</p>
                     <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">Mua xe ô tô điện là xu hướng đang phát triển trong giới tiêu dùng.<br>Buying electric cars <input type="text" class="exercise-input" placeholder="..."> among consumers.</div></li>
-                        <li><div class="exercise-item">Người ta không thể tự cai nghiện ma túy.<br>People cannot overcome <input type="text" class="exercise-input" placeholder="..."> on their own.</div></li>
-                        <li><div class="exercise-item">Thỉnh thoảng, các công ty lại tuyển nhân viên thời vụ để giảm chi phí.<br>Companies sometimes hire <input type="text" class="exercise-input" placeholder="..."> to reduce their costs.</div></li>
-                        <li><div class="exercise-item">Ngày càng nhiều người quay về vùng nông thôn để thoát khỏi cuộc sống thành thị.<br>More people are returning to <input type="text" class="exercise-input" placeholder="..."> to escape city life.</div></li>
-                        <li><div class="exercise-item">Thay đổi nghề nghiệp có thể trở thành một trải nghiệm cực kỳ áp lực.<br><input type="text" class="exercise-input" placeholder="..."> can be a very stressful experience.</div></li>
-                        <li><div class="exercise-item">Truyền thông xã hội đã giúp nâng cao nhận thức cộng đồng về các bệnh hiếm gặp.<br>Social media has helped to <input type="text" class="exercise-input" placeholder="..."> about little-known illnesses.</div></li>
-                        <li><div class="exercise-item">Ngày nay, những người có bằng cấp về nghệ thuật cảm thấy rất khó kiếm sống.<br>Those with degrees in the arts are finding it difficult to <input type="text" class="exercise-input" placeholder="..."> these days.</div></li>
-                        <li><div class="exercise-item">Trong văn hóa truyền thống, có nhiều áp lực khi phải đáp ứng kỳ vọng xã hội.<br>In traditional cultures, there is a lot of pressure to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Mức độ hài lòng trong công việc thấp có thể khiến nhà tuyển dụng khó giữ chân được nhân viên làm việc lâu dài.<br>Low <input type="text" class="exercise-input" placeholder="..."> can make it difficult for employers to keep long-term workers.</div></li>
-                        <li><div class="exercise-item">Trung tâm cộng đồng cung cấp nhiều hoạt động văn hóa cho người dân.<br>Community centers provide many <input type="text" class="exercise-input" placeholder="..."> for residents.</div></li>
-                        <li><div class="exercise-item">Thói quen chi tiêu hợp lý nên được chỉ dạy ngay từ khi còn nhỏ.<br>Good <input type="text" class="exercise-input" placeholder="..."> should be taught early on in life.</div></li>
-                        <li><div class="exercise-item">Một nghiên cứu cho thấy cảnh bạo lực trong trò chơi điện tử có thể dẫn đến tính hung bạo.<br>One study shows that <input type="text" class="exercise-input" placeholder="..."> may lead to aggression.</div></li>
-                        <li><div class="exercise-item">Do chi phí sinh hoạt tăng, chính phủ phải tăng lương tối thiểu.<br>As the cost of living has increased, the government must <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Phần lớn mọi người không thích các phương tiện thông tin đại chúng.<br>A large proportion of people dislike the <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Hầu hết các công ty đều có chính sách đảm bảo tôn trọng quyền riêng tư của khách hàng.<br>Most companies have policies that ensure they <input type="text" class="exercise-input" placeholder="..."> their customers.</div></li>
+                        <li><span>Buying electric cars <input type="text" class="exercise-input-inline" size="18"> among consumers.</span></li>
+                        <li><span>People cannot overcome <input type="text" class="exercise-input-inline" size="15"> on their own.</span></li>
+                        <li><span>Companies sometimes hire <input type="text" class="exercise-input-inline" size="18"> to reduce their costs.</span></li>
+                        <li><span>More people are returning to <input type="text" class="exercise-input-inline" size="12"> to escape city life.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="22"> can be a very stressful experience.</span></li>
+                        <li><span>Social media has helped to <input type="text" class="exercise-input-inline" size="22"> about little-known illnesses.</span></li>
+                        <li><span>Those with degrees in the arts are finding it difficult to <input type="text" class="exercise-input-inline" size="12"> these days.</span></li>
+                        <li><span>In traditional cultures, there is a lot of pressure to <input type="text" class="exercise-input-inline" size="22">.</span></li>
+                        <li><span>Low <input type="text" class="exercise-input-inline" size="18"> can make it difficult for employers to keep long-term workers.</span></li>
+                        <li><span>Community centers provide many <input type="text" class="exercise-input-inline" size="20"> for residents.</span></li>
+                        <li><span>Good <input type="text" class="exercise-input-inline" size="18"> should be taught early on in life.</span></li>
+                        <li><span>One study shows that <input type="text" class="exercise-input-inline" size="28"> may lead to aggression.</span></li>
+                        <li><span>As the cost of living has increased, the government must <input type="text" class="exercise-input-inline" size="22">.</span></li>
+                        <li><span>A large proportion of people dislike the <input type="text" class="exercise-input-inline" size="12">.</span></li>
+                        <li><span>Most companies have policies that ensure they <input type="text" class="exercise-input-inline" size="25"> their customers.</span></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d4-1')">Show/Hide Answers</button>
                     <div id="answers-d4-1" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -668,21 +680,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Test</h3>
                     <p class="mb-4 text-gray-600">Dịch các câu sau sang tiếng Anh.</p>
                      <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">những người có thu nhập thấp / thỉnh thoảng làm việc bán thời gian / để cân bằng chỉ tiêu<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">việc cân bằng giữa công việc và giải trí sẽ dẫn đến / lối sống lành mạnh hơn<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">một cách để kiểm soát / thói quen chi tiêu tệ hại / là chỉ sử dụng tiền mặt<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">ngày càng khó khăn cho / lao động tay nghề thấp / để tìm việc<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các công ty nhỏ thường có / môi trường làm việc thoải mái hơn<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">theo OECD, / khoảng cách giàu nghèo / tiếp tục gia tăng<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">làm việc theo nhóm đòi hỏi / sự giao tiếp tốt / giữa các thành viên trong nhóm<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">mức ô nhiễm tiếng ồn cực kỳ cao / ở hầu hết các khu vực thành thị<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">một số nhà tuyển dụng ưu tiên / các ứng viên có kinh nghiệm làm việc / hơn những người có bằng đại học<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">mọi người quá tập trung vào / việc theo đuổi những xu hướng mới nhất<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">vai trò giới trong gia đình / đã thay đổi / từ những năm 1950<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">thanh thiếu niên dễ bị ảnh hưởng / bởi truyền thông đại chúng<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">mức lương thấp / khiến công việc trở nên kém hấp dẫn / đối với các ứng viên<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các bậc phụ huynh không nên để trẻ tiếp xúc / với các cảnh bạo lực trong phim<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">phóng viên phải tôn trọng quyền riêng tư của / người nổi tiếng<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">những người có thu nhập thấp / thỉnh thoảng làm việc bán thời gian / để cân bằng chỉ tiêu<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">việc cân bằng giữa công việc và giải trí sẽ dẫn đến / lối sống lành mạnh hơn<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">một cách để kiểm soát / thói quen chi tiêu tệ hại / là chỉ sử dụng tiền mặt<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">ngày càng khó khăn cho / lao động tay nghề thấp / để tìm việc<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các công ty nhỏ thường có / môi trường làm việc thoải mái hơn<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">theo OECD, / khoảng cách giàu nghèo / tiếp tục gia tăng<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">làm việc theo nhóm đòi hỏi / sự giao tiếp tốt / giữa các thành viên trong nhóm<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">mức ô nhiễm tiếng ồn cực kỳ cao / ở hầu hết các khu vực thành thị<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">một số nhà tuyển dụng ưu tiên / các ứng viên có kinh nghiệm làm việc / hơn những người có bằng đại học<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">mọi người quá tập trung vào / việc theo đuổi những xu hướng mới nhất<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">vai trò giới trong gia đình / đã thay đổi / từ những năm 1950<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">thanh thiếu niên dễ bị ảnh hưởng / bởi truyền thông đại chúng<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">mức lương thấp / khiến công việc trở nên kém hấp dẫn / đối với các ứng viên<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các bậc phụ huynh không nên để trẻ tiếp xúc / với các cảnh bạo lực trong phim<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">phóng viên phải tôn trọng quyền riêng tư của / người nổi tiếng<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d4-2')">Show/Hide Answers</button>
                     <div id="answers-d4-2" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -753,7 +765,7 @@
 
             <!-- Day 5 Content -->
             <div id="day5" class="tab-content">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Day 5: CHỦ ĐỀ THIÊN NHIÊN, MÔI TRƯỜNG & KHOA HỌC KỸ THUẬT</h2>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Day 5: CHỦ ĐỀ THIÊN NHIÊN, MÔI TRƯƯỜNG & KHOA HỌC KỸ THUẬT</h2>
                 
                 <div class="exercise-card">
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Vocabulary</h3>
@@ -789,21 +801,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Check-up</h3>
                      <p class="mb-4 text-gray-600">Dịch cụm từ sang tiếng Anh và điền vào chỗ trống.</p>
                     <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">Ví dụ, Ấn Độ là nước bị ô nhiễm không khí nghiêm trọng nhất thế giới.<br>For example, India has the worst <input type="text" class="exercise-input" placeholder="..."> in the world.</div></li>
-                        <li><div class="exercise-item">Biến đổi gen đã thay đổi cách chúng ta trồng trọt.<br><input type="text" class="exercise-input" placeholder="..."> has changed the way we grow crops.</div></li>
-                        <li><div class="exercise-item">Dù việc thám hiểm vũ trụ rất tốn kém nhưng nó lại cần thiết cho sự tiến bộ của nhân loại.<br>Although <input type="text" class="exercise-input" placeholder="..."> is expensive, it is necessary for human progress.</div></li>
-                        <li><div class="exercise-item">Sự nóng lên toàn cầu khiến cho sông băng ở Bắc Cực tan chảy.<br><input type="text" class="exercise-input" placeholder="..."> has been causing glaciers to melt in the Arctic.</div></li>
-                        <li><div class="exercise-item">Chúng ta phải sử dụng tài nguyên thiên nhiên khôn ngoan hơn.<br>We must use <input type="text" class="exercise-input" placeholder="..."> more wisely.</div></li>
-                        <li><div class="exercise-item">Tình trạng ngày càng tăng việc thải khí độc đang gây ra các vấn đề về sức khỏe.<br>The increased <input type="text" class="exercise-input" placeholder="..."> is causing health problems.</div></li>
-                        <li><div class="exercise-item">Tràn dầu là vấn đề môi trường cốt yếu đối với động vật ven biển.<br>Oil spills are a major <input type="text" class="exercise-input" placeholder="..."> for coastal wildlife.</div></li>
-                        <li><div class="exercise-item">Những người không thể truy cập Internet sẽ không thể tận dụng được hoạt động mua sắm trực tuyến.<br>Those who cannot <input type="text" class="exercise-input" placeholder="..."> are unable to take advantage of online shopping.</div></li>
-                        <li><div class="exercise-item">Với sự phát triển của trí tuệ nhân tạo, nhiều người sẽ mất việc.<br>With advancements in <input type="text" class="exercise-input" placeholder="...">, many people will lose their jobs.</div></li>
-                        <li><div class="exercise-item">Quan tâm tới phúc lợi động vật là nghĩa vụ đạo đức của chúng ta.<br>It is our moral duty to care about <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Số lượng các loài có nguy cơ tuyệt chủng đang tăng lên do nạn săn bắt quá mức.<br>The number of <input type="text" class="exercise-input" placeholder="..."> has increased because of overhunting.</div></li>
-                        <li><div class="exercise-item">Năng lượng gió là một loại năng lượng thay thế đầy triển vọng.<br>Wind power is a promising form of <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Những tiến bộ công nghệ cho phép mọi người kết nối với bất kỳ ai trên khắp thế giới.<br><input type="text" class="exercise-input" placeholder="..."> allow people to connect with anyone around the world.</div></li>
-                        <li><div class="exercise-item">Các phương thức giao tiếp truyền thống như viết thư đang dần biến mất.<br>Traditional <input type="text" class="exercise-input" placeholder="...">, such as letter writing, are dying out.</div></li>
-                        <li><div class="exercise-item">Tắt các thiết bị khi không sử dụng là một cách bảo tồn năng lượng.<br>Switching off your appliances when they are not in use is a type of <input type="text" class="exercise-input" placeholder="...">.</div></li>
+                        <li><span>For example, India has the worst <input type="text" class="exercise-input-inline" size="12"> in the world.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="20"> has changed the way we grow crops.</span></li>
+                        <li><span>Although <input type="text" class="exercise-input-inline" size="18"> is expensive, it is necessary for human progress.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="15"> has been causing glaciers to melt in the Arctic.</span></li>
+                        <li><span>We must use <input type="text" class="exercise-input-inline" size="18"> more wisely.</span></li>
+                        <li><span>The increased <input type="text" class="exercise-input-inline" size="25"> is causing health problems.</span></li>
+                        <li><span>Oil spills are a major <input type="text" class="exercise-input-inline" size="22"> for coastal wildlife.</span></li>
+                        <li><span>Those who cannot <input type="text" class="exercise-input-inline" size="18"> are unable to take advantage of online shopping.</span></li>
+                        <li><span>With advancements in <input type="text" class="exercise-input-inline" size="22">, many people will lose their jobs.</span></li>
+                        <li><span>It is our moral duty to care about <input type="text" class="exercise-input-inline" size="15">.</span></li>
+                        <li><span>The number of <input type="text" class="exercise-input-inline" size="20"> has increased because of overhunting.</span></li>
+                        <li><span>Wind power is a promising form of <input type="text" class="exercise-input-inline" size="18">.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="28"> allow people to connect with anyone around the world.</span></li>
+                        <li><span>Traditional <input type="text" class="exercise-input-inline" size="25">, such as letter writing, are dying out.</span></li>
+                        <li><span>Switching off your appliances when they are not in use is a type of <input type="text" class="exercise-input-inline" size="20">.</span></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d5-1')">Show/Hide Answers</button>
                     <div id="answers-d5-1" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -831,21 +843,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Test</h3>
                     <p class="mb-4 text-gray-600">Dịch các câu sau sang tiếng Anh.</p>
                      <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">chúng ta phải cùng chung tay / bảo tồn hệ sinh thái / sinh vật biển<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">sử dụng túi nilon / tàn phá môi trường<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">thuyết tương đối / là một trong những phát hiện khoa học quan trọng nhất / trong lịch sử<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các nhà khoa học đang sử dụng / công nghệ tiên tiến nhất / để chế tạo robot<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">có nhiều tổ chức / thúc đẩy phúc lợi động vật / ngày nay<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nhiều học sinh hiện nay được yêu cầu / truy cập mạng / để làm bài tập về nhà<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">bảo tồn năng lượng là một phương thức quan trọng / trong việc bảo vệ môi trường<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">đi xe đạp / là một cách thức thân thiện với môi trường / để đi làm hằng ngày<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nước ngọt là / một trong những nguồn tài nguyên thiên nhiên quý giá nhất của chúng ta<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">ngày càng nhiều công ty / đang chuyển sang / các nguồn năng lượng thay thế<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">trí tuệ nhân tạo đã có bước tiến lớn / trong những năm gần đây<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nhiều loài sẽ tuyệt chủng / vì biến đổi khí hậu<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">thời gian gần đây, rất nhiều tai nạn xảy ra do / sử dụng điện thoại thông minh quá mức / khi lái xe<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các nhà hàng có thể giúp / giảm thiểu tác động của con người / lên môi trường / bằng cách không sử dụng nhựa<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">nếu không sử dụng an ninh mạng đúng cách / thông tin cá nhân của một người có thể bị đánh cắp<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">chúng ta phải cùng chung tay / bảo tồn hệ sinh thái / sinh vật biển<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">sử dụng túi nilon / tàn phá môi trường<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">thuyết tương đối / là một trong những phát hiện khoa học quan trọng nhất / trong lịch sử<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các nhà khoa học đang sử dụng / công nghệ tiên tiến nhất / để chế tạo robot<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">có nhiều tổ chức / thúc đẩy phúc lợi động vật / ngày nay<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nhiều học sinh hiện nay được yêu cầu / truy cập mạng / để làm bài tập về nhà<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">bảo tồn năng lượng là một phương thức quan trọng / trong việc bảo vệ môi trường<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">đi xe đạp / là một cách thức thân thiện với môi trường / để đi làm hằng ngày<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nước ngọt là / một trong những nguồn tài nguyên thiên nhiên quý giá nhất của chúng ta<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">ngày càng nhiều công ty / đang chuyển sang / các nguồn năng lượng thay thế<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">trí tuệ nhân tạo đã có bước tiến lớn / trong những năm gần đây<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nhiều loài sẽ tuyệt chủng / vì biến đổi khí hậu<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">thời gian gần đây, rất nhiều tai nạn xảy ra do / sử dụng điện thoại thông minh quá mức / khi lái xe<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các nhà hàng có thể giúp / giảm thiểu tác động của con người / lên môi trường / bằng cách không sử dụng nhựa<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">nếu không sử dụng an ninh mạng đúng cách / thông tin cá nhân của một người có thể bị đánh cắp<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d5-2')">Show/Hide Answers</button>
                     <div id="answers-d5-2" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -953,21 +965,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Check-up</h3>
                      <p class="mb-4 text-gray-600">Dịch cụm từ sang tiếng Anh và điền vào chỗ trống.</p>
                     <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">Giao tiếp là chìa khóa để giải quyết xung đột.<br>Communication is the key to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Người ta nói rằng du lịch giúp mở mang đầu óc.<br>It is said that travel <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Du lịch nước ngoài là cách hoàn hảo để tìm hiểu về văn hóa của các quốc gia khác.<br>Traveling to other countries is the perfect way to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Việc xây các điểm du lịch có thể là một khoản đầu tư xứng đáng đối với chính quyền địa phương.<br>Building <input type="text" class="exercise-input" placeholder="..."> can be a worthwhile investment for local governments.</div></li>
-                        <li><div class="exercise-item">Bảo vệ nhân quyền là trách nhiệm của chính phủ.<br>Protecting <input type="text" class="exercise-input" placeholder="..."> is the responsibility of governments.</div></li>
-                        <li><div class="exercise-item">Thưởng thức ẩm thực địa phương là một trong những cách tốt nhất để trải nghiệm một nền văn hóa mới.<br>Eating the <input type="text" class="exercise-input" placeholder="..."> is one of the best ways to experience a new culture.</div></li>
-                        <li><div class="exercise-item">Các chương trình du học giúp sinh viên tìm hiểu về sự đa dạng văn hóa.<br>Study abroad programs help students learn about <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Các di tích lịch sử phải được bảo tồn vì tầm quan trọng về mặt văn hóa của chúng.<br><input type="text" class="exercise-input" placeholder="..."> should be preserved due to their cultural importance.</div></li>
-                        <li><div class="exercise-item">Giá dịch vụ lưu trú hiện đã cao hơn so với trước đây.<br>The cost of <input type="text" class="exercise-input" placeholder="..."> is higher than in the past.</div></li>
-                        <li><div class="exercise-item">Bản sắc dân tộc khó có thể được định nghĩa theo cách cụ thể.<br><input type="text" class="exercise-input" placeholder="..."> can be difficult to define in a concrete way.</div></li>
-                        <li><div class="exercise-item">Dạo gần đây, nhiều người đi du lịch nước ngoài với ngân sách eo hẹp.<br>Nowadays, many people <input type="text" class="exercise-input" placeholder="..."> on a tight budget.</div></li>
-                        <li><div class="exercise-item">Ví dụ, các đại lý du lịch thường tính hàng trăm đô-la cho phí dịch vụ.<br>For example, <input type="text" class="exercise-input" placeholder="..."> typically charge several hundred dollars for their services.</div></li>
-                        <li><div class="exercise-item">Tỷ lệ tử vong thấp ở trẻ sơ sinh và những tiến bộ trong y học đã dẫn đến sự quá tải dân số.<br>Low child mortality rates and improvements in medicine have led to <input type="text" class="exercise-input" placeholder="...">.</div></li>
-                        <li><div class="exercise-item">Khó mà dự đoán được cuộc khủng hoảng quốc tế tiếp theo sẽ xuất hiện ở đâu.<br>It is difficult to predict where the next <input type="text" class="exercise-input" placeholder="..."> will arise.</div></li>
-                        <li><div class="exercise-item">Sự phân tranh giữa các nhóm dân tộc thiểu số đôi khi có thể gây ra xung đột.<br>Divisions between <input type="text" class="exercise-input" placeholder="..."> can sometimes cause conflict.</div></li>
+                        <li><span>Communication is the key to <input type="text" class="exercise-input-inline" size="18">.</span></li>
+                        <li><span>It is said that travel <input type="text" class="exercise-input-inline" size="18">.</span></li>
+                        <li><span>Traveling to other countries is the perfect way to <input type="text" class="exercise-input-inline" size="28">.</span></li>
+                        <li><span>Building <input type="text" class="exercise-input-inline" size="20"> can be a worthwhile investment for local governments.</span></li>
+                        <li><span>Protecting <input type="text" class="exercise-input-inline" size="12"> is the responsibility of governments.</span></li>
+                        <li><span>Eating the <input type="text" class="exercise-input-inline" size="15"> is one of the best ways to experience a new culture.</span></li>
+                        <li><span>Study abroad programs help students learn about <input type="text" class="exercise-input-inline" size="18">.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="18"> should be preserved due to their cultural importance.</span></li>
+                        <li><span>The cost of <input type="text" class="exercise-input-inline" size="15"> is higher than in the past.</span></li>
+                        <li><span><input type="text" class="exercise-input-inline" size="18"> can be difficult to define in a concrete way.</span></li>
+                        <li><span>Nowadays, many people <input type="text" class="exercise-input-inline" size="15"> on a tight budget.</span></li>
+                        <li><span>For example, <input type="text" class="exercise-input-inline" size="18"> typically charge several hundred dollars for their services.</span></li>
+                        <li><span>Low child mortality rates and improvements in medicine have led to <input type="text" class="exercise-input-inline" size="15">.</span></li>
+                        <li><span>It is difficult to predict where the next <input type="text" class="exercise-input-inline" size="22"> will arise.</span></li>
+                        <li><span>Divisions between <input type="text" class="exercise-input-inline" size="15"> can sometimes cause conflict.</span></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d6-1')">Show/Hide Answers</button>
                     <div id="answers-d6-1" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -995,21 +1007,21 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Daily Test</h3>
                     <p class="mb-4 text-gray-600">Dịch các câu sau sang tiếng Anh.</p>
                      <ol class="list-decimal list-inside space-y-4 text-gray-700">
-                        <li><div class="exercise-item">trẻ em tìm hiểu / về các nhóm dân tộc thiểu số khác nhau / qua tivi và Internet<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các hãng hàng không giá rẻ / cũng an toàn như các hãng hàng không thông thường<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">sản phẩm đóng hộp là những món đồ tốt nhất / để quyên góp / cho những nơi thiếu lương thực<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">chính phủ phải hỗ trợ / việc sản xuất các sản phẩm nội địa<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">học sinh nên tham gia / chương trình trao đổi văn hóa / để tìm hiểu về văn hóa quốc gia khác<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">tình trạng lạm dụng thuốc ngày càng nhiều / là một cuộc khủng hoảng quốc tế<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">sẽ hữu ích / khi học một chút ngôn ngữ địa phương / khi bạn đi du lịch nước ngoài<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">ẩm thực địa phương đúng chuẩn thường có thể được tìm thấy / ở những khu dân cư nhỏ / hơn là ở các điểm du lịch<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">những yếu tố tích cực / của việc đăng cai tổ chức sự kiện thể thao quốc tế / nhiều hơn những yếu tố tiêu cực<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">ở một số khu vực, / người dân nói / không chỉ tiếng mẹ đẻ<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">những luật lệ nghiêm khắc sẽ ngăn chặn việc xuất khẩu / các tác phẩm là di sản văn hóa quan trọng<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">các nước giàu / thường cung cấp / hỗ trợ tài chính / cho các quốc gia đang phát triển<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">du khách có thể bị coi là bất lịch sự / nếu họ không nhập gia tùy tục<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">bảo tồn các di tích lịch sử / là nhiệm vụ tối quan trọng / của chính quyền địa phương<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
-                        <li><div class="exercise-item">tổ chức từ thiện / đôi khi có thể hỗ trợ nhiều hơn / so với chính phủ<br><input type="text" class="exercise-input" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">trẻ em tìm hiểu / về các nhóm dân tộc thiểu số khác nhau / qua tivi và Internet<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các hãng hàng không giá rẻ / cũng an toàn như các hãng hàng không thông thường<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">sản phẩm đóng hộp là những món đồ tốt nhất / để quyên góp / cho những nơi thiếu lương thực<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">chính phủ phải hỗ trợ / việc sản xuất các sản phẩm nội địa<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">học sinh nên tham gia / chương trình trao đổi văn hóa / để tìm hiểu về văn hóa quốc gia khác<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">tình trạng lạm dụng thuốc ngày càng nhiều / là một cuộc khủng hoảng quốc tế<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">sẽ hữu ích / khi học một chút ngôn ngữ địa phương / khi bạn đi du lịch nước ngoài<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">ẩm thực địa phương đúng chuẩn thường có thể được tìm thấy / ở những khu dân cư nhỏ / hơn là ở các điểm du lịch<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">những yếu tố tích cực / của việc đăng cai tổ chức sự kiện thể thao quốc tế / nhiều hơn những yếu tố tiêu cực<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">ở một số khu vực, / người dân nói / không chỉ tiếng mẹ đẻ<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">những luật lệ nghiêm khắc sẽ ngăn chặn việc xuất khẩu / các tác phẩm là di sản văn hóa quan trọng<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">các nước giàu / thường cung cấp / hỗ trợ tài chính / cho các quốc gia đang phát triển<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">du khách có thể bị coi là bất lịch sự / nếu họ không nhập gia tùy tục<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">bảo tồn các di tích lịch sử / là nhiệm vụ tối quan trọng / của chính quyền địa phương<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
+                        <li><div class="exercise-item">tổ chức từ thiện / đôi khi có thể hỗ trợ nhiều hơn / so với chính phủ<br><input type="text" class="exercise-input-full" placeholder="Your translation..."></div></li>
                     </ol>
                     <button class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition" onclick="toggleAnswers('answers-d6-2')">Show/Hide Answers</button>
                     <div id="answers-d6-2" class="answer-section mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
