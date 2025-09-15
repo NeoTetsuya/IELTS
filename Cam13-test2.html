@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-container {
+            display: contents;
+        }
+        .two-column-layout {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            height: 100%;
+        }
+        .one-column-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            height: 100%;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .main-tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+        .main-tab-btn.active {
+            background-color: #4b5563;
+            color: white;
+            border-color: #4b5563;
+        }
+        .sub-tab-btn {
+            padding: 6px 12px;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            font-weight: 500;
+        }
+        .sub-tab-btn.active {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        .nav-button {
+            background-color: #4b5563;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .nav-button:hover {
+            background-color: #1f2937;
+        }
+        
+        .question-input {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.25rem 0.5rem;
+            width: 100px;
+            margin-left: 0.5rem;
+        }
+        .question-list li {
+            margin-bottom: 1rem;
+        }
+        
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #4b5563;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            display: none;
+            cursor: pointer;
+        }
+        .correct-answer {
+            color: green;
+        }
+        .incorrect-answer {
+            color: red;
+        }
+        .feedback {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="ielts-container">
+        <!-- Header -->
+        <header class="bg-white p-4 flex justify-between items-center shadow-md">
+            <h1 class="text-xl font-bold text-gray-700">IELTS Academic Test Simulator</h1>
+            <div class="flex items-center space-x-4">
+                <div class="flex space-x-2">
+                    <button id="listening-main-tab-btn" class="main-tab-btn">Listening</button>
+                    <button id="reading-main-tab-btn" class="main-tab-btn active">Reading</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sub-Tabs for Sections -->
+        <div id="sub-tabs-container" class="bg-white px-4 py-2 border-b border-gray-200 flex space-x-2 justify-center">
+            <!-- Sub-tabs will be added here by JavaScript -->
+        </div>
+
+        <!-- Main Content Panes -->
+        <main id="main-content" class="content-container h-full">
+            <!-- Listening Container (1-column layout) -->
+            <div id="listening-container" class="one-column-layout hidden h-full">
+                <div id="listening-questions-pane" class="pane bg-white overflow-y-auto">
+                    <!-- Listening Section 1: Questions 1-10 -->
+                    <div id="listening-section-1" class="listening-section">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">LISTENING SECTION 1: Questions 1-10</h3>
+                        <p class="text-gray-600 mb-4">Complete the notes below. Write ONE WORD AND/OR A NUMBER for each answer.</p>
+                        <div class="space-y-4 text-gray-700">
+                            <p><strong>Example</strong></p>
+                            <p>South City Cycling Club</p>
+                            <p>Name of club secretary: Jim Hunter</p>
+                            <ul class="list-none space-y-2">
+                                <li>Full membership costs $260; this covers cycling and 1. <input type="text" data-answer="triathlon" class="question-input" placeholder=""> all over Australia.</li>
+                                <li>Recreational membership costs $108</li>
+                                <li>Cost of membership includes the club fee and 2. <input type="text" data-answer="insurance" class="question-input" placeholder="">.</li>
+                                <li>The club kit is made by a company called 3. <input type="text" data-answer="KELLYS" class="question-input" placeholder="">.</li>
+                                <li><strong>Training rides</strong></li>
+                                <li>Chance to improve cycling skills and fitness</li>
+                                <li>Level B: speed about 4. <input type="text" data-answer="20" class="question-input" placeholder=""> kph</li>
+                                <li>Weekly sessions</li>
+                                <li>Tuesdays at 5.30 am, meet at the 5. <input type="text" data-answer="stadium" class="question-input" placeholder="">.</li>
+                                <li>Thursdays at 5.30 am, meet at the entrance to the 6. <input type="text" data-answer="park" class="question-input" placeholder="">.</li>
+                                <li><strong>Further information</strong></li>
+                                <li>Rides are about an hour and a half</li>
+                                <li>Members often have 7. <input type="text" data-answer="coffee" class="question-input" placeholder=""> together afterwards.</li>
+                                <li>There is not always a 8. <input type="text" data-answer="leader" class="question-input" placeholder=""> with the group on these rides.</li>
+                                <li>Check and print the 9. <input type="text" data-answer="map" class="question-input" placeholder=""> on the website beforehand.</li>
+                                <li>Bikes must have 10. <input type="text" data-answer="lights" class="question-input" placeholder="">.</li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                    </div>
+
+                    <!-- Listening Section 2: Questions 11-20 -->
+                    <div id="listening-section-2" class="listening-section hidden">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">LISTENING SECTION 2: Questions 11-20</h3>
+                        <p class="text-gray-600 mb-4">Questions 11-16</p>
+                        <p class="text-gray-600 mb-4">Choose the correct letter, A, B or C.</p>
+                        <div class="space-y-4 text-gray-700">
+                            <p><strong>Information on company volunteering projects</strong></p>
+                            <div class="mb-4">
+                                <p class="font-medium">11. How much time for volunteering does the company allow per employee?</p>
+                                <div class="mt-2 space-y-1">
+                                    <label class="block"><input type="radio" name="q11" value="A" class="mr-2" data-answer="c">A. two hours per week</label>
+                                    <label class="block"><input type="radio" name="q11" value="B" class="mr-2" data-answer="c">B. one day per month</label>
+                                    <label class="block"><input type="radio" name="q11" value="C" class="mr-2" data-answer="c">C. 8 hours per year</label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-medium">12. In feedback almost all employees said that volunteering improved their</p>
+                                <div class="mt-2 space-y-1">
+                                    <label class="block"><input type="radio" name="q12" value="A" class="mr-2" data-answer="b">A. chances of promotion.</label>
+                                    <label class="block"><input type="radio" name="q12" value="B" class="mr-2" data-answer="b">B. job satisfaction.</label>
+                                    <label class="block"><input type="radio" name="q12" value="C" class="mr-2" data-answer="b">C. relationships with colleagues.</label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-medium">13. Last year some staff helped unemployed people with their</p>
+                                <div class="mt-2 space-y-1">
+                                    <label class="block"><input type="radio" name="q13" value="A" class="mr-2" data-answer="b">A. literacy skills.</label>
+                                    <label class="block"><input type="radio" name="q13" value="B" class="mr-2" data-answer="b">B. job applications.</label>
+                                    <label class="block"><input type="radio" name="q13" value="C" class="mr-2" data-answer="b">C. communication skills.</label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-medium">14. This year the company will</p>
+                                <div class="mt-2 space-y-1">
+                                    <label class="block"><input type="radio" name="q14" value="A" class="mr-2" data-answer="c">A. make it more difficult to find volunteering opportunities.</label>
+                                    <label class="block"><input type="radio" name="q14" value="B" class="mr-2" data-answer="c">B. make all volunteering projects require the same level of commitment.</label>
+                                    <label class="block"><input type="radio" name="q14" value="C" class="mr-2" data-answer="c">C. keep a better record of the skills employees learn while volunteering.</label>
+                                </div>
+                            </div>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                        <p class="text-gray-600 mt-8 mb-4">Questions 17-20</p>
+                        <p class="text-gray-600 mb-4">What is the main difference between each of the following types of volunteering projects? Write the correct letter, A, B or C, next to questions 17-20.</p>
+                        <div class="space-y-4 text-gray-700">
+                            <ul class="list-none space-y-1 mb-4">
+                                <li>A working with people</li>
+                                <li>B working with animals</li>
+                                <li>C working with the environment</li>
+                            </ul>
+                            <ul class="list-decimal list-inside space-y-2">
+                                <li>17. The Business Action Project <input type="text" data-answer="A" class="question-input" placeholder=""></li>
+                                <li>18. The London Volcano Project <input type="text" data-answer="C" class="question-input" placeholder=""></li>
+                                <li>19. The Home-Start Project <input type="text" data-answer="A" class="question-input" placeholder=""></li>
+                                <li>20. The Stepney City Farm Project <input type="text" data-answer="B" class="question-input" placeholder=""></li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                    </div>
+
+                    <!-- Listening Section 3: Questions 21-30 -->
+                    <div id="listening-section-3" class="listening-section hidden">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">LISTENING SECTION 3: Questions 21-30</h3>
+                        <p class="text-gray-600 mb-4">Questions 21-25</p>
+                        <p class="text-gray-600 mb-4">Complete the table below. Write NO MORE THAN TWO WORDS for each answer.</p>
+                        <div class="mt-2 space-y-4 text-gray-700">
+                            <table class="table-auto w-full border-collapse border border-gray-400">
+                                <thead>
+                                    <tr>
+                                        <th class="border border-gray-400 px-4 py-2">Subject</th>
+                                        <th class="border border-gray-400 px-4 py-2">Aspects to consider</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">21. <input type="text" class="w-full question-input" data-answer="essay" placeholder="essay"></td>
+                                        <td class="border border-gray-400 px-4 py-2">Can choose your own topic, but needs to be well-organised.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">Group presentation</td>
+                                        <td class="border border-gray-400 px-4 py-2">22. <input type="text" class="w-full question-input" data-answer="co-operation" placeholder="co-operation"> is very important.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">Case study</td>
+                                        <td class="border border-gray-400 px-4 py-2">Should be prepared to deal with 23. <input type="text" class="w-full question-input" data-answer="unexpected problems" placeholder="unexpected problems">.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">Report writing</td>
+                                        <td class="border border-gray-400 px-4 py-2">Lecturer has recommended a book on 24. <input type="text" class="w-full question-input" data-answer="academic writing" placeholder="academic writing">.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">25. <input type="text" class="w-full question-input" data-answer="portfolio" placeholder="portfolio"></td>
+                                        <td class="border border-gray-400 px-4 py-2">Students must provide an original written summary.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                        <p class="text-gray-600 mt-8 mb-4">Questions 26-30</p>
+                        <p class="text-gray-600 mb-4">Match the comments (A-G) with the aspects of Russ's previous presentation. Write the correct letter, A-G, next to Questions 26-30.</p>
+                        <ul class="list-none space-y-1 mb-4 text-gray-700 font-medium">
+                            <li><strong>Comments</strong></li>
+                            <li>A lacked a conclusion</li>
+                            <li>B useful in the future</li>
+                            <li>C not enough</li>
+                            <li>D sometimes distracting</li>
+                            <li>E showed originality</li>
+                            <li>F covered a wide range</li>
+                            <li>G not too technical</li>
+                        </ul>
+                        <div class="space-y-4 text-gray-700">
+                            <p><strong>Aspects of Russ's previous presentation</strong></p>
+                            <ul class="list-decimal list-inside space-y-2">
+                                <li>26. Introduction <input type="text" data-answer="E" class="question-input" placeholder=""></li>
+                                <li>27. Main points <input type="text" data-answer="F" class="question-input" placeholder=""></li>
+                                <li>28. Speed of delivery <input type="text" data-answer="C" class="question-input" placeholder=""></li>
+                                <li>29. Use of visuals <input type="text" data-answer="D" class="question-input" placeholder=""></li>
+                                <li>30. Language <input type="text" data-answer="G" class="question-input" placeholder=""></li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                    </div>
+
+                    <!-- Listening Section 4: Questions 31-40 -->
+                    <div id="listening-section-4" class="listening-section hidden">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">LISTENING SECTION 4: Questions 31-40</h3>
+                        <p class="text-gray-600 mb-4">Complete the notes below. Write ONE WORD ONLY for each answer.</p>
+                        <div class="space-y-4 text-gray-700">
+                            <p class="font-medium">Episodic memory</p>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>the ability to recall details, e.g. the time and 31. <input type="text" data-answer="place" class="question-input" placeholder="place"> of past events</li>
+                                <li>different to semantic memory - the ability to remember general information about the 32. <input type="text" data-answer="world" class="question-input" placeholder="world"> which does not involve recalling 33. <input type="text" data-answer="personal" class="question-input" placeholder="personal"> information</li>
+                            </ul>
+                            <p class="font-medium">Forming episodic memories involves three steps:</p>
+                            <p class="font-medium">Encoding</p>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>involves receiving and processing information</li>
+                                <li>the more 34. <input type="text" data-answer="attention" class="question-input" placeholder="attention"> Given to an event, the more successfully it can be encoded</li>
+                                <li>to remember a 35. <input type="text" data-answer="location" class="question-input" placeholder="location">, it is useful to have a strategy for encoding such information</li>
+                            </ul>
+                            <p class="font-medium">Consolidation</p>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>how memories are strengthened and stored</li>
+                                <li>most effective when memories can be added to a 36. <input type="text" data-answer="framework" class="question-input" placeholder="framework"> of related information</li>
+                                <li>the 37. <input type="text" data-answer="frequency" class="question-input" placeholder="frequency"> of retrieval affects the strength of memories</li>
+                                <li>memory retrieval often depends on using a prompt, e.g. the 38. <input type="text" data-answer="smell" class="question-input" placeholder="smell"> of an object near to the place where you left your car</li>
+                            </ul>
+                            <p class="font-medium">Episodic memory impairments</p>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>these affect people with a wide range of medical conditions</li>
+                                <li>games which stimulate the 39. <input type="text" data-answer="senses" class="question-input" placeholder="senses"> have been found to help people with schizophrenia</li>
+                                <li>children with autism may have difficulty forming episodic memories - possibly because their concept of the 40. <input type="text" data-answer="self" class="question-input" placeholder="self"> may be absent</li>
+                                <li>memory training may help autistic children develop social skills</li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reading Container (2-column layout) -->
+            <div id="reading-container" class="two-column-layout h-full">
+                <!-- Left Pane: Reading Passage -->
+                <div id="reading-passage-pane" class="pane bg-gray-50 overflow-y-auto">
+                    <!-- Reading Passage 1: Questions 1-13 -->
+                    <div id="reading-passage-1" class="reading-passage">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Reading Passage 1: Bringing cinnamon to Europe</h2>
+                        <div class="prose max-w-none text-gray-700">
+                            <p class="mb-4">Cinnamon is a sweet, fragrant spice produced from the inner bark of trees of the genus Cinnamomum, which is native to the Indian sub-continent. It was known in biblical times, and is mentioned in several books of the Bible, both as an ingredient that was mixed with oils for anointing people's bodies, and also as a token indicating friendship among lovers and friends. In ancient Rome, mourners attending funerals burnt cinnamon to create a pleasant scent. Most often, however, the spice found its primary use as an additive to food and drink. In the Middle Ages, Europeans who could afford the spice used it to flavor food, particularly meat, and to impress those around them with their ability to purchase an expensive condiment from the 'exotic' East. At a banquet, a host would offer guests a plate with various spices piled upon it as a sign of the wealth at his or her disposal. Cinnamon was also reported to have health benefits, and was thought to cure various ailments, such as indigestion.</p>
+                            <p class="mb-4">Toward the end of the Middle Ages, the European middle classes began to desire the lifestyle of the elite, including their consumption of spices. This led to a growth in demand for cinnamon and other spices. At that time, cinnamon was transported by Arab merchants, who closely guarded the secret of the source of the spice from potential rivals. They took it from India, where it was grown, on camels via an overland route to the Mediterranean. Their journey ended when they arrived in the Mediterranean at Alexandria, where the spice was sold to Venetian traders. These traders then took it to Europe, and sold it to destinations around the continent. The Venetians came to control the European trade in cinnamon, and for a period, the spice was one of the foundations of their economic prosperity.</p>
+                            <p class="mb-4">The increase in demand for spices from the East coincided with the growing power of the Ottoman Empire, which took control of Constantinople in 1453. The city was a major hub on the overland spice route from India to the Mediterranean, and the merchants of Venice found it increasingly difficult to trade there. Their problem was compounded by the fact that the Portuguese had begun to rival them on the seas. As the Portuguese sailors explored the west coast of Africa, they hoped to discover a new sea route to India, and for the first time, to bypass the Venetians in the spice trade. They reached India in 1498, having sailed round the Cape of Good Hope, and quickly established a number of trading posts there.</p>
+                            <p class="mb-4">The Portuguese soon realised they had to do more than simply trade in spices; they had to control their production as well. They established a number of fortified trading posts and factories, and took control of the native cinnamon production on the island of Ceylon. They forced the local people to supply them with the cinnamon they wanted and they also guarded their trade routes carefully. As a result, the price of cinnamon fell, and the Portuguese became the major suppliers of cinnamon to the European market, making great profits.</p>
+                            <p class="mb-4">The new dominance of the Portuguese in the spice trade was to be short-lived, however. By the 17th century, the Dutch had become the main European commercial power in the East, having established their own East India Company and having driven the Portuguese out of their trading posts. The Dutch took over the trade in cinnamon. They took a more systematic approach to the cultivation of the spice, introducing a plantation system, although their methods were equally brutal. They were able to supply the market with far larger quantities of cinnamon than the Portuguese had done.</p>
+                            <p class="mb-4">However, by the middle of the 18th century, the demand for cinnamon had fallen dramatically, and the spice trade was no longer as profitable as it had been. This was due to the increasing popularity of sugar and tea, and the European obsession with these new products. The cinnamon plantations were not as profitable as they had been, and a great many were converted to coffee plantations. In 1795, the British took over Ceylon from the Dutch, but they were unable to revive the cinnamon trade. The spice had lost its economic importance.</p>
+                        </div>
+                    </div>
+                    <!-- Reading Passage 2: Questions 14-26 -->
+                    <div id="reading-passage-2" class="reading-passage hidden">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Reading Passage 2: The Deserts of the Antarctic</h2>
+                        <div class="prose max-w-none text-gray-700">
+                            <p class="mb-4">A The Antarctic is the coldest, driest and windiest continent on Earth. The continent is larger than Europe and has an average altitude of 2,300 metres. The lowest temperature ever recorded on Earth was in Antarctica, at -89.2°C. The lowest temperature ever recorded in the Arctic was a comparatively mild -68°C. Antarctica is a desert, but not in the way that people usually think of deserts. It has no rain, and its average rainfall is 200 mm a year. Some parts of the continent get less than that. But the main reason it is a desert is that all of the water that falls there is in the form of ice and snow, so it is permanently frozen. Only about 2% of the continent is free of ice; the rest is covered by an ice sheet that is, on average, 2,160 metres thick. The Transantarctic Mountains, one of the world's great mountain chains, divide the continent into East and West Antarctica. The mountains stretch 3,500 km across the continent. On the western side is a huge ice sheet that is 2.5 km thick. On the eastern side the ice sheet is even thicker, at 4.5 km.</p>
+                            <p class="mb-4">B The continent is surrounded by the Southern Ocean, which is home to a wide variety of animals, including seals, whales, and penguins. The marine life around Antarctica is very rich, due to the upwelling of nutrient-rich water from the deep ocean. The water is so cold that it can hold a great deal of oxygen, and this also helps to support the marine life. The continent itself has very little life, due to the extreme cold and the lack of liquid water. There are some lichens, mosses and a few insects that can survive, but no large plants or animals live on the continent permanently. The animals that live there, such as penguins and seals, spend most of their time in the ocean, and only come to the land to breed.</p>
+                            <p class="mb-4">C The Antarctic is of great interest to scientists. The ice sheet is a huge repository of information about the Earth's climate history. By drilling into the ice, scientists can extract cores of ice that contain tiny bubbles of air. These bubbles are a snapshot of the atmosphere at the time the ice was formed. By analysing the gases in the bubbles, scientists can learn about the climate and the composition of the atmosphere in the past. The ice cores have shown that the Earth's climate has changed many times in the past, with periods of warming and cooling. The ice cores also contain dust, pollen, and volcanic ash, which can provide information about past events. The Antarctic is also a good place to study the stars, because the air is very clear and dry, and there is no light pollution. The continent is also a good place to study the aurora australis, or southern lights, which are caused by the interaction of charged particles from the sun with the Earth's atmosphere. </p>
+                            <p class="mb-4">D The Antarctic Treaty was signed in 1959 by 12 countries. The treaty has since been signed by many more countries, and it now has 53 members. The treaty prohibits military activity, mining, and nuclear explosions in Antarctica. It also promotes scientific research and the protection of the environment. The treaty has been very successful in protecting Antarctica from exploitation and has helped to preserve it for scientific research. The continent is also a popular destination for tourists, who come to see the unique wildlife and the spectacular scenery. The number of tourists has been increasing rapidly in recent years, and this has raised concerns about the impact of tourism on the environment. The International Association of Antarctica Tour Operators (IAATO) has been set up to promote safe and environmentally responsible tourism in Antarctica. The IAATO has a strict code of conduct for tourists and tour operators, and it works to minimise the impact of tourism on the environment.</p>
+                        </div>
+                    </div>
+                    <!-- Reading Passage 3: Questions 27-40 -->
+                    <div id="reading-passage-3" class="reading-passage hidden">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Reading Passage 3: The Secret of the Ice Man</h2>
+                        <div class="prose max-w-none text-gray-700">
+                            <p class="mb-4">A In September 1991, two German hikers discovered a mummified corpse frozen in the ice of the Otztal Alps, on the border between Austria and Italy. At first, they thought the body was a modern one, perhaps a lost mountaineer. However, it soon became clear that the corpse was far older. The mummy was nicknamed 'Otzi' by the media, after the location where he was found, and he became an overnight sensation. He was given a thorough scientific examination, and the results were astonishing. He was a man who lived 5,300 years ago, and he was the oldest natural human mummy ever found in Europe. </p>
+                            <p class="mb-4">B Otzi was a man of about 45 years old, and he was 1.6 metres tall. He was dressed in a coat made of goat skin, and he wore leggings made of goatskin and a loincloth made of calfskin. He had a hat made of bear fur and shoes made of leather, stuffed with grass for insulation. He carried a copper axe, a bow and a quiver of arrows, and a flint dagger. He also had a small bag containing some dried mushrooms, which are thought to have had medicinal properties, and a fire-starting kit, including some pieces of flint and iron pyrite. His possessions were a remarkable insight into the life of a Copper Age man.</p>
+                            <p class="mb-4">C What happened to Otzi? For a long time, it was thought that he had simply died of exposure in a sudden blizzard. However, a CT scan in 2001 revealed a shocking discovery: an arrowhead lodged in his left shoulder. The arrowhead had severed a major artery, and it is likely that he bled to death in a short time. He also had a deep cut on his right hand, which suggests he had been in a fight. It seems that he was murdered, but who killed him? One theory is that he was a victim of a tribal conflict. He was found with a number of uncompleted arrows, which suggests he may have been running away from an enemy. He was also found with a number of objects that were not from his local area, which suggests he may have been a trader or a traveller. Another theory is that he was a victim of a personal dispute, perhaps over a woman or a piece of land.</p>
+                            <p class="mb-4">D The discovery of Otzi has provided a huge amount of information about the Copper Age. His body and possessions have given scientists a unique glimpse into the life of a man who lived thousands of years ago. The analysis of his stomach contents revealed that his last meal consisted of red deer meat, ibex meat, and some cereal. The analysis of his DNA has shown that he was related to people who now live in Sardinia, Corsica, and the Basque region of Spain. The analysis of his teeth has shown that he had a diet that was rich in meat and that he had a number of dental problems. The analysis of his tattoos, which were made by rubbing charcoal into cuts in his skin, suggests that they were used for medicinal purposes. The tattoos are located on parts of his body that were suffering from joint pain, which suggests that they were used to treat a form of arthritis. The discovery of Otzi has opened a window into the past, and he continues to fascinate scientists and the public alike.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resizable Splitter -->
+                <div class="splitter"></div>
+
+                <!-- Right Pane: Questions -->
+                <div id="reading-questions-pane" class="pane bg-white overflow-y-auto">
+                    <!-- Reading Questions 1: Questions 1-13 -->
+                    <div id="reading-questions-1" class="reading-questions">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Reading: Questions 1-13</h3>
+                        <p class="text-gray-600 mb-4">Questions 1-9</p>
+                        <p class="text-gray-600 mb-4">Complete the notes below. Write NO MORE THAN TWO WORDS for each answer.</p>
+                        <div class="space-y-4 text-gray-700">
+                            <p><strong>A. Uses of cinnamon in the past</strong></p>
+                            <ul class="list-none space-y-2">
+                                <li>a component of a scented 1. <input type="text" class="question-input" data-answer="oil" placeholder="oil"></li>
+                                <li>a sign of 2. <input type="text" class="question-input" data-answer="friendship" placeholder="friendship"> between friends</li>
+                                <li>used to improve the 3. <input type="text" class="question-input" data-answer="flavour" placeholder="flavour"> of food</li>
+                                <li>a cure for 4. <input type="text" class="question-input" data-answer="indigestion" placeholder="indigestion"></li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+
+                            <p class="mt-8"><strong>B. Transport of cinnamon to Europe</strong></p>
+                            <table class="table-auto w-full border-collapse border border-gray-400">
+                                <thead>
+                                    <tr>
+                                        <th class="border border-gray-400 px-4 py-2">Step</th>
+                                        <th class="border border-gray-400 px-4 py-2">Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">From India</td>
+                                        <td class="border border-gray-400 px-4 py-2">on camels via an overland route to the Mediterranean</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">Arrived in the Mediterranean at</td>
+                                        <td class="border border-gray-400 px-4 py-2">8. <input type="text" class="question-input" data-answer="Alexandria" placeholder="Alexandria"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">Traders took it to</td>
+                                        <td class="border border-gray-400 px-4 py-2">9. <input type="text" class="question-input" data-answer="Venetian" placeholder="Venetian"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">Sold to</td>
+                                        <td class="border border-gray-400 px-4 py-2">destinations around Europe</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+
+                            <p class="text-gray-600 mt-8 mb-4"><strong>C. Changes in the trade in the 15th century</strong></p>
+                            <ul class="list-none space-y-2">
+                                <li>transport through Constantinople was made more difficult by the 10. <input type="text" class="question-input" data-answer="Ottoman Empire" placeholder="Ottoman Empire"></li>
+                                <li>Portuguese sailors found a different route to India via the 11. <input type="text" class="question-input" data-answer="Cape of Good Hope" placeholder="Cape of Good Hope"></li>
+                                <li>The Portuguese soon realised they had to control the 12. <input type="text" class="question-input" data-answer="production" placeholder="production"> of spices as well.</li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                        <p class="text-gray-600 mt-8 mb-4">Questions 13-16</p>
+                        <p class="text-gray-600 mb-4">Do the following statements agree with the information given in Reading Passage 1?</p>
+                        <p class="text-gray-600 mb-4">In boxes 13-16 on your answer sheet, write</p>
+                        <ul class="list-none space-y-1 mb-4 text-gray-700 font-medium">
+                            <li><strong>TRUE</strong> if the statement agrees with the information</li>
+                            <li><strong>FALSE</strong> if the statement contradicts the information</li>
+                            <li><strong>NOT GIVEN</strong> if there is no information on this</li>
+                        </ul>
+                        <div class="space-y-4 text-gray-700">
+                            <ul class="list-decimal list-inside space-y-2">
+                                <li>13. The Portuguese had control over the cinnamon trade in Ceylon throughout the 16th century. <input type="text" class="question-input" data-answer="TRUE" placeholder="True/False/Not Given"></li>
+                                <li>14. The Dutch took over the cinnamon trade from the Portuguese as soon as they arrived in Ceylon. <input type="text" class="question-input" data-answer="NOT GIVEN" placeholder="True/False/Not Given"></li>
+                                <li>15. The trees planted by the Dutch produced larger quantities of cinnamon than the wild trees. <input type="text" class="question-input" data-answer="NOT GIVEN" placeholder="True/False/Not Given"></li>
+                                <li>16. The spice trade maintained its economic importance during the 19th century. <input type="text" class="question-input" data-answer="FALSE" placeholder="True/False/Not Given"></li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                    </div>
+                    <!-- Reading Questions 2: Questions 14-26 -->
+                    <div id="reading-questions-2" class="reading-questions hidden">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Reading: Questions 14-26</h3>
+                        <p class="text-gray-600 mb-4">Questions 14-17</p>
+                        <p class="text-gray-600 mb-4">Reading Passage 2 has four sections, A-D. Choose the correct heading for each section from the list of headings below.</p>
+                        <p class="text-gray-600 mb-4">Write the correct number, i-viii, in boxes 14-17 on your answer sheet.</p>
+                        <ul class="list-none space-y-1 mb-4 text-gray-700 font-medium">
+                            <li><strong>List of Headings</strong></li>
+                            <li>i. The Antarctic's importance for scientists</li>
+                            <li>ii. A comparison of the Arctic and Antarctic</li>
+                            <li>iii. The history of the Antarctic Treaty</li>
+                            <li>iv. The Antarctic's unique climate</li>
+                            <li>v. The challenges of living in Antarctica</li>
+                            <li>vi. The animal life of Antarctica</li>
+                            <li>vii. The impact of tourism on the Antarctic environment</li>
+                            <li>viii. The geography of the Antarctic continent</li>
+                        </ul>
+                        <div class="space-y-4 text-gray-700">
+                            <ul class="list-decimal list-inside space-y-2">
+                                <li>14. Section A <input type="text" class="question-input" data-answer="viii" placeholder=""></li>
+                                <li>15. Section B <input type="text" class="question-input" data-answer="vi" placeholder=""></li>
+                                <li>16. Section C <input type="text" class="question-input" data-answer="i" placeholder=""></li>
+                                <li>17. Section D <input type="text" class="question-input" data-answer="iii" placeholder=""></li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                        <p class="text-gray-600 mt-8 mb-4">Questions 18-20</p>
+                        <p class="text-gray-600 mb-4">Complete the summary below. Write NO MORE THAN TWO WORDS from the passage for each answer.</p>
+                        <div class="space-y-4 text-gray-700">
+                            <p><strong>The Antarctic Treaty</strong></p>
+                            <p class="text-gray-600 mb-4">The Antarctic Treaty was signed in 1959 and has 18. <input type="text" class="question-input" data-answer="53" placeholder=""> members. The treaty bans military activity and 19. <input type="text" class="question-input" data-answer="mining" placeholder=""> in Antarctica. It also promotes scientific research and the protection of the 20. <input type="text" class="question-input" data-answer="environment" placeholder="">.</p>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                        <p class="text-gray-600 mt-8 mb-4">Questions 21-26</p>
+                        <p class="text-gray-600 mb-4">Complete the sentences below. Write NO MORE THAN TWO WORDS from the passage for each answer.</p>
+                        <div class="space-y-4 text-gray-700">
+                            <ul class="list-decimal list-inside space-y-2">
+                                <li>21. The Antarctic is the coldest, driest and <input type="text" class="question-input" data-answer="windiest continent" placeholder=""> on Earth.</li>
+                                <li>22. The continent is larger than <input type="text" class="question-input" data-answer="Europe" placeholder="">.</li>
+                                <li>23. The Transantarctic Mountains divide the continent into East and West Antarctica, and stretch <input type="text" class="question-input" data-answer="3500 km" placeholder=""> across the continent.</li>
+                                <li>24. The marine life around Antarctica is very rich, due to the <input type="text" class="question-input" data-answer="upwelling" placeholder=""> of nutrient-rich water.</li>
+                                <li>25. The ice cores have shown that the Earth's climate has changed many times in the past, with periods of <input type="text" class="question-input" data-answer="warming" placeholder=""> and cooling.</li>
+                                <li>26. The Antarctic is also a good place to study the <input type="text" class="question-input" data-answer="stars" placeholder="">, because the air is very clear and dry.</li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                    </div>
+                    <!-- Reading Questions 3: Questions 27-40 -->
+                    <div id="reading-questions-3" class="reading-questions hidden">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Reading: Questions 27-40</h3>
+                        <p class="text-gray-600 mb-4">Questions 27-30</p>
+                        <p class="text-gray-600 mb-4">Reading Passage 3 has four sections, A-D. Choose the correct heading for each section from the list of headings below.</p>
+                        <p class="text-gray-600 mb-4">Write the correct number, i-viii, in boxes 27-30 on your answer sheet.</p>
+                        <ul class="list-none space-y-1 mb-4 text-gray-700 font-medium">
+                            <li><strong>List of Headings</strong></li>
+                            <li>i. The discovery of Otzi</li>
+                            <li>ii. The cause of Otzi's death</li>
+                            <li>iii. The analysis of Otzi's DNA</li>
+                            <li>iv. The mystery of Otzi's life</li>
+                            <li>v. Otzi's possessions</li>
+                            <li>vi. A glimpse into the Copper Age</li>
+                            <li>vii. A new theory about Otzi's death</li>
+                            <li>viii. The location of the discovery</li>
+                        </ul>
+                        <div class="space-y-4 text-gray-700">
+                            <ul class="list-decimal list-inside space-y-2">
+                                <li>27. Section A <input type="text" class="question-input" data-answer="i" placeholder=""></li>
+                                <li>28. Section B <input type="text" class="question-input" data-answer="v" placeholder=""></li>
+                                <li>29. Section C <input type="text" class="question-input" data-answer="ii" placeholder=""></li>
+                                <li>30. Section D <input type="text" class="question-input" data-answer="vi" placeholder=""></li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                        <p class="text-gray-600 mt-8 mb-4">Questions 31-33</p>
+                        <p class="text-gray-600 mb-4">Complete the sentences below. Write NO MORE THAN TWO WORDS from the passage for each answer.</p>
+                        <div class="space-y-4 text-gray-700">
+                            <ul class="list-decimal list-inside space-y-2">
+                                <li>31. Otzi was discovered by two German <input type="text" class="question-input" data-answer="hikers" placeholder="">.</li>
+                                <li>32. The mummy was nicknamed 'Otzi' after the <input type="text" class="question-input" data-answer="location" placeholder=""> where he was found.</li>
+                                <li>33. The discovery of Otzi has provided a huge amount of information about the <input type="text" class="question-input" data-answer="Copper Age" placeholder="">.</li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                        <p class="text-gray-600 mt-8 mb-4">Questions 34-40</p>
+                        <p class="text-gray-600 mb-4">Do the following statements agree with the information given in Reading Passage 3?</p>
+                        <p class="text-gray-600 mb-4">In boxes 34-40 on your answer sheet, write</p>
+                        <ul class="list-none space-y-1 mb-4 text-gray-700 font-medium">
+                            <li><strong>TRUE</strong> if the statement agrees with the information</li>
+                            <li><strong>FALSE</strong> if the statement contradicts the information</li>
+                            <li><strong>NOT GIVEN</strong> if there is no information on this</li>
+                        </ul>
+                        <div class="space-y-4 text-gray-700">
+                            <ul class="list-decimal list-inside space-y-2">
+                                <li>34. Otzi was found in a remote part of the Alps. <input type="text" class="question-input" data-answer="NOT GIVEN" placeholder="True/False/Not Given"></li>
+                                <li>35. Otzi was a trader or a traveller. <input type="text" class="question-input" data-answer="NOT GIVEN" placeholder="True/False/Not Given"></li>
+                                <li>36. Otzi died from a sudden blizzard. <input type="text" class="question-input" data-answer="FALSE" placeholder="True/False/Not Given"></li>
+                                <li>37. The analysis of Otzi's stomach contents revealed that he had a rich diet. <input type="text" class="question-input" data-answer="FALSE" placeholder="True/False/Not Given"></li>
+                                <li>38. The analysis of Otzi's DNA showed that he was related to people who now live in Italy. <input type="text" class="question-input" data-answer="NOT GIVEN" placeholder="True/False/Not Given"></li>
+                                <li>39. Otzi's tattoos were used to treat a form of arthritis. <input type="text" class="question-input" data-answer="TRUE" placeholder="True/False/Not Given"></li>
+                                <li>40. Otzi's death was a mystery until 2001. <input type="text" class="question-input" data-answer="TRUE" placeholder="True/False/Not Given"></li>
+                            </ul>
+                            <button onclick="checkAnswers(this)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Check Answers</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white p-4 flex justify-between items-center shadow-inner">
+            <button id="prev-btn" class="nav-button opacity-50 cursor-not-allowed">Prev</button>
+            <div class="text-gray-500">
+                <span id="page-number">1</span> of <span id="total-pages">3</span>
+            </div>
+            <button id="next-btn" class="nav-button">Next</button>
+        </footer>
+    </div>
+    
+    <!-- Highlighting Tooltip -->
+    <div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            mainContent: document.getElementById('main-content'),
+            subTabsContainer: document.getElementById('sub-tabs-container'),
+            passagePane: document.getElementById('reading-passage-pane'),
+            questionPane: document.getElementById('reading-questions-pane'),
+            splitter: document.querySelector('.splitter'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            listeningContainer: document.getElementById('listening-container'),
+            readingContainer: document.getElementById('reading-container'),
+            listeningMainTab: document.getElementById('listening-main-tab-btn'),
+            readingMainTab: document.getElementById('reading-main-tab-btn'),
+            navPrevBtn: document.getElementById('prev-btn'),
+            navNextBtn: document.getElementById('next-btn'),
+            pageNumberSpan: document.getElementById('page-number'),
+            totalPageSpan: document.getElementById('total-pages'),
+
+            listeningSections: null,
+            readingPassages: null,
+            readingQuestions: null,
+
+            currentListeningSectionIndex: 0,
+            currentReadingSectionIndex: 0,
+            
+            isResizing: false,
+            initialX: 0,
+            initialWidth: 0,
+
+            init() {
+                this.listeningSections = document.querySelectorAll('.listening-section');
+                this.readingPassages = document.querySelectorAll('.reading-passage');
+                this.readingQuestions = document.querySelectorAll('.reading-questions');
+
+                this.setupSplitter();
+                this.setupHighlighting();
+                this.setupMainTabs();
+                this.setupNavigation();
+                
+                // Initial state
+                this.readingMainTab.click();
+            },
+
+            setupSplitter() {
+                this.splitter.addEventListener('mousedown', (e) => {
+                    this.isResizing = true;
+                    this.initialX = e.clientX;
+                    this.initialWidth = this.passagePane.offsetWidth;
+                    document.body.style.cursor = 'col-resize';
+                    this.passagePane.style.userSelect = 'none';
+                    this.questionPane.style.userSelect = 'none';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!this.isResizing) return;
+                    
+                    const dx = e.clientX - this.initialX;
+                    const newWidth = this.initialWidth + dx;
+                    const containerWidth = this.readingContainer.offsetWidth;
+                    const newWidthPercentage = (newWidth / containerWidth) * 100;
+                    
+                    if (newWidthPercentage > 20 && newWidthPercentage < 80) {
+                        this.passagePane.style.flexBasis = `${newWidthPercentage}%`;
+                        this.readingContainer.style.gridTemplateColumns = `${newWidthPercentage}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    this.isResizing = false;
+                    document.body.style.cursor = 'default';
+                    this.passagePane.style.userSelect = 'auto';
+                    this.questionPane.style.userSelect = 'auto';
+                });
+            },
+
+            setupMainTabs() {
+                this.listeningMainTab.addEventListener('click', () => {
+                    this.listeningMainTab.classList.add('active');
+                    this.readingMainTab.classList.remove('active');
+                    this.listeningContainer.classList.remove('hidden');
+                    this.readingContainer.classList.add('hidden');
+                    this.splitter.classList.add('hidden');
+                    this.createSubTabs('listening');
+                    this.showListeningSection(this.currentListeningSectionIndex);
+                });
+
+                this.readingMainTab.addEventListener('click', () => {
+                    this.readingMainTab.classList.add('active');
+                    this.listeningMainTab.classList.remove('active');
+                    this.readingContainer.classList.remove('hidden');
+                    this.listeningContainer.classList.add('hidden');
+                    this.splitter.classList.remove('hidden');
+                    this.createSubTabs('reading');
+                    this.showReadingSection(this.currentReadingSectionIndex);
+                });
+            },
+
+            createSubTabs(type) {
+                this.subTabsContainer.innerHTML = '';
+                let count = 0;
+                let prefix = '';
+                let activeIndex = 0;
+
+                if (type === 'listening') {
+                    count = this.listeningSections.length;
+                    prefix = 'S';
+                    activeIndex = this.currentListeningSectionIndex;
+                } else {
+                    count = this.readingPassages.length;
+                    prefix = 'P';
+                    activeIndex = this.currentReadingSectionIndex;
+                }
+
+                for (let i = 0; i < count; i++) {
+                    const button = document.createElement('button');
+                    button.textContent = `${prefix}${i + 1}`;
+                    button.classList.add('sub-tab-btn');
+                    button.dataset.index = i;
+                    
+                    if (i === activeIndex) {
+                        button.classList.add('active');
+                    }
+
+                    button.addEventListener('click', () => {
+                        if (type === 'listening') {
+                            this.showListeningSection(i);
+                        } else {
+                            this.showReadingSection(i);
+                        }
+                    });
+                    this.subTabsContainer.appendChild(button);
+                }
+            },
+
+            setupNavigation() {
+                this.navPrevBtn.addEventListener('click', () => {
+                    if (this.listeningMainTab.classList.contains('active')) {
+                        if (this.currentListeningSectionIndex > 0) {
+                            this.currentListeningSectionIndex--;
+                            this.showListeningSection(this.currentListeningSectionIndex);
+                        }
+                    } else if (this.readingMainTab.classList.contains('active')) {
+                        if (this.currentReadingSectionIndex > 0) {
+                            this.currentReadingSectionIndex--;
+                            this.showReadingSection(this.currentReadingSectionIndex);
+                        }
+                    }
+                });
+
+                this.navNextBtn.addEventListener('click', () => {
+                    if (this.listeningMainTab.classList.contains('active')) {
+                        if (this.currentListeningSectionIndex < this.listeningSections.length - 1) {
+                            this.currentListeningSectionIndex++;
+                            this.showListeningSection(this.currentListeningSectionIndex);
+                        }
+                    } else if (this.readingMainTab.classList.contains('active')) {
+                        if (this.currentReadingSectionIndex < this.readingPassages.length - 1) {
+                            this.currentReadingSectionIndex++;
+                            this.showReadingSection(this.currentReadingSectionIndex);
+                        }
+                    }
+                });
+            },
+            
+            showListeningSection(index) {
+                this.currentListeningSectionIndex = index;
+                this.listeningSections.forEach((section, i) => {
+                    section.classList.toggle('hidden', i !== index);
+                });
+                this.updateSubTabs(index);
+                this.updateNavigation(index, this.listeningSections.length);
+            },
+            
+            showReadingSection(index) {
+                this.currentReadingSectionIndex = index;
+                this.readingPassages.forEach((section, i) => {
+                    section.classList.toggle('hidden', i !== index);
+                });
+                this.readingQuestions.forEach((section, i) => {
+                    section.classList.toggle('hidden', i !== index);
+                });
+                this.updateSubTabs(index);
+                this.updateNavigation(index, this.readingPassages.length);
+            },
+
+            updateSubTabs(activeIndex) {
+                const subTabButtons = this.subTabsContainer.querySelectorAll('.sub-tab-btn');
+                subTabButtons.forEach((btn, i) => {
+                    btn.classList.toggle('active', i === activeIndex);
+                });
+            },
+
+            updateNavigation(currentIndex, totalCount) {
+                this.pageNumberSpan.textContent = currentIndex + 1;
+                this.totalPageSpan.textContent = totalCount;
+                
+                this.navPrevBtn.classList.toggle('opacity-50', currentIndex === 0);
+                this.navPrevBtn.classList.toggle('cursor-not-allowed', currentIndex === 0);
+                
+                this.navNextBtn.classList.toggle('opacity-50', currentIndex === totalCount - 1);
+                this.navNextBtn.classList.toggle('cursor-not-allowed', currentIndex === totalCount - 1);
+            },
+
+            setupHighlighting() {
+                this.passagePane.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    if (selection.toString().length > 0) {
+                        const range = selection.getRangeAt(0);
+                        const rect = range.getBoundingClientRect();
+                        const passageRect = this.passagePane.getBoundingClientRect();
+
+                        this.highlightTooltip.style.left = `${rect.left - passageRect.left + (rect.width / 2) - (this.highlightTooltip.offsetWidth / 2)}px`;
+                        this.highlightTooltip.style.top = `${rect.top - passageRect.top - this.highlightTooltip.offsetHeight - 5}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const selection = window.getSelection();
+                            if (!selection.rangeCount) return;
+
+                            const mark = document.createElement('mark');
+                            
+                            function getNodesInRange(range) {
+                                const nodes = [];
+                                let node = range.startContainer;
+                                let endNode = range.endContainer;
+                                while (node && node !== endNode.nextSibling) {
+                                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
+                                        nodes.push(node);
+                                    }
+                                    if (node === endNode && range.endOffset === endNode.length) {
+                                        break;
+                                    }
+                                    if (node.firstChild) {
+                                        node = node.firstChild;
+                                    } else {
+                                        while (node && !node.nextSibling) {
+                                            node = node.parentNode;
+                                        }
+                                        node = node.nextSibling;
+                                    }
+                                }
+                                return nodes;
+                            }
+
+                            const textNodes = getNodesInRange(range);
+                            
+                            textNodes.forEach(node => {
+                                const newNode = document.createElement('mark');
+                                newNode.textContent = node.textContent;
+                                node.parentNode.replaceChild(newNode, node);
+                            });
+                            
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        window.checkAnswers = (button) => {
+            const container = button.parentElement;
+            const inputs = container.querySelectorAll('input[type="text"], input[type="radio"]');
+            
+            inputs.forEach(input => {
+                if (input.dataset.checked === 'true') {
+                    return; // Skip if already checked
+                }
+
+                const answer = input.dataset.answer ? input.dataset.answer.trim().toLowerCase() : '';
+                let userAnswer = '';
+                
+                if (input.type === 'radio') {
+                    if (input.checked) {
+                         userAnswer = input.value.trim().toLowerCase();
+                         if (userAnswer === answer) {
+                             input.parentElement.innerHTML += '<span class="feedback correct-answer">✓ Correct</span>';
+                         } else {
+                             input.parentElement.innerHTML += '<span class="feedback incorrect-answer">✗ Incorrect</span>';
+                         }
+                         input.dataset.checked = 'true';
+                    }
+                } else {
+                    userAnswer = input.value.trim().toLowerCase();
+                    if (userAnswer === answer) {
+                        input.parentElement.innerHTML += '<span class="feedback correct-answer">✓ Correct</span>';
+                    } else {
+                        input.parentElement.innerHTML += '<span class="feedback incorrect-answer">✗ Incorrect</span>';
+                    }
+                    input.dataset.checked = 'true';
+                }
+            });
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
