@@ -1,0 +1,1471 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Cambridge 17 Test 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+            margin: 0;
+            padding: 0;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .questions-section {
+            width: 100%;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+            text-indent: 1.5rem;
+        }
+        .reading-passage h3, .reading-passage h4, .reading-passage h5 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .reading-passage strong {
+            font-weight: 700;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .explanation-box:hover {
+            background-color: #dbeafe !important;
+            transform: scale(1.01);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .vocab-word {
+            cursor: help;
+            border-bottom: 1px dotted #3b82f6;
+            color: #1e40af;
+            transition: all 0.2s ease;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-color: #1e40af;
+        }
+        .vocab-tooltip {
+            position: absolute;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 350px;
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none; /* Make it transparent to mouse events initially */
+            user-select: none;
+        }
+        .vocab-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto; /* Enable mouse interaction when shown */
+        }
+        .vocab-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #1e40af;
+        }
+        .vocab-word-text {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #fbbf24;
+        }
+        .vocab-definition {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .content-panes {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+            .splitter {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Cambridge 17 Test 1</h1>
+        <div class="flex items-center space-x-4">
+            <div class="text-lg font-semibold text-gray-600">Reading Test - Q1-40</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+            <div class="reading-passage">
+                <!-- Passage content -->
+            </div>
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions (Reading) -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+            
+            <!-- Script Section (Removed for Reading-only test, kept placeholder for structure) -->
+            <div id="script-section" class="script-section" style="display:none;"></div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="reading">Reading</button>
+                <button class="tab-btn" data-tab="vocabulary">Vocabulary Quiz</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Vocabulary Tooltip -->
+<div id="vocab-tooltip" class="vocab-tooltip">
+    <div class="vocab-word-text">
+        <span class="vocab-word-display"></span>
+    </div>
+    <div class="vocab-definition"></div>
+</div>
+
+
+<script>
+    // --- DATA for Cambridge 17, Test 1 ---
+    const testData = {
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1 (Q1-13)",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The development of the London underground railway</h3>
+                        <p class="mb-4">In the first half of the 1800s, London’s <span class="vocab-word" data-word="population">population</span> grew at an astonishing rate, and the central area became increasingly <span class="vocab-word" data-word="congested">congested</span>. In addition, the expansion of the overground railway network resulted in more and more passengers arriving in the capital. However, in 1846, a Royal Commission decided that the railways should not be allowed to enter the City, the capital’s historic and business centre. The result was that the overground railway stations formed a ring around the City. The area within consisted of poorly built, overcrowded slums and the streets were full of horse-drawn traffic. Crossing the City became a nightmare. It could take an hour and a half to travel 8 km by horse-drawn carriage or bus. Numerous schemes were proposed to resolve these problems, but few succeeded.</p>
+                        <p class="mb-4">Amongst the most vocal <span class="vocab-word" data-word="advocates">advocates</span> for a solution to London’s traffic problems was Charles Pearson, who worked as a solicitor for the City of London. He saw both social and economic advantages in building an underground railway that would link the overground railway stations together and clear London slums at the same time. His idea was to relocate the poor workers who lived in the inner-city slums to newly constructed <span class="vocab-word" data-word="suburbs">suburbs</span>, and to provide cheap rail travel for them to get to work. Pearson’s ideas gained support amongst some businessmen and in 1851 he submitted a plan to Parliament. It was rejected, but coincided with a proposal from another group for an underground connecting line, which Parliament passed.</p>
+                        <p class="mb-4">The two groups merged and established the Metropolitan Railway Company in August 1854. The company’s plan was to construct an underground railway line from the Great Western Railway’s (GWR) station at Paddington to the edge of the City at Farringdon Street – a distance of almost 5 km. The organisation had difficulty in raising the <span class="vocab-word" data-word="funding">funding</span> for such a <span class="vocab-word" data-word="radical">radical</span> and expensive scheme, not least because of the critical articles printed by the <span class="vocab-word" data-word="press">press</span>. Objectors argued that the tunnels would collapse under the weight of traffic overhead, buildings would be shaken and passengers would be poisoned by the emissions from the train engines. However, Pearson and his partners persisted.</p>
+                        <p class="mb-4">The GWR, aware that the new line would finally enable them to run trains into the heart of the City, invested almost £250,000 in the scheme. Eventually, over a five-year period, £1m was raised. The chosen route ran beneath existing main roads to minimise the expense of demolishing buildings. Originally scheduled to be completed in 21 months, the construction of the underground line took three years. It was built just below street level using a technique known as ‘cut and cover’. A trench about ten metres wide and six metres deep was dug, and the sides temporarily help up with timber beams. Brick walls were then constructed, and finally a brick arch was added to create a tunnel. A two-metre-deep layer of <span class="vocab-word" data-word="soil">soil</span> was laid on top of the tunnel and the road above rebuilt.</p>
+                        <p class="mb-4">The Metropolitan line, which opened on 10 January 1863, was the world’s first underground railway. On its first day, almost 40,000 passengers were carried between Paddington and Farringdon, the journey taking about 18 minutes. By the end of the Metropolitan’s first year of operation, 9.5 million journeys had been made.</p>
+                        <p class="mb-4">Even as the Metropolitan began operation, the first extensions to the line were being authorised; these were built over the next five years, reaching Moorgate in the east to London and Hammersmith in the west. The original plan was to pull the trains with steam locomotives, using firebricks in the boilers to provide steam, but these engines were never introduced. Instead, the line used specially designed locomotives that were fitted with water tanks in which steam could be condensed. However, smoke and fumes remained a problem, even though ventilation shafts were added to the tunnels.</p>
+                        <p class="mb-4">Despite the extension of the underground railway, by the 1880s, congestion on London’s streets had become worse. The problem was partly that the existing underground lines formed a circuit around the centre of London and extended to the suburbs, but did not cross the capital’s centre. The ‘cut and cover’ method of construction was not an option in this part of the capital. The only alternative was to tunnel deep underground.</p>
+                        <p class="mb-4">Although the technology to create these tunnels existed, steam locomotives could not be used in such a confined space. It wasn’t until the development of a reliable electric motor, and a means of transferring power from the generator to a moving train, that the world’s first deep-level electric railway, the City & South London, became possible. The line opened in 1890, and ran from the City to Stockwell, south of the River Thames. The trains were made up of three carriages and driven by electric engines. The carriages were narrow and had tiny windows just below the roof because it was thought that passengers would not want to look out at the tunnel walls. The line was not without its problems, mainly caused by an unreliable power supply, Although the City & South London Railway was a great technical achievement, it did not make a profit. Then, in 1900, the Central London Railway, known as the ‘Tuppenny Tube’, began operation using new electric locomotives. It was very popular and soon afterwards new railways and extensions were added to the growing tube network. By 1907, the heart of today’s Underground system was in place.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1- 6</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-lg">The London underground railway</h5>
+                            <p><strong>The problem</strong></p>
+                            <ul>
+                                <li>The <strong>1</strong> <input type="text" id="q1" data-q="1" class="w-40"> of London increased rapidly between 1800 and 1850</li>
+                                <li>The streets were full of horse-drawn vehicles</li>
+                            </ul>
+                            <p><strong>The proposed solution</strong></p>
+                            <ul>
+                                <li>Charles Pearson, a solicitor, suggested building an underground railway</li>
+                                <li>Building the railway would make it possible to move people to better housing in the <strong>2</strong> <input type="text" id="q2" data-q="2" class="w-40"></li>
+                                <li>A number of <strong>3</strong> <input type="text" id="q3" data-q="3" class="w-40"> agreed with Pearson’s idea</li>
+                                <li>The company initially had problems getting the <strong>4</strong> <input type="text" id="q4" data-q="4" class="w-40"> needed for the project</li>
+                                <li>Negative articles about the project appeared in the <strong>5</strong> <input type="text" id="q5" data-q="5" class="w-40"></li>
+                            </ul>
+                            <p><strong>The construction</strong></p>
+                            <ul>
+                                <li>The chosen route did not require many buildings to be pulled down</li>
+                                <li>The ‘cut and cover’ method was used to construct the tunnels</li>
+                                <li>With the completion of the brick arch, the tunnel was covered with <strong>6</strong> <input type="text" id="q6" data-q="6" class="w-40"></li>
+                            </ul>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 7- 13</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>7</strong> Other countries had built underground railways before the Metropolitan line opened. <input type="text" id="q7" data-q="7" class="w-40"></p>
+                            <p><strong>8</strong> More people than predicted travelled on the Metropolitan line on the first day. <input type="text" id="q8" data-q="8" class="w-40"></p>
+                            <p><strong>9</strong> The use of ventilation shafts failed to prevent pollution in the tunnels. <input type="text" id="q9" data-q="9" class="w-40"></p>
+                            <p><strong>10</strong> A different approach from the ‘cut and cover’ technique was required in London’s central area. <input type="text" id="q10" data-q="10" class="w-40"></p>
+                            <p><strong>11</strong> The windows on City & South London trains were at eye level. <input type="text" id="q11" data-q="11" class="w-40"></p>
+                            <p><strong>12</strong> The City & South London Railway was a financial success. <input type="text" id="q12" data-q="12" class="w-40"></p>
+                            <p><strong>13</strong> Trains on the ‘Tuppenny Tube’ nearly always ran on time. <input type="text" id="q13" data-q="13" class="w-40"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2 (Q14-26)",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Stadiums: past, present and future</h3>
+                        <p class="mb-4"><strong>A</strong> Stadiums are among the oldest forms of urban architecture: vast stadiums where the public could watch sporting events were at the centre of western city life as far back as the ancient Greek and Roman Empires, well before the construction of the great medieval cathedrals and the grand 19th- and 20th-century railway stations which dominated urban skylines in later eras.</p>
+                        <p class="mb-4">Today, however, stadiums are regarded with growing <span class="vocab-word" data-word="skepticism">skepticism</span>. Construction costs can soar above £1 billion, and stadiums finished for major events such as the Olympic Games or the FIFA World Cup have notably fallen into disuse and disrepair.</p>
+                        <p class="mb-4">But this need not be the cause. History shows that stadiums can drive urban development and adapt to the culture of every age. Even today, architects and planners are finding new ways to adapt the mono-functional sports arenas which became emblematic of modernisation during the 20th century.</p>
+                        <p class="mb-4"><strong>B</strong> The amphitheatre* of Arles in southwest France, with a capacity of 25,000 spectators, is perhaps the best example of just how <span class="vocab-word" data-word="versatile">versatile</span> stadiums can be. Built by the Romans in 90 AD, it became a <span class="vocab-word" data-word="fortress">fortress</span> with four towers after the fifth century, and was then transformed into a village containing more than 200 houses. With the growing interest in conservation during the 19th century, it was converted back into an arena for the staging of bullfights, thereby returning the structure to its original use as a venue for public spectacles.</p>
+                        <p class="mb-4">Another example is the imposing arena of Verona in northern Italy, with space for 30,000 spectators, which was built 60 years before the Arles amphitheatre and 40 years before Rome’s famous Colosseum. It has endured the centuries and is currently considered one of the world’s prime sites for opera, thanks to its outstanding acoustics.</p>
+                        <p class="mb-4"><strong>C</strong> The area in the centre of the Italian town of Lucca, known as the Piazza dell’ Anfiteatro, is yet another impressive example of an amphitheatre becoming absorbed into the fabric of the city. The site evolved in a similar way to Arles and was progressively filled with buildings from the Middle Ages until the 19th century, variously used as houses, a <span class="vocab-word" data-word="salt">salt</span> depot and a prison. But rather than reverting to an arena, it became a market square, designed by Romanticist architect Lorenzo Nottolini. Today, the ruins of the amphitheatre remain embedded in the various <span class="vocab-word" data-word="shops">shops</span> and residences surrounding the public square.</p>
+                        <p class="mb-4"><strong>D</strong> There are many similarities between modern stadiums and the ancient amphitheatres intended for games. But some of the flexibility was lost at the beginning of the 20th century, as stadiums were developed using new products such as steel and reinforced concrete, and made use of bright lights for night-time matches.</p>
+                        <p class="mb-4">Many such stadiums are situated in suburban areas, designed for sporting use only and surrounded by parking lots. These factors mean that they may not be as accessible to the general public, require more energy to run and contribute to urban heat.</p>
+                        <p class="mb-4"><strong>E</strong> But many of today’s most innovative architects see scope for the stadium to help improve the city. Among the current strategies, two seem to be having particular success: the stadium as an urban hub, and as a power plant.</p>
+                        <p class="mb-4">There’s a growing trend for stadiums to be equipped with public spaces and services that serve a function beyond sport, such as hotels, retail outlets, conference centres, restaurants and bars, children’s playgrounds and green space. Creating mixed-use developments such as this reinforces compactness and multi-functionality, making more efficient use of land and helping to regenerate urban spaces.</p>
+                        <p class="mb-4">This opens the space up to families and a wider cross-section of society, instead of catering only to sportspeople and supporters. There have been many examples of this in the UK: the mixed-use facilities at Wembley and Old Trafford have become a blueprint for many other stadiums in the world.</p>
+                        <p class="mb-4"><strong>F</strong> The phenomenon of stadium as power stations has arisen from the idea that energy problems can be overcome by integrating interconnected buildings by means of a smart grid, which is an electricity supply network that uses digital communications technology to detect and react to local changes in usage, without significant energy losses. Stadiums are ideal for these purposes, because their canopies have a large surface area for fitting photovoltaic panels and rise high enough (more than 40 metres) to make use of micro wind turbines.</p>
+                        <p class="mb-4">Freiburg Mage Solar Stadium in Germany is the first of a new wave of stadiums as power plants, which also includes the Amsterdam Arena and the Kaohsiung Stadium. The latter, inaugurated in 2009, has 8,844 photovoltaic panels producing up to 1.14 GWh of electricity annually. This reduces the annual output of carbon dioxide by 660 tons and supplies up to 80 percent of the surrounding area when the stadium is not in use. This is proof that a stadium can serve its city, and have a decidedly positive impact in terms of reduction of CO2 emissions.</p>
+                        <p class="mb-4"><strong>G</strong> Sporting arenas have always been central to the life and culture of cities. In every era, the stadium has acquired new value and uses: from military <span class="vocab-word" data-word="fortress">fortress</span> to residential village, public space to theatre and most recently a field for experimentation in advanced engineering. The stadium of today now brings together multiple functions, thus helping cities to create a sustainable future.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14- 17</h4>
+                        <p class="mb-4">Which paragraph contains the following information? Write the correct letter, <strong>A-G</strong>.</p>
+                        <p class="mb-4"><strong>NB</strong> You may use any letter more than once.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> a mention of negative attitudes towards stadium building projects <input type="text" maxlength="1" class="w-10 text-center" id="q14" data-q="14"></p>
+                            <p><strong>15</strong> figures demonstrating the environmental benefits of a certain stadium <input type="text" maxlength="1" class="w-10 text-center" id="q15" data-q="15"></p>
+                            <p><strong>16</strong> examples of the wide range of facilities available at some new stadiums <input type="text" maxlength="1" class="w-10 text-center" id="q16" data-q="16"></p>
+                            <p><strong>17</strong> reference to the disadvantages of the stadiums built during a certain era <input type="text" maxlength="1" class="w-10 text-center" id="q17" data-q="17"></p>
+                        </div>
+                        
+                        <h4 class="font-bold mb-2 mt-6">Questions 18- 22</h4>
+                        <p class="mb-4">Complete the summary below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-lg">Roman amphitheatres</h5>
+                            <p>The Roman stadium of Europe have proved very versatile. The amphitheatre of Arles, for example, was converted first into a <strong>18</strong> <input type="text" id="q18" data-q="18" class="w-40">, then into a residential area and finally into an arena where spectators could watch <strong>19</strong> <input type="text" id="q19" data-q="19" class="w-40">. Meanwhile, the arena in Verona, one of the oldest Roman amphitheatres, is famous today as a venue where <strong>20</strong> <input type="text" id="q20" data-q="20" class="w-40"> is performed. The site of Lucca’s amphitheatre has also been used for many purposes over the centuries, including the storage of <strong>21</strong> <input type="text" id="q21" data-q="21" class="w-40">. It is now a market square with <strong>22</strong> <input type="text" id="q22" data-q="22" class="w-40"> and homes incorporated into the remains of the Roman amphitheatre.</p>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 23- 24</h4>
+                        <p class="mb-4">Choose <strong>TWO</strong> letters, <strong>A-E</strong>. Which <strong>TWO</strong> negative features does the writer mention when comparing twentieth-century stadiums to ancient amphitheatres in Section D?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q23_24" value="A"> A They are less imaginatively designed.</label>
+                            <label class="block"><input type="checkbox" name="q23_24" value="B"> B They are less spacious.</label>
+                            <label class="block"><input type="checkbox" name="q23_24" value="C"> C They are in less convenient locations.</label>
+                            <label class="block"><input type="checkbox" name="q23_24" value="D"> D They are less versatile.</label>
+                            <label class="block"><input type="checkbox" name="q23_24" value="E"> E They are made of less durable materials.</label>
+                        </div>
+                        
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 25- 26</h4>
+                        <p class="mb-4">Choose <strong>TWO</strong> letters, <strong>A-E</strong>. Which <strong>TWO</strong> advantages of modern stadium design does the writer mention?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white">
+                            <label class="block"><input type="checkbox" name="q25_26" value="A"> A offering improved amenities for the enjoyment of sports events.</label>
+                            <label class="block"><input type="checkbox" name="q25_26" value="B"> B bringing community life back into the city environment.</label>
+                            <label class="block"><input type="checkbox" name="q25_26" value="C"> C facilitating research into solar and wind energy solutions.</label>
+                            <label class="block"><input type="checkbox" name="q25_26" value="D"> D enabling local residents to reduce their consumption of electricity.</label>
+                            <label class="block"><input type="checkbox" name="q25_26" value="E"> E providing a suitable site for the installation of renewable power generators.</label>
+                        </div>
+                        
+                    `
+                },
+                {
+                    title: "Passage 3 (Q27-40)",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">To catch a king</h3>
+                        <p class="mb-4">Anna Keay reviews Charles Spencer’s book about the hunt for King Charles II during the English Civil War of the seventeenth century.</p>
+                        <p class="mb-4">Charles Spencer’s latest book, _To Catch a King_ , tells us the story of the hunt for King Charles II in the six weeks after his resounding defeat at the Battle of Worcester in September 1651. And what a story it is. After his father was executed by the Parliamentarians in 1649, the young Charles II sacrificed one of the very principles his father had died for and did a deal with Scots, thereby accepting Presbyterianism* as the national religion in return for being crowned King of Scots. His arrival in Edinburgh prompted the English Parliamentary army to invade Scotland in a pre-emptive strike. This was followed by a Scottish invasion of England. The two sides finally faced one another at Worcester in the west of England in 1651. After being comprehensively defeated on the meadows outside the city by the Parliamentarian army, the 21-year-old king found himself the subject of a national manhunt, with a huge sum offered for his capture, through a series of heart-poundingly close escapes, to evade the Parliamentarians before seeking refuge in France. For the next nine years, the penniless and defeated Charles wandered around Europe with only a small group of loyal supporters.</p>
+                        <p class="mb-4">Years later, after his restoration as king, the 50-year-old Charles II requested a meeting with the writer and diarist Samuel Pepys. His intention when asking Pepys to commit his story to paper was to ensure that this most extraordinary episode was never forgotten. Over two three-hour sittings, the king related to him in great detail his personal recollections of the six weeks he had spent as a fugitive. As the king and secretary settled down (a scene that is surely a gift for a future scriptwriter), Charles commenced his story: ‘After the battle was so absolutely lost as to be beyond hope of recovery, I began to think of the best way of saving myself.’</p>
+                        <p class="mb-4">One of the joys of Spencer’s book, a result not least of its use of Charles II’s own <span class="vocab-word" data-word="narrative">narrative</span> as well as those of his supporters, is just how close the reader gets to the action. The day-by-day retelling of the fugitives’ doings provides delicious details: the cutting of the king’s long hair with agricultural shears, the use of walnut leaves to dye his pale skin, and the day Charles spent lying on a branch of the great oak tree in Boscobel Wood as the Parliamentary soldiers scoured the forest floor below. Spencer draws out both the humour – such as the <span class="vocab-word" data-word="preposterous">preposterous</span> refusal of Charles’s friend Henry Wilmot to adopt disguise on the grounds that it was beneath his dignity – and the emotional tension when the secret of the king’s presence was cautiously revealed to his supporters.</p>
+                        <p class="mb-4">Charles’s adventures after losing the Battle of Worcester hide the uncomfortable truth that whilst almost everyone in England had been appalled by the execution of his father, they had not welcomed the arrival of his son with the Scots army, but had instead firmly bolted their doors. This was partly because he rode at the head of what looked like a foreign invasion force and partly because, after almost a decade of civil war, people were desperate to avoid it beginning again. This makes it all the more interesting that Charles II himself loved the story so much ever after. As well as retelling it to anyone who would listen, causing eye-rolling among courtiers, he set in train a series of <span class="vocab-word" data-word="initiatives">initiatives</span> to <span class="vocab-word" data-word="memorialise">memorialise</span> it. There was to be a new order of chivalry, the Knights of the Royal Oak. A series of enormous oil paintings depicting the episode were produced, including a two-metre-wide canvas of Boscobel Wood and a set of six similarly enormous paintings of the king on the run. In 1660, Charles II commissioned the artist John Michael Wright to paint a flying squadron of cherubs* carrying an oak tree to the heavens on the ceiling of his bedchamber. It is hard to imagine many other kings marking the lowest point in their life so enthusiastically, or indeed pulling off such an escape in the first place.</p>
+                        <p class="mb-4">Charles Spencer is the perfect person to pass the story on to a new generation. His pacey, readable <span class="vocab-word" data-word="prose">prose</span> steers deftly clear of modern idioms and elegantly brings to life the details of the great tale. He has even-handed sympathy for both the fugitive king and the fierce republican regime that hunted him, and he succeeds in his desire to explore far more of the background of the story than previous books on the subject have done. Indeed, the opening third of the book is about how Charles II found himself at Worcester in the first place, which for some will be reason alone to read _To Catch a King_.</p>
+                        <p class="mb-4">The tantalizing question left, in the end, is that of what it all meant. Would Charles II have been a different king had these six weeks never happened? The days and nights spent in hiding must have affected him in some way. Did the need to assume disguises, to survive on wit and charm alone, to use trickery and <span class="vocab-word" data-word="subterfuge">subterfuge</span> to escape from tight corners help form him? This is the one area where the book doesn’t quite hit the mark. Instead its depiction of Charles II in his final years as an ineffective, pleasure-loving monarch doesn’t do justice to the man (neither is it accurate), or to the complexity of his character. But this one <span class="vocab-word" data-word="niggle">niggle</span> aside, _To Catch a King_ is an excellent read, and those who come to it knowing little of the famous tale will find they have a treat in store.</p>
+                        <p class="text-sm mt-8">* Presbyterianism: part of the reformed Protestant religion</p>
+                        <p class="text-sm">* cherub: an image of angelic children used in paintings</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27- 31</h4>
+                        <p class="mb-4">Complete the summary using the list of phrases, <strong>A-J</strong>, below. Write the correct letter, <strong>A-J</strong>, in boxes 27-31 on your answer sheet.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-lg">The story behind the hunt for Charles II</h5>
+                            <p>Charles II’s father was executed by the Parliamentarian forces in 1649. Charles II then formed a <strong>27</strong> <input type="text" maxlength="1" class="w-10 text-center" id="q27" data-q="27"> with the Scots, and in order to become King of Scots, he abandoned an important <strong>28</strong> <input type="text" maxlength="1" class="w-10 text-center" id="q28" data-q="28"> that was held by his father and had contributed to his father’s death. The opposing sides then met outside Worcester in 1651. The battle led to a <strong>29</strong> <input type="text" maxlength="1" class="w-10 text-center" id="q29" data-q="29"> for the Parliamentarians and Charles had to flee for his life. A <strong>30</strong> <input type="text" maxlength="1" class="w-10 text-center" id="q30" data-q="30"> was offered for Charles’s capture, but after six weeks spent in hiding, he eventually managed to reach the <strong>31</strong> <input type="text" maxlength="1" class="w-10 text-center" id="q31" data-q="31"> of continental Europe.</p>
+                            <div class="mt-4 p-2 bg-gray-100 rounded">
+                                <p class="font-bold">List of Phrases</p>
+                                <div class="grid grid-cols-2 sm:grid-cols-5 text-sm gap-2 mt-2">
+                                    <p><strong>A</strong> military innovation</p>
+                                    <p><strong>B</strong> large reward</p>
+                                    <p><strong>C</strong> widespread conspiracy</p>
+                                    <p><strong>D</strong> relative safety</p>
+                                    <p><strong>E</strong> new government</p>
+                                    <p><strong>F</strong> decisive victory</p>
+                                    <p><strong>G</strong> political debate</p>
+                                    <p><strong>H</strong> strategic alliance</p>
+                                    <p><strong>I</strong> popular solution</p>
+                                    <p><strong>J</strong> religious conviction</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 32- 35</h4>
+                        <p class="mb-4">Do the following statements agree with the claims of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>32</strong> Charles chose Pepys for the task because he considered him to be trustworthy. <input type="text" id="q32" data-q="32" class="w-40"></p>
+                            <p><strong>33</strong> Charles’s personal recollection of the escape lacked sufficient detail. <input type="text" id="q33" data-q="33" class="w-40"></p>
+                            <p><strong>34</strong> Charles indicated to Pepys that he had planned his escape before the battle. <input type="text" id="q34" data-q="34" class="w-40"></p>
+                            <p><strong>35</strong> The inclusion of Charles’s account is a positive aspect of the book. <input type="text" id="q35" data-q="35" class="w-40"></p>
+                        </div>
+                        
+                        <h4 class="font-bold mb-2 mt-6">Questions 36- 40</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B, C, or D</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white">
+                            <div class="q-item">
+                                <p><strong>36</strong> What is the reviewer’s main purpose in the first paragraph?</p>
+                                <label class="block"><input type="radio" name="q36" value="A"> A to describe what happened during the Battle of Worcester</label>
+                                <label class="block"><input type="radio" name="q36" value="B"> B to give an account of the circumstances leading to Charles II’s escape</label>
+                                <label class="block"><input type="radio" name="q36" value="C"> C to provide details of the Parliamentarians’ political views</label>
+                                <label class="block"><input type="radio" name="q36" value="D"> D to compare Charles II’s beliefs with those of his father</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>37</strong> Why does the reviewer include examples of the fugitives’ behaviour in the third paragraph?</p>
+                                <label class="block"><input type="radio" name="q37" value="A"> A to explain how close Charles II came to losing his life</label>
+                                <label class="block"><input type="radio" name="q37" value="B"> B to suggest that Charles II’s supporters were badly prepared</label>
+                                <label class="block"><input type="radio" name="q37" value="C"> C to illustrate how the events of the six weeks are brought to life</label>
+                                <label class="block"><input type="radio" name="q37" value="D"> D to argue that certain aspects are not as well known as they should be</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>38</strong> What point does the reviewer make about Charles II in the fourth paragraph?</p>
+                                <label class="block"><input type="radio" name="q38" value="A"> A He chose to celebrate what was essentially a defeat.</label>
+                                <label class="block"><input type="radio" name="q38" value="B"> B He misunderstood the motives of his opponents.</label>
+                                <label class="block"><input type="radio" name="q38" value="C"> C He aimed to restore people’s faith in the monarchy.</label>
+                                <label class="block"><input type="radio" name="q38" value="D"> D He was driven by a desire to be popular.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>39</strong> What does the reviewer say about Charles Spencer in the fifth paragraph?</p>
+                                <label class="block"><input type="radio" name="q39" value="A"> A His decision to write the book comes as a surprise.</label>
+                                <label class="block"><input type="radio" name="q39" value="B"> B He takes an unbiased approach to the subject matter.</label>
+                                <label class="block"><input type="radio" name="q39" value="C"> C His descriptions of events would be better if they included more detail.</label>
+                                <label class="block"><input type="radio" name="q39" value="D"> D He chooses language that is suitable for a twenty-first-century audience.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>40</strong> When the reviewer says the book ‘doesn’t quite hit the mark’, she is making the point that</p>
+                                <label class="block"><input type="radio" name="q40" value="A"> A it overlooks the impact of events on ordinary people.</label>
+                                <label class="block"><input type="radio" name="q40" value="B"> B it lacks an analysis of prevalent views on monarchy.</label>
+                                <label class="block"><input type="radio" name="q40" value="C"> C it omits any references to the deceit practised by Charles II during his time in hiding.</label>
+                                <label class="block"><input type="radio" name="q40" value="D"> D it fails to address whether Charles II’s experiences had a lasting influence on him.</label>
+                            </div>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    // Correct Answers (Q1-Q40)
+    const answers = {
+        // Passage 1 (Q1-13)
+        q1: "population", q2: "suburbs", q3: "businessmen", q4: "funding", q5: "press", q6: "soil",
+        q7: "false", q8: "not given", q9: "true", q10: "true", q11: "false", q12: "false", q13: "not given",
+        
+        // Passage 2 (Q14-26)
+        q14: "a", q15: "f", q16: "e", q17: "d", 
+        q18: "fortress", q19: "bullfights", q20: "opera", q21: "salt", q22: "shops",
+        // Multi-answer questions: use the required letter values for checking
+        q23: "c/d", q24: "c/d", 
+        q25: "b/e", q26: "b/e", 
+
+        // Passage 3 (Q27-40) -- FIXED
+        q27: "h", q28: "j", q29: "f", q30: "b", q31: "d", 
+        q32: "not given", q33: "no", q34: "no", q35: "yes", 
+        q36: "b", q37: "c", q38: "a", q39: "b", q40: "d"
+    };
+
+    // Explanations (Sample - extend as needed)
+    const readingExplanations = {
+        // Passage 1
+        q1: "The first paragraph mentions London's 'population grew at an astonishing rate'.",
+        q6: "The construction technique description states 'A two-metre-deep layer of soil was laid on top of the tunnel'.",
+        q7: "The passage states, 'The Metropolitan line, which opened on 10 January 1863, was the world’s first underground railway.' This contradicts the statement (FALSE).",
+        q10: "The passage notes that 'The ‘cut and cover’ method of construction was not an option in this part of the capital. The only alternative was to tunnel deep underground.' (TRUE).",
+        // Passage 2
+        q14: "Paragraph A states that 'stadiums are regarded with growing skepticism.'",
+        q17: "Paragraph D describes stadiums built in the 20th century as being in 'suburban areas' and that these factors 'contribute to urban heat' (disadvantages of a certain era).",
+        q18: "Paragraph B describes the amphitheatre of Arles becoming a 'fortress with four towers after the fifth century'.",
+        q23: "Paragraph D mentions that 'some of the flexibility was lost' (less versatile, D) and stadiums are in 'suburban areas' (less convenient locations, C).",
+        q25: "Paragraph E discusses facilities that help 'regenerate urban spaces' (bringing community life back, B) and Paragraph F discusses using canopies for fitting 'photovoltaic panels' (renewable power generators, E).",
+        
+        // Passage 3 -- FIXED
+        q27: "Charles II did a 'deal with Scots' thereby accepting Presbyterianism, which formed a strategic alliance (H) in return for the crown.",
+        q28: "Charles II sacrificed 'one of the very principles his father had died for' (Presbyterianism), which refers to the deeply held religious conviction (J).",
+        q29: "Charles II was 'comprehensively defeated' at Worcester, which means the battle resulted in a decisive victory (F) for the Parliamentarians.",
+        q30: "The king was subject to a 'national manhunt, with a huge sum offered for his capture,' meaning a large reward (B).",
+        q31: "After escaping the manhunt, Charles was 'seeking refuge in France,' which offered him relative safety (D).",
+        q32: "The passage states his intention was to ensure the episode 'was never forgotten.' It does not say whether Charles chose Pepys specifically for his trustworthiness (NOT GIVEN).",
+        q33: "The passage explicitly states the king related the story to Pepys 'in great detail' (NO).",
+        q34: "Charles started his story by saying, 'After the battle was so absolutely lost... I began to think of the best way of saving myself,' indicating the plan started after the loss (NO).",
+        q35: "The reviewer says, 'One of the joys of Spencer’s book... is just how close the reader gets to the action,' confirming the inclusion of the narrative is a positive aspect (YES).",
+        q36: "The first paragraph details the preceding events (father's death, deal with Scots, invasions) which led to Charles II being a fugitive, giving an account of the circumstances (B).",
+        q37: "The reviewer highlights details like hair cutting and the oak tree because they show 'just how close the reader gets to the action,' illustrating how the events are brought to life (C).",
+        q38: "The reviewer notes that Charles II 'set in train a series of initiatives to memorialise it' and found it hard to imagine other kings 'marking the lowest point in their life so enthusiastically,' meaning he chose to celebrate what was essentially a defeat (A).",
+        q39: "Spencer is praised for his 'even-handed sympathy for both the fugitive king and the fierce republican regime,' showing he takes an unbiased approach (B).",
+        q40: "The book 'doesn’t quite hit the mark' on the 'tantalizing question' of whether the six weeks helped 'form him,' meaning it fails to address whether his experiences had a lasting influence on him (D)."
+    };
+    
+    // Vocabulary database for difficult words in reading passages (C17)
+    const vocabularyDatabase = {
+        "congested": { definition: "Extremely crowded or blocked with traffic." },
+        "advocates": { definition: "People who publicly support or recommend a particular cause or policy." },
+        "radical": { definition: "Relating to or affecting the fundamental nature of something; far-reaching or thorough." },
+        "press": { definition: "Newspapers and journalists regarded collectively." },
+        "soil": { definition: "The upper layer of earth in which plants grow; earth, dirt." },
+        "suburbs": { definition: "An outlying district of a city, especially a residential one." },
+        "skepticism": { definition: "Doubt as to the truth of something." },
+        "fortress": { definition: "A military stronghold, especially a strongly fortified town." },
+        "versatile": { definition: "Able to adapt or be adapted to many different functions or activities." },
+        "salt": { definition: "Mentioned in the passage as something stored, indicating a former use of the space." },
+        "shops": { definition: "Places where goods are sold." },
+        "narrative": { definition: "A spoken or written account of connected events; a story." },
+        "preposterous": { definition: "Contrary to reason or common sense; utterly absurd or ridiculous." },
+        "initiatives": { definition: "The start of an action; new plans or programs." },
+        "memorialise": { definition: "Commemorate or perpetuate by a memorial." },
+        "prose": { definition: "Written or spoken language in its ordinary form, without metrical structure." },
+        "subterfuge": { definition: "Deceit used in order to achieve one's goal." },
+        "niggle": { definition: "A slight but persistent feeling of worry or discomfort." }
+    };
+
+    // Vocabulary Quiz Questions (Sample based on C17)
+    const vocabularyQuiz = {
+        title: "Vocabulary Quiz - Reading Test 1",
+        description: "Test your understanding of key words from the passages.",
+        questions: [
+            {
+                id: "vq1", type: "multiple_choice",
+                question: "What does 'congested' mean in the context of London's streets?",
+                options: ["Crowded with people", "Blocked with traffic", "Under construction", "Empty of vehicles"],
+                correct: 1,
+                explanation: "'Congested' means extremely crowded, particularly with vehicles or people, leading to blocking."
+            },
+            {
+                id: "vq2", type: "multiple_choice",
+                question: "Which word is a synonym for 'versatile'?",
+                options: ["Rigid", "Adaptable", "Monolithic", "Limited"],
+                correct: 1,
+                explanation: "Versatile means able to adapt to many different functions; adaptable is the closest synonym."
+            },
+            {
+                id: "vq3", type: "true_false",
+                question: "The word 'radical' means 'conservative' or 'traditional'.",
+                correct: false,
+                explanation: "False. 'Radical' means relating to the fundamental nature of something, often implying change or novelty, the opposite of traditional."
+            },
+            {
+                id: "vq4", type: "gap_filling",
+                question: "The book’s easy-to-read __________ steers clear of modern idioms.",
+                correct: "prose",
+                suggestions: ["dialogue", "poetry", "prose", "verse"],
+                explanation: "Prose refers to written or spoken language in its ordinary form. The passage mentions 'His pacey, readable prose'."
+            },
+            {
+                id: "vq5", type: "multiple_choice",
+                question: "What is 'subterfuge'?",
+                options: ["Honesty and transparency", "Deceit used to achieve a goal", "A type of underground tunnel", "A military command"],
+                correct: 1,
+                explanation: "Subterfuge means deceit used in order to achieve one's goal, often associated with trickery."
+            }
+        ]
+    };
+    
+    // --- APPLICATION LOGIC (Adapted for Reading Only) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentTab: 'reading',
+            currentSection: 0,
+            answersChecked: {},
+            
+            // Quiz State
+            currentQuizQuestion: 0,
+            quizScore: 0,
+            quizAnswers: [],
+
+            // Elements
+            contentPanes: document.getElementById('content-panes'),
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabTooltip: document.getElementById('vocab-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.switchTab('reading');
+                this.initSplitter();
+                this.initHighlighter();
+                // Process vocabulary after loading content for the first time
+                setTimeout(() => this.processVocabulary(), 100);
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                
+                this.questionsSection.addEventListener('input', (e) => this.saveAnswer(e));
+                this.rightPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        const range = e.target.dataset.range;
+                        const [startQ, endQ] = range.split('-').map(Number);
+                        const exerciseKey = `${this.currentTab}_${this.currentSection}_${startQ}-${endQ}`;
+                        this.checkExerciseAnswers(exerciseKey, range);
+                    } else if (e.target.classList.contains('explanation-box')) {
+                        e.target.remove();
+                    }
+                });
+                
+                // Event listener for general input fields to save data
+                document.getElementById('right-pane').addEventListener('input', (e) => this.saveAnswer(e));
+                
+                // Vocab tooltip hover logic
+                let tooltipTimeout;
+                let isTooltipHovered = false;
+
+                document.addEventListener('mouseover', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        clearTimeout(tooltipTimeout);
+                        const word = e.target.dataset.word;
+                        this.showVocabularyTooltip(word, e.target);
+                    }
+                });
+
+                document.addEventListener('mouseout', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        tooltipTimeout = setTimeout(() => {
+                            if (!isTooltipHovered) {
+                                this.hideVocabularyTooltip();
+                            }
+                        }, 300);
+                    }
+                });
+
+                this.vocabTooltip.addEventListener('mouseenter', () => {
+                    clearTimeout(tooltipTimeout);
+                    isTooltipHovered = true;
+                });
+
+                this.vocabTooltip.addEventListener('mouseleave', () => {
+                    isTooltipHovered = false;
+                    this.hideVocabularyTooltip();
+                });
+            },
+
+            saveAnswer(e) {
+                const target = e.target;
+                const id = target.id || target.name;
+                
+                if (!id) return;
+
+                if (target.type === 'checkbox') {
+                    // For checkboxes, collect all checked values under the same name (e.g., q23_24)
+                    const checkboxes = document.querySelectorAll(`input[name="${id}"]:checked`);
+                    const values = Array.from(checkboxes).map(cb => cb.value).sort(); // Sort to ensure consistent storage
+                    this.userAnswers[id] = values.join('/');
+                } else if (target.type === 'radio') {
+                    // For radio buttons, the name is the key
+                    this.userAnswers[id] = target.value;
+                } else if (target.type === 'text') {
+                    // For text inputs
+                    this.userAnswers[id] = target.value;
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    
+                    if (textInput && textInput.type === 'text') {
+                        textInput.value = value;
+                    } else {
+                        // Handle radio buttons and checkboxes
+                        const inputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        
+                        inputs.forEach(input => {
+                            if (input.type === 'radio' && input.value === value) {
+                                input.checked = true;
+                            } else if (input.type === 'checkbox') {
+                                const values = value.split('/');
+                                input.checked = values.includes(input.value);
+                            }
+                        });
+                    }
+                }
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            processVocabulary() {
+                const passages = document.querySelectorAll('.reading-passage');
+                passages.forEach(this.addVocabularyTooltips.bind(this));
+            },
+
+            addVocabularyTooltips(container) {
+                const walker = document.createTreeWalker(
+                    container,
+                    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+
+                const textNodes = [];
+                let node;
+                while (node = walker.nextNode()) {
+                    // Only process text nodes that are not inside input or textarea
+                    if (node.nodeType === 3 && node.parentElement.tagName !== 'INPUT' && node.parentElement.tagName !== 'TEXTAREA') {
+                         textNodes.push(node);
+                    }
+                }
+
+                textNodes.forEach(textNode => {
+                    const text = textNode.textContent;
+                    // Regex to split by word boundary but keep spaces and punctuation
+                    const words = text.split(/([^\w']|\s)+/);
+                    let newContent = '';
+                    let needsReplacement = false;
+
+                    words.forEach(word => {
+                        const cleanWord = word.toLowerCase().replace(/[^\w]/g, '');
+                        if (vocabularyDatabase[cleanWord]) {
+                            newContent += `<span class="vocab-word" data-word="${cleanWord}">${word}</span>`;
+                            needsReplacement = true;
+                        } else {
+                            newContent += word;
+                        }
+                    });
+
+                    if (needsReplacement) {
+                        const wrapper = document.createElement('span');
+                        wrapper.innerHTML = newContent;
+                        textNode.parentNode.replaceChild(wrapper, textNode);
+                    }
+                });
+            },
+
+            showVocabularyTooltip(word, element) {
+                const vocabData = vocabularyDatabase[word];
+                if (!vocabData) return;
+
+                const tooltip = this.vocabTooltip;
+                tooltip.querySelector('.vocab-word-display').textContent = word;
+                tooltip.querySelector('.vocab-definition').textContent = vocabData.definition;
+                
+                // Position tooltip
+                const rect = element.getBoundingClientRect();
+                const tooltipRect = tooltip.getBoundingClientRect();
+                
+                let left = rect.left + window.scrollX + (rect.width / 2) - (tooltipRect.width / 2);
+                let top = rect.top + window.scrollY - tooltipRect.height - 10; 
+
+                // Adjust for boundary conditions
+                if (top < window.scrollY) top = rect.bottom + window.scrollY + 10; 
+                if (left < 10) left = 10;
+                if (left + tooltipRect.width > window.innerWidth - 10) {
+                    left = window.innerWidth - tooltipRect.width - 10;
+                }
+
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+                tooltip.classList.add('show');
+            },
+
+            hideVocabularyTooltip() {
+                this.vocabTooltip.classList.remove('show');
+            },
+
+            loadContent() {
+                if (this.currentTab === 'vocabulary') {
+                    this.loadVocabularyQuiz();
+                    return;
+                }
+                
+                // Assuming 'reading' tab is active
+                const data = testData.reading;
+                const sectionData = data.sections[this.currentSection];
+
+                // Setup two-column reading layout
+                this.contentPanes.style.gridTemplateColumns = '1fr 5px 1fr';
+                this.leftPane.style.display = 'block';
+                this.splitter.style.display = 'block';
+                this.questionsSection.style.display = 'block';
+
+                // Load content into panes
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                // Generate section buttons
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                // Add event listeners to new section buttons
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex)));
+                });
+                
+                this.restoreAnswers();
+                this.addCheckAnswersButton();
+                this.processVocabulary(); // Re-process vocab for the new passage
+
+                // Check and show answers if already checked
+                this.getReadingExerciseTypes().forEach(exercise => {
+                    const exerciseKey = `${this.currentTab}_${this.currentSection}_${exercise.startQ}-${exercise.endQ}`;
+                    if (this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${exercise.startQ}-${exercise.endQ}`);
+                    }
+                });
+            },
+
+            loadVocabularyQuiz() {
+                // Single column layout for vocabulary quiz
+                this.contentPanes.style.gridTemplateColumns = '1fr';
+                this.leftPane.style.display = 'block';
+                this.splitter.style.display = 'none';
+                this.questionsSection.style.display = 'none';
+                this.sectionTabsContainer.innerHTML = '';
+                
+                this.currentQuizQuestion = 0;
+                this.quizScore = 0;
+                this.quizAnswers = [];
+                
+                const quizHTML = this.generateVocabularyQuizHTML();
+                this.leftPane.innerHTML = quizHTML;
+                
+                document.getElementById('restart-quiz').addEventListener('click', () => {
+                    this.loadVocabularyQuiz();
+                });
+                
+                this.showCurrentQuestion();
+            },
+
+            generateVocabularyQuizHTML() {
+                let html = `
+                    <div class="max-w-4xl mx-auto p-6">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-blue-600 mb-4">${vocabularyQuiz.title}</h2>
+                            <p class="text-lg text-gray-600 mb-6">${vocabularyQuiz.description}</p>
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                <p class="text-blue-800"><strong>Instructions:</strong> Select the correct answer or complete the gap.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Progress</span>
+                                <span id="quiz-progress" class="text-sm font-medium text-gray-700">0 / ${vocabularyQuiz.questions.length}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="quiz-progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Question Container -->
+                        <div id="question-container" class="min-h-96">
+                            <!-- Questions will be loaded here dynamically -->
+                        </div>
+                        
+                        <!-- Results Container -->
+                        <div id="vocab-results" class="mt-8 hidden">
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4">Quiz Results</h3>
+                                <div id="vocab-score" class="text-2xl font-bold text-blue-600 mb-4"></div>
+                                <button id="restart-quiz" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                                    Take Quiz Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                return html;
+            },
+
+            showCurrentQuestion() {
+                const questions = vocabularyQuiz.questions;
+                const currentQuestion = questions[this.currentQuizQuestion];
+                const questionNumber = this.currentQuizQuestion + 1;
+                
+                this.updateProgress();
+                
+                // Generate and display current question
+                let html = `
+                    <div class="bg-white border border-gray-200 rounded-lg p-8 shadow-lg" id="quiz-question-box">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
+                                ${questionNumber}
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-xl font-semibold text-gray-800 mb-6">${currentQuestion.question}</h4>
+                `;
+                
+                const qid = currentQuestion.id;
+                
+                if (currentQuestion.type === 'multiple_choice') {
+                    html += '<div class="space-y-3">';
+                    currentQuestion.options.forEach((option, index) => {
+                        html += `
+                            <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="radio" name="${qid}" value="${index}" class="vocab-answer">
+                                <span class="text-gray-700 text-lg">${String.fromCharCode(65 + index)}. ${option}</span>
+                            </label>
+                        `;
+                    });
+                    html += '</div>';
+                } else if (currentQuestion.type === 'true_false') {
+                    html += `
+                        <div class="space-y-3">
+                            <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="radio" name="${qid}" value="true" class="vocab-answer">
+                                <span class="text-gray-700 text-lg">True</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="radio" name="${qid}" value="false" class="vocab-answer">
+                                <span class="text-gray-700 text-lg">False</span>
+                            </label>
+                        </div>
+                    `;
+                } else if (currentQuestion.type === 'gap_filling') {
+                     html += `
+                        <div class="mt-4">
+                            <div class="space-y-3">
+                                <p class="text-sm text-gray-600 mb-3">Choose the correct word to complete the sentence (selection from related words):</p>
+                    `;
+                    
+                    const shuffledSuggestions = [...currentQuestion.suggestions].sort(() => Math.random() - 0.5);
+                    
+                    shuffledSuggestions.forEach((suggestion) => {
+                        html += `
+                            <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="radio" name="${qid}" value="${suggestion}" class="vocab-answer">
+                                <span class="text-gray-700 text-lg">${suggestion}</span>
+                            </label>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                            </div>
+                        </div>
+                        <div id="explanation-${qid}" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg hidden">
+                            <h5 class="font-semibold text-gray-800 mb-2">Explanation:</h5>
+                            <p class="text-gray-700">${currentQuestion.explanation}</p>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('question-container').innerHTML = html;
+                
+                // Add event listeners for current question
+                document.querySelectorAll(`input[name="${qid}"]`).forEach(input => {
+                    input.addEventListener('change', () => this.handleQuizAnswer(currentQuestion));
+                });
+            },
+
+            updateProgress() {
+                const total = vocabularyQuiz.questions.length;
+                const progress = (this.currentQuizQuestion / total) * 100;
+                document.getElementById('quiz-progress').textContent = `${this.currentQuizQuestion} / ${total}`;
+                document.getElementById('quiz-progress-bar').style.width = `${progress}%`;
+            },
+
+            handleQuizAnswer(question) {
+                const qid = question.id;
+                const userAnswer = this.getQuizAnswer(question);
+                const isCorrect = this.checkQuizAnswer(question, userAnswer);
+                
+                this.quizAnswers.push({ question: question, userAnswer: userAnswer, isCorrect: isCorrect });
+                
+                if (isCorrect) {
+                    this.quizScore++;
+                }
+                
+                this.showQuizFeedback(question, userAnswer, isCorrect);
+                
+                // Auto-advance after a short delay
+                setTimeout(() => {
+                    this.nextQuizQuestion();
+                }, 1500);
+            },
+
+            getQuizAnswer(question) {
+                const inputs = document.querySelectorAll(`input[name="${question.id}"]`);
+                for (let input of inputs) {
+                    if (input.checked) {
+                        return (question.type === 'multiple_choice') ? parseInt(input.value) : input.value;
+                    }
+                }
+                return null;
+            },
+
+            checkQuizAnswer(question, userAnswer) {
+                if (userAnswer === null) return false;
+                
+                if (question.type === 'multiple_choice') {
+                    return userAnswer === question.correct;
+                } else if (question.type === 'true_false') {
+                    return userAnswer === (question.correct ? 'true' : 'false');
+                } else if (question.type === 'gap_filling') {
+                    return userAnswer.toLowerCase() === question.correct.toLowerCase();
+                }
+                return false;
+            },
+
+            showQuizFeedback(question, userAnswer, isCorrect) {
+                const explanationDiv = document.getElementById(`explanation-${question.id}`);
+                const inputs = document.querySelectorAll(`input[name="${question.id}"]`);
+                
+                explanationDiv.classList.remove('hidden');
+                
+                inputs.forEach(input => {
+                    const label = input.closest('label');
+                    // Check if the input is the correct answer option (for visual feedback)
+                    let isOptionCorrect = false;
+                    if (question.type === 'multiple_choice' && parseInt(input.value) === question.correct) {
+                        isOptionCorrect = true;
+                    } else if (question.type === 'true_false' && input.value === (question.correct ? 'true' : 'false')) {
+                        isOptionCorrect = true;
+                    } else if (question.type === 'gap_filling' && input.value.toLowerCase() === question.correct.toLowerCase()) {
+                        isOptionCorrect = true;
+                    }
+
+                    if (input.checked) {
+                        label.classList.add(isCorrect ? 'border-green-500' : 'border-red-500', isCorrect ? 'bg-green-50' : 'bg-red-50');
+                    } else if (isOptionCorrect) {
+                        label.classList.add('border-green-500', 'bg-green-100');
+                    }
+                    input.disabled = true;
+                });
+            },
+
+            nextQuizQuestion() {
+                this.currentQuizQuestion++;
+                
+                if (this.currentQuizQuestion >= vocabularyQuiz.questions.length) {
+                    this.showQuizResults();
+                } else {
+                    this.showCurrentQuestion();
+                }
+            },
+
+            showQuizResults() {
+                const totalQuestions = vocabularyQuiz.questions.length;
+                const percentage = Math.round((this.quizScore / totalQuestions) * 100);
+                
+                document.getElementById('vocab-results').classList.remove('hidden');
+                document.getElementById('vocab-score').textContent = `Score: ${this.quizScore}/${totalQuestions} (${percentage}%)`;
+                document.getElementById('question-container').innerHTML = '';
+            },
+
+            getReadingExerciseTypes() {
+                // Exercise type definitions for C17 Test 1 Reading (Q1-40)
+                const exerciseTypes = {
+                    0: [ // Passage 1 (Q1-13)
+                        { title: 'Note Completion', startQ: 1, endQ: 6 },
+                        { title: 'True/False/Not Given', startQ: 7, endQ: 13 }
+                    ],
+                    1: [ // Passage 2 (Q14-26)
+                        { title: 'Paragraph Matching', startQ: 14, endQ: 17 },
+                        { title: 'Summary Completion', startQ: 18, endQ: 22 },
+                        { title: 'Multiple Choice (2 answers)', startQ: 23, endQ: 26 }
+                    ],
+                    2: [ // Passage 3 (Q27-40)
+                        { title: 'Summary Completion (Matching)', startQ: 27, endQ: 31 },
+                        { title: 'Yes/No/Not Given', startQ: 32, endQ: 35 },
+                        { title: 'Multiple Choice', startQ: 36, endQ: 40 }
+                    ]
+                };
+                
+                return exerciseTypes[this.currentSection] || [];
+            },
+
+            addCheckAnswersButton() {
+                // Find all existing buttons and remove them
+                document.querySelectorAll('.check-exercise-btn-wrapper').forEach(el => el.remove());
+                
+                const exerciseTypes = this.getReadingExerciseTypes();
+                
+                exerciseTypes.forEach(exercise => {
+                    const exerciseKey = `${this.currentTab}_${this.currentSection}_${exercise.startQ}-${exercise.endQ}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonClass = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-green-600 hover:bg-green-700';
+
+                    const buttonWrapper = document.createElement('div');
+                    buttonWrapper.className = 'check-exercise-btn-wrapper mt-4 p-3 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 text-center';
+                    buttonWrapper.innerHTML = `
+                        <button class="check-exercise-btn text-white font-bold py-2 px-6 rounded-md transition-colors ${buttonClass}" data-range="${exercise.startQ}-${exercise.endQ}">
+                            ${buttonText}
+                        </button>
+                        <p class="text-sm text-gray-600 mt-1">${exercise.title} (Q${exercise.startQ}-${exercise.endQ})</p>
+                    `;
+                    
+                    // --- Custom logic for positioning buttons correctly for Passage 2 ---
+                    let lastQuestionElement = null;
+
+                    if (exercise.startQ >= 23 && exercise.endQ <= 26) {
+                        // For the Checkbox groups (Q23-24 and Q25-26), we need two separate buttons.
+                        // The exercise object spans 23-26, so we need to split it here.
+                        if (exercise.startQ === 23) { // Q23-24
+                            const q23_24_container = document.querySelector('input[name="q23_24"]').closest('.space-y-2');
+                            if (q23_24_container) {
+                                const buttonWrapper23_24 = document.createElement('div');
+                                buttonWrapper23_24.className = 'check-exercise-btn-wrapper mt-4 p-3 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 text-center';
+                                
+                                const checkKey23_24 = 'reading_1_23-24';
+                                const isChecked23_24 = this.answersChecked[checkKey23_24];
+                                
+                                buttonWrapper23_24.innerHTML = `
+                                    <button class="check-exercise-btn text-white font-bold py-2 px-6 rounded-md transition-colors ${isChecked23_24 ? 'bg-gray-600 hover:bg-gray-700' : 'bg-green-600 hover:bg-green-700'}" data-range="23-24">
+                                        ${isChecked23_24 ? 'Reset Answers' : 'Check Answers'}
+                                    </button>
+                                    <p class="text-sm text-gray-600 mt-1">Multiple Choice (2 answers) (Q23-24)</p>
+                                `;
+                                q23_24_container.parentNode.insertBefore(buttonWrapper23_24, q23_24_container.nextSibling);
+                            }
+                        }
+                        
+                        if (exercise.startQ === 23) { // Q25-26 uses the end of the question block
+                            const q25_26_container = document.querySelector('input[name="q25_26"]').closest('.space-y-2');
+                            if (q25_26_container) {
+                                const buttonWrapper25_26 = document.createElement('div');
+                                buttonWrapper25_26.className = 'check-exercise-btn-wrapper mt-4 p-3 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 text-center';
+                                
+                                const checkKey25_26 = 'reading_1_25-26';
+                                const isChecked25_26 = this.answersChecked[checkKey25_26];
+                                
+                                buttonWrapper25_26.innerHTML = `
+                                    <button class="check-exercise-btn text-white font-bold py-2 px-6 rounded-md transition-colors ${isChecked25_26 ? 'bg-gray-600 hover:bg-gray-700' : 'bg-green-600 hover:bg-green-700'}" data-range="25-26">
+                                        ${isChecked25_26 ? 'Reset Answers' : 'Check Answers'}
+                                    </button>
+                                    <p class="text-sm text-gray-600 mt-1">Multiple Choice (2 answers) (Q25-26)</p>
+                                `;
+                                q25_26_container.parentNode.insertBefore(buttonWrapper25_26, q25_26_container.nextSibling);
+                            }
+                        }
+                        return; // Skip the default insertion for grouped checkboxes
+                    } else {
+                        // Default logic for all other questions (Note Completion, T/F/NG, etc.)
+                        lastQuestionElement = document.getElementById(`q${exercise.endQ}`) || document.querySelector(`input[name^="q${exercise.endQ}"]`);
+                    }
+                    
+                    if (lastQuestionElement) {
+                        const parent = lastQuestionElement.closest('.space-y-3, .space-y-4, .space-y-2');
+                        if (parent && parent.parentNode) {
+                            parent.parentNode.insertBefore(buttonWrapper, parent.nextSibling);
+                        } else {
+                            this.questionsSection.appendChild(buttonWrapper); // Absolute fallback
+                        }
+                    } else if (!isGrouped) { // Only append if it wasn't a grouped question that was already handled
+                        this.questionsSection.appendChild(buttonWrapper); // Final fallback if no questions found
+                    }
+                });
+            },
+
+            checkExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+                
+                // Create a dynamic exercise key for the group logic
+                let actualExerciseKey = exerciseKey;
+                if ((startQ === 23 && endQ === 24) || (startQ === 25 && endQ === 26)) {
+                    actualExerciseKey = `reading_1_${startQ}-${endQ}`;
+                }
+
+                if (this.answersChecked[actualExerciseKey]) {
+                    this.answersChecked[actualExerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+
+                this.answersChecked[actualExerciseKey] = true;
+                this.showExerciseAnswers(actualExerciseKey, range);
+            },
+            
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+                const button = document.querySelector(`[data-range="${range}"]`);
+                
+                // 1. Update button style
+                if (button) {
+                    button.textContent = 'Reset Answers';
+                    button.className = 'check-exercise-btn text-white font-bold py-2 px-6 rounded-md transition-colors bg-gray-600 hover:bg-gray-700';
+                }
+
+                const isGrouped = (startQ === 23 && endQ === 24) || (startQ === 25 && endQ === 26);
+                const nameAttr = isGrouped ? (startQ === 23 ? 'q23_24' : 'q25_26') : `q${startQ}`;
+                
+                // Determine the question index range for looping (this should iterate over all questions in the set if not grouped)
+                const loopStart = startQ;
+                const loopEnd = endQ;
+
+                for (let i = loopStart; i <= loopEnd; i++) {
+                    const qId = `q${i}`;
+                    const correctAnswer = answers[qId] || "";
+                    let isCorrectOverall = false;
+                    
+                    if (isGrouped) {
+                        // Grouped logic only needs to run once per set (at startQ)
+                        if (i === startQ) {
+                            // --- Grouped Checkbox Logic (Q23-24 and Q25-26) ---
+                            const userGroupedAnswer = this.userAnswers[nameAttr] || "";
+                            
+                            const requiredAnswers = (nameAttr === 'q23_24' ? answers['q23'].split('/').concat(answers['q24'].split('/')) : answers['q25'].split('/').concat(answers['q26'].split('/')));
+                            const correctGroupedAnswer = requiredAnswers.map(v => v.trim().toLowerCase()).sort().join('/');
+                            
+                            isCorrectOverall = userGroupedAnswer === correctGroupedAnswer;
+
+                            document.querySelectorAll(`input[name="${nameAttr}"]`).forEach(input => {
+                                const label = input.closest('label');
+                                const isOptionCorrect = requiredAnswers.map(v => v.trim().toLowerCase()).includes(input.value.toLowerCase());
+                                
+                                // Reset existing styles
+                                label.classList.remove('correct-answer', 'incorrect-answer');
+                                label.style.backgroundColor = '';
+                                label.style.borderColor = '';
+
+                                // Highlight correct options
+                                if (isOptionCorrect) {
+                                    label.style.backgroundColor = '#dcfce7'; // Correct: Light green
+                                    label.style.borderColor = '#16a34a';
+                                    label.classList.add('correct-answer'); 
+                                }
+
+                                // Highlight user selections: Mark selection as incorrect if it wasn't a correct option.
+                                if (input.checked) {
+                                    if (!isOptionCorrect) { 
+                                        label.style.backgroundColor = '#fef2f2'; // Incorrect: Light red
+                                        label.style.borderColor = '#dc2626';
+                                        label.classList.add('incorrect-answer');
+                                    }
+                                }
+                            });
+                            
+                            // Add explanation (using q23 or q25 as reference for the explanation text)
+                            const expQId = qId;
+                            if (readingExplanations[expQId]) {
+                                const explanation = readingExplanations[expQId];
+                                const explanationBox = document.createElement('div');
+                                explanationBox.className = 'explanation-box mt-2 p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-md text-left';
+                                explanationBox.innerHTML = `
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm text-blue-800">
+                                            <strong>Q${startQ}-${endQ}:</strong> ${explanation}
+                                        </p>
+                                        <p class="text-xs text-blue-600 mt-1 italic">Click to remove this explanation</p>
+                                    </div>
+                                </div>
+                                `;
+                                
+                                let targetElement = document.querySelector(`input[name="${nameAttr}"]`);
+                                const parentContainer = targetElement ? targetElement.closest('.space-y-3, .space-y-4, .space-y-2, .q-item') : null;
+                                
+                                if (parentContainer) {
+                                    parentContainer.appendChild(explanationBox);
+                                } else {
+                                    document.getElementById('questions-section').appendChild(explanationBox);
+                                }
+                            }
+                        }
+                    } else {
+                        // --- Standard Single-Input Logic (Text/Radio/T/F/NG) ---
+                        // FIX: Use a robust way to find the input element, regardless of check state
+                        let input = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`) || document.querySelector(`input[name="${qId}"]`);
+                        
+                        const userAnswer = this.userAnswers[qId] || ""; 
+                        
+                        isCorrectOverall = correctAnswer.split('/').includes(userAnswer.toLowerCase().trim());
+                        
+                        // Reset all radio/text styling first
+                        if (input) {
+                            document.querySelectorAll(`input[name="${qId}"]`).forEach(el => {
+                                const label = el.closest('label');
+                                if (label) {
+                                    label.classList.remove('correct-answer', 'incorrect-answer');
+                                    label.style.backgroundColor = '';
+                                    label.style.borderColor = '';
+                                }
+                                if (el.type === 'text') {
+                                    el.classList.remove('correct-answer', 'incorrect-answer');
+                                    el.style.backgroundColor = '';
+                                    el.style.borderColor = '';
+                                    el.placeholder = '';
+                                }
+                            });
+                        }
+
+                        if (input && input.type === 'text') {
+                            input.style.backgroundColor = isCorrectOverall ? '#dcfce7' : '#fef2f2';
+                            input.style.borderColor = isCorrectOverall ? '#16a34a' : '#dc2626';
+                            input.classList.add(isCorrectOverall ? 'correct-answer' : 'incorrect-answer');
+                            if (!isCorrectOverall && correctAnswer) {
+                                input.placeholder = `Correct: ${correctAnswer}`;
+                            }
+                        } else if (input && input.type === 'radio') {
+                            document.querySelectorAll(`input[name="${qId}"]`).forEach(radio => {
+                                const label = radio.closest('label');
+                                const isOptionCorrect = correctAnswer.split('/').includes(radio.value.toLowerCase());
+                                
+                                if (isOptionCorrect) {
+                                    label.style.backgroundColor = '#dcfce7'; // Correct option highlight
+                                    label.style.borderColor = '#16a34a';
+                                    label.classList.add('correct-answer');
+                                }
+
+                                if (radio.checked) {
+                                    label.classList.add(isCorrectOverall ? 'correct-answer' : 'incorrect-answer');
+                                    label.style.backgroundColor = isCorrectOverall ? '#dcfce7' : '#fef2f2';
+                                }
+                             });
+                        }
+                        
+                        // Add explanation (Use input that was successfully retrieved)
+                        if (readingExplanations[qId] && input) {
+                            const explanation = readingExplanations[qId];
+                            const explanationBox = document.createElement('div');
+                            explanationBox.className = 'explanation-box mt-2 p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-md text-left';
+                            explanationBox.innerHTML = `
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm text-blue-800">
+                                            <strong>Q${i}:</strong> ${explanation}
+                                        </p>
+                                        <p class="text-xs text-blue-600 mt-1 italic">Click to remove this explanation</p>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            const parentContainer = input.closest('.space-y-3, .space-y-4, .space-y-2, .q-item');
+                            if (parentContainer) {
+                                parentContainer.appendChild(explanationBox);
+                            } else {
+                                console.error('Could not find suitable parent container for explanation for Q' + i);
+                                document.getElementById('questions-section').appendChild(explanationBox);
+                            }
+                        }
+                    }
+                }
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                const minWidth = 300; // Minimum pixel width for each pane
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    if (this.currentTab === 'vocabulary') return;
+                    e.preventDefault();
+                    isDragging = true;
+                    this.contentPanes.style.userSelect = 'none';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = this.contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    
+                    if (newLeftWidth > minWidth && (containerRect.width - newLeftWidth) > minWidth) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        this.contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    this.contentPanes.style.userSelect = 'auto';
+                });
+            },
+            
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        const rect = range.getBoundingClientRect();
+                        // Position relative to the viewport
+                        this.highlightTooltip.style.left = `${e.clientX}px`;
+                        this.highlightTooltip.style.top = `${e.clientY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            try {
+                                const mark = document.createElement('mark');
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                                // Ignore common selection errors when nodes cross boundaries
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
