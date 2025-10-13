@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Practice Test 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .questions-section {
+            width: 100%;
+        }
+        .script-section {
+            width: 100%;
+            background-color: #faf5ff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 2px solid #e9d5ff;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        .play-audio-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2563eb;
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-audio-btn:hover {
+            background-color: #1d4ed8;
+        }
+        .play-audio-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .audio-seeker {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb;
+            outline: none;
+            border-radius: 0.5rem;
+        }
+        .audio-seeker::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .audio-seeker::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .explanation-box:hover {
+            background-color: #dbeafe !important;
+            transform: scale(1.02);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Practice Test 1</h1>
+        <div class="flex items-center space-x-4">
+            <button id="toggle-script-btn" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition-colors">
+                Show Script
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions (Reading) or Script (Listening) -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <!-- Questions Section (for Reading) -->
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+            
+            <!-- Script Section (for Listening) -->
+            <div id="script-section" class="script-section" style="display: none;">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-purple-800 mb-2">Listening Script</h3>
+                </div>
+                <div id="script-content" class="text-sm leading-relaxed overflow-y-auto">
+                    <!-- Script will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="listening">Listening</button>
+                <button class="tab-btn" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+
+<script>
+    // --- DATA ---
+    const testData = {
+        listening: {
+            duration: 1800, // 30 minutes
+            sections: [
+                {
+                    title: "Section 1",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 1</h3>
+                        <p class="mb-4">You will hear a conversation about the Beechen Festival.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec1" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test1-1.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec1" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 1-6</h4>
+                        <p class="mb-4">Complete the table below. Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-center text-lg">Beechen Festival</h5>
+                            <table class="w-full border-collapse border border-gray-300">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="border p-2">Date</th><th class="border p-2">Time</th><th class="border p-2">Activity</th><th class="border p-2">Place</th><th class="border p-2">Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="border p-2">June 19th</td><td class="border p-2">7 p.m.</td><td class="border p-2">Example: Concert</td><td class="border p-2">the <strong>1</strong> <input type="text" id="q1" class="w-24"></td><td class="border p-2"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2">June 20th</td><td class="border p-2"><strong>2</strong> <input type="text" id="q2" class="w-24"> p.m.</td><td class="border p-2">tour</td><td class="border p-2">meet at the <strong>3</strong> <input type="text" id="q3" class="w-24"></td><td class="border p-2">includes a visit to an old flour mill</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2">June 21st</td><td class="border p-2">all day</td><td class="border p-2">children's <strong>4</strong> <input type="text" id="q4" class="w-24"> competition</td><td class="border p-2">Beechen Community Centre</td><td class="border p-2">bring a <strong>5</strong> <input type="text" id="q5" class="w-24"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border p-2">June 21st</td><td class="border p-2">evening</td><td class="border p-2">fireworks</td><td class="border p-2">by the <strong>6</strong> <input type="text" id="q6" class="w-24"></td><td class="border p-2"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 7-10</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p>This year, activities end by <strong>7</strong> <input type="text" id="q7"> p.m.</p>
+                            <p>There won't be any <strong>8</strong> <input type="text" id="q8"> in the town centre this year.</p>
+                            <p>The festival's web address is www.<strong>9</strong> <input type="text" id="q9">.com.</p>
+                            <p>Festival organisers would like to receive <strong>10</strong> <input type="text" id="q10"> online.</p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 2",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 2</h3>
+                        <p class="mb-4">You will hear a talk about a walking holiday.</p>
+                         <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec2" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test1-2.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec2" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 11-14</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <div class="q-item">
+                                <p><strong>11</strong> Approximately how many passengers does the ferry hold?</p>
+                                <label class="block"><input type="radio" name="q11" value="A"> A 160</label>
+                                <label class="block"><input type="radio" name="q11" value="B"> B 600</label>
+                                <label class="block"><input type="radio" name="q11" value="C"> C 2000</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>12</strong> Which items should the tourists pack in a separate bag?</p>
+                                <label class="block"><input type="radio" name="q12" value="A"> A food</label>
+                                <label class="block"><input type="radio" name="q12" value="B"> B reading material</label>
+                                <label class="block"><input type="radio" name="q12" value="C"> C medicines</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>13</strong> The hostel in La Vega de Liebana has</p>
+                                <label class="block"><input type="radio" name="q13" value="A"> A good washing facilities.</label>
+                                <label class="block"><input type="radio" name="q13" value="B"> B a games room.</label>
+                                <label class="block"><input type="radio" name="q13" value="C"> C a number of single bedroom</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>14</strong> Residents at the hostel are not allowed to</p>
+                                <label class="block"><input type="radio" name="q14" value="A"> A take furniture out of the hostel building.</label>
+                                <label class="block"><input type="radio" name="q14" value="B"> B enter the hostel after a certain time.</label>
+                                <label class="block"><input type="radio" name="q14" value="C"> C smoke in the hostel gardens.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 15-17</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>NO MORE THAN THREE WORDS</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">Clothes and equipment</h5>
+                            <p>Bring:</p>
+                            <ul class="list-disc list-inside">
+                               <li>boots with thick soles</li>
+                               <li>spare <strong>15</strong> <input type="text" id="q15"></li>
+                               <li>light waterproofs</li>
+                               <li>suncream: strength - <strong>16</strong> <input type="text" id="q16"></li>
+                               <li>a <strong>17</strong> <input type="text" id="q17"> folder for map, etc.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 18-20</h4>
+                        <p class="mb-4">Choose <strong>THREE letters, A-G</strong>.</p>
+                        <p class="mb-4">Which THREE of the following features of the area in Spain does the speaker talk about?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white">
+                            <label class="block"><input type="checkbox" name="q18_20" value="A"> A altitude</label>
+                            <label class="block"><input type="checkbox" name="q18_20" value="B"> B coastline</label>
+                            <label class="block"><input type="checkbox" name="q18_20" value="C"> C economy</label>
+                            <label class="block"><input type="checkbox" name="q18_20" value="D"> D temperatures</label>
+                            <label class="block"><input type="checkbox" name="q18_20" value="E"> E vegetation</label>
+                            <label class="block"><input type="checkbox" name="q18_20" value="F"> F wildlife</label>
+                             <label class="block"><input type="checkbox" name="q18_20" value="G"> G scenery</label>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 3",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 3</h3>
+                        <p class="mb-4">You will hear a conversation about Peer Assessment.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec3" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test1-3.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec3" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                           <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 21-24</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                             <div class="q-item">
+                                <p><strong>21</strong> Sally says many students see peer assessment as</p>
+                                <label class="block"><input type="radio" name="q21" value="A"> A a way for tutors to save time.</label>
+                                <label class="block"><input type="radio" name="q21" value="B"> B a useful learning tool.</label>
+                                <label class="block"><input type="radio" name="q21" value="C"> C a valuable form of assessment.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>22</strong> What do Steve and Sally agree is an advantage of peer assessment?</p>
+                                <label class="block"><input type="radio" name="q22" value="A"> A It's more reliable than self-assessment.</label>
+                                <label class="block"><input type="radio" name="q22" value="B"> B It increases students' self-awareness.</label>
+                                <label class="block"><input type="radio" name="q22" value="C"> C It builds rapport between students.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>23</strong> If the peer assessment marks seem incorrect,</p>
+                                <label class="block"><input type="radio" name="q23" value="A"> A students should mark the assignments again.</label>
+                                <label class="block"><input type="radio" name="q23" value="B"> B the tutor should check those assignments.</label>
+                                <label class="block"><input type="radio" name="q23" value="C"> C the marking criteria should be rewritten.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>24</strong> How were the presentations in the research project marked?</p>
+                                <label class="block"><input type="radio" name="q24" value="A"> A Students and lecturers marked all the presentations.</label>
+                                <label class="block"><input type="radio" name="q24" value="B"> B Students chose which presentations they wanted to mark.</label>
+                                <label class="block"><input type="radio" name="q24" value="C"> C Lecturers marked a selection of presentations.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 25-30</h4>
+                        <p class="mb-4">How did the following categories of student markers compare with the rest of the group when marking student presentations?</p>
+                        <p>Write the correct letter, A, B or C, next to questions 25-30.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> They gave higher marks.</p>
+                            <p><strong>B</strong> They gave lower marks.</p>
+                            <p><strong>C</strong> Their marks were not significantly different.</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>25</strong> male students marking female presenters <input type="text" id="q25" data-q="25" class="w-16"></p>
+                            <p><strong>26</strong> female students marking male presenters <input type="text" id="q26" data-q="26" class="w-16"></p>
+                            <p><strong>27</strong> female students marking female presenters <input type="text" id="q27" data-q="27" class="w-16"></p>
+                            <p><strong>28</strong> younger students marking older presenters <input type="text" id="q28" data-q="28" class="w-16"></p>
+                            <p><strong>29</strong> students marking presenters from a different university <input type="text" id="q29" data-q="29" class="w-16"></p>
+                            <p><strong>30</strong> students who had helped set criteria <input type="text" id="q30" data-q="30" class="w-16"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 4",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 4</h3>
+                        <p class="mb-4">You will hear a lecture about Bislama - The Pidgin English Language of Vanuatu.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec4" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test1-4.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec4" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 31-40</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <h5 class="font-bold text-center text-lg">Bislama - The Pidgin English Language of Vanuatu</h5>
+                            <p><strong>Languages in Vanuatu</strong></p>
+                            <ul class="list-disc list-inside">
+                                <li>Local languages: Actively spoken languages: 81, Declining languages: 17, <strong>31</strong> <input type="text" id="q31"> languages: 8</li>
+                                <li>Foreign languages: English is used in the <strong>32</strong> <input type="text" id="q32"> system</li>
+                            </ul>
+                            <p><strong>Bislama</strong></p>
+                            <ul class="list-disc list-inside">
+                                <li>It is spoken by 90% of the population today.</li>
+                                <li>In the past this language was described as <strong>33</strong> <input type="text" id="q33"></li>
+                            </ul>
+                             <p><strong>History of Bislama</strong></p>
+                            <ul class="list-disc list-inside">
+                                <li>Around 1800 it was used as a common language on many ships.</li>
+                                <li>After 1860 Vanuatu people worked in Australian <strong>34</strong> <input type="text" id="q34"></li>
+                                <li>After 1950 people moved to the <strong>35</strong> <input type="text" id="q35"></li>
+                            </ul>
+                            <p><strong>Description of Bislama</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>General: Bislama should be called a <strong>36</strong> <input type="text" id="q36"> pidgin.</li>
+                               <li>Vocabulary: Most words come from English. Words such as "from" may have more <strong>37</strong> <input type="text" id="q37"> in Bislama. Less than 10% of words are of <strong>38</strong> <input type="text" id="q38"> origin. Pacific words describe the natural world and also local <strong>39</strong> <input type="text" id="q39">.</li>
+                               <li>Grammar: It is based on Vanuatu languages. The word "long" acts as an important <strong>40</strong> <input type="text" id="q40"> in Bislama.</li>
+                            </ul>
+                        </div>
+                    `
+                }
+            ]
+        },
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The development of the silk industry</h3>
+                        <p>Silk, a natural fibre produced by a particular worm called a silkworm, has been used in clothing for many centuries.</p>
+                        <p>When silk was first discovered in China over 4,500 years ago, it was reserved exclusively for the use of the emperor, his close relations and the very highest of his dignitaries. Within the palace, the emperor is believed to have worn a robe of white silk; outside, he, his principal wife, and the heir to the throne wore yellow, the colour of the earth.</p>
+                        <p>Gradually silk came into more general use, and the various classes of Chinese society began wearing tunics of silk. As well as being used for clothing and decoration, silk was quite quickly put to industrial use, and rapidly became one of the principal elements of the Chinese economy. It was used in the production of musical instruments, as string for fishing, and even as the world's first luxury paper. Eventually even the common people were able to wear garments of silk.</p>
+                        <p>During the Han dynasty (206 BC-220 AD), silk ceased to be a mere fabric and became a form of currency. Farmers paid their taxes in grain and silk, and silk was used to pay civil servants and to reward subjects for outstanding services. Values were calculated in lengths of silk as they had previously been calculated in weight of gold. Before long, silk became a currency used in trade with foreign countries, which continued into the Tang dynasty (616-907 AD). It is possible that this added importance was the result of a major increase in production. Silk also found its way so thoroughly into the Chinese language that 230 of the 5,000 most common characters of Mandarin have 'silk' as their key component.</p>
+                        <p>Silk became a precious commodity, highly sought after by other countries from an early date, and it is believed that the silk trade actually existed before the Silk Road was officially opened in the second century BC. An Egyptian mummy with a silk thread in her hair, dating from 1070 BC, has been discovered in the village of Deir el Medina near the Valley of the Kings, and is probably the earliest evidence of the silk trade. During the second century BC, the Chinese emperor Han Wu Di's ambassadors travelled as far west as Persia and Mesopotamis, bearing gifts including silks. A range of important finds of Chinese silks have also been made along the Silk Road. One of the most dramatic of these finds was some Tang silk discovered in 1900. It is believed that around 1015 AD Buddhist monks, possibly alarmed by the threat of invasion by Tibetan people, had sealed more than ten thousand manuscripts and silk paintings, silk banners and textiles in caves near Dunhuang, a trading station on the Silk Road in north-west China.</p>
+                        <p>Some historians believe the first Europeans to set eyes upon the fabulous fabric were the Roman legions of Marcus Licinius Crassus, Governor of Syria. According to certain accounts of the period, at an important battle near the Euphrates River in 53 BC, the Roman soldiers were so startled by the bright silken banners of the enemy that they fled in panic. Yet, within decades Chinese silks were widely worn by the rich and noble families of Rome. The Roman Emperor Heliogabalus (218-222 AD) wore nothing but silk. By 380 AD, the Roman historian Marcellinnus Ammianus reported that. The use of silk, which was one confined to the nobility, has now spread to all classes without distinction even to the lowest. The desire for silk continued to increase over the centuries. Despite this demand, the price of silk remained very high.</p>
+                        <p>In spite of their secrecy about production methods, the Chinese eventually lost their monopoly on silk production. Knowledge of silk production methods reached Korea around 200 BC, when waves of Chinese immigrants arrived there. Shortly after 300 AD, it travelled westward, and the cultivation of the silkworm was established in India.</p>
+                        <p>Around 550 AD silk production reached the Middle East. Records indicate that two monks from Constantinople (modern-day Istanbul), capital of the Byzantine Empire, appeared at their emperor's court with silkworm eggs which they had obtained secretly, and hidden in their hollow bamboo walking sticks. Under their supervision the eggs hatched into worms, and the worms spun silk threads. Byzantium was in the silk business at last. The Byzantine church and state created imperial workshops, monopolising production and keeping the secret to themselves. This allowed a silk industry to be established, undercutting the market for ordinary-grade Chinese silk. However, high quality silk textiles, woven in China especially for the Middle Eastern market, continued to achieve high prices in the West, and trade along the Silk Road continued as before. By the sixth century the Persians, too, had mastered the art of silk weaving, developing their own rich patterns and techniques.</p>
+                         <p>World silk production has approximately doubled during the last 30 years in spite of man-made fibres replacing certain uses of silk. Before this period, China and Japan were the two main producers, together manufacturing more than 50 per cent of world production each year. After the late 1970s, however, China dramatically increased its silk production, and once again became the world's leading producer.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-7</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">Early Uses of Chinese Silk</h5>
+                            <p><strong>Clothing</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>at first, silk only available to Chinese of high rank</li>
+                               <li>emperor wore <strong>1</strong> <input type="text" id="q41"> silk indoors</li>
+                            </ul>
+                            <p><strong>In industry</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>silk items included parts of musical instruments, fishing strings and <strong>2</strong> <input type="text" id="q42"></li>
+                            </ul>
+                            <p><strong>Currency</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>silk was used as payment of <strong>3</strong> <input type="text" id="q43"> as well as for wages and rewards</li>
+                               <li>silk replaced <strong>4</strong> <input type="text" id="q44"> as a unit of value</li>
+                               <li>silk soon used as payment in <strong>5</strong> <input type="text" id="q45"> trade</li>
+                            </ul>
+                             <p><strong>Evidence of silk trade</strong></p>
+                            <ul class="list-disc list-inside">
+                                <li>1070 BC, Egypt: hair of a <strong>6</strong> <input type="text" id="q46"> contained silk</li>
+                                <li>2nd century BC, Persia and Mesopotamia: gifts of silk were presented by Chinese ambassadors</li>
+                                <li>1015 AD, north-west China: silk objects were hidden inside <strong>7</strong> <input type="text" id="q47"></li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 8-13</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                           <p><strong>8</strong> Their first sight of silk created fear among Roman soldiers. <input type="text" id="q48" class="w-32"></p>
+                           <p><strong>9</strong> The quality of Chinese silk imported by the early Romans varied widely. <input type="text" id="q49" class="w-32"></p>
+                           <p><strong>10</strong> The Byzantine emperor first acquired silkworm eggs from the Chinese emperor. <input type="text" id="q50" class="w-32"></p>
+                           <p><strong>11</strong> The price of high-grade Chinese silk fell due to competition from Middle-Eastern producers. <input type="text" id="q51" class="w-32"></p>
+                           <p><strong>12</strong> Silk was produced in the Middle East several centuries before it was produced in Europe. <input type="text" id="q52" class="w-32"></p>
+                           <p><strong>13</strong> Global silk production has declined in recent years. <input type="text" id="q53" class="w-32"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                         <h3 class="text-xl font-bold mb-4">The discovery of a baby mammoth</h3>
+                        <p><em>A near-perfect frozen mammoth offers clues to a great vanished species</em></p>
+                        <p><strong>A</strong> On a May morning in 2007, on the Yamal Peninsula in northwestern Siberia, a Nenets reindeer herder named Yuri Khudi stood on a sandbar on the Yuribey River, looking carefully at a diminutive corpse. Although he'd never seen such an animal before, Khudi had seen many mammoth tusks, the thick corkscrew shafts that his people found each summer, and this persuaded him the corpse was a baby mammoth. It was eerily well preserved. Apart from its missing hair and toenails, it was perfectly intact. Khudi realised the find might be significant and he knew he couldn't just return home and forget all about it. He therefore decided to travel to the small town of Yar Sale to consult an old friend named Kirill Serotetto. His friend took him to meet the director of the local museum, who persuaded the local authorities to fly Khudi and Serotetto back to the Yuribey River to collect the baby mammoth.</p>
+                        <p><strong>B</strong> Mammoths became extinct between 14,000 and 10,000 years ago and since the extinctions coincided with the end of the most recent Ice age, many researchers believe that the primary cause of the great die-off was the sharp rise in temperature, which dramatically altered the vegetation. 'We have strong evidence that the temperature rise played a significant part in their extinction. says Adrian Lister, a palaeontologist and mammoth expert at London's Natural History Museum. 'In Eurasia, the timing of the two events matches closely. The extinctions also coincided, however, with the arrival of modern humans. In addition to exploiting mammoths for food, they used their bones and tusks to make weapons, tools, and even dwellings. Some scientists believe humans were as much to blame as the temperature rise for the great die-off. Some say they caused it.</p>
+                        <p><strong>C</strong> The body of the baby mammoth was eventually sent to the St Petersburg Zoological Museum in Russia. Alexei Tikhonov, the museum's director, was one of the first scientists to view the baby, a female. According to Tikhonov, Khudi had rescued 'the best preserved mammoth to come down to US from the Ice Age', and he gratefully named her Lyuba, after Khudi's wife. Tikhonov knew that no-one would be more excited by the find than Dan Fisher, an American colleague at the University of Michigan who had spent 30 years researching the lives of mammoths. Tikhonov invited Fisher, along with Bernard Buigues, a French mammoth hunter, to come and view the baby mammoth. Fisher and Buigues had examined other specimens together, including infants, but these had been in a relatively poor state. Lyuba was another story entirely. Other than the missing hair and toenails, the only flaw in her pristine appearance was a curious dent above the trunk.</p>
+                        <p><strong>D</strong> Fisher was particularly excited about one specific part of Lyuba's anatomy: her milk tusks. Through his career, Fisher has taken hundreds of tusk samples. Most of these came from the Great Lakes region of North America, and his research showed that these animals continued to thrive, despite the late Pleistocene temperature change. On the other hand, to Fisher the tusks often revealed telltale evidence of human hunting. His samples frequently came from animals that had died in the autumn, when they should have been at their peak after summer grazing, and less likely to die of natural causes, but also when humans would have been most eager to stockpile meat for the coming winter. He has done limited work in Siberia, but his analysis of tusks from Wrangel Island, off the coast of Siberia, suggests the same conclusion.</p>
+                        <p><strong>E</strong> In December 2007, Buigues arranged for the specimen to be transported to Japan to undergo a CT scan by Naoki Suzuki of the Jikei University School of Medicine. The test confirmed her skeleton was undamaged, and her internal organs seemed largely intact. It also showed that the end of her trunk, and her throat, mouth, and windpipe were filled with dense sediment. Six months later, in a laboratory in St Petersburg, Fisher, Buigues, Suzuki, Tikhonov and other colleagues began a three-day series of tests on Lyuba. During these, Fisher noted a dense mix of clay and sand in her trunk, mouth and throat, which had been indicated earlier by the scan. In fact, the sediment in Lyuba's trunk was packed so tightly that Fisher saw it as a possible explanation for the dent above her trunk. If she was frantically fighting for breath and inhaled convulsively, perhaps a partial vacuum was created in the base of her trunk, which would have flattened surrounding soft tissue. To Fisher, the circumstances of Lyuba's death were clear: she had asphyxiated. Suzuki, however, proposed a different interpretation, seeing more evidence for drowning than asphyxiation.</p>
+                        <p><strong>F</strong> Studies are ongoing, but Lyuba has begun to shed the secrets of her short life and some clues to the fate of her kind. Her good general health was shown in the record of her dental development, a confirmation for Fisher that dental research is useful for evaluating health and thus key to investigating the causes of mammoth extinction. Analysis of her well-preserved DNA has revealed that she belonged to a distinct population of Mammuthus primigenius and that, soon after her time, another population migrating to Siberia from North America would take their place. Finally, Lyuba's premolars and tusks revealed that she had been born in late spring and was only a month old when she died.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-18</h4>
+                        <p class="mb-4">Reading Passage 2 has six paragraphs, A-F. Which paragraph contains the following information?</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> Similarities between studies of mammoth remains from different parts of the world. <input type="text" id="q54" class="w-16"></p>
+                            <p><strong>15</strong> Details of the uses to which mammoth body parts were put. <input type="text" id="q55" class="w-16"></p>
+                            <p><strong>16</strong> A theory that accounts for the damage to Lyuba's face. <input type="text" id="q56" class="w-16"></p>
+                            <p><strong>17</strong> An explanation of how an individual was able to identify a small corpse. <input type="text" id="q57" class="w-16"></p>
+                            <p><strong>18</strong> A comparison between Lyuba and other young mammoth corpses. <input type="text" id="q58" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 19-23</h4>
+                        <p class="mb-4">Look at the following statements (Questions 19-23) and the list of people below. Match each statement with the correct person, A-G.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                             <p class="font-bold mb-2">List of People</p>
+                            <p><strong>A</strong> Yuri Khudi</p>
+                            <p><strong>B</strong> Kirill Serotetto</p>
+                            <p><strong>C</strong> Adrian Lister</p>
+                            <p><strong>D</strong> Alexei Tikhonov</p>
+                            <p><strong>E</strong> Dan Fisher</p>
+                            <p><strong>F</strong> Bernard Buigues</p>
+                            <p><strong>G</strong> Naoki Suzuki</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>19</strong> The indications are that mammoths died as a result of climate change. <input type="text" id="q59" class="w-16"></p>
+                            <p><strong>20</strong> Teeth analysis is important in discovering why mammoths died out. <input type="text" id="q60" class="w-16"></p>
+                            <p><strong>21</strong> The corpse of the baby mammoth is in better condition than any other that has been discovered. <input type="text" id="q61" class="w-16"></p>
+                            <p><strong>22</strong> It would be a mistake to ignore the baby mammoth's discovery, because of its potential importance. <input type="text" id="q62" class="w-16"></p>
+                            <p><strong>23</strong> Mammoths often died at a time of year when they should have been in good physical condition. <input type="text" id="q63" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 24-26</h4>
+                        <p class="mb-4">Complete the sentences below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>24</strong> Some researchers say that a marked rise in temperature impacted on mammoths by changing the type of ............ available. <input type="text" id="q64"></p>
+                            <p><strong>25</strong> Fisher concluded that many of the mammoth tusks he looked at displayed signs of ............ <input type="text" id="q65"></p>
+                            <p><strong>26</strong> Not long after Lyuba's death, the Mammuthus primigenius group she belonged to was replaced by another group that came from ............ <input type="text" id="q66"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">What makes a musical expert?</h3>
+                        <p><em>How does someone become expert in music? And IS it really possible to have a 'talent' for music?</em></p>
+                        <p>Does that class of people acknowledged to be musical experts just have more of the same basic skills we are all endowed with, or do they have a set of abilities or neural structures that are totally different from those of the rest of US? Are high levels of musical achievement simply the result of training and practice, or are they based on innate brain structure - what we refer to as 'talent'? Talent can be defined as something that originates in genetic structures and that is identifiable by trained people who can recognize its existence before a person has achieved exceptional levels of performance. The emphasis on early identification means that to investigate it, we study the development of skills in children.</p>
+                        <p>It is evident that some children acquire skills more rapidly than others: the age of onset for walking and talking varies widely, even between children in the same household. There may be genetic factors at work, but these are closely linked with other factors with a presumably environmental component such as motivation and family dynamics. Similar factors can influence musical development and can mask the contribution of genetics to musical ability.</p>
+                        <p>Brain studies, so far, haven't been of much use in sorting out the issues. Gottfried Schlaug at Harvard collected brain scans of individuals with absolute pitch (AP) and showed that a region in the brain called the planum temporale is larger in these people than in others. This suggests that the planum is involved in AP, but it's not clear if it starts out larger in people who eventually acquire AP, or if the acquisition of AP makes the planum increase in size.</p>
+                        <p>Results of research into the areas of the brain involved in skilled motor movement are more conclusive. Studies of violin players have shown that the region of the brain responsible for controlling the movement of the left hand (the hand that requires greater precision in violin playing) increases in size as a result of practice. We do not know yet if the propensity for increase pre-exists in some-peopled not others.</p>
+                        <p>The evidence against talent comes from research on how much training the experts do. Like experts in mathematics, chess, or sports, experts in music require lengthy periods of instruction and practice. In several studies, the very best music students were found to have practiced more than twice as much as the others. In another study, students were secretly divided into two groups based on teachers' perceptions of their talent. Several years later, it was found that the students who achieved the highest performance ratings had practiced the most, irrespective of which 'talent' group they had been assigned to, suggesting that practice does not merely correlate with achievement, but causes it.</p>
+                        <p>Anders Ericsson, at Florida State University, approaches the topic of musical expertise as a general problem in cognitive psychology. He takes as a starting point the assumption that there are certain issues involved in becoming an expert at anything; that we can learn about musical expertise by studying expert chess players, athletes, artists, mathematicians, as well as the musicians themselves. The emerging picture from such studies is that ten thousand hours of practice is required to achieve the level of mastery associated with being a world-class expert - in anything. In study after study, of composers, ice skaters, concert pianists, chess players and master criminals, this number comes up again and again. Someone would do this amount of practice if they practiced, for example, roughly 20 hours a week for ten years. Of course, this does not address why some people do not seem to get anywhere when they practice, and why some people get more out of their practice sessions than others. But no-one has yet found a case in which true world-class expertise was accomplished in less time. It seems that it takes the brain this long to assimilate all that it needs to know to achieve true mastery.</p>
+                        <p>The ten-thousand-hour theory is consistent with what we know about how the brain learns. Learning requires the assimilation and consolidation of information in neural tissue. The more experiences we have with something, the stronger the memory/learning trace for that experience becomes. Although people differ in how long it takes them to consolidate information neutrally, it remains true that increased practice leads to a greater number of neural traces, which create stronger memory representation.</p>
+                        <p>The classic rebuttal to this theory goes something like this: 'What about Mozart? I hear that he composed his first symphony at the age of four! First, there is a factual error here: Mozart did not write it until he was eight. Still, this is unusual, to say the least. However, this early work received little acclaim and was not performed very often. In fact, the only reason we know about it is because the child who wrote it grew up to become Mozart. And Mozart had an expert teacher in his father, who was renowned as a teacher of musicians all over Europe. We do not know how much Mozart practiced, but if he started at age two and worked thirty-two hours a week (quite possible, given that his father was a stern taskmaster) he would have made his ten thousand hours by the time he composed his first symphony. This does not mean that there are no genetic factors involved in Mozart's greatness, but that inborn traits may not be the only cause.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-30</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B, C or D</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                           <div class="q-item">
+                                <p><strong>27</strong> In the first paragraph, the writer suggests that a musician who IS talented someone</p>
+                                <label class="block"><input type="radio" name="q67" value="A"> A who is aware of being set apart from other people.</label>
+                                <label class="block"><input type="radio" name="q67" value="B"> B whose brain structure is unlike that of other people.</label>
+                                <label class="block"><input type="radio" name="q67" value="C"> C who can perform extremely well in early childhood.</label>
+                                <label class="block"><input type="radio" name="q67" value="D"> D whose essential skills are more varied than those of ordinary people.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>28</strong> According to the writer, what is unclear about the findings of Gottfried Schlaug?</p>
+                                <label class="block"><input type="radio" name="q68" value="A"> A which part of the brain is linked to a particular musical skill.</label>
+                                <label class="block"><input type="radio" name="q68" value="B"> B which type of musical skill leads to the greatest change in the brain.</label>
+                                <label class="block"><input type="radio" name="q68" value="C"> C whether a feature of the brain is a cause or an effect of a musical skill.</label>
+                                <label class="block"><input type="radio" name="q68" value="D"> D whether the acquisition of a musical skill is easier for some people than others.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>29</strong> According to the writer, what has been established by studies of violin players?</p>
+                                <label class="block"><input type="radio" name="q69" value="A"> A Changes may occur in the brain following violin practice.</label>
+                                <label class="block"><input type="radio" name="q69" value="B"> B Left-handed violinists have a different brain structure from other people.</label>
+                                <label class="block"><input type="radio" name="q69" value="C"> C A violinist's hand size is not due to practice but to genetic factors.</label>
+                                <label class="block"><input type="radio" name="q69" value="D"> D Violinists are born with brains that have a particular structure.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>30</strong> According to the writer, findings on the amount of practices done by expert musicians suggest that</p>
+                                <label class="block"><input type="radio" name="q70" value="A"> A talent may have little to do with expertise.</label>
+                                <label class="block"><input type="radio" name="q70" value="B"> B practice may actually prevent the development of talent.</label>
+                                <label class="block"><input type="radio" name="q70" value="C"> C talent may not be recognised by teachers.</label>
+                                <label class="block"><input type="radio" name="q70" value="D"> D expertise may be related to quality of instruction.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 31-36</h4>
+                        <p class="mb-4">Do the following statements agree with the claims of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>31</strong> Anders Ericsson's work with cognitive psychology has influenced other researchers. <input type="text" id="q71" class="w-32"></p>
+                            <p><strong>32</strong> Different areas of expertise seem to have one specific thing in common. <input type="text" id="q72" class="w-32"></p>
+                            <p><strong>33</strong> In order to be useful, practice must be carried out regularly every day. <input type="text" id="q73" class="w-32"></p>
+                            <p><strong>34</strong> Anyone who practices for long enough can reach the level of a world-class expert. <input type="text" id="q74" class="w-32"></p>
+                            <p><strong>35</strong> Occasionally, someone can become an expert at global level with fewer than 10,000 hours' practice. <input type="text" id="q75" class="w-32"></p>
+                            <p><strong>36</strong> Existing knowledge of learning and cognitive skills supports the importance of practice. <input type="text" id="q76" class="w-32"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 37-40</h4>
+                        <p class="mb-4">Complete the summary using the list of words, A-J, below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> popular, <strong>B</strong> artistic, <strong>C</strong> completed</p>
+                            <p><strong>D</strong> eight, <strong>E</strong> tuition, <strong>F</strong> encouragement</p>
+                            <p><strong>G</strong> inherited, <strong>H</strong> four, <strong>I</strong> practice</p>
+                            <p><strong>J</strong> two</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>Mozart</strong></p>
+                            <p>The case of Mozart could be quoted as evidence against the 10,000-hour-practice theory. However, the writer points out that the young Mozart received a lot of <strong>37</strong><input type="text" id="q77" class="w-16"> from his father, and that the symphony he wrote at the age of <strong>38</strong><input type="text" id="q78" class="w-16"> was not <strong>39</strong><input type="text" id="q79" class="w-16"> and may be of only academic interest. The case therefore supports the view that expertise is not solely the result of <strong>40</strong><input type="text" id="q80" class="w-16"> characteristics.</p>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const listeningScripts = {
+        section1: "<p class='text-gray-500'>Listening script not available for this test.</p>",
+        section2: "<p class='text-gray-500'>Listening script not available for this test.</p>",
+        section3: "<p class='text-gray-500'>Listening script not available for this test.</p>",
+        section4: "<p class='text-gray-500'>Listening script not available for this test.</p>"
+    };
+
+    const answers = {
+        // Listening Answers
+        q1: "theater", q2: "4.30", q3: "station", q4: "cooking", q5: "plate", q6: "river", q7: "11.15", q8: "parking", q9: "events", q10: "feedback",
+        q11: "C", q12: "B", q13: "A", q14: "B", q15: "socks", q16: "total block", q17: "plastic", "q18_20": "A/F/G",
+        q21: "A", q22: "B", q23: "B", q24: "A", q25: "B", q26: "C", q27: "C", q28: "A", q29: "C", q30: "B",
+        q31: "extinct", q32: "education", q33: "broken", q34: "plantation", q35: "city", q36: "developed", q37: "meanings", q38: "French", q39: "culture", q40: "preposition",
+        // Reading Answers
+        q41: "white", q42: "paper", q43: "taxes", q44: "gold", q45: "foreign", q46: "mummy", q47: "caves", 
+        q48: "true", q49: "not given", q50: "false", q51: "false", q52: "true", q53: "false",
+        q54: "D", q55: "B", q56: "E", q57: "A", q58: "C",
+        q59: "C", q60: "E", q61: "D", q62: "A", q63: "E",
+        q64: "vegetation", q65: "human hunting", q66: "north america",
+        q67: "C", q68: "C", q69: "A", q70: "A", 
+        q71: "not given", q72: "yes", q73: "not given", q74: "no", q75: "no", q76: "yes",
+        q77: "E", q78: "D", q79: "A", q80: "G"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            userAnswers: {},
+            currentTab: 'listening',
+            currentSection: 0,
+            answersChecked: {},
+            scriptVisible: false,
+
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            scriptSection: document.getElementById('script-section'),
+            scriptContent: document.getElementById('script-content'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            toggleScriptBtn: document.getElementById('toggle-script-btn'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                this.toggleScriptBtn.addEventListener('click', () => this.toggleScript());
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                    if (e.target.classList.contains('section-btn')) {
+                        this.switchSection(parseInt(e.target.dataset.sectionIndex, 10));
+                    }
+                });
+            },
+            
+            saveAnswer(e) {
+                const target = e.target;
+                if (target.id || target.name) {
+                    const id = target.id || target.name;
+                    if (target.type === 'radio') {
+                        if (target.checked) this.userAnswers[id] = target.value;
+                    } else if (target.type === 'checkbox') {
+                        const checked = Array.from(document.querySelectorAll(`input[name="${id}"]:checked`)).map(cb => cb.value).sort().join('/');
+                        this.userAnswers[id] = checked;
+                    } else {
+                         this.userAnswers[id] = target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const multiInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        if (multiInputs.length > 0) {
+                            if (multiInputs[0].type === 'checkbox') {
+                                const values = value.split('/');
+                                multiInputs.forEach(input => {
+                                    input.checked = values.includes(input.value);
+                                });
+                            } else {
+                                multiInputs.forEach(radio => {
+                                    if (radio.value === value) radio.checked = true;
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+            
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                this.scriptVisible = false;
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+
+                this.toggleScriptBtn.style.display = (tabName === 'listening') ? 'block' : 'none';
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.scriptVisible = false;
+                 this.loadContent();
+            },
+
+            toggleScript() {
+                if (this.currentTab !== 'listening') return;
+                this.scriptVisible = !this.scriptVisible;
+                this.updatePaneVisibility();
+            },
+
+            updatePaneVisibility() {
+                if (this.currentTab === 'listening') {
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = this.scriptVisible ? 'flex' : 'none';
+                    this.questionsSection.style.display = this.scriptVisible ? 'none' : 'block';
+                    this.toggleScriptBtn.textContent = this.scriptVisible ? 'Hide Script' : 'Show Script';
+                    
+                    if (this.scriptVisible) {
+                        const scriptKey = `section${this.currentSection + 1}`;
+                        this.scriptContent.innerHTML = listeningScripts[scriptKey] || "<p class='text-gray-500'>Script not available.</p>";
+                    }
+
+                } else { // Reading
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = 'none';
+                    this.questionsSection.style.display = 'block';
+                }
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                if (this.currentTab === 'listening') {
+                    this.leftPane.innerHTML = sectionData.instructions;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                } else { // reading
+                    this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                }
+                
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+
+                this.updatePaneVisibility();
+                this.addAudioListeners();
+                this.restoreAnswers();
+                this.addCheckButtons();
+                
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+
+            addAudioListeners() {
+                document.querySelectorAll('.play-audio-btn').forEach(btn => {
+                    const audioId = btn.dataset.audioId;
+                    const audioEl = document.getElementById(audioId);
+                    if (!audioEl) return;
+
+                    const timeDisplay = btn.nextElementSibling;
+                    const seeker = btn.parentElement.nextElementSibling;
+                    const playText = btn.querySelector('.play-text');
+
+                    const formatTime = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+                    btn.onclick = () => {
+                        if (audioEl.paused) audioEl.play();
+                        else audioEl.pause();
+                    };
+                    audioEl.onplay = () => playText.textContent = 'Pause';
+                    audioEl.onpause = () => playText.textContent = 'Play';
+                    audioEl.onloadedmetadata = () => {
+                        timeDisplay.textContent = `${formatTime(0)} / ${formatTime(audioEl.duration)}`;
+                    };
+                    audioEl.ontimeupdate = () => {
+                        timeDisplay.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`;
+                        seeker.value = audioEl.duration ? (audioEl.currentTime / audioEl.duration) * 100 : 0;
+                    };
+                    seeker.oninput = () => {
+                        if (audioEl.duration) {
+                            audioEl.currentTime = (seeker.value / 100) * audioEl.duration;
+                        }
+                    };
+                });
+            },
+
+            getExerciseTypes() {
+                const types = {
+                    listening: {
+                        0: [ { type: 'table_completion', startQ: 1, endQ: 6, title: 'Table Completion' }, { type: 'notes_completion', startQ: 7, endQ: 10, title: 'Notes Completion' } ],
+                        1: [ { type: 'multiple_choice', startQ: 11, endQ: 14, title: 'Multiple Choice' }, { type: 'notes_completion_2', startQ: 15, endQ: 17, title: 'Notes Completion' }, { type: 'multiple_selection', startQ: 18, endQ: 20, title: 'Multiple Selection' } ],
+                        2: [ { type: 'multiple_choice_2', startQ: 21, endQ: 24, title: 'Multiple Choice' }, { type: 'matching', startQ: 25, endQ: 30, title: 'Matching' } ],
+                        3: [ { type: 'notes_completion_3', startQ: 31, endQ: 40, title: 'Notes Completion' } ]
+                    },
+                    reading: {
+                        0: [ { type: 'notes_completion', startQ: 41, endQ: 47, title: 'Notes Completion' }, { type: 'true_false', startQ: 48, endQ: 53, title: 'True/False/Not Given' } ],
+                        1: [ { type: 'paragraph_matching', startQ: 54, endQ: 58, title: 'Paragraph Matching' }, { type: 'people_matching', startQ: 59, endQ: 63, title: 'Matching People' }, { type: 'sentence_completion', startQ: 64, endQ: 66, title: 'Sentence Completion' } ],
+                        2: [ { type: 'multiple_choice', startQ: 67, endQ: 70, title: 'Multiple Choice' }, { type: 'yes_no', startQ: 71, endQ: 76, title: 'Yes/No/Not Given' }, { type: 'summary_completion', startQ: 77, endQ: 80, title: 'Summary Completion' } ]
+                    }
+                };
+                return types[this.currentTab][this.currentSection] || [];
+            },
+
+            addCheckButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                const container = this.currentTab === 'listening' ? this.questionsSection : this.questionsSection;
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `<p class="font-semibold mb-2">${exercise.title} (Q${exercise.startQ}-${exercise.endQ})</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">${buttonText}</button>`;
+
+                    const firstQuestionInput = document.getElementById(`q${exercise.startQ}`) || document.querySelector(`input[name="q${exercise.startQ}"]`);
+                    const questionBlock = firstQuestionInput ? firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6') : null;
+                    if (questionBlock) {
+                        questionBlock.appendChild(buttonContainer);
+                    } else {
+                        container.appendChild(buttonContainer);
+                    }
+                });
+            },
+            
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+
+                for (let i = startQ; i <= endQ; i++) {
+                    let qId = `q${i}`;
+                    // Special handling for checkbox groups
+                    if (i >= 18 && i <= 20) {
+                        qId = 'q18_20';
+                        const inputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        const userAnswer = this.userAnswers[qId] || '';
+                        const correctAnswer = answers[qId].toLowerCase();
+                        const isCorrect = userAnswer === correctAnswer;
+                        
+                        inputs.forEach(input => {
+                            const label = input.closest('label');
+                            const isChecked = input.checked;
+                            const isCorrectAnswer = correctAnswer.includes(input.value.toLowerCase());
+
+                            if (isChecked) {
+                                if (isCorrectAnswer) {
+                                    label.classList.add('correct-answer');
+                                } else {
+                                    label.classList.add('incorrect-answer');
+                                }
+                            } else {
+                                if (isCorrectAnswer) {
+                                     label.style.border = '2px solid #fbbf24'; // suggest correct
+                                }
+                            }
+                        });
+                        continue; // Skip the rest of the loop for this iteration
+                    }
+
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const correctAnswer = (answers[qId] || "").toLowerCase();
+                    const isCorrect = correctAnswer.split('/').some(ans => ans.trim() === userAnswer);
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+
+                    if (inputElement) {
+                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') : inputElement;
+                         if (isCorrect) {
+                            elementToStyle.classList.add('correct-answer');
+                        } else {
+                            elementToStyle.classList.add('incorrect-answer');
+                             if(inputElement.type === 'text') {
+                                 inputElement.placeholder = `Correct: ${answers[qId]}`;
+                             }
+                        }
+                    } else if (inputs[0].type === 'text') {
+                        inputs[0].classList.add('incorrect-answer');
+                        inputs[0].placeholder = `Correct: ${answers[qId]}`;
+                    }
+                    
+                     if (inputs[0].type === 'radio' && !isCorrect) {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId]}"]`);
+                         if(correctRadio) correctRadio.closest('label').classList.add('correct-answer');
+                    }
+                }
+
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = this.splitter.parentElement.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        this.splitter.parentElement.style.gridTemplateColumns = `${newLeftWidth}px 5px 1fr`;
+                    }
+                });
+                document.addEventListener('mouseup', () => isDragging = false);
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                         if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) { console.warn(ex); }
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
