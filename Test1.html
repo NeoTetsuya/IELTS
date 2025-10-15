@@ -160,12 +160,13 @@
         }
         .explanation-box {
             animation: fadeIn 0.3s ease-in-out;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .explanation-box:hover {
-            background-color: #dbeafe !important;
-            transform: scale(1.02);
+            margin-top: 8px;
+            padding: 12px;
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #0c4a6e;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
@@ -182,7 +183,6 @@
 <body class="bg-gray-100 text-gray-800">
 
 <div id="test-container" class="ielts-container">
-    <!-- Header -->
     <header class="bg-white shadow-md p-3 flex justify-between items-center">
         <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Practice Test 1</h1>
         <div class="flex items-center space-x-4">
@@ -192,52 +192,38 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main id="content-panes" class="content-panes">
-        <!-- Left Pane: Passages / Instructions -->
         <div id="left-pane" class="pane bg-white">
-            <!-- Content will be loaded here by JS -->
-        </div>
+            </div>
 
-        <!-- Splitter -->
         <div id="splitter" class="splitter"></div>
 
-        <!-- Right Pane: Questions (Reading) or Script (Listening) -->
         <div id="right-pane" class="pane bg-gray-50">
-            <!-- Questions Section (for Reading) -->
             <div id="questions-section" class="questions-section">
-                <!-- Questions will be loaded here by JS -->
-            </div>
+                </div>
             
-            <!-- Script Section (for Listening) -->
             <div id="script-section" class="script-section" style="display: none;">
                 <div class="mb-4">
                     <h3 class="text-lg font-bold text-purple-800 mb-2">Listening Script</h3>
                 </div>
                 <div id="script-content" class="text-sm leading-relaxed overflow-y-auto">
-                    <!-- Script will be loaded here -->
-                </div>
+                    </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer: Navigation -->
     <footer class="bg-white shadow-inner p-3">
         <div class="flex justify-between items-center">
-            <!-- Main Skill Tabs -->
             <div>
                 <button class="tab-btn active" data-tab="listening">Listening</button>
                 <button class="tab-btn" data-tab="reading">Reading</button>
             </div>
-            <!-- Section Tabs -->
             <div id="section-tabs">
-                <!-- Section buttons will be loaded here by JS -->
-            </div>
+                </div>
         </div>
     </footer>
 </div>
 
-<!-- Highlight Tooltip -->
 <div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
 
 
@@ -696,6 +682,49 @@
         q77: "E", q78: "D", q79: "A", q80: "G"
     };
 
+    const readingExplanations = {
+        q41: "Passage 1, Paragraph 2: 'Within the palace, the emperor is believed to have worn a robe of white silk...'",
+        q42: "Passage 1, Paragraph 3: 'It was used in the production of musical instruments, as string for fishing, and even as the world's first luxury paper.'",
+        q43: "Passage 1, Paragraph 4: 'Farmers paid their taxes in grain and silk...'",
+        q44: "Passage 1, Paragraph 4: 'Values were calculated in lengths of silk as they had previously been calculated in weight of gold.'",
+        q45: "Passage 1, Paragraph 4: 'Before long, silk became a currency used in trade with foreign countries...'",
+        q46: "Passage 1, Paragraph 5: 'An Egyptian mummy with a silk thread in her hair, dating from 1070 BC, has been discovered...'",
+        q47: "Passage 1, Paragraph 5: '...Buddhist monks... had sealed more than ten thousand manuscripts and silk paintings... in caves near Dunhuang...'",
+        q48: "Passage 1, Paragraph 6: '...at an important battle... the Roman soldiers were so startled by the bright silken banners of the enemy that they fled in panic.' Being startled and fleeing in panic indicates fear.",
+        q49: "The passage mentions that silk was 'widely worn by the rich and noble families of Rome' but provides no information about whether the quality varied.",
+        q50: "Passage 1, Paragraph 8 states that 'two monks from Constantinople... appeared at their emperor's court with silkworm eggs which they had obtained secretly'. They did not get them from the Chinese emperor.",
+        q51: "Passage 1, Paragraph 8 states the opposite: 'However, high quality silk textiles, woven in China... continued to achieve high prices in the West...'",
+        q52: "Passage 1, Paragraph 8 notes that Byzantium (Europe) was in the silk business around 550 AD and 'By the sixth century the Persians, too, had mastered the art of silk weaving', showing production was established in the Middle East around the same time or slightly earlier than in Europe.",
+        q53: "Passage 1, Paragraph 9 states the opposite: 'World silk production has approximately doubled during the last 30 years...'",
+        q54: "Paragraph D describes Dan Fisher's research on tusk samples from both the Great Lakes region of North America and Wrangel Island in Siberia, noting he 'suggests the same conclusion' for both.",
+        q55: "Paragraph B states that modern humans 'used their bones and tusks to make weapons, tools, and even dwellings.'",
+        q56: "Paragraph E explains Fisher's theory for the dent: '...perhaps a partial vacuum was created in the base of her trunk, which would have flattened surrounding soft tissue.'",
+        q57: "Paragraph A explains that Yuri Khudi 'had seen many mammoth tusks... and this persuaded him the corpse was a baby mammoth.'",
+        q58: "Paragraph C compares Lyuba to other infant specimens, stating they 'had been in a relatively poor state. Lyuba was another story entirely.'",
+        q59: "Paragraph B quotes Adrian Lister: ''We have strong evidence that the temperature rise played a significant part in their extinction.''",
+        q60: "Paragraph F confirms Fisher's view that 'dental research is useful for evaluating health and thus key to investigating the causes of mammoth extinction.'",
+        q61: "Paragraph C quotes Alexei Tikhonov describing Lyuba as 'the best preserved mammoth to come down to US from the Ice Age'.",
+        q62: "Paragraph A describes Yuri Khudi's thought process: 'Khudi realised the find might be significant and he knew he couldn't just return home and forget all about it.'",
+        q63: "Paragraph D mentions Dan Fisher's findings that mammoth remains were 'from animals that had died in the autumn, when they should have been at their peak after summer grazing...'",
+        q64: "Passage 2, Paragraph B: '...the primary cause of the great die-off was the sharp rise in temperature, which dramatically altered the vegetation.'",
+        q65: "Passage 2, Paragraph D: 'On the other hand, to Fisher the tusks often revealed telltale evidence of human hunting.'",
+        q66: "Passage 2, Paragraph F: '...soon after her time, another population migrating to Siberia from North America would take their place.'",
+        q67: "Passage 3, Paragraph 1 defines talent as something that can be identified 'before a person has achieved exceptional levels of performance,' implying it can be seen in early childhood.",
+        q68: "Passage 3, Paragraph 3 raises the question: '...it's not clear if it starts out larger in people who eventually acquire AP, or if the acquisition of AP makes the planum increase in size.' This is a question of cause versus effect.",
+        q69: "Passage 3, Paragraph 4 states: 'Studies of violin players have shown that the region of the brain responsible for controlling the movement of the left hand... increases in size as a result of practice.' This shows changes can occur.",
+        q70: "Passage 3, Paragraph 5 finds that the highest performers 'had practiced the most, irrespective of which 'talent' group they had been assigned to,' suggesting practice, not innate talent, is the cause of expertise.",
+        q71: "The passage discusses Anders Ericsson's work but does not state whether or not it has influenced other researchers.",
+        q72: "Passage 3, Paragraph 6 states that the 'ten thousand hours of practice is required to achieve the level of mastery... in anything.' This is the common factor.",
+        q73: "The passage gives an example of '20 hours a week for ten years' but does not specify that practice must be done every single day.",
+        q74: "Passage 3, Paragraph 6 states that the theory 'does not address why some people do not seem to get anywhere when they practice,' implying practice alone is not a guarantee for everyone.",
+        q75: "Passage 3, Paragraph 6 explicitly states: 'But no-one has yet found a case in which true world-class expertise was accomplished in less time.'",
+        q76: "Passage 3, Paragraph 7 opens by saying: 'The ten-thousand-hour theory is consistent with what we know about how the brain learns.'",
+        q77: "Passage 3, Paragraph 8: 'And Mozart had an expert teacher in his father, who was renowned as a teacher of musicians all over Europe.' 'Tuition' refers to this expert teaching.",
+        q78: "Passage 3, Paragraph 8: 'First, there is a factual error here: Mozart did not write it until he was eight.'",
+        q79: "Passage 3, Paragraph 8: 'However, this early work received little acclaim and was not performed very often.' This means it was not popular.",
+        q80: "Passage 3, Paragraph 8 concludes: 'This does not mean that there are no genetic factors... but that inborn traits may not be the only cause.' 'Inherited' corresponds to 'inborn traits'."
+    };
+
 
     // --- APPLICATION LOGIC ---
     document.addEventListener('DOMContentLoaded', () => {
@@ -949,13 +978,15 @@
 
                 for (let i = startQ; i <= endQ; i++) {
                     let qId = `q${i}`;
+                    let currentQuestionIndex = i; // Keep track of original index
+
                     // Special handling for checkbox groups
                     if (i >= 18 && i <= 20) {
                         qId = 'q18_20';
+                        currentQuestionIndex = '18_20'; // for explanation lookup if needed
                         const inputs = document.querySelectorAll(`input[name="${qId}"]`);
                         const userAnswer = this.userAnswers[qId] || '';
                         const correctAnswer = answers[qId].toLowerCase();
-                        const isCorrect = userAnswer === correctAnswer;
                         
                         inputs.forEach(input => {
                             const label = input.closest('label');
@@ -974,20 +1005,21 @@
                                 }
                             }
                         });
-                        continue; // Skip the rest of the loop for this iteration
+                        i = 20; // Skip to the end of this checkbox group
+                        continue;
                     }
 
                     const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
                     if (inputs.length === 0) continue;
 
-                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim().replace(/\s+/g, ' ');
                     const correctAnswer = (answers[qId] || "").toLowerCase();
                     const isCorrect = correctAnswer.split('/').some(ans => ans.trim() === userAnswer);
                     
-                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`) || document.querySelector(`input[name="${qId}"]`);
 
                     if (inputElement) {
-                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') : inputElement;
+                         const elementToStyle = (inputElement.type === 'radio' || inputElement.type === 'checkbox') ? inputElement.closest('label') : inputElement;
                          if (isCorrect) {
                             elementToStyle.classList.add('correct-answer');
                         } else {
@@ -1004,6 +1036,21 @@
                      if (inputs[0].type === 'radio' && !isCorrect) {
                          const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId]}"]`);
                          if(correctRadio) correctRadio.closest('label').classList.add('correct-answer');
+                    }
+                    
+                    // Add explanation for reading questions
+                    if (this.currentTab === 'reading' && inputElement) {
+                        const explanationText = readingExplanations[qId];
+                        if (explanationText) {
+                            const explanationDiv = document.createElement('div');
+                            explanationDiv.className = 'explanation-box';
+                            explanationDiv.innerHTML = `<strong>Explanation:</strong> ${explanationText}`;
+                            
+                            const questionContainer = inputElement.closest('p, div.q-item, li');
+                            if (questionContainer && !questionContainer.querySelector('.explanation-box')) {
+                                questionContainer.appendChild(explanationDiv);
+                            }
+                        }
                     }
                 }
 
