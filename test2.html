@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Practice Test 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .questions-section {
+            width: 100%;
+        }
+        .script-section {
+            width: 100%;
+            background-color: #faf5ff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 2px solid #e9d5ff;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        .play-audio-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2563eb;
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-audio-btn:hover {
+            background-color: #1d4ed8;
+        }
+        .play-audio-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .audio-seeker {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb;
+            outline: none;
+            border-radius: 0.5rem;
+        }
+        .audio-seeker::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .audio-seeker::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .explanation-box:hover {
+            background-color: #dbeafe !important;
+            transform: scale(1.02);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Practice Test 2</h1>
+        <div class="flex items-center space-x-4">
+            <button id="toggle-script-btn" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition-colors">
+                Show Script
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions (Reading) or Script (Listening) -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <!-- Questions Section (for Reading) -->
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+            
+            <!-- Script Section (for Listening) -->
+            <div id="script-section" class="script-section" style="display: none;">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-purple-800 mb-2">Listening Script</h3>
+                </div>
+                <div id="script-content" class="text-sm leading-relaxed overflow-y-auto">
+                    <!-- Script will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="listening">Listening</button>
+                <button class="tab-btn" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+
+<script>
+    // --- DATA ---
+    const testData = {
+        listening: {
+            duration: 1800, // 30 minutes
+            sections: [
+                {
+                    title: "Section 1",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 1</h3>
+                        <p class="mb-4">You will hear a conversation about a rental property application.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec1" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-1.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec1" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 1-10</h4>
+                        <p class="mb-4">Complete the form below. Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-center text-lg">Rental Property Application Form</h5>
+                            <p><strong>Example:</strong> Name: Susan Smith</p>
+                            <p>Phone number: (mobile) <strong>1</strong> <input type="text" id="q1"></p>
+                            <p>Email address: Susansmith@ <strong>2</strong> <input type="text" id="q2"></p>
+                            <p>Current address: 234 Becketts Road, Brisbane. 4054</p>
+                            <p>New Zealand Employer: Auckland Hospital</p>
+                            <p>Occupation: a <strong>3</strong> <input type="text" id="q3"></p>
+                            <p>Rental start date: 8th February</p>
+                            <p>Preferred property type: first preference: a house with a <strong>4</strong> <input type="text" id="q4">, second preference, an apartment with a big <strong>5</strong> <input type="text" id="q5"></p>
+                            <p>Bedrooms: two</p>
+                            <p>Furnishings: a <strong>6</strong> <input type="text" id="q6"> is required</p>
+                            <p>Maximum rent: <strong>7</strong>$ <input type="text" id="q7"> per week</p>
+                            <p>Preferred location: near the <strong>8</strong> <input type="text" id="q8"></p>
+                            <p>Other requirements: must have <strong>9</strong> <input type="text" id="q9"> nearby, would like <strong>10</strong> <input type="text" id="q10"> included in the rent</p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 2",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 2</h3>
+                        <p class="mb-4">You will hear a talk about the Pre-school Family Centre.</p>
+                         <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec2" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-2.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec2" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 11-20</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>NO MORE THAN THREE WORDS AND/OR A NUMBER</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">The Pre-school Family Centre</h5>
+                            <p><strong>Features of the Pre-school Family Centre</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>for children from <strong>11</strong> <input type="text" id="q11"> to 5 years old</li>
+                               <li>run as a <strong>12</strong> <input type="text" id="q12"> by parents, who attend with their children</li>
+                               <li>parents receive special <strong>13</strong> <input type="text" id="q13"> from the centre</li>
+                               <li>children's activities organised in <strong>14</strong> <input type="text" id="q14"> age groups</li>
+                            </ul>
+                             <p><strong>Facts about the Centre</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>sessions from 9.30-12.30 each morning</li>
+                               <li>one afternoon session to help prepare older children for <strong>15</strong> <input type="text" id="q15"> at school</li>
+                               <li>parents must make several <strong>16</strong> <input type="text" id="q16"> before they enroll their child</li>
+                               <li>funding: each centre is officially recognised and receives <strong>17</strong> <input type="text" id="q17"></li>
+                            </ul>
+                             <p><strong>Parents' Commitments</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>take on responsibility for a special <strong>18</strong> <input type="text" id="q18"></li>
+                               <li>attend one <strong>19</strong> <input type="text" id="q19"></li>
+                            </ul>
+                             <p><strong>Practical Advice</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>attend regularly to help your child gain <strong>20</strong> <input type="text" id="q20"></li>
+                               <li>younger children may need to leave early</li>
+                               <li>provide a snack for your child</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 3",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 3</h3>
+                        <p class="mb-4">You will hear a conversation about a presentation on foot injuries among sports players.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec3" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-3.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec3" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                           <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 21-26</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                             <div class="q-item">
+                                <p><strong>21</strong> John and Cath's presentation plans are different in</p>
+                                <label class="block"><input type="radio" name="q21" value="A"> A the examples used.</label>
+                                <label class="block"><input type="radio" name="q21" value="B"> B the order of information.</label>
+                                <label class="block"><input type="radio" name="q21" value="C"> C the main points made.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>22</strong> What do the students agree about the anatomy section of their presentation?</p>
+                                <label class="block"><input type="radio" name="q22" value="A"> A It would be better if Cath spoke about it.</label>
+                                <label class="block"><input type="radio" name="q22" value="B"> B It should be kept quite short.</label>
+                                <label class="block"><input type="radio" name="q22" value="C"> C It should be based on information from the internet.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>23</strong> What do the students agree to include in the last section?</p>
+                                <label class="block"><input type="radio" name="q23" value="A"> A visuals of injuries</label>
+                                <label class="block"><input type="radio" name="q23" value="B"> B demonstrations of treatment</label>
+                                <label class="block"><input type="radio" name="q23" value="C"> C interviews with patients</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>24</strong> What is said about the different types of heel injury?</p>
+                                <label class="block"><input type="radio" name="q24" value="A"> A Diagnosis is straightforward.</label>
+                                <label class="block"><input type="radio" name="q24" value="B"> B They are expensive to treat.</label>
+                                <label class="block"><input type="radio" name="q24" value="C"> C Some are more serious than others.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>25</strong> On the subject of causes of heel injuries, the students agree to</p>
+                                <label class="block"><input type="radio" name="q25" value="A"> A focus on a single reason.</label>
+                                <label class="block"><input type="radio" name="q25" value="B"> B reject certain approaches.</label>
+                                <label class="block"><input type="radio" name="q25" value="C"> C use a source written by their professor.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>26</strong> What does Cath say about stretching as a treatment?</p>
+                                <label class="block"><input type="radio" name="q26" value="A"> A It is potentially risky.</label>
+                                <label class="block"><input type="radio" name="q26" value="B"> B It is commonly confused with strengthening.</label>
+                                <label class="block"><input type="radio" name="q26" value="C"> C It is the least effective part of treatment.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 27 and 28</h4>
+                        <p class="mb-4">Choose TWO letters A-E.</p>
+                        <p class="mb-4">Which TWO treatment techniques did the female runner find useful for her swollen heel?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q27_28" value="A"> A massage</label>
+                            <label class="block"><input type="checkbox" name="q27_28" value="B"> B ultrasound</label>
+                            <label class="block"><input type="checkbox" name="q27_28" value="C"> C rest</label>
+                            <label class="block"><input type="checkbox" name="q27_28" value="D"> D balancing exercises</label>
+                            <label class="block"><input type="checkbox" name="q27_28" value="E"> E ice</label>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 29 and 30</h4>
+                        <p class="mb-4">Choose TWO letters, A-E.</p>
+                        <p class="mb-4">Which TWO sports did the male sprinter find most effective during his rehabilitation programme?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white">
+                            <label class="block"><input type="checkbox" name="q29_30" value="A"> A swimming</label>
+                            <label class="block"><input type="checkbox" name="q29_30" value="B"> B weight-training</label>
+                            <label class="block"><input type="checkbox" name="q29_30" value="C"> C running on grass</label>
+                            <label class="block"><input type="checkbox" name="q29_30" value="D"> D cycling</label>
+                            <label class="block"><input type="checkbox" name="q29_30" value="E"> E jumping</label>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 4",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 4</h3>
+                        <p class="mb-4">You will hear a lecture about different types of supermarket layout.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <audio id="audio-sec4" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-4.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec4" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 31-40</h4>
+                        <p class="mb-4">Complete the table below. Write <strong>NO MORE THAN THREE WORDS</strong> for each answer.</p>
+                        <div class="p-4 border rounded-lg bg-white mb-6">
+                            <table class="w-full border-collapse border">
+                                <thead>
+                                    <tr><th colspan="4" class="p-2 border bg-gray-100 text-left">Different Types of Supermarket Layout</th></tr>
+                                    <tr class="bg-gray-50"><th class="p-2 border">Layout</th><th class="p-2 border">Description</th><th class="p-2 border">Advantages</th><th class="p-2 border">Disadvantages</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="p-2 border">Grid</td>
+                                        <td class="p-2 border">parallel aisles</td>
+                                        <td class="p-2 border">efficient use of floor space, Controls <strong>31</strong> <input type="text" id="q31"></td>
+                                        <td class="p-2 border">Uninteresting layout, Shoppers can <strong>32</strong> <input type="text" id="q32"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border">Free-form</td>
+                                        <td class="p-2 border"><strong>33</strong> <input type="text" id="q33"> organization</td>
+                                        <td class="p-2 border">customers need more <strong>34</strong> <input type="text" id="q34"> their shopping to find products</td>
+                                        <td class="p-2 border">poor use of space, so less <strong>35</strong> <input type="text" id="q35"></td>
+                                    </tr>
+                                     <tr>
+                                        <td class="p-2 border">Boutique</td>
+                                        <td class="p-2 border">Displays arranged around a food speciality</td>
+                                        <td class="p-2 border">separates space into <strong>36</strong> <input type="text" id="q36">, creates attractive image</td>
+                                        <td class="p-2 border">poor use of space</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                         <h4 class="font-bold mb-2 mt-6">Questions 37-40</h4>
+                         <p class="mb-4">Which types of products are placed in each location in supermarkets?</p>
+                        <p>Choose FOUR answers from the box and write the correct letter, A-F, next to questions 37-40.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> more expensive products</p>
+                            <p><strong>B</strong> most profitable products</p>
+                            <p><strong>C</strong> products reduced in price</p>
+                            <p><strong>D</strong> products aimed at children</p>
+                            <p><strong>E</strong> products requiring careful selection</p>
+                            <p><strong>F</strong> slow-moving products</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                           <p><strong>Locations</strong></p>
+                           <p><strong>37</strong> end of aisles <input type="text" id="q37" class="w-16"></p>
+                           <p><strong>38</strong> middle shelves <input type="text" id="q38" class="w-16"></p>
+                           <p><strong>39</strong> near the entrance <input type="text" id="q39" class="w-16"></p>
+                           <p><strong>40</strong> checkout areas <input type="text" id="q40" class="w-16"></p>
+                        </div>
+                    `
+                }
+            ]
+        },
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The Clipper Races: an era of competition between cargo ships</h3>
+                        <p>During the seventeenth and eighteenth centuries, the British East India Company had the monopoly on trade with China and India. This meant that because no rival could legally import tea or other goods from these countries at this time, the company was rarely in a hurry to transport its merchandise. Instead, its priority was to minimise costs by carrying as much as possible on each ship. This meant that its ships known as East Indiamen - were enormous, strong and very slow.</p>
+                        <p>By 1800, the average East Indiaman could carry 1,200 tons of merchandise. The trading pattern for China tea usually meant the East Indiamen set sail from Britain in January, sailed round the Cape of Good Hope at the southernmost tip of Africa, and arrived in China in September. There they would load up that year's tea harvest, set off again and, depending on the wind and weather, aim to arrive back by the following September. So even with favourable sailing conditions, the round trip lasted almost two years, and if anything went wrong it could take a lot longer.</p>
+                        <p>However, by 1834 the company had lost its trading monopolies, and tea had become a freely traded item. Having no more use for its great ships, the company sold them off, and many were bought by merchants or their captains, who continued to plough the seas between Britain and China. But now that tea could be traded freely, a few smart sailors began to realise that whoever brought each new harvest of tea to Britain first, stood to make the most money.</p>
+                        <p>This was partly because if you were home first, you could sell your shipment of tea before your competitors even arrived, and partly because consumers in Britain in the nineteenth century believed that the fresher and earlier-picked the tea, the better the resulting drink. Tea traders now needed faster, sleeker ships to bring their precious cargo back. Nevertheless, in Britain this idea only caught on slowly, and white the 1840s saw a few faster ships launched, for the time being many merchants remained satisfied with the slow but reliable East Indiamen.</p>
+                        <p>In fact it was the Americans who pioneered the first clipper ships. These vessels were fast and slender, with a narrow hull that was deeper at the back than at the front and masses of sails on tall masts. They earned their name from the way that they clipped off journey times British merchants resolved to build their own clippers to rival the Americans and the first British tea clipper, Stornaway, was built in Aberdeen in 1850 More tea clippers were designed and built in Britain throughout the 1850s and 1860s, they had a narrower beam than their American equivalents, making them less powerful during storms, but faster in calmer weather.</p>
+                        <p>There was a great spirit of competition between the British and American ships plying the tea trade, but to begin with the Americans had the edge. Then in 1851 a British ship owner, Richard Green, built the aptly named clipper Challenger, with the stated intention of beating the American ships. Loaded with tea, Challenger left China for London in 1852 at the same time as the American clipper Challenge, a much larger, older ship, already greatly admired for its speed. Large sums were bet on which would complete the journey first. In the event, the British ship beat its rival to London by two days, amid much jubilation. From then on, such international races grew in popularity.</p>
+                        <p>After 1855, American participation in the British tea trade gradually stopped. But even without the Anglo-American rivalry, the competitive spirit continued. It was really ignited when new ports were opened up for trade in China. These included Fouchow, which was much closer to the tea-producing areas than Canton, the port used previously. As a result, tea could be loaded onboard earlier and fresher, and the clippers could set off in late May or early June sometimes not even taking time to fill out the official paperwork - racing back to Britain whatever the difficulties.</p>
+                        <p>They sped down through the South China Sea and into the Indian Ocean, then raced to get round the southernmost tip of Africa at the Cape of Good Hope. Then it was north across the vast Atlantic, past the Azores, through the English Channel and into the estuary of the River Thames. Once there, they would be towed by tugs, up the river and into the docks.</p>
+                        <p>The cargo of the winning ship could earn a premium of up to sixpence per pound-and so the captain and crew were rewarded by the owners of the cargo. But the races were about more than just money the crews, about 40 men on each clipper, were expert sailors, proud of their ships, and they delighted in competing against each other. Without their enthusiasm, the races would never have happened, since getting the ship home as fast as possible required the crew to be totally dedicated and to sacrifice much of their rest for the duration of the race.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-6</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>1</strong> In the seventeenth and eighteenth centuries, the British East India Company faced a lot of competition. <input type="text" id="q41" class="w-32"></p>
+                           <p><strong>2</strong> Before 1800, cargo size was the most important consideration for the East India Company. <input type="text" id="q42" class="w-32"></p>
+                           <p><strong>3</strong> At best, voyages of the East Indiamen to China and back took nearly two years to complete. <input type="text" id="q43" class="w-32"></p>
+                           <p><strong>4</strong> Before 1834, voyages to and from China were considered to be highly dangerous. <input type="text" id="q44" class="w-32"></p>
+                           <p><strong>5</strong> After 1834, the ships which had served the East India Company stopped being used for commercial purposes. <input type="text" id="q45" class="w-32"></p>
+                           <p><strong>6</strong> In the nineteenth century, British drinkers preferred tea made from mature leaves to that made from younger leaves. <input type="text" id="q46" class="w-32"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 7-13</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <h5 class="font-bold">Clipper races</h5>
+                            <p><strong>The ships</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>Clipper ships were first used for trading by American merchants.</li>
+                               <li>The ships were remarkable for the number of <strong>7</strong> <input type="text" id="q47" class="w-24"> they had.</li>
+                               <li>The performance of British tea clippers was particularly affected when there were <strong>8</strong> <input type="text" id="q48" class="w-24"> at sea.</li>
+                            </ul>
+                            <p><strong>The races</strong></p>
+                            <ul class="list-disc list-inside">
+                               <li>It was in a ship called <strong>9</strong> <input type="text" id="q49" class="w-24"> that the British first competed successfully against the Americans.</li>
+                               <li>Richard Green's ship arrived two days ahead of its competitor.</li>
+                               <li>Competition increased when additional Chinese trading <strong>10</strong> <input type="text" id="q50" class="w-24"> were established.</li>
+                               <li>Merchants were occasionally in such a hurry that they failed to complete the <strong>11</strong> <input type="text" id="q51" class="w-24"> before leaving China.</li>
+                               <li>At the end of their journey, the ships needed the help of <strong>12</strong> <input type="text" id="q52" class="w-24">.</li>
+                            </ul>
+                            <p><strong>The rewards</strong></p>
+                            <ul class="list-disc list-inside">
+                                <li>The crews were motivated by both <strong>13</strong> <input type="text" id="q53" class="w-24"> and their enthusiasm for the competition.</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                         <h3 class="text-xl font-bold mb-4">Orientation of birds</h3>
+                        <p><strong>A</strong> For many of us, the way birds are able to orientate is both astounding and difficult to appreciate fully. For instance, the annual migration of tire golden plover of the Pacific takes it from Alaska to Hawaii on a flight of well over 3000 kilometres, and if it were to deviate by only one degree, it would miss the island on which it nests.</p>
+                        <p><strong>B</strong> The first systematic studies on orientation in birds were made possible by the 'homing instinct' exhibited by so many species. Birds are caught at a time when they show an attachment to their territory, especially during the nesting season. They are taken to some spot, released, and the percentage of returns is recorded. The distance can be varied, and the direction, as well as the method of transporting them, and then the influence of climatic and other factors on their ability to find their way home can be studied. These experiments have shown a wide variation in ability to home, and three types of homing behaviour have been identified.</p>
+                        <p><strong>C</strong> In the first type, birds methodically explore the area in which they are released until they pick up some familiar feature, and then they quickly find their way back to the nest. Such birds possess a highly developed visual memory, as experiments with pigeons have shown. Domestic pigeons have been trained to peck at a certain point on an aerial photograph, with a system of rewards, and four years later the birds were still able to respond to this training when placed on the aerial photograph. Birds' eyes have a power of resolution two to three times greater than ours, enabling them to pick up very fine details. If a bird uses only this type of homing behaviour, however, it can only succeed if the point of release is not too far away. If the birds are transported 800 kilometres from their nest, it is only by good fortune that they find their way back as a result of long exploratory flights. Usually, the area known to a bird is its feeding territory. Released within this area, the birds soon make their return; release them outside it and far fewer return. However, if a bird is released for a second time in the same place, its visual memory comes into play, and the bird, no longer requiring tedious exploratory flights, will return much more quickly.</p>
+                        <p><strong>D</strong> The second type of homing behaviour is shown by birds that are capable of choosing their flight direction and holding to it for the rest of their journey. How do they decide what direction to take? They appear to choose their normal migration direction even if they are released in a different place from their usual stalling point. If, for example, birds which normally fly to the north-east to reach latitude 45 degrees north are released at that latitude, they will immediately start flying north-east anyway. So if they're released further to the west, they'll maintain the correct direction, but fly west of their destination, and so fail to arrive.</p>
+                        <p><strong>E</strong> The third type of homing behaviour shows the highest degree of orientation. Released at one point, the birds immediately take stock of it, compare its position with that of the nest, decide on the direction and fly off. This happens even if the birds are in a country right off their migration routes, where they have never been before. In one example, a laysan albatross returned to its nesting area on Midway Island in the middle of the Pacific, having flown over 5000 kilometres from the west coastal of the USA in just over ten days. This is a perfect example of the third type of homing, for the albatross clearly couldn't rely on any landmarks over the vast expanse of the Pacific Ocean.</p>
+                        <p><strong>F</strong> The percentage of successful birds varies greatly, being highest in those species with a strong migratory behaviour. Thus the lesser black-backed gull is more migratory than the herring gull and more often reaches 'home'. Great migrants such as the swift have the highest percentage of returns. In one case, seven out of nine alpine swifts were recaptured at their nests after being displaced some 1400 kilometres; one made the journey in three days.</p>
+                        <p><strong>G</strong> What part does heredity play in all this? Two research studies suggest that instinctive, i.e. genetically inherited, behaviour patterns play a part in navigation. The first was carried out by Ernst Schuz and it is highly significant. Schuz caught first year European storks and released them later, after the departure of the adult storks at a time when they normally make their south-west autumn migration to Africa. The recaptures showed that, in spite of thefact that there were no adults to guide them, the birds unanimously headed south-west. This was a most striking finding, for it showed that the birds had an innate and unlearned attraction for the African wintering area that they have occupied for thousands of years.</p>
+                        <p><strong>H</strong> The case of starlings is a little different. These birds have a great aptitude for homing, but this behaviour differs in the different age groups. Birds that were shifted to the south-east of their normal migration route split into two lots. The adults, in full possession of their gift for orientation, found their wintering area by modifying their direction by 90 degrees, whereas the juveniles sought their winter quarters to the south-east of their real position.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-18</h4>
+                        <p class="mb-4">Complete the summary below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">Types of homing behaviour</h5>
+                            <p><strong>First type:</strong> Birds rely on their sophisticated <strong>14</strong> <input type="text" id="q54">. However, they are generally most successful if they are released within their feeding territory.</p>
+                            <p><strong>Second type:</strong> Birds select their accustomed <strong>15</strong> <input type="text" id="q55">, no matter where they are released. As a result, they may miss their <strong>16</strong> <input type="text" id="q56">.</p>
+                            <p><strong>Third type:</strong> Birds orientate correctly, even when they are released in an unfamiliar place and have no <strong>17</strong> <input type="text" id="q57"> to make use of. One bird with this type of skill is the <strong>18</strong> <input type="text" id="q58">.</p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 19-22</h4>
+                        <p class="mb-4">Reading Passage 2 has eight paragraphs, A-H. Which paragraph contains the following information?</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>19</strong> the effects of distance on some birds' ability to find their nests <input type="text" id="q59" class="w-16"></p>
+                            <p><strong>20</strong> a methodology for testing the general ability of birds to find their nests <input type="text" id="q60" class="w-16"></p>
+                            <p><strong>21</strong> one aspect of physical ability in humans and birds <input type="text" id="q61" class="w-16"></p>
+                            <p><strong>22</strong> how some birds' migration was delayed for experimental purposes <input type="text" id="q62" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 23-26</h4>
+                        <p class="mb-4">Look at the following types of birds (Questions 23-26) and the list of points which the author wishes to illustrate below. Match each bird with the point which it illustrates, A-G.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p class="font-bold mb-2">List of points which the author wishes to illustrate</p>
+                            <p><strong>A</strong> an ability to orientate without previous training</p>
+                            <p><strong>B</strong> the speed at which birds can fly</p>
+                            <p><strong>C</strong> the ability to remember things seen previously</p>
+                            <p><strong>D</strong> the effect of age on homing ability</p>
+                            <p><strong>E</strong> the strength required to fly a great distance</p>
+                            <p><strong>F</strong> a high success rate in finding nests</p>
+                            <p><strong>G</strong> the importance of seasonal cues for migrating birds</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>23</strong> domestic pigeon <input type="text" id="q63" class="w-16"></p>
+                            <p><strong>24</strong> alpine swift <input type="text" id="q64" class="w-16"></p>
+                            <p><strong>25</strong> European stork <input type="text" id="q65" class="w-16"></p>
+                            <p><strong>26</strong> starling <input type="text" id="q66" class="w-16"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The role of accidents in business</h3>
+                        <p>In 1894 Dr John Kellogg and his brother. Will, were supervising a hospital and health spa in Michigan. The patients were on a restricted diet. One day, the brothers left cooked wheat untended for more than 24 hours. When they returned, they saw what they had done. It was no good to eat, but they decided to run the stale wheat through rollers, just to see how it would turn out. Normally, the process produced long sheets, but they were surprised to discover that this time the rollers created flat flakes. They baked them, and then tried the same thing with corn. From this accidental discovery came the cornflakes that generations have now been eating for breakfast.</p>
+                        <p>Accidents happen; there is nothing predictable and orderly about innovation. Nobel laureate Sir Alan Hodgkin, who discovered how nerve cells transmit electrical impulses between the skin and the brain, commented: 'I believe that the record of my published papers conveys an impression of directedness and planning which does not at all coincide with the actual sequence of events.</p>
+                        <p>The same rule applies in business. The mistake that gave us cornflakes keeps repeating itself in the history of disruptive innovation, the kind that transforms markets. Louis Daguerre, for, instance, discovered the technique that gave us photography in the 1830s, when drops of mercury from a shattered thermometer produced a photographic image. The microwave was discovered when Peroy Spender, a scientist with Raytheon, was testing a new vacuum tube and discovered that the sweet in his pocket had melted. The artificial sweetener, saccharin, was the unintentional result of a medical scientist's work on a chemical treatment for gastric ulcers. While working for the firm 3M, researcher Art Fry had no idea he was taking the first steps towards Post-It Notes when he used bits of adhesive office paper that could be easily lifted off the page to replace the scrap paper bookmarks that kept falling out of his hymn book.</p>
+                        <p>Breakthrough and disruptive innovation are rarely driven by orderly process. Usually they come out of a chaotic, haphazard mess, which is why big companies, full of managers schooled in business programmes designed to eliminate random variation and mistakes, struggle with them. In these sorts of environments, accidents are called failures and are discouraged.</p>
+                        <p>It is no surprise then that research from the late British economist Paul Geroski and London Business School's Constantinos Markides found that companies that were skilled at innovation were usually not that skilled when it came to commercialisation, and vice versa. Their book, Fast Second, divides businesses into 'colonists' and 'consolidators'. Small and nimble, colonists are adept at creating market niches but are terrible institution builders. Consolidators, with their strong cultures of discipline and cost control, know how to take clever ideas from other firms and turn them into mass-market items. Microsoft is a prime instance of this.</p>
+                        <p>With companies spending hundreds of billions of dollars on research and development, US academics Robert Austin and Lee Devin examined how managers can encourage productive slip-ups. In their article Accident, Intention and Expectation in the Innovation Process, they argue that business processes actually prevent helpful mis-steps from occurring. According to their catalogue of accidents, not all false steps and mishaps are equal. Accidents, they say, come from unlikely mental associations such as memories and vague connections, looking for something and finding it in an unexpected way, looking for one thing and finding something else, and not looking for anything but finding something valuable.</p>
+                        <p>Accident-prone innovation, they say, requires companies to get outside the 'cone of expectation'. It means throwing together groups from diverse backgrounds, and combining ideas in unpredictable ways. Other strategies also include having systems that watch out for accidents and examine them for value, generating them when they do not happen often enough, seizing oil the useful ones, capturing their valuable features, and building on them to add value and give potential for useful accidents.</p>
+                        <p>All this, however, requires thinking that is often counter-intuitive to the way businesses operate. In other words, it is the kind of thinking that goes against the beliefs of most business managers. It runs counter to the notion frequently pushes by consultants that you can 'harness' creativity and direct it to line up with intention. 'The cost of accidents business, people tend to call such efforts failure.'</p>
+                        <p>There are tentative signs that more companies are starting to realise that failure can lead to commercial gain, and that this is part or the risk-talking that underpins innovation. Australia's largest brewing company, for example, made a bad error when it launched a new beer called Empire Lager, pitched at younger consumers. Having spent a fortune creating a beer with a sweeter taste, designing a great-looking bottle and a television campaign, Foster's was left with a drink that no-one wanted to buy. The target market was more interested in brands built up by word of mouth.</p>
+                        <p>Instead of wiping the unsuccessfull product launch, Fosters used this lesson learned to go on and develop other brands instead. One of them, Pure Blonde, is now ranked as Australia's fifth-largest beer brand. Unlike Empire Lager, there has been almost no promotion and its sales are generated more by word of mouth.</p>
+                        <p>Other companies are taking similar steps to study their own slip-ups. Intuit, the company behind financial tools such as Quicken, holds regular 'When Learning Hurts' sessions. But this sort of transformation is never easy. In a market that focuses on the short-term, convincing employees and shareholders to tolerate failure and not play it safe is a big thing to ask.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-31</h4>
+                        <p class="mb-4">Do the following statements agree with the claims of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>27</strong> The delay in the process used by the Kellogg brothers affected the final product. <input type="text" id="q67" class="w-32"></p>
+                           <p><strong>28</strong> Sir Alan Hodgkin is an example of someone whose work proceeded in a logical and systematic way. <input type="text" id="q68" class="w-32"></p>
+                           <p><strong>29</strong> Daguerre is an exception to the general rule of innovation. <input type="text" id="q69" class="w-32"></p>
+                           <p><strong>30</strong> The discovery of saccharin occurred by accident during drug research. <input type="text" id="q70" class="w-32"></p>
+                           <p><strong>31</strong> The company 3M should have supported Art Fry by funding his idea of Post-It Notes. <input type="text" id="q71" class="w-32"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 32-35</h4>
+                        <p class="mb-4">Complete each sentence with the correct ending, A-H, below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> can be found in unusual thoughts and chance events.</p>
+                            <p><strong>B</strong> can be taught in business schools.</p>
+                            <p><strong>C</strong> has made a success from someone else's invention.</p>
+                            <p><strong>D</strong> is designed to nurture differences.</p>
+                            <p><strong>E</strong> is unlikely to lead to creative innovation.</p>
+                            <p><strong>F</strong> says that all mistakes are the same.</p>
+                            <p><strong>G</strong> shows that businesses are good at either inventing of selling.</p>
+                            <p><strong>H</strong> suggests ways of increasing the number of mistakes.</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>32</strong> The usual business environment <input type="text" id="q72" class="w-16"></p>
+                            <p><strong>33</strong> Geroki and Markides's book <input type="text" id="q73" class="w-16"></p>
+                            <p><strong>34</strong> Microsoft is an example of a company which <input type="text" id="q74" class="w-16"></p>
+                            <p><strong>35</strong> The origin of useful accidents <input type="text" id="q75" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 36-40</h4>
+                        <p class="mb-4">Choose the correct letter, A, B, C or D.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white">
+                            <div class="q-item">
+                                <p><strong>36</strong> How do Austin and Devin advise companies to get out of the 'cone of expectation'?</p>
+                                <label class="block"><input type="radio" name="q76" value="A"> A by decreasing the number of company systems</label>
+                                <label class="block"><input type="radio" name="q76" value="B"> B by forming teams of different types of people</label>
+                                <label class="block"><input type="radio" name="q76" value="C"> C by hiring new and creative people</label>
+                                <label class="block"><input type="radio" name="q76" value="D"> D by holding regular brainstorming meetings</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>37</strong> In recommending 'counter-intuitive' thinking, what do Austin and Devin imply?</p>
+                                <label class="block"><input type="radio" name="q77" value="A"> A that failing at business is bad for staff morale</label>
+                                <label class="block"><input type="radio" name="q77" value="B"> B that innovation cannot be planned for</label>
+                                <label class="block"><input type="radio" name="q77" value="C"> C that most businesses should be devoted to avoiding mistakes</label>
+                                <label class="block"><input type="radio" name="q77" value="D"> D that the cost of mistakes is an important consideration</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>38</strong> The writer describes the Empire Lager disaster in order to show that</p>
+                                <label class="block"><input type="radio" name="q78" value="A"> A success can come out of a business failure</label>
+                                <label class="block"><input type="radio" name="q78" value="B"> B the majority of companies now value risk-talking.</label>
+                                <label class="block"><input type="radio" name="q78" value="C"> C TV advertising works better on older people</label>
+                                <label class="block"><input type="radio" name="q78" value="D"> D young beer drinkers do not like a sweet taste</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>39</strong> Pure Blonde has been more successful than Empire Lager because</p>
+                                <label class="block"><input type="radio" name="q79" value="A"> A digital media other than TV were used.</label>
+                                <label class="block"><input type="radio" name="q79" value="B"> B it was advertised under a different brand name.</label>
+                                <label class="block"><input type="radio" name="q79" value="C"> C it was launched with very little advertising.</label>
+                                <label class="block"><input type="radio" name="q79" value="D"> D the advertising budget was larger</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>40</strong> The writer concludes that creating a culture that learns from mistakes</p>
+                                <label class="block"><input type="radio" name="q80" value="A"> A brings short-term financial gains.</label>
+                                <label class="block"><input type="radio" name="q80" value="B"> B can be very difficult for some companies.</label>
+                                <label class="block"><input type="radio" name="q80" value="C"> C holds no risk for workers.</label>
+                                <label class="block"><input type="radio" name="q80" value="D"> D is a popular move with shareholders.</label>
+                            </div>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        // Listening Answers
+        q1: "614381997", q2: "post.com", q3: "chemist", q4: "garden", q5: "balcony", q6: "fridge", q7: "400", q8: "beach", q9: "parking", q10: "electricity",
+        q11: "3 months", q12: "cooperative", q13: "training", q14: "mixed", q15: "reading", q16: "visits", q17: "government", q18: "job", q19: "meeting", q20: "confidence",
+        q21: "A", q22: "B", q23: "B", q24: "C", q25: "A", q26: "A", "q27_28": "A/C", "q29_30": "B/D",
+        q31: "traffic flow", q32: "rush", q33: "random", q34: "time", q35: "cost-effective", q36: "smaller areas",
+        q37: "E", q38: "F", q39: "A", q40: "B",
+        // Reading Answers
+        q41: "false", q42: "true", q43: "true", q44: "not given", q45: "false", q46: "false",
+        q47: "sails", q48: "storms", q49: "Challenger", q50: "ports", q51: "paperwork", q52: "tugs", q53: "money",
+        q54: "visual memory", q55: "migration direction", q56: "destination", q57: "landmarks", q58: "albatross",
+        q59: "C", q60: "B", q61: "C", q62: "G",
+        q63: "C", q64: "F", q65: "A", q66: "D",
+        q67: "yes", q68: "no", q69: "no", q70: "yes", q71: "not given",
+        q72: "E", q73: "G", q74: "C", q75: "A",
+        q76: "B", q77: "B", q78: "A", q79: "C", q80: "B"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            userAnswers: {},
+            currentTab: 'listening',
+            currentSection: 0,
+            answersChecked: {},
+            scriptVisible: false,
+
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            scriptSection: document.getElementById('script-section'),
+            scriptContent: document.getElementById('script-content'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            toggleScriptBtn: document.getElementById('toggle-script-btn'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                this.toggleScriptBtn.addEventListener('click', () => this.toggleScript());
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                    if (e.target.classList.contains('section-btn')) {
+                        this.switchSection(parseInt(e.target.dataset.sectionIndex, 10));
+                    }
+                });
+            },
+            
+            saveAnswer(e) {
+                const target = e.target;
+                if (target.id || target.name) {
+                    const id = target.id || target.name;
+                    if (target.type === 'radio') {
+                        if (target.checked) this.userAnswers[id] = target.value;
+                    } else if (target.type === 'checkbox') {
+                        const checked = Array.from(document.querySelectorAll(`input[name="${id}"]:checked`)).map(cb => cb.value).sort().join('/');
+                        this.userAnswers[id] = checked;
+                    } else {
+                         this.userAnswers[id] = target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const multiInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        if (multiInputs.length > 0) {
+                            if (multiInputs[0].type === 'checkbox') {
+                                const values = value.split('/');
+                                multiInputs.forEach(input => {
+                                    input.checked = values.includes(input.value);
+                                });
+                            } else {
+                                multiInputs.forEach(radio => {
+                                    if (radio.value === value) radio.checked = true;
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+            
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                this.scriptVisible = false;
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+
+                this.toggleScriptBtn.style.display = (tabName === 'listening') ? 'block' : 'none';
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.scriptVisible = false;
+                 this.loadContent();
+            },
+
+            toggleScript() {
+                if (this.currentTab !== 'listening') return;
+                this.scriptVisible = !this.scriptVisible;
+                this.updatePaneVisibility();
+            },
+
+            updatePaneVisibility() {
+                if (this.currentTab === 'listening') {
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = this.scriptVisible ? 'flex' : 'none';
+                    this.questionsSection.style.display = this.scriptVisible ? 'none' : 'block';
+                    this.toggleScriptBtn.textContent = this.scriptVisible ? 'Hide Script' : 'Show Script';
+                    
+                    if (this.scriptVisible) {
+                        const scriptKey = `section${this.currentSection + 1}`;
+                        this.scriptContent.innerHTML = listeningScripts[scriptKey] || "<p class='text-gray-500'>Script not available.</p>";
+                    }
+
+                } else { // Reading
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = 'none';
+                    this.questionsSection.style.display = 'block';
+                }
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                if (this.currentTab === 'listening') {
+                    this.leftPane.innerHTML = sectionData.instructions;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                } else { // reading
+                    this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                }
+                
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+
+                this.updatePaneVisibility();
+                this.addAudioListeners();
+                this.restoreAnswers();
+                this.addCheckButtons();
+                
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+
+            addAudioListeners() {
+                document.querySelectorAll('.play-audio-btn').forEach(btn => {
+                    const audioId = btn.dataset.audioId;
+                    const audioEl = document.getElementById(audioId);
+                    if (!audioEl) return;
+
+                    const timeDisplay = btn.nextElementSibling;
+                    const seeker = btn.parentElement.nextElementSibling;
+                    const playText = btn.querySelector('.play-text');
+
+                    const formatTime = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+                    btn.onclick = () => {
+                        if (audioEl.paused) audioEl.play();
+                        else audioEl.pause();
+                    };
+                    audioEl.onplay = () => playText.textContent = 'Pause';
+                    audioEl.onpause = () => playText.textContent = 'Play';
+                    audioEl.onloadedmetadata = () => {
+                        timeDisplay.textContent = `${formatTime(0)} / ${formatTime(audioEl.duration)}`;
+                    };
+                    audioEl.ontimeupdate = () => {
+                        timeDisplay.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`;
+                        seeker.value = audioEl.duration ? (audioEl.currentTime / audioEl.duration) * 100 : 0;
+                    };
+                    seeker.oninput = () => {
+                        if (audioEl.duration) {
+                            audioEl.currentTime = (seeker.value / 100) * audioEl.duration;
+                        }
+                    };
+                });
+            },
+
+            getExerciseTypes() {
+                const types = {
+                    listening: {
+                        0: [ { type: 'form_completion', startQ: 1, endQ: 10, title: 'Form Completion' } ],
+                        1: [ { type: 'notes_completion', startQ: 11, endQ: 20, title: 'Notes Completion' } ],
+                        2: [ { type: 'multiple_choice', startQ: 21, endQ: 26, title: 'Multiple Choice' }, { type: 'multiple_selection', startQ: 27, endQ: 28, title: 'Multiple Selection' }, { type: 'multiple_selection_2', startQ: 29, endQ: 30, title: 'Multiple Selection' }],
+                        3: [ { type: 'table_completion', startQ: 31, endQ: 36, title: 'Table Completion' }, { type: 'matching', startQ: 37, endQ: 40, title: 'Matching' } ]
+                    },
+                    reading: {
+                        0: [ { type: 'true_false', startQ: 41, endQ: 46, title: 'True/False/Not Given' }, { type: 'notes_completion', startQ: 47, endQ: 53, title: 'Notes Completion' } ],
+                        1: [ { type: 'summary_completion', startQ: 54, endQ: 58, title: 'Summary Completion' }, { type: 'paragraph_matching', startQ: 59, endQ: 62, title: 'Paragraph Matching' }, { type: 'matching_points', startQ: 63, endQ: 66, title: 'Matching Points' }],
+                        2: [ { type: 'yes_no', startQ: 67, endQ: 71, title: 'Yes/No/Not Given' }, { type: 'sentence_completion', startQ: 72, endQ: 75, title: 'Sentence Completion' }, { type: 'multiple_choice', startQ: 76, endQ: 80, title: 'Multiple Choice' } ]
+                    }
+                };
+                return types[this.currentTab][this.currentSection] || [];
+            },
+
+            addCheckButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                const container = this.currentTab === 'listening' ? this.questionsSection : this.questionsSection;
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `<p class="font-semibold mb-2">${exercise.title} (Q${exercise.startQ}-${exercise.endQ})</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">${buttonText}</button>`;
+
+                    const firstQuestionInput = document.getElementById(`q${exercise.startQ}`) || document.querySelector(`input[name="q${exercise.startQ}"]`);
+                    const questionBlock = firstQuestionInput ? firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6, .space-y-2') : null;
+                    if (questionBlock) {
+                        questionBlock.appendChild(buttonContainer);
+                    } else {
+                        container.appendChild(buttonContainer);
+                    }
+                });
+            },
+            
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+
+                for (let i = startQ; i <= endQ; i++) {
+                    let qId = `q${i}`;
+                    // Special handling for checkbox groups
+                    if ((i >= 27 && i <= 28) || (i >= 29 && i <= 30)) {
+                        qId = (i <= 28) ? 'q27_28' : 'q29_30';
+                        const userAnswer = this.userAnswers[qId] || '';
+                        const correctAnswer = answers[qId].toLowerCase().split('/');
+                        
+                        document.querySelectorAll(`input[name="${qId}"]`).forEach(input => {
+                            const label = input.closest('label');
+                            if (input.checked) {
+                                if (correctAnswer.includes(input.value.toLowerCase())) {
+                                    label.classList.add('correct-answer');
+                                } else {
+                                    label.classList.add('incorrect-answer');
+                                }
+                            } else if (correctAnswer.includes(input.value.toLowerCase())) {
+                                     label.style.border = '2px solid #fbbf24';
+                            }
+                        });
+                        if (i === 28 || i === 30) continue;
+                    }
+
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const correctAnswer = (answers[qId] || "").toLowerCase();
+                    const isCorrect = correctAnswer.split('/').some(ans => ans.trim() === userAnswer);
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+
+                    if (inputElement) {
+                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') : inputElement;
+                         if (isCorrect) {
+                            elementToStyle.classList.add('correct-answer');
+                            if(inputElement.type === 'text') inputElement.style.backgroundColor = '#dcfce7';
+                        } else {
+                            elementToStyle.classList.add('incorrect-answer');
+                             if(inputElement.type === 'text') {
+                                 inputElement.placeholder = `Correct: ${answers[qId]}`;
+                             }
+                        }
+                    } else if (inputs[0] && inputs[0].type === 'text') {
+                        inputs[0].classList.add('incorrect-answer');
+                        inputs[0].placeholder = `Correct: ${answers[qId]}`;
+                    }
+                    
+                     if (inputs[0] && inputs[0].type === 'radio' && !isCorrect) {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId]}"]`);
+                         if(correctRadio) correctRadio.closest('label').classList.add('correct-answer');
+                    }
+                }
+
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = this.splitter.parentElement.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        this.splitter.parentElement.style.gridTemplateColumns = `${newLeftWidth}px 5px 1fr`;
+                    }
+                });
+                document.addEventListener('mouseup', () => isDragging = false);
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                         if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) { console.warn(ex); }
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
