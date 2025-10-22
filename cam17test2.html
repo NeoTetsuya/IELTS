@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Cambridge 17 Test 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            transition: all 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+        }
+        #vocab-modal {
+            animation: fadeInModal 0.3s ease-out;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+         @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Cambridge 17 Test 2</h1>
+        <div class="flex items-center space-x-4">
+            <div class="text-lg font-semibold text-gray-600">IELTS Academic Reading</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative transform transition-all" style="animation: zoomIn 0.3s ease-out;">
+        <button id="close-vocab-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 text-3xl leading-none">&times;</button>
+        <div class="flex items-center mb-4">
+            <h3 id="vocab-word" class="text-3xl font-bold text-blue-600 capitalize"></h3>
+        </div>
+        <div class="flex items-center mb-4">
+            <button id="play-audio-btn" class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white mr-3 transition-colors">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-600 text-lg"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 leading-relaxed"></p>
+    </div>
+</div>
+
+
+<script>
+    // --- DATA ---
+    const vocabulary = {
+        'settlement': { meaning: 'A place, typically one which has previously been uninhabited, where people establish a community.', phonetic: '/ˈsɛtəlmənt/' },
+        'stumbled': { meaning: "To trip or momentarily lose one's balance; almost fall. In this context, it means to find something by chance.", phonetic: '/ˈstʌmbəld/' },
+        'antiquities': { meaning: 'Objects, buildings, or works of art from the ancient past.', phonetic: '/ænˈtɪkwətiz/' },
+        'unearthed': { meaning: 'To find something in the ground by digging.', phonetic: '/ʌnˈərθt/' },
+        'prevailing': { meaning: 'Existing at a particular time; current or most common.', phonetic: '/prɪˈveɪlɪŋ/' },
+        'devout': { meaning: 'Having or showing deep religious feeling or commitment.', phonetic: '/dɪˈvaʊt/' },
+        'sectarian': { meaning: 'Relating to a particular religious or political group, often with a narrow-minded viewpoint.', phonetic: '/sɛkˈtɛriən/' },
+        'chiselled': { meaning: 'In this context, it means carved or engraved onto a hard surface like metal or stone.', phonetic: '/ˈtʃɪzəld/' },
+        'intriguing': { meaning: "Arousing one's curiosity or interest; fascinating.", phonetic: '/ɪnˈtriːɡɪŋ/' },
+        'caches': { meaning: 'A collection of items of the same type stored in a hidden or inaccessible place.', phonetic: '/ˈkæʃɪz/' },
+        'pillaged': { meaning: 'To rob a place using violence, especially in wartime.', phonetic: '/ˈpɪlɪdʒd/' },
+        'deciphered': { meaning: 'To convert (a text written in code, or a coded signal) into normal language.', phonetic: '/dɪˈsaɪfərd/' },
+        'domesticate': { meaning: 'To tame an animal or cultivate a plant for food, keeping it as a pet or on a farm.', phonetic: '/dəˈmɛstɪˌkeɪt/' },
+        'cultivate': { meaning: 'To prepare and use land for growing crops or gardening.', phonetic: '/ˈkʌltɪˌveɪt/' },
+        'nutritious': { meaning: 'Containing many of the substances needed for life and growth; nourishing.', phonetic: '/nuˈtrɪʃəs/' },
+        'revolutionary': { meaning: 'Involving or causing a complete or dramatic change.', phonetic: '/ˌrɛvəˈluʃəˌnɛri/' },
+        'appealing': { meaning: 'Attractive or interesting.', phonetic: '/əˈpilɪŋ/' },
+        'devastating': { meaning: 'Highly destructive or damaging.', phonetic: '/ˈdɛvəˌsteɪtɪŋ/' },
+        'mimic': { meaning: 'To imitate someone or their actions or words, especially in order to entertain or ridicule.', phonetic: '/ˈmɪmɪk/' },
+        'diversity': { meaning: 'The state of being diverse; variety.', phonetic: '/daɪˈvɜrsəti/' },
+        'traits': { meaning: 'A distinguishing quality or characteristic, typically one belonging to a person or organism.', phonetic: '/treɪts/' },
+        'aromatic': { meaning: 'Having a pleasant and distinctive smell.', phonetic: '/ˌærəˈmætɪk/' },
+        'sprawling': { meaning: 'Spreading out over a large area in an untidy or irregular way.', phonetic: '/ˈsprɔlɪŋ/' },
+        'obscure': { meaning: 'Not discovered or known about; uncertain.', phonetic: '/əbˈskjʊr/' },
+        'disregards': { meaning: 'To pay no attention to; ignore.', phonetic: '/dɪsrɪˈɡɑrdz/' },
+        'predecessors': { meaning: 'A person who held a job or office before the current holder.', phonetic: '/ˈprɛdəˌsɛsərz/' },
+        'conventional': { meaning: 'Based on or in accordance with what is generally done or believed.', phonetic: '/kənˈvɛnʃənəl/' },
+        'misrepresents': { meaning: 'To give a false or misleading account of the nature of something.', phonetic: '/ˌmɪsˌrɛprɪˈzɛnts/' },
+        'cumulative': { meaning: 'Increasing or increased in quantity, degree, or force by successive additions.', phonetic: '/ˈkjumjələtɪv/' },
+        'unheralded': { meaning: 'Not previously announced, expected, or recognized.', phonetic: '/ʌnˈhɛrəldɪd/' },
+        'postulated': { meaning: 'To suggest or assume the existence, fact, or truth of something as a basis for reasoning or discussion.', phonetic: '/ˈpɑstʃəˌleɪtɪd/' },
+        'fanciful': { meaning: '(of a person or their ideas) overimaginative and unrealistic.', phonetic: '/ˈfænsɪfəl/' },
+        'gleaned': { meaning: 'To obtain information from various sources, often with difficulty.', phonetic: '/ɡliːnd/' },
+        'confer': { meaning: 'To grant or bestow a title, degree, benefit, or right.', phonetic: '/kənˈfɜr/' },
+        'serendipity': { meaning: 'The occurrence of events by chance in a happy or beneficial way.', phonetic: '/ˌsɛrənˈdɪpəti/' },
+        'banal': { meaning: 'So lacking in originality as to be obvious and boring.', phonetic: '/bəˈnɑl/' },
+        'provenance': { meaning: 'The place of origin or earliest known history of something.', phonetic: '/ˈprɑvənəns/' },
+    };
+
+    const testData = {
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The Dead Sea Scrolls</h3>
+                        <p>In late 1946 or early 1947, three Bedouin teenagers were tending their goats and sheep near the ancient <span class="vocab-word" data-word="settlement">settlement</span> of Qumran, located on the northwest shore of the Dead Sea in what is now known as the West Bank. One of these young shepherds tossed a rock into an opening on the side of a cliff and was surprised to hear a shattering sound. He and his companions later entered the cave and <span class="vocab-word" data-word="stumbled">stumbled</span> across a collection of large clay jars, seven of which contained scrolls with writing on them. The teenagers took the seven scrolls to a nearby town where they were sold for a small sum to a local <span class="vocab-word" data-word="antiquities">antiquities</span> dealer. Word of the find spread, and Bedouins and archaeologists eventually <span class="vocab-word" data-word="unearthed">unearthed</span> tens of thousands of additional scroll fragments from 10 nearby caves; together they make up between 800 and 900 manuscripts. It soon became clear that this was one of the greatest archaeological discoveries ever made.</p>
+                        <p>The origin of the Dead Sea Scrolls, which were written around 2,000 years ago between 150 BCE and 70 CE, is still the subject of scholarly debate even today. According to the <span class="vocab-word" data-word="prevailing">prevailing</span> theory, they are the work of a population that inhabited the area until Roman troops destroyed the settlement around 70 CE. The area was known as Judea at that time, and the people are thought to have belonged to a group called the Essenes, a <span class="vocab-word" data-word="devout">devout</span> Jewish sect.</p>
+                        <p>The majority of the texts on the Dead Sea Scrolls are in Hebrew, with some fragments written in an ancient version of its alphabet thought to have fallen out of use in the fifth century BCE. But there are other languages as well. Some scrolls are in Aramaic, the language spoken by many inhabitants of the region from the sixth century BCE to the siege of Jerusalem in 70 CE. In addition, several texts feature translations of the Hebrew Bible into Greek.</p>
+                        <p>The Dead Sea Scrolls include fragments from every book of the Old Testament of the Bible except for the Book of Esther. The only entire book of the Hebrew Bible preserved among the manuscripts from Qumran is Isaiah; this copy, dated to the first century BCE, is considered the earliest biblical manuscript still in existence. Along with biblical texts, the scrolls include documents about <span class="vocab-word" data-word="sectarian">sectarian</span> regulations and religious writings that do not appear in the Old Testament.</p>
+                        <p>The writing on the Dead Sea Scrolls is mostly in black or occasionally red ink, and the scrolls themselves are nearly all made of neither parchment (animal skin) or an early form of paper called ‘papyrus’. The only exception is the scroll numbered 3Q15, which was created out of a combination of copper and tin. Known as the Copper Scroll, this curious document features letters <span class="vocab-word" data-word="chiselled">chiselled</span> onto metal – perhaps, as some have theorized, to better withstand the passage of time. One of the most <span class="vocab-word" data-word="intriguing">intriguing</span> manuscripts from Qumran, this is a sort of ancient treasure map that lists dozens of gold and silver <span class="vocab-word" data-word="caches">caches</span>. Using an unconventional vocabulary and odd spelling, it describes 64 underground hiding places that supposedly contain riches buried for safekeeping. None of these hoards have been recovered, possibly because the Romans <span class="vocab-word" data-word="pillaged">pillaged</span> Judea during the first century CE. According to various hypotheses, the treasure belonged to local people, or was rescued from the Second Temple before its destruction or never existed to begin with.</p>
+                        <p>Some of the Dead Sea Scrolls have been on interesting journeys. In 1948, a Syrian Orthodox archbishop known as Mar Samuel acquired four of the original seven scrolls from a Jerusalem shoemaker and part-time antiquity dealer, paying less than $100 for them. He then travelled to the United States and unsuccessfully offered them to a number of universities, including Yale. Finally, in 1954, he placed an advertisement in the business newspaper <em>The Wall Street Journal</em> – under the category ‘Miscellaneous Items for Sale’ – that read: ‘Biblical Manuscripts dating back to at least 200 B.C. are for sale. This would be an ideal gift to an educational or religious institution by an individual or group.’ Fortunately, Israeli archaeologist and statesman Yigael Yadin negotiated their purchase and brought the scrolls back to Jerusalem, where they remain to this day.</p>
+                        <p>In 2017, researchers from the University of Haifa restored and <span class="vocab-word" data-word="deciphered">deciphered</span> one of the last untranslated scrolls. The university’s Eshbal Ratson and Jonathan Ben-Dov spent one year reassembling the 60 fragments that make up the scroll. Deciphered from a band of coded text on parchment, the find provides insight into the community of people who wrote it and the 364-day calendar they would have used. The scroll names celebrations that indicate shifts in seasons and details two yearly religious events known from another Dead Sea Scroll. Only one more known scroll remains untranslated.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-5</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">The Dead Sea Scrolls</h5>
+                            <p><strong>Discovery</strong></p>
+                            <ul class="list-disc list-inside space-y-2">
+                               <li>Qumran, 1946/1947</li>
+                               <li>three Bedouin shepherds in their teens were near an opening on side of cliff</li>
+                               <li>heard a noise of breaking when one teenager threw a <strong>1</strong> <input type="text" id="q1" class="w-24"></li>
+                               <li>teenagers went into the <strong>2</strong> <input type="text" id="q2" class="w-24"> and found a number of containers made of <strong>3</strong> <input type="text" id="q3" class="w-24"></li>
+                            </ul>
+                            <p><strong>The scrolls</strong></p>
+                            <ul class="list-disc list-inside space-y-2">
+                               <li>date from between 150 BCE and 70 CE</li>
+                               <li>thought to have been written by group of people known as the <strong>4</strong> <input type="text" id="q4" class="w-24"></li>
+                               <li>written mainly in the <strong>5</strong> <input type="text" id="q5" class="w-24"> language</li>
+                               <li>most are on religious topics, written using ink on parchment or papyrus</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 6-13</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                           <p><strong>6</strong> The Bedouin teenagers who found the scrolls were disappointed by how little money they received for them. <input type="text" id="q6" class="w-32"></p>
+                           <p><strong>7</strong> There is agreement among academics about the origin of the Dead Sea Scrolls. <input type="text" id="q7" class="w-32"></p>
+                           <p><strong>8</strong> Most of the books of the Bible written on the scrolls are incomplete. <input type="text" id="q8" class="w-32"></p>
+                           <p><strong>9</strong> The information on the Copper Scroll is written in an unusual way. <input type="text" id="q9" class="w-32"></p>
+                           <p><strong>10</strong> Mar Samuel was given some of the scrolls as a gift. <input type="text" id="q10" class="w-32"></p>
+                           <p><strong>11</strong> In the early 1950s, a number of educational establishments in the US were keen to buy scrolls from Mar Samuel. <input type="text" id="q11" class="w-32"></p>
+                           <p><strong>12</strong> The scroll that was pieced together in 2017 contains information about annual occasions in the Qumran area 2,000 years ago. <input type="text" id="q12" class="w-32"></p>
+                           <p><strong>13</strong> Academics at the University of Haifa are currently researching how to decipher the final scroll. <input type="text" id="q13" class="w-32"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">A second attempt at domesticating the tomato</h3>
+                        <p><strong>A</strong> It took at least 3,000 years for humans to learn how to <span class="vocab-word" data-word="domesticate">domesticate</span> the wild tomato and <span class="vocab-word" data-word="cultivate">cultivate</span> it for food. Now two separate teams in Brazil and China have done it all over again in less than three years. And they have done it better in some ways, as the re-domesticated tomatoes are more <span class="vocab-word" data-word="nutritious">nutritious</span> than the ones we eat at present.</p>
+                        <p>This approach relies on the <span class="vocab-word" data-word="revolutionary">revolutionary</span> CRISPR genome editing technique, in which changes are deliberately made to the DNA of a living cell, allowing genetic material to be added, removed or altered. The technique could not only improve existing crops, but could also be used to turn thousands of wild plants into useful and <span class="vocab-word" data-word="appealing">appealing</span> foods. In fact, a third team in the US has already begun to do this with a relative of the tomato called the groundcherry.</p>
+                        <p>This fast-track domestication could help make the world’s food supply healthier and far more resistant to diseases, such as the rust fungus <span class="vocab-word" data-word="devastating">devastating</span> wheat crops.</p>
+                        <p>‘This could transform what we eat,’ says Jorg Kudla at the University of Munster in Germany, a member of the Brazilian team. ‘There are 50,000 edible plants in the world, but 90 percent of our energy comes from just 15 crops.’</p>
+                        <p>‘We can now <span class="vocab-word" data-word="mimic">mimic</span> the known domestication course of major crops like rice, maize, sorghum or others,’ says Caixia Gao of the Chinese Academy of Sciences in Beijing. ‘Then we might try to domesticate plants that have never been domesticated.’</p>
+                        <p><strong>B</strong> Wild tomatoes, which are native to the Andes region in South America, produce pea-sized fruits. Over many generations, peoples such as the Aztecs and Incas transformed the plant by selecting and breeding plants with mutations* in their genetic structure, which resulted in desirable traits such as larger fruit.</p>
+                        <p>But every time a single plant with a mutation is taken from a larger population for breeding, much genetic <span class="vocab-word" data-word="diversity">diversity</span> is lost. And sometimes the desirable mutations come with less desirable <span class="vocab-word" data-word="traits">traits</span>. For instance, the tomato strains grown for supermarkets have lost much of their flavour.</p>
+                        <p>By comparing the genomes of modern plants to those of their wild relatives, biologists have been working out what genetic changes occurred as plants were domesticated. The teams in Brazil and China have now used this knowledge to reintroduce these changes from scratch while maintaining or even enhancing the desirable traits of wild strains.</p>
+                        <p><strong>C</strong> Kudla’s team made six changes altogether. For instance, they tripled the size of fruit by editing a gene called FRUIT WEIGHT, and increased the number of tomatoes per truss by editing another called MULTIFLORA.</p>
+                        <p>While the historical domestication of tomatoes reduced levels of the red pigment lycopene – thought to have potential health benefits – the team in Brazil managed to boost it instead. The wild tomato has twice as much lycopene as cultivated ones; the newly domesticated one has five times as much.</p>
+                        <p>‘They are quite tasty,’ says Kudla. ‘A little bit strong. And very <span class="vocab-word" data-word="aromatic">aromatic</span>.’</p>
+                        <p>The team in China re-domesticated several strains of wild tomatoes with desirable traits lost in domesticated tomatoes. In this way they managed to create a strain resistant to a common disease called bacterial spot race, which can devastate yields. They also created another strain that is more salt tolerant – and has higher levels of vitamin C.</p>
+                        <p><strong>D</strong> Meanwhile, Joyce Van Eck at the Boyce Thompson Institute in New York state decided to use the same approach to domesticate the groundcherry or goldenberry (<em>Physalis pruinosa</em>) for the first time. This fruit looks similar to the closely related Cape gooseberry (<em>Physalis peruviana</em>).</p>
+                        <p>Groundcherries are already sold to a limited extent in the US but they are hard to produce because the plant has a <span class="vocab-word" data-word="sprawling">sprawling</span> growth habit and the small fruits fall off the branches when ripe. Van Eck’s team has edited the plants to increase fruit size, make their growth more compact and to stop fruits dropping. ‘There’s potential for this to be a commercial crop,’ says Van Eck. But she adds that taking the work further would be expensive because of the need to pay for a licence for the CRISPR technology and get regulatory approval.</p>
+                        <p><strong>E</strong> This approach could boost the use of many <span class="vocab-word" data-word="obscure">obscure</span> plants, says Jonathan Jones of the Sainsbury Lab in the UK. But it will be hard for new foods to grow so popular with farmers and consumers that they become new staple crops, he thinks.</p>
+                        <p>The three teams already have their eye on other plants that could be ‘catapulted into the mainstream’, including foxtail, oat-grass and cowpea. By choosing wild plants that are drought or heat tolerant, says Gao, we could create crops that will thrive even as the planet warms.</p>
+                        <p>But Kudla didn’t want to reveal which species were in his team’s sights, because CRISPR has made the process so easy. ‘Any one with the right skills could go to their lab and do this.’</p>
+                        <p><small>* mutations: changes in an organism’s genetic structure that can be passed down to later generations</small></p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-18</h4>
+                        <p class="mb-4">Reading Passage 2 has five paragraphs, A-E. Which paragraph contains the following information?</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> a reference to a type of tomato that can resist a dangerous infection. <input type="text" id="q14" class="w-16"></p>
+                            <p><strong>15</strong> an explanation of how problems can arise from focusing only on a certain type of tomato plant. <input type="text" id="q15" class="w-16"></p>
+                            <p><strong>16</strong> a number of examples of plants that are not cultivated at present but could be useful as food sources. <input type="text" id="q16" class="w-16"></p>
+                            <p><strong>17</strong> a comparison between the early domestication of the tomato and more recent research <input type="text" id="q17" class="w-16"></p>
+                            <p><strong>18</strong> a personal reaction to the flavour of a tomato that has been genetically edited <input type="text" id="q18" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 19-23</h4>
+                        <p class="mb-4">Look at the following statements (Questions 19-23) and the list of researchers below. Match each statement with the correct researcher, A-D.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p class="font-bold mb-2">List of Researchers</p>
+                            <p><strong>A</strong> Jorg Kudla</p>
+                            <p><strong>B</strong> Caixia Gao</p>
+                            <p><strong>C</strong> Joyce Van Eck</p>
+                            <p><strong>D</strong> Jonathan Jones</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>19</strong> Domestication of certain plants could allow them to adapt to future environmental challenges. <input type="text" id="q19" class="w-16"></p>
+                            <p><strong>20</strong> The idea of growing and eating unusual plants may not be accepted on a large scale. <input type="text" id="q20" class="w-16"></p>
+                            <p><strong>21</strong> It is not advisable for the future direction of certain research to be made public. <input type="text" id="q21" class="w-16"></p>
+                            <p><strong>22</strong> Present efforts to domesticate one wild fruit are limited by the costs involved. <input type="text" id="q22" class="w-16"></p>
+                            <p><strong>23</strong> Humans only make use of a small proportion of the plant food available on Earth. <input type="text" id="q23" class="w-16"></p>
+                        </div>
+                         <h4 class="font-bold mb-2">Questions 24-26</h4>
+                        <p class="mb-4">Complete the sentences below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>24</strong> An undesirable trait such as loss of ........................... may be caused by a mutation in a tomato gene. <input type="text" id="q24"></p>
+                           <p><strong>25</strong> By modifying one gene in a tomato plant, researchers made the tomato three times its original ........................... <input type="text" id="q25"></p>
+                           <p><strong>26</strong> A type of tomato which was not badly affected by ..........................., and was rich in vitamin C, was produced by a team of researchers in China. <input type="text" id="q26"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Insight or evolution?</h3>
+                        <p><em>Two scientists consider the origins of discoveries and other innovative behavior</em></p>
+                        <p>Scientific discovery is popularly believed to result from the sheer genius of such intellectual stars as naturalist Charles Darwin and theoretical physicist Albert Einstein. Our view of such unique contributions to science often <span class="vocab-word" data-word="disregards">disregards</span> the person’s prior experience and the efforts of their lesser-known <span class="vocab-word" data-word="predecessors">predecessors</span>. <span class="vocab-word" data-word="conventional">Conventional</span> wisdom also places great weight on insight in promoting breakthrough scientific achievements, as if ideas spontaneously pop into someone’s head – fully formed and functional.</p>
+                        <p>There may be some limited truth to this view. However, we believe that it largely <span class="vocab-word" data-word="misrepresents">misrepresents</span> the real nature of scientific discovery, as well as that of creativity and innovation in many other realms of human endeavor.</p>
+                        <p>Setting aside such greats as Darwin and Einstein – whose monumental contributions are duly celebrated – we suggest that innovation is more a process of trial and error, where two steps forward may sometimes come with one step back, as well as one or more stops to the right or left. This evolutionary view of human innovation undermines the notion of creative genius and recognizes the <span class="vocab-word" data-word="cumulative">cumulative</span> nature of scientific progress.</p>
+                        <p>Consider one <span class="vocab-word" data-word="unheralded">unheralded</span> scientist: John Nicholson, a mathematical physicist working in the 1910s who <span class="vocab-word" data-word="postulated">postulated</span> the existence of ‘proto-elements’ in outer space. By combining different numbers of weights of these proto-elements’ atoms, Nicholson could recover the weights of all the elements in the then-known periodic table. These successes are all the more noteworthy given the fact that Nicholson was wrong about the presence of proto-elements: they do not actually exist. Yet, amid his often <span class="vocab-word" data-word="fanciful">fanciful</span> theories and wild speculations, Nicholson also proposed a novel theory about the structure of atoms. Niels Bohr, the Nobel prize-winning father of modern atomic theory, jumped off from this interesting idea to conceive his now-famous model of the atom.</p>
+                        <p>What are we to make of this story? One might simply conclude that science is a collective and cumulative enterprise. That may be true, but there may be a deeper insight to be <span class="vocab-word" data-word="gleaned">gleaned</span>. We propose that science is constantly evolving, much as species of animals do. In biological systems, organisms may display new characteristics that result from random genetic mutations. In the same way, random, arbitrary or accidental mutations of ideas may help pave the way for advances in science. If mutations prove beneficial, then the animal or the scientific theory will continue to thrive and perhaps reproduce.</p>
+                        <p>Support for this evolutionary view of behavioral innovation comes from many domains. Consider one example of an influential innovation in US horseracing. The so-called ‘acey-deucy’ stirrup placement, in which the rider’s foot in his left stirrup is placed as much as 25 centimeters lower than the right, is believed to <span class="vocab-word" data-word="confer">confer</span> important speed advantages when turning on oval tracks. It was developed by a relatively unknown jockey named Jackie Westrope. Had Westrope conducted methodical investigations or examined extensive film records in a shrewd plan to outrun his rivals? Had he foreseen the speed advantage that would be conferred by riding acey-deucy? No. He suffered a leg injury, which left him unable to fully bend his left knee. His modification just happened to coincide with enhanced left-hand turning performance. This led to the rapid and widespread adoption of riding acey-deucy by many riders, a racing style which continues in today’s thoroughbred racing.</p>
+                        <p>Plenty of other stories show that fresh advances can arise from error, misadventure, and also pure <span class="vocab-word" data-word="serendipity">serendipity</span> – a happy accident. For example, in the early 1970s, two employees of the company 3M each had a problem: Spencer Silver had a product – a glue which was only slightly sticky – and no use for it, while his colleague Art Fry was trying to figure out how to affix temporary bookmarks in his hymn book without damaging its pages. The solution to both these problems was invention of the brilliantly simple yet phenomenally successful Post-It note. Such examples give lie to the claim that ingenious, designing minds are responsible for human creativity and invention. Far more <span class="vocab-word" data-word="banal">banal</span> and mechanical forces may be at work; forces that are fundamentally connected to the laws of science.</p>
+                        <p>The notions of insight, creativity and genius are often invoked, but they remain vague and of doubtful scientific utility, especially when one considers the diverse and enduring contributions of individuals such as Plato, Leonardo da Vinci, Shakespeare, Beethoven, Galileo, Newton, Kepler, Curie, Pasteur and Edison. These notions merely label rather than explain the evolution of human innovations. We need another approach, and there is a promising candidate.</p>
+                        <p>The Law of Effect was advanced by psychologist Edward Thorndike in 1898, some 40 years after Charles Darwin published his groundbreaking work on biological evolution, <em>On the Origin of Species</em>. This simple law holds that organisms tend to repeat successful behaviors and to refrain from performing unsuccessful ones. Just like Darwin’s Law of Natural Selection, the Law of Effect involves an entirely mechanical process of variation and selection, without any end objective in sight.</p>
+                        <p>Of course, the origin of human innovation demands much further study. In particular, the <span class="vocab-word" data-word="provenance">provenance</span> of the raw material on which the Law of Effect operates is not as clearly known as that of the genetic mutations on which the Law of Natural Selection operates. The generation of novel ideas and behaviors may not be entirely random, but constrained by prior successes and failures – of the current individual (such as Bohr) or of predecessors (such as Nicholson).</p>
+                        <p>The time seems right for abandoning the naïve notion of intelligent design and genius, and for scientifically exploring the true origins of creative behavior.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-31</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B, C or D</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <div class="q-item">
+                                <p><strong>27</strong> The purpose of the first paragraph is to</p>
+                                <label class="block"><input type="radio" name="q27" value="A"> A defend particular ideas.</label>
+                                <label class="block"><input type="radio" name="q27" value="B"> B compare certain beliefs.</label>
+                                <label class="block"><input type="radio" name="q27" value="C"> C disprove a widely held view.</label>
+                                <label class="block"><input type="radio" name="q27" value="D"> D outline a common assumption.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>28</strong> What are the writers doing in the second paragraph?</p>
+                                <label class="block"><input type="radio" name="q28" value="A"> A criticising an opinion</label>
+                                <label class="block"><input type="radio" name="q28" value="B"> B justifying a standpoint</label>
+                                <label class="block"><input type="radio" name="q28" value="C"> C explaining an approach</label>
+                                <label class="block"><input type="radio" name="q28" value="D"> D supporting an argument</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>29</strong> In the third paragraph, what do the writers suggest about Darwin and Einstein?</p>
+                                <label class="block"><input type="radio" name="q29" value="A"> A They represent an exception to a general rule.</label>
+                                <label class="block"><input type="radio" name="q29" value="B"> B Their way of working has been misunderstood.</label>
+                                <label class="block"><input type="radio" name="q29" value="C"> C They are an ideal which others should aspire to.</label>
+                                <label class="block"><input type="radio" name="q29" value="D"> D Their achievements deserve greater recognition.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>30</strong> John Nicholson is an example of a person whose idea</p>
+                                <label class="block"><input type="radio" name="q30" value="A"> A established his reputation as an influential scientist.</label>
+                                <label class="block"><input type="radio" name="q30" value="B"> B was only fully understood at a later point in history.</label>
+                                <label class="block"><input type="radio" name="q30" value="C"> C laid the foundations for someone else’s breakthrough.</label>
+                                <label class="block"><input type="radio" name="q30" value="D"> D initially met with scepticism from the scientific community.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>31</strong> What is the key point of interest about the ‘acey-deucy’ stirrup placement?</p>
+                                <label class="block"><input type="radio" name="q31" value="A"> A the simple reason why it was invented</label>
+                                <label class="block"><input type="radio" name="q31" value="B"> B the enthusiasm with which it was adopted</label>
+                                <label class="block"><input type="radio" name="q31" value="C"> C the research that went into its development</label>
+                                <label class="block"><input type="radio" name="q31" value="D"> D the cleverness of the person who first used it</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 32-36</h4>
+                        <p class="mb-4">Do the following statements agree with the claims of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>32</strong> Acknowledging people such as Plato or da Vinci as geniuses will help us understand the process by which great minds create new ideas. <input type="text" id="q32" class="w-32"></p>
+                           <p><strong>33</strong> The Law of Effect was discovered at a time when psychologists were seeking a scientific reason why creativity occurs. <input type="text" id="q33" class="w-32"></p>
+                           <p><strong>34</strong> The Law of Effect states that no planning is involved in the behaviour of organisms. <input type="text" id="q34" class="w-32"></p>
+                           <p><strong>35</strong> The Law of Effect sets out clear explanations about the sources of new ideas and behaviours. <input type="text" id="q35" class="w-32"></p>
+                           <p><strong>36</strong> Many scientists are now turning away from the notion of intelligent design and genius. <input type="text" id="q36" class="w-32"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 37-40</h4>
+                        <p class="mb-4">Complete the summary using the list of words, A-G, below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> invention <strong>B</strong> goals <strong>C</strong> compromise</p>
+                            <p><strong>D</strong> mistakes <strong>E</strong> luck <strong>F</strong> inspiration</p>
+                            <p><strong>G</strong> experiments</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>The origins of creative behaviour</strong></p>
+                            <p>The traditional view of scientific discovery is that breakthroughs happen when a single great mind has sudden <strong>37</strong> ......................... Although this can occur, it is not often the case. Advances are more likely to be the result of a longer process. In some cases, this process involves <strong>38</strong> ........................, such as Nicholson’s theory about proto-elements. In others, simple necessity may provoke innovation, as with Westrope’s decision to modify the position of his riding stirrups. There is also often an element of <strong>39</strong> ........................, for example, the coincidence of ideas that led to the invention of the Post-It note. With both the Law of Natural Selection and the Law of Effect, there may be no clear <strong>40</strong> ........................ involved, but merely a process of variation and selection.</p>
+                            <p class="flex items-center gap-4">
+                                37 <input type="text" id="q37" class="w-16">
+                                38 <input type="text" id="q38" class="w-16">
+                                39 <input type="text" id="q39" class="w-16">
+                                40 <input type="text" id="q40" class="w-16">
+                            </p>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        // Reading Passage 1
+        q1: "rock", q2: "cave", q3: "clay", q4: "Essenes", q5: "Hebrew",
+        q6: "not given", q7: "false", q8: "true", q9: "true", q10: "false",
+        q11: "false", q12: "true", q13: "not given",
+        // Reading Passage 2
+        q14: "C", q15: "B", q16: "E", q17: "A", q18: "C",
+        q19: "B", q20: "D", q21: "A", q22: "C", q23: "A",
+        q24: "flavour", q25: "size", q26: "salt",
+        // Reading Passage 3
+        q27: "D", q28: "A", q29: "A", q30: "C", q31: "A",
+        q32: "no", q33: "not given", q34: "yes", q35: "no", q36: "not given",
+        q37: "F", q38: "D", q39: "E", q40: "B"
+    };
+
+    const explanations = {
+        // Reading Passage 1
+        q1: "Paragraph 1 states: 'One of these young shepherds tossed a <strong>rock</strong> into an opening on the side of a cliff and was surprised to hear a shattering sound.'",
+        q2: "Paragraph 1 states: 'He and his companions later entered the <strong>cave</strong> and stumbled across a collection of large clay jars...'",
+        q3: "Paragraph 1 states: '...stumbled across a collection of large <strong>clay</strong> jars, seven of which contained scrolls with writing on them.'",
+        q4: "Paragraph 2 states: '...the people are thought to have belonged to a group called the <strong>Essenes</strong>, a devout Jewish sect.'",
+        q5: "Paragraph 3 states: 'The majority of the texts on the Dead Sea Scrolls are in <strong>Hebrew</strong>...'",
+        q6: "The answer is NOT GIVEN. Paragraph 1 says they 'were sold for a small sum', but it does not mention how the teenagers felt about the amount of money. We don't know if they were disappointed or not.",
+        q7: "The answer is FALSE. Paragraph 2 states: 'The origin of the Dead Sea Scrolls... is still the subject of scholarly <strong>debate</strong> even today.' This means there is no agreement.",
+        q8: "The answer is TRUE. Paragraph 4 states that the scrolls include '<strong>fragments</strong> from every book of the Old Testament' and that 'The <strong>only entire book</strong>... is Isaiah'. This implies that most of the books are incomplete.",
+        q9: "The answer is TRUE. Paragraph 5 describes the Copper Scroll as using an '<strong>unconventional vocabulary and odd spelling</strong>', which means it was written in an unusual way.",
+        q10: "The answer is FALSE. Paragraph 6 states that Mar Samuel '<strong>acquired</strong> four of the original seven scrolls... <strong>paying</strong> less than $100 for them.' He bought them; they were not a gift.",
+        q11: "The answer is FALSE. Paragraph 6 states that Mar Samuel traveled to the US and '<strong>unsuccessfully</strong> offered them to a number of universities, including Yale.' This means they were not keen to buy them.",
+        q12: "The answer is TRUE. Paragraph 7 says the scroll 'names celebrations that indicate shifts in seasons and details two <strong>yearly religious events</strong>'. Yearly events are annual occasions.",
+        q13: "The answer is NOT GIVEN. The final sentence of paragraph 7 says 'Only one more known scroll remains untranslated.' It doesn't say that academics from the University of Haifa are the ones currently working on it.",
+        // Reading Passage 2
+        q14: "Paragraph C mentions: 'In this way they managed to create a strain resistant to a common disease called <strong>bacterial spot race</strong>, which can devastate yields.'",
+        q15: "Paragraph B explains the problem: '...every time a single plant with a mutation is taken from a larger population for breeding, much genetic diversity is lost. And sometimes the desirable mutations come with less desirable traits. For instance, the tomato strains grown for supermarkets have <strong>lost much of their flavour</strong>.'",
+        q16: "Paragraph E gives examples of other plants that could be cultivated: '...including <strong>foxtail, oat-grass and cowpea</strong>.'",
+        q17: "Paragraph A makes the comparison: 'It took at least <strong>3,000 years</strong> for humans to learn how to domesticate the wild tomato... Now two separate teams... have done it all over again in <strong>less than three years</strong>.'",
+        q18: "Paragraph C includes a direct quote from Jorg Kudla about the taste: '<strong>‘They are quite tasty,’</strong> says Kudla. ‘A little bit strong. And very aromatic.’'",
+        q19: "This refers to Caixia Gao (B). In Paragraph E, Gao says: 'By choosing wild plants that are drought or heat tolerant... we could create crops that will thrive even as the <strong>planet warms</strong>.' This relates to adapting to future environmental challenges.",
+        q20: "This refers to Jonathan Jones (D). In Paragraph E, Jones's opinion is: 'But it will be <strong>hard for new foods to grow so popular</strong> with farmers and consumers that they become new staple crops, he thinks.'",
+        q21: "This refers to Jorg Kudla (A). In Paragraph E, the text states: 'But Kudla <strong>didn’t want to reveal which species were in his team’s sights</strong>...'",
+        q22: "This refers to Joyce Van Eck (C). In Paragraph D, Van Eck states that 'taking the work further would be <strong>expensive because of the need to pay for a licence</strong> for the CRISPR technology and get regulatory approval.'",
+        q23: "This refers to Jorg Kudla (A). In Paragraph A, Kudla is quoted saying: '‘There are 50,000 edible plants in the world, but <strong>90 percent of our energy comes from just 15 crops</strong>.’'",
+        q24: "Paragraph B states: 'For instance, the tomato strains grown for supermarkets have lost much of their <strong>flavour</strong>.'",
+        q25: "Paragraph C states: 'For instance, they tripled the <strong>size</strong> of fruit by editing a gene called FRUIT WEIGHT...'",
+        q26: "Paragraph C states: 'They also created another strain that is more <strong>salt</strong> tolerant – and has higher levels of vitamin C.'",
+        // Reading Passage 3
+        q27: "The first paragraph introduces the 'popularly believed' view and 'Conventional wisdom', which is a common assumption about scientific discovery. The correct answer is D.",
+        q28: "The second paragraph begins with 'However, we believe that it largely misrepresents the real nature of scientific discovery', which is a direct criticism of the opinion mentioned in the first paragraph. The correct answer is A.",
+        q29: "The third paragraph says 'Setting aside such greats as Darwin and Einstein', before explaining the authors' own theory. This phrasing treats them as special cases that don't fit the general rule being proposed. The correct answer is A.",
+        q30: "Paragraph 4 explains that Niels Bohr 'jumped off from this interesting idea [by Nicholson] to conceive his now-famous model of the atom.' Nicholson's work was a foundation for Bohr's. The correct answer is C.",
+        q31: "Paragraph 6 explains the jockey 'suffered a leg injury' which forced him to change his stirrup position. The innovation was an accident, not a result of research or cleverness. The key point is the simple, accidental reason for it. The correct answer is A.",
+        q32: "The answer is NO. Paragraph 8 states these notions 'merely <strong>label rather than explain</strong> the evolution of human innovations. We need another approach...'. Therefore, calling them geniuses does not help us understand the process.",
+        q33: "The answer is NOT GIVEN. Paragraph 9 introduces the Law of Effect but does not mention the historical context or what other psychologists were doing at the time.",
+        q34: "The answer is YES. Paragraph 9 describes the process as 'entirely mechanical' and '<strong>without any end objective in sight</strong>', which means no planning is involved.",
+        q35: "The answer is NO. Paragraph 10 states that 'the provenance of the raw material on which the Law of Effect operates is <strong>not as clearly known</strong>'. This means it does not provide clear explanations for the source of new ideas.",
+        q36: "The answer is NOT GIVEN. The final paragraph expresses the authors' opinion that 'The time seems right for abandoning the naïve notion...'. It does not state as a fact that 'many scientists' are already doing this.",
+        q37: "The answer is F (inspiration). The summary describes the traditional view. Paragraph 1 says this view is that 'ideas spontaneously pop into someone’s head', which is a definition of sudden inspiration.",
+        q38: "The answer is D (mistakes). The summary gives Nicholson's theory as an example. Paragraph 4 explains that 'Nicholson was wrong about the presence of proto-elements: they do not actually exist.' His theory was based on a mistake.",
+        q39: "The answer is E (luck). The summary gives the Post-It note as an example. Paragraph 7 says this came from 'pure serendipity – a happy accident', which is luck.",
+        q40: "The answer is B (goals). The summary refers to the Law of Effect. Paragraph 9 says this law operates 'without any end objective in sight.' An end objective is a goal."
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentTab: 'reading',
+            currentSection: 0,
+            answersChecked: {},
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+                this.initVocabulary();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                // Use event delegation for dynamically added elements
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                });
+            },
+            
+            saveAnswer(e) {
+                if (e.target.id || e.target.name) {
+                    const id = e.target.id || e.target.name;
+                     if (e.target.type === 'radio') {
+                        if (e.target.checked) {
+                            this.userAnswers[id] = e.target.value;
+                        }
+                    } else {
+                         this.userAnswers[id] = e.target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const radioInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        radioInputs.forEach(radio => {
+                            if (radio.value === value) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                }
+            },
+
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex, 10)));
+                });
+                
+                this.restoreAnswers();
+                this.addReadingExerciseButtons();
+
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+            
+            getReadingExerciseTypes() {
+                const exerciseTypes = {
+                    0: [ 
+                        { type: 'notes_completion', startQ: 1, endQ: 5, title: 'Notes Completion (Q1-5)' },
+                        { type: 'true_false', startQ: 6, endQ: 13, title: 'True/False/Not Given (Q6-13)' }
+                    ],
+                    1: [ 
+                        { type: 'paragraph_matching', startQ: 14, endQ: 18, title: 'Paragraph Matching (Q14-18)' },
+                        { type: 'researcher_matching', startQ: 19, endQ: 23, title: 'Matching Researchers to Statements (Q19-23)' },
+                        { type: 'sentence_completion', startQ: 24, endQ: 26, title: 'Sentence Completion (Q24-26)' }
+                    ],
+                    2: [ 
+                        { type: 'multiple_choice', startQ: 27, endQ: 31, title: 'Multiple Choice (Q27-31)' },
+                        { type: 'yes_no', startQ: 32, endQ: 36, title: 'Yes/No/Not Given (Q32-36)' },
+                        { type: 'summary_completion', startQ: 37, endQ: 40, title: 'Summary Completion (Q37-40)' }
+                    ]
+                };
+                return exerciseTypes[this.currentSection] || [];
+            },
+
+            addReadingExerciseButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Hide Explanations' : 'Check Answers & Explain';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `
+                        <p class="font-semibold mb-2">${exercise.title}</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">
+                            ${buttonText}
+                        </button>
+                    `;
+
+                    const firstQuestionInput = document.getElementById(`q${exercise.startQ}`) || document.querySelector(`input[name="q${exercise.startQ}"]`);
+                    const parentBlock = firstQuestionInput ? firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6') : null;
+
+                    if (parentBlock) {
+                        parentBlock.appendChild(buttonContainer);
+                    } else if (this.questionsSection.lastElementChild) {
+                        this.questionsSection.lastElementChild.appendChild(buttonContainer);
+                    } else {
+                         this.questionsSection.appendChild(buttonContainer);
+                    }
+                });
+            },
+            
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+
+                for (let i = startQ; i <= endQ; i++) {
+                    const qId = `q${i}`;
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const correctAnswer = (answers[qId] || "").toLowerCase();
+                    const isCorrect = correctAnswer.split('/').some(ans => ans.trim() === userAnswer);
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+                    const firstInput = inputs[0];
+
+                    // Style correct/incorrect answers
+                    if (inputElement) { // For text inputs with answers or checked radio buttons
+                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') : inputElement;
+                         elementToStyle.classList.add(isCorrect ? 'correct-answer' : 'incorrect-answer');
+                         if(inputElement.type === 'text') {
+                             inputElement.style.backgroundColor = isCorrect ? '#dcfce7' : '#fef2f2';
+                             if (!isCorrect) inputElement.value = `${this.userAnswers[qId] || ''}➜ ${answers[qId]}`;
+                         }
+                    } else if (firstInput.type === 'text') { // For empty text inputs
+                        firstInput.classList.add('incorrect-answer');
+                        firstInput.style.backgroundColor = '#fef2f2';
+                        firstInput.placeholder = `Correct: ${answers[qId]}`;
+                    }
+                    
+                     // For radio buttons, always highlight the correct answer if the user was wrong
+                     if (firstInput.type === 'radio' && !isCorrect) {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId].toUpperCase()}"]`);
+                         if(correctRadio) correctRadio.closest('label').classList.add('correct-answer');
+                    }
+                    
+                    // Add explanation box
+                    const explanationText = explanations[qId];
+                    if (explanationText) {
+                        const explanationBox = document.createElement('div');
+                        explanationBox.className = 'explanation-box p-3 mt-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-gray-800';
+                        explanationBox.innerHTML = `<strong>Explanation:</strong> ${explanationText}`;
+
+                        const inputParent = firstInput.closest('.q-item, p, li');
+                        if (inputParent) {
+                             // For note completion, append after the whole list
+                            if (inputParent.tagName === 'LI' && !inputParent.querySelector('.explanation-box')) {
+                                const list = inputParent.closest('ul');
+                                if (list) list.after(explanationBox);
+                            } else if (inputParent.tagName !== 'LI') {
+                                inputParent.after(explanationBox);
+                            }
+                        }
+                    }
+                }
+
+                // Update button text
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Hide Explanations';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+            initVocabulary() {
+                const modal = document.getElementById('vocab-modal');
+                const closeBtn = document.getElementById('close-vocab-modal');
+                const playBtn = document.getElementById('play-audio-btn');
+                const wordEl = document.getElementById('vocab-word');
+                const meaningEl = document.getElementById('vocab-meaning');
+                const pronunciationEl = document.getElementById('vocab-pronunciation-text');
+                let utterance = null;
+
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const word = e.target.dataset.word;
+                        const vocabData = vocabulary[word];
+                        if (vocabData) {
+                            wordEl.textContent = word;
+                            meaningEl.textContent = vocabData.meaning;
+                            pronunciationEl.textContent = vocabData.phonetic || '';
+                            
+                            // Use SpeechSynthesis API for pronunciation
+                            if ('speechSynthesis' in window) {
+                                utterance = new SpeechSynthesisUtterance(word);
+                                utterance.lang = 'en-US';
+                                playBtn.style.display = 'flex';
+                            } else {
+                                // Hide button if API not supported
+                                playBtn.style.display = 'none';
+                            }
+
+                            modal.classList.remove('hidden');
+                        }
+                    }
+                });
+                
+                playBtn.addEventListener('click', () => {
+                    if (utterance && window.speechSynthesis) {
+                        // Cancel any previous speech before starting a new one
+                        window.speechSynthesis.cancel();
+                        window.speechSynthesis.speak(utterance);
+                    }
+                });
+
+                const closeModal = () => {
+                    modal.classList.add('hidden');
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.cancel(); // Stop speaking when modal closes
+                    }
+                    utterance = null;
+                };
+
+                closeBtn.addEventListener('click', closeModal);
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                });
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                    document.body.style.cursor = 'col-resize';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    document.body.style.cursor = 'default';
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    if (e.target.closest && e.target.closest('.highlight-tooltip')) return;
+
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 35}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) { console.warn("Could not highlight selection."); }
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (!e.target.closest('.highlight-tooltip')) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
+
