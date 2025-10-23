@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Cambridge 10 Test 2 (Enhanced)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            transition: all 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        /* Vocabulary Styles */
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+        }
+        #vocab-modal {
+            animation: fadeInModal 0.3s ease-out;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+         @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Cambridge 10 Test 2</h1>
+        <div class="flex items-center space-x-4">
+            <div class="text-lg font-semibold text-gray-600">IELTS Academic Reading</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative transform transition-all" style="animation: zoomIn 0.3s ease-out;">
+        <button id="close-vocab-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 text-3xl leading-none">&times;</button>
+        <div class="flex items-center mb-4">
+            <h3 id="vocab-word" class="text-3xl font-bold text-blue-600 capitalize"></h3>
+        </div>
+        <div class="flex items-center mb-4">
+            <button id="play-audio-btn" class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white mr-3 transition-colors">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-600 text-lg"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 leading-relaxed"></p>
+    </div>
+</div>
+
+
+<script>
+    // --- DATA ---
+    const vocabulary = {
+        'wrestling': { meaning: 'Struggling with a difficulty or problem.', phonetic: '/ˈrɛslɪŋ/' },
+        'enigma': { meaning: 'A person or thing that is mysterious, puzzling, or difficult to understand.', phonetic: '/ɪˈnɪɡmə/' },
+        'anthropological': { meaning: 'Relating to the study of humankind, especially its societies and customs.', phonetic: '/ˌænθrəpəˈlɒdʒɪkl/' },
+        'affluent': { meaning: 'Having a great deal of money; wealthy.', phonetic: '/ˈæfluənt/' },
+        'criteria': { meaning: 'Principles or standards by which something may be judged or decided.', phonetic: '/kraɪˈtɪəriə/' },
+        'antiseptic': { meaning: 'Preventing the growth of disease-causing microorganisms.', phonetic: '/ˌæntiˈsɛptɪk/' },
+        'succumbing': { meaning: 'Failing to resist pressure, temptation, or some other negative force.', phonetic: '/səˈkʌmɪŋ/' },
+        'dysentery': { meaning: 'Infection of the intestines resulting in severe diarrhea with the presence of blood and mucus in the feces.', phonetic: '/ˈdɪsəntri/' },
+        'eccentric': { meaning: '(Of a person or their behaviour) unconventional and slightly strange.', phonetic: '/ɪkˈsɛntrɪk/' },
+        'deduction': { meaning: 'The action of deducting or subtracting something; the inference of particular instances by reference to a general law or principle.', phonetic: '/dɪˈdʌkʃən/' },
+        'scepticism': { meaning: 'A skeptical attitude; doubt as to the truth of something.', phonetic: '/ˈskɛptɪsɪzəm/' },
+        'appraisal': { meaning: 'An act of assessing something or someone.', phonetic: '/əˈpreɪzl/' },
+        'alighted': { meaning: 'Descended from a train, bus, or other form of transport; noticed or fixed upon.', phonetic: '/əˈlaɪtɪd/' },
+        'static': { meaning: 'Lacking in movement, action, or change, especially in a way viewed as undesirable or uninteresting.', phonetic: '/ˈstætɪk/' },
+        'incidence': { meaning: 'The occurrence, rate, or frequency of a disease, crime, or something else undesirable.', phonetic: '/ˈɪnsɪdəns/' },
+        'antibacterial': { meaning: 'Active against bacteria.', phonetic: '/ˌæntibækˈtɪəriəl/' },
+        'prevalence': { meaning: 'The fact or condition of being prevalent; commonness.', phonetic: '/ˈprɛvələns/' },
+        'contention': { meaning: 'Heated disagreement; an assertion maintained in an argument.', phonetic: '/kənˈtɛnʃən/' },
+        'forge': { meaning: 'Create (something) strong, enduring, or successful.', phonetic: '/fɔːrdʒ/' },
+        'literacy': { meaning: 'The ability to read and write.', phonetic: '/ˈlɪtərəsi/' },
+        'abandoned': { meaning: 'Having been deserted or cast off.', phonetic: '/əˈbændənd/' },
+        'provision': { meaning: 'The action of providing or supplying something for use.', phonetic: '/prəˈvɪʒən/' },
+        'manipulate': { meaning: 'Handle or control (a tool, mechanism, etc.), typically in a skillful manner.', phonetic: '/məˈnɪpjuleɪt/' },
+        'qualitative': { meaning: 'Relating to, measuring, or measured by the quality of something rather than its quantity.', phonetic: '/ˈkwɒlɪtətɪv/' },
+        'regulation': { meaning: 'A rule or directive made and maintained by an authority.', phonetic: '/ˌrɛɡjuˈleɪʃən/' },
+        'compensates': { meaning: 'Reduce or counteract (something undesirable) by exerting an opposite force or effect.', phonetic: '/ˈkɒmpənseɪts/' },
+        'metacognition': { meaning: 'Awareness and understanding of one\'s own thought processes.', phonetic: '/ˌmɛtəkɒɡˈnɪʃən/' },
+        'succinctly': { meaning: 'In a brief and clearly expressed manner.', phonetic: '/səkˈsɪŋktli/' },
+        'conversely': { meaning: 'Introducing a statement or idea which reverses one that has just been made or referred to.', phonetic: '/ˈkɒnvɜːrsli/' },
+        'diminish': { meaning: 'Make or become less.', phonetic: '/dɪˈmɪnɪʃ/' },
+        'autonomy': { meaning: 'The right or condition of self-government.', phonetic: '/ɔːˈtɒnəmi/' },
+        'deprived': { meaning: 'Suffering a severe and damaging lack of basic material and cultural benefits.', phonetic: '/dɪˈpraɪvd/' },
+        'domain': { meaning: 'An area of territory owned or controlled by a ruler or government; a specified sphere of activity or knowledge.', phonetic: '/dəʊˈmeɪn/' },
+        'expertise': { meaning: 'Expert skill or knowledge in a particular field.', phonetic: '/ˌɛkspɜːrˈtiːz/' },
+        'facilitate': { meaning: 'Make (an action or process) easy or easier.', phonetic: '/fəˈsɪlɪteɪt/' },
+        'inhibit': { meaning: 'Hinder, restrain, or prevent (an action or process).', phonetic: '/ɪnˈhɪbɪt/' },
+        'reproduction': { meaning: 'The action or process of making a copy of something.', phonetic: '/ˌriːprəˈdʌkʃən/' },
+        'manuscript': { meaning: 'A book, document, or piece of music written by hand rather than typed or printed.', phonetic: '/ˈmænjuskrɪpt/' },
+        'evolved': { meaning: 'Develop gradually, especially from a simple to a more complex form.', phonetic: '/ɪˈvɒlvd/' },
+        'conventions': { meaning: 'Ways in which something is usually done.', phonetic: '/kənˈvɛnʃənz/' },
+        'signify': { meaning: 'Be an indication of.', phonetic: '/ˈsɪɡnɪfaɪ/' },
+        'facsimiles': { meaning: 'Exact copies, especially of written or printed material.', phonetic: '/fækˈsɪmɪliz/' },
+        'assign': { meaning: 'Allocate (a job or duty).', phonetic: '/əˈsaɪn/' },
+        'incomparably': { meaning: 'Without comparison; superior.', phonetic: '/ɪnˈkɒmpərəbli/' },
+        'reprographic': { meaning: 'Relating to the reproduction of graphics through mechanical or electrical means.', phonetic: '/ˌriːprəˈɡræfɪk/' },
+        'duplication': { meaning: 'The action or process of duplicating something.', phonetic: '/ˌdjuːplɪˈkeɪʃən/' },
+        'implicit': { meaning: 'Suggested though not directly expressed.', phonetic: '/ɪmˈplɪsɪt/' },
+        'repositories': { meaning: 'Places, buildings, or receptacles where things are or may be stored.', phonetic: '/rɪˈpɒzɪtəriz/' },
+        'reinforces': { meaning: 'Strengthen or support, especially with additional personnel or material.', phonetic: '/ˌriːɪnˈfɔːrsɪz/' },
+        'monetary': { meaning: 'Relating to money or currency.', phonetic: '/ˈmʌnɪtri/' },
+        'deterred': { meaning: 'Discouraged (someone) from doing something by instilling doubt or fear of the consequences.', phonetic: '/dɪˈtɜːrd/' },
+        'spontaneous': { meaning: 'Performed or occurring as a result of a sudden inner impulse or inclination.', phonetic: '/spɒnˈteɪniəs/' },
+        'diverse': { meaning: 'Showing a great deal of variety; very different.', phonetic: '/daɪˈvɜːrs/' },
+        'displacement': { meaning: 'The moving of something from its place or position.', phonetic: '/dɪsˈpleɪsmənt/' },
+        'prescribed': { meaning: 'Stated authoritatively or as a rule that should be followed.', phonetic: '/prɪˈskraɪbd/' },
+        'temporal': { meaning: 'Relating to time.', phonetic: '/ˈtɛmpərəl/' },
+        'superficially': { meaning: 'As to the outward appearance only; on the surface.', phonetic: '/ˌsuːpərˈfɪʃəli/' },
+        'harmony': { meaning: 'Agreement or concord.', phonetic: '/ˈhɑːrməni/' },
+        'authentic': { meaning: 'Of undisputed origin; genuine.', phonetic: '/ɔːˈθɛntɪk/' },
+        'suppressed': { meaning: 'Forcibly put an end to.', phonetic: '/səˈprɛst/' },
+        'fidelity': { meaning: 'Faithfulness to a person, cause, or belief, demonstrated by continuing loyalty and support.', phonetic: '/fɪˈdɛləti/' },
+        'awe': { meaning: 'A feeling of reverential respect mixed with fear or wonder.', phonetic: '/ɔː/' },
+    };
+
+    const testData = {
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Tea and the Industrial Revolution</h3>
+                        <p class="mb-4"><em>A Cambridge professor says that a change in drinking habits was the reason for the Industrial Revolution in Britain. Anjana Abuja reports</em></p>
+                        <p class="mb-4"><strong>A</strong> Alan Macfarlane, professor of <span class="vocab-word" data-word="anthropological">anthropological</span> science at King’s College, Cambridge has, like other historians, spent decades <span class="vocab-word" data-word="wrestling">wrestling</span> with the <span class="vocab-word" data-word="enigma">enigma</span> of the Industrial Revolution. Why did this particular Big Bang – the world-changing birth of industry-happen in Britain? And why did it strike at the end of the 18th century?</p>
+                        <p class="mb-4"><strong>B</strong> Macfarlane compares the puzzle to a combination lock. ‘There are about 20 different factors and all of them need to be present before the revolution can happen,’ he says. For industry to take off, there needs to be the technology and power to drive factories, large urban populations to provide cheap labour, easy transport to move goods around, an <span class="vocab-word" data-word="affluent">affluent</span> middle-class willing to buy mass-produced objects, a market-driven economy and a political system that allows this to happen. While this was the case for England, other nations, such as Japan, the Netherlands and France also met some of these <span class="vocab-word" data-word="criteria">criteria</span> but were not industrialising. All these factors must have been necessary. But not sufficient to cause the revolution, says Macfarlane. ‘After all, Holland had everything except coal while China also had many of these factors. Most historians are convinced there are one or two missing factors that you need to open the lock.’</p>
+                        <p class="mb-4"><strong>C</strong> The missing factors, he proposes, are to be found in almost even kitchen cupboard. Tea and beer, two of the nation’s favourite drinks, fuelled the revolution. The <span class="vocab-word" data-word="antiseptic">antiseptic</span> properties of tannin, the active ingredient in tea, and of hops in beer – plus the fact that both are made with boiled water – allowed urban communities to flourish at close quarters without <span class="vocab-word" data-word="succumbing">succumbing</span> to water-borne diseases such as <span class="vocab-word" data-word="dysentery">dysentery</span>. The theory sounds <span class="vocab-word" data-word="eccentric">eccentric</span> but once he starts to explain the detective work that went into his <span class="vocab-word" data-word="deduction">deduction</span>, the <span class="vocab-word" data-word="scepticism">scepticism</span> gives way to wary admiration. Macfarlanes case has been strengthened by support from notable quarters – Roy Porter, the distinguished medical historian, recently wrote a favourable <span class="vocab-word" data-word="appraisal">appraisal</span> of his research.</p>
+                        <p class="mb-4"><strong>D</strong> Macfarlane had wondered for a long time how the Industrial Revolution came about. Historians had <span class="vocab-word" data-word="alighted">alighted</span> on one interesting factor around the mid-18th century that required explanation. Between about 1650 and 1740, the population in Britain was <span class="vocab-word" data-word="static">static</span>. But then there was a burst in population growth. Macfarlane says: ‘The infant mortality rate halved in the space of 20 years, and this happened in both rural areas and cities, and across all classes. People suggested four possible causes. Was there a sudden change in the viruses and bacteria around? Unlikely. Was there a revolution in medical science? But this was a century before Lister’s revolution*. Was there a change in environmental conditions? There were improvements in agriculture that wiped out malaria, but these were small gains. Sanitation did not become widespread until the 19th century. The only option left is food. But the height and weight statistics show a decline. So the food must have got worse. Efforts to explain this sudden reduction in child deaths appeared to draw a blank.’</p>
+                        <p class="mb-4"><strong>E</strong> This population burst seemed to happen at just the right time to provide labour for the Industrial Revolution. ‘When you start moving towards an industrial revolution, it is economically efficient to have people living close together,’ says Macfarlane. ‘But then you get disease, particularly from human waste.’ Some digging around in historical records revealed that there was a change in the <span class="vocab-word" data-word="incidence">incidence</span> of water-borne disease at that time, especially dysentery. Macfarlane deduced that whatever the British were drinking must have been important in regulating disease. He says, ‘We drank beer. For a long time, the English were protected by the strong <span class="vocab-word" data-word="antibacterial">antibacterial</span> agent in hops, which were added to help preserve the beer. But in the late 17th century a tax was introduced on malt, the basic ingredient of beer. The poor turned to water and gin and in the 1720s the mortality rate began to rise again. Then it suddenly dropped again. What caused this?’</p>
+                        <p class="mb-4"><strong>F</strong> Macfarlane looked to Japan, which was also developing large cities about the same time, and also had no sanitation. Water-borne diseases had a much looser grip on the Japanese population than those in Britain. Could it be the <span class="vocab-word" data-word="prevalence">prevalence</span> of tea in their culture? Macfarlane then noted that the history of tea in Britain provided an extraordinary coincidence of dates. Tea was relatively expensive until Britain started a direct clipper trade with China in the early 18th century. By the 1740s, about the time that infant mortality was dipping, the drink was common. Macfarlane guessed that the fact that water had to be boiled, together with the stomach-purifying properties of tea meant that the breast milk provided by mothers was healthier than it had ever been. No other European nation sipped tea like the British, which, by Macfarlanes logic, pushed these other countries out of <span class="vocab-word" data-word="contention">contention</span> for the revolution.</p>
+                        <p class="mb-4"><strong>G</strong> But, if tea is a factor in the combination lock, why didn’t Japan <span class="vocab-word" data-word="forge">forge</span> ahead in a tea-soaked industrial revolution of its own? Macfarlane notes that even though 17th-century Japan had large cities, high <span class="vocab-word" data-word="literacy">literacy</span> rates, even a futures market, it had turned its back on the essence of any work-based revolution by giving up labour-saving devices such as animals, afraid that they would put people out of work. So, the nation that we now think of as one of the most technologically advanced entered the 19th century having ‘<span class="vocab-word" data-word="abandoned">abandoned</span> the wheel’.</p>
+                        <p class="mb-4"><small>* Joseph Lister was the first doctor to use antiseptic techniques during surgical operations to prevent infections.</small></p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-7</h4>
+                        <p class="mb-4">Reading Passage 1 has seven paragraphs, A-G. Choose the correct heading for each paragraph from the list of headings below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p class="font-bold mb-2">List of Headings</p>
+                            <p><strong>i</strong> The search for the reasons for an increase in population</p>
+                            <p><strong>ii</strong> Industrialisation and the fear of unemployment</p>
+                            <p><strong>iii</strong> The development of cities in Japan</p>
+                            <p><strong>iv</strong> The time and place of the Industrial Revolution</p>
+                            <p><strong>v</strong> The cases of Holland, France and China</p>
+                            <p><strong>vi</strong> Changes in drinking habits in Britain</p>
+                            <p><strong>vii</strong> Two keys to Britain’s industrial revolution</p>
+                            <p><strong>viii</strong> Conditions required for industrialisation</p>
+                            <p><strong>ix</strong> Comparisons with Japan lead to the answer</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>1</strong> Paragraph <strong>A</strong> <input type="text" id="q1" data-q="1" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>2</strong> Paragraph <strong>B</strong> <input type="text" id="q2" data-q="2" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>3</strong> Paragraph <strong>C</strong> <input type="text" id="q3" data-q="3" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>4</strong> Paragraph <strong>D</strong> <input type="text" id="q4" data-q="4" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>5</strong> Paragraph <strong>E</strong> <input type="text" id="q5" data-q="5" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>6</strong> Paragraph <strong>F</strong> <input type="text" id="q6" data-q="6" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>7</strong> Paragraph <strong>G</strong> <input type="text" id="q7" data-q="7" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 8-13</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                           <p><strong>8</strong> China’s transport system was not suitable for industry in the 18th century. <input type="text" id="q8" data-q="8" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>9</strong> Tea and beer both helped to prevent dysentery in Britain. <input type="text" id="q9" data-q="9" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>10</strong> Roy Porter disagrees with Professor Macfarlane’s findings. <input type="text" id="q10" data-q="10" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>11</strong> After 1740，there was a reduction in population in Britain. <input type="text" id="q11" data-q="11" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>12</strong> People in Britain used to make beer at home. <input type="text" id="q12" data-q="12" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>13</strong> The tax on malt indirectly caused a rise in the death rate. <input type="text" id="q13" data-q="13" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Gifted children and learning</h3>
+                        <p class="mb-4"><strong>A</strong> Internationally, ‘giftedness’ is most frequently determined by a score on a general intelligence test, known as an IQ test, which is above a chosen cutoff point, usually at around the top 2-5%. Children’s educational environment contributes to the IQ score and the way intelligence is used. For example, a very close positive relationship was found when children’s IQ scores were compared with their home educational <span class="vocab-word" data-word="provision">provision</span> (Freeman, 2010). The higher the children’s IQ scores, especially over IQ 130, the better the quality of their educational backup, measured in terms of reported verbal interactions with parents, number of books and activities in their home etc. Because IQ tests are decidedly influenced by what the child has learned, they are to some extent measures of current achievement based on age-norms; that is, how well the children have learned to <span class="vocab-word" data-word="manipulate">manipulate</span> their knowledge and know-how within the terms of the test. The vocabulary aspect, for example, is dependent on having heard those words. But IQ tests can neither identify the processes of learning and thinking nor predict creativity.</p>
+                        <p class="mb-4"><strong>B</strong> Excellence does not emerge without appropriate help. To reach an exceptionally high standard in any area very able children need the means to learn, which includes material to work with and focused challenging tuition -and the encouragement to follow their dream. There appears to be a <span class="vocab-word" data-word="qualitative">qualitative</span> difference in the way the intellectually highly able think, compared with more average-ability or older pupils, for whom external <span class="vocab-word" data-word="regulation">regulation</span> by the teacher often <span class="vocab-word" data-word="compensates">compensates</span> for lack of internal regulation. To be at their most effective in their self-regulation, all children can be helped to identify their own ways of learning – <span class="vocab-word" data-word="metacognition">metacognition</span> – which will include strategies of planning, monitoring, evaluation, and choice of what to learn. Emotional awareness is also part of metacognition, so children should be helped to be aware of their feelings around the area to be learned, feelings of curiosity or confidence, for example.</p>
+                        <p class="mb-4"><strong>C</strong> High achievers have been found to use self-regulatory learning strategies more often and more effectively than lower achievers, and are better able to transfer these strategies to deal with unfamiliar tasks. This happens to such a high degree in some children that they appear to be demonstrating talent in particular areas. Overviewing research on the thinking process of highly able children, (Shore and Kanevsky, 1993) put the instructor’s problem <span class="vocab-word" data-word="succinctly">succinctly</span>: ‘If they [the gifted] merely think more quickly, then .we need only teach more quickly. If they merely make fewer errors, then we can shorten the practice’. But of course, this is not entirely the case; adjustments have to be made in methods of learning and teaching, to take account of the many ways individuals think.</p>
+                        <p class="mb-4"><strong>D</strong> Yet in order to learn by themselves, the gifted do need some support from their teachers. <span class="vocab-word" data-word="Conversely">Conversely</span>, teachers who have a tendency to ‘overdirect’ can <span class="vocab-word" data-word="diminish">diminish</span> their gifted pupils’ learning <span class="vocab-word" data-word="autonomy">autonomy</span>. Although ‘spoon-feeding’ can produce extremely high examination results, these are not always followed by equally impressive life successes. Too much dependence on the teachers risks loss of autonomy and motivation to discover. However, when teachers o pupils to reflect on their own learning and thinking activities, they increase their pupils’ self-regulation. For a young child, it may be just the simple question ‘What have you learned today?’ which helps them to recognise what they are doing. Given that a fundamental goal of education is to transfer the control of learning from teachers to pupils, improving pupils’ learning to learn techniques should be a major outcome of the school experience, especially for the highly competent. There are quite a number of new methods which can help, such as child- initiated learning, ability-peer tutoring, etc. Such practices have been found to be particularly useful for bright children from <span class="vocab-word" data-word="deprived">deprived</span> areas.</p>
+                        <p class="mb-4"><strong>E</strong> But scientific progress is not all theoretical, knowledge is a so vital to outstanding performance: individuals who know a great deal about a specific <span class="vocab-word" data-word="domain">domain</span> will achieve at a higher level than those who do not (Elshout, 1995). Research with creative scientists by Simonton (1988) brought him to the conclusion that above a certain high level, characteristics such as independence seemed to contribute more to reaching the highest levels of <span class="vocab-word" data-word="expertise">expertise</span> than intellectual skills, due to the great demands of effort and time needed for learning and practice. Creativity in all forms can be seen as expertise se mixed with a high level of motivation (Weisberg, 1993).</p>
+                        <p class="mb-4"><strong>F</strong> To sum up, learning is affected by emotions of both the individual and significant others. Positive emotions <span class="vocab-word" data-word="facilitate">facilitate</span> the creative aspects of earning and negative emotions <span class="vocab-word" data-word="inhibit">inhibit</span> it. Fear, for example, can limit the development of curiosity, which is a strong force in scientific advance, because it motivates problem-solving behaviour. In Boekaerts’ (1991) review of emotion the learning of very high IQ and highly achieving children, she found emotional forces in harness. They were not only curious, but often had a strong desire to control their environment, improve their learning efficiency and increase their own learning resources.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-17</h4>
+                        <p class="mb-4">Reading Passage 2 has six paragraphs, A-F. Which paragraph contains the following information?</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> a reference to the influence of the domestic background on the gifted child. <input type="text" id="q14" data-q="14" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>15</strong> reference to what can be lost if learners are given too much guidance. <input type="text" id="q15" data-q="15" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>16</strong> a reference to the damaging effects of anxiety. <input type="text" id="q16" data-q="16" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>17</strong> examples of classroom techniques which favour socially-disadvantaged children. <input type="text" id="q17" data-q="17" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 18-22</h4>
+                        <p class="mb-4">Look at the following statements (Questions 18-22) and the list of people below. Match each statement with the correct person or people, A-E.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p class="font-bold mb-2">List of People</p>
+                            <p><strong>A</strong> Freeman</p>
+                            <p><strong>B</strong> Shore and Kanevsky</p>
+                            <p><strong>C</strong> Elshout</p>
+                            <p><strong>D</strong> Simonton</p>
+                            <p><strong>E</strong> Boekaerts</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>18</strong> Less time can be spent on exercises with gifted pupils who produce accurate work. <input type="text" id="q18" data-q="18" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>19</strong> Self-reliance is a valuable tool that helps gifted students reach their goals. <input type="text" id="q19" data-q="19" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>20</strong> Gifted children know how to channel their feelings to assist their learning. <input type="text" id="q20" data-q="20" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>21</strong> The very gifted child benefits from appropriate support from close relatives. <input type="text" id="q21" data-q="21" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>22</strong> Really successful students have learnt a considerable amount about their subject. <input type="text" id="q22" data-q="22" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+                         <h4 class="font-bold mb-2">Questions 23-26</h4>
+                        <p class="mb-4">Complete the sentences below. Choose <strong>NO MORE THAN THREE WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>23</strong> One study found a strong connection between children’s IQ and the availability of .................. and .................. at home. <input type="text" id="q23" data-q="23"></p>
+                           <p><strong>24</strong> Children of average ability seem to need more direction from teachers because they do not have .................. <input type="text" id="q24" data-q="24"></p>
+                           <p><strong>25</strong> Meta-cognition involves children understanding their own learning strategies, as well as developing .................. <input type="text" id="q25" data-q="25"></p>
+                           <p><strong>26</strong> Teachers who rely on what is known as .................. often produce sets of impressive grades in class tests. <input type="text" id="q26" data-q="26"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Museums of fine art and their public</h3>
+                        <p class="mb-4">The fact that people go to the Louvre museum in Paris to see the original painting Mona Lisa when they can see a <span class="vocab-word" data-word="reproduction">reproduction</span> anywhere leads us to question some assumptions about the role of museums of fine art in today’s world</p>
+                        <p class="mb-4">One of the most famous works of art in the world is Leonardo da Vinci’s Mona Lisa. Nearly everyone who goes to see the original will already be familiar with it from reproductions, but they accept that fine art is more rewardingly viewed in its original form.</p>
+                        <p class="mb-4">However, if Mona Lisa was a famous novel, few people would bother to go to a museum to read the writer’s actual <span class="vocab-word" data-word="manuscript">manuscript</span> rather than a printed reproduction. This might be explained by the fact that the novel has <span class="vocab-word" data-word="evolved">evolved</span> precisely because of technological developments that made it possible to print out huge numbers of texts, whereas oil paintings have always been produced as unique objects. In addition, it could be argued that the practice of interpreting or ‘reading’ each medium follows different <span class="vocab-word" data-word="conventions">conventions</span>. With novels, the reader attends mainly to the meaning of words rather than the way they are printed on the page, whereas the ‘reader’ of a painting must attend just as closely to the material form of marks and shapes in the picture as to any ideas they may <span class="vocab-word" data-word="signify">signify</span>.</p>
+                        <p class="mb-4">Yet it has always been possible to make very accurate <span class="vocab-word" data-word="facsimiles">facsimiles</span> of pretty well any fine art work. The seven surviving versions of Mona Lisa bear witness to the fact that in the 16th century, artists seemed perfectly content to <span class="vocab-word" data-word="assign">assign</span> the reproduction of their creations to their workshop apprentices as regular ‘bread and butter’ work. And today the task of reproducing pictures is <span class="vocab-word" data-word="incomparably">incomparably</span> more simple and reliable, with <span class="vocab-word" data-word="reprographic">reprographic</span> techniques that allow the production of high-quality prints made exactly to the original scale, with faithful colour values, and even with <span class="vocab-word" data-word="duplication">duplication</span> of the surface relief of the painting.</p>
+                        <p class="mb-4">But despite an <span class="vocab-word" data-word="implicit">implicit</span> recognition that the spread of good reproductions can be culturally valuable, museums continue to promote the special status of original work.</p>
+                        <p class="mb-4">Unfortunately, this seems to place severe limitations on the kind of experience offered to visitors.</p>
+                        <p class="mb-4">One limitation is related to the way the museum presents its exhibits. As <span class="vocab-word" data-word="repositories">repositories</span> of unique historical objects, art museums are often called ‘treasure houses’. We are reminded of this even before we view a collection by the presence of security guards, attendants, ropes and display cases to keep us away from the exhibits. In many cases, the architectural style of the building further <span class="vocab-word" data-word="reinforces">reinforces</span> that notion. In addition, a major collection like that of London’s National Gallery is housed in numerous rooms, each with dozens of works, any one of which is likely to be worth more than all the average visitor possesses. In a society that judges the personal status of the individual so much by their material worth, it is therefore difficult not to be impressed by one’s own relative ‘worthlessness’ in such an environment.</p>
+                        <p class="mb-4">Furthermore, consideration of the ‘value’ of the original work in its treasure house setting impresses upon the viewer that, since these works were originally produced, they have been assigned a huge <span class="vocab-word" data-word="monetary">monetary</span> value by some person or institution more powerful than themselves. Evidently, nothing the viewer thinks about the work is going to alter that value, and so today’s viewer is <span class="vocab-word" data-word="deterred">deterred</span> from trying to extend that <span class="vocab-word" data-word="spontaneous">spontaneous</span>, immediate, self-reliant kind of reading which would originally have met the work.</p>
+                        <p class="mb-4">The visitor may then be struck by the strangeness of seeing such <span class="vocab-word" data-word="diverse">diverse</span> paintings, drawings and sculptures brought together in an environment for which they were not originally created. This ‘<span class="vocab-word" data-word="displacement">displacement</span> effect’ is further heightened by the sheer volume of exhibits. In the case of a major collection, there are probably more works on display than we could realistically view in weeks or even months.</p>
+                        <p class="mb-4">This is particularly distressing because time seems to be a vital factor in the appreciation of all art forms. A fundamental difference between paintings and other art forms is that there is no <span class="vocab-word" data-word="prescribed">prescribed</span> time over which a painting is viewed. By contrast, the audience encourage an opera or a play over a specific time, which is the duration of the performance. Similarly novels and poems are read in a prescribed <span class="vocab-word" data-word="temporal">temporal</span> sequence, whereas a picture has no clear place at which to start viewing, or at which to finish. Thus art works themselves encourage us to view them <span class="vocab-word" data-word="superficially">superficially</span>, without appreciating the richness of detail and labour that is involved.</p>
+                        <p class="mb-4">Consequently, the dominant critical approach becomes that of the art historian, a specialised academic approach devoted to ‘discovering the meaning’ of art within the cultural context of its time. This is in perfect <span class="vocab-word" data-word="harmony">harmony</span> with the museum s function, since the approach is dedicated to seeking out and conserving ‘<span class="vocab-word" data-word="authentic">authentic</span>’, original, readings of the exhibits. Again, this seems to put paid to that spontaneous, participators criticism which can be found in abundance in criticism of classic works of literature, but is absent from most art history.</p>
+                        <p class="mb-4">The displays of art museums serve as a warning of what critical practices can emerge when spontaneous criticism is <span class="vocab-word" data-word="suppressed">suppressed</span>. The museum public, like any other audience, experience art more rewardingly when given the confidence to express their views. If appropriate works of fine art could be rendered permanently accessible to the public by means of high-<span class="vocab-word" data-word="fidelity">fidelity</span> reproductions, as literature and music already are, the public may feel somewhat less in <span class="vocab-word" data-word="awe">awe</span> of them. Unfortunately, that may be too much to ask from those who seek to maintain and control the art establishment.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-31</h4>
+                        <p class="mb-4">Complete the summary using the list of words, A-L, below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> institution <strong>B</strong> mass production <strong>C</strong> mechanical processes</p>
+                            <p><strong>D</strong> public <strong>E</strong> paints <strong>F</strong> artist</p>
+                            <p><strong>G</strong> size <strong>H</strong> underlying ideas <strong>I</strong> basic technology</p>
+                            <p><strong>J</strong> readers <strong>K</strong> picture frames <strong>L</strong> assistants</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>The value attached to original works of art</strong></p>
+                            <p>People go to art museums because they accept the value of seeing an original work of art. But they do not go to museums to read original manuscripts of novels, perhaps because the availability of novels has depended on <strong>27</strong> .................. for so long, and also because with novels, the <strong>28</strong> .................. are the most important thing. <input type="text" id="q27" data-q="27" class="border border-gray-300 rounded px-2 py-1 w-16"> <input type="text" id="q28" data-q="28" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p>However, in historical times artists such as Leonardo were happy to instruct <strong>29</strong> .................... to produce copies of their work and these days new methods of reproduction allow excellent replication of surface relief features as well as colour and <strong>30</strong> .................. <input type="text" id="q29" data-q="29" class="border border-gray-300 rounded px-2 py-1 w-16"> <input type="text" id="q30" data-q="30" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p>It is regrettable that museums still promote the superiority of original works of art, since this may not be in the interests of the <strong>31</strong> ................... <input type="text" id="q31" data-q="31" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 32-35</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B, C or D</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <div class="q-item">
+                                <p><strong>32</strong> The writer mentions London’s National Gallery to illustrate</p>
+                                <label class="block"><input type="radio" name="q32" value="A"> A the undesirable cost to a nation of maintaining a huge collection of art.</label>
+                                <label class="block"><input type="radio" name="q32" value="B"> B the conflict that may arise in society between financial and artistic values.</label>
+                                <label class="block"><input type="radio" name="q32" value="C"> C the negative effect a museum can have on visitors’ opinions of themselves.</label>
+                                <label class="block"><input type="radio" name="q32" value="D"> D the need to put individual well-being above large-scale artistic schemes.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>33</strong> The writer says that today, viewers may be unwilling to criticise a because</p>
+                                <label class="block"><input type="radio" name="q33" value="A"> A they lack the knowledge needed to support an opinion.</label>
+                                <label class="block"><input type="radio" name="q33" value="B"> B they fear it may have financial implications.</label>
+                                <label class="block"><input type="radio" name="q33" value="C"> C they have no real concept of the work’s value.</label>
+                                <label class="block"><input type="radio" name="q33" value="D"> D they feel their personal reaction is of no significance.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>34</strong> According to the writer, the ‘displacement effect’ on the visitor is caused by</p>
+                                <label class="block"><input type="radio" name="q34" value="A"> A the variety of works on display and the way they are arranged.</label>
+                                <label class="block"><input type="radio" name="q34" value="B"> B the impossibility of viewing particular works of art over a long period.</label>
+                                <label class="block"><input type="radio" name="q34" value="C"> C the similar nature of the paintings and the lack of great works.</label>
+                                <label class="block"><input type="radio" name="q34" value="D"> D the inappropriate nature of the individual works selected for exhibition.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>35</strong> The writer says that unlike other forms of art, a painting does not</p>
+                                <label class="block"><input type="radio" name="q35" value="A"> A involve direct contact with an audience.</label>
+                                <label class="block"><input type="radio" name="q35" value="B"> B require a specific location for a performance.</label>
+                                <label class="block"><input type="radio" name="q35" value="C"> C need the involvement of other professionals.</label>
+                                <label class="block"><input type="radio" name="q35" value="D"> D have a specific beginning or end.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 36-40</h4>
+                        <p class="mb-4">Do the following statements agree with the views of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>36</strong> Art history should focus on discovering the meaning of art using a range of media. <input type="text" id="q36" data-q="36" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>37</strong> The approach of art historians conflicts with that of art museums. <input type="text" id="q37" data-q="37" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>38</strong> People should be encouraged to give their opinions openly on works of art. <input type="text" id="q38" data-q="38" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>39</strong> Reproductions of fine art should only be sold to the public if they are of high quality. <input type="text" id="q39" data-q="39" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>40</strong> In the future, those with power are likely to encourage more people to enjoy art. <input type="text" id="q40" data-q="40" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        // Reading Passage 1
+        q1: "iv", q2: "viii", q3: "vii", q4: "i", q5: "vi", q6: "ix", q7: "ii",
+        q8: "not given", q9: "true", q10: "false", q11: "false", q12: "not given", q13: "true",
+        // Reading Passage 2
+        q14: "A", q15: "D", q16: "F", q17: "D",
+        q18: "B", q19: "D", q20: "E", q21: "A", q22: "C",
+        q23: "books and activities", q24: "internal regulation", q25: "emotional awareness", q26: "spoon-feeding",
+        // Reading Passage 3
+        q27: "B", q28: "H", q29: "L", q30: "G", q31: "D",
+        q32: "C", q33: "D", q34: "A", q35: "D",
+        q36: "not given", q37: "no", q38: "yes", q39: "not given", q40: "no"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentTab: 'reading',
+            currentSection: 0,
+            answersChecked: {},
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                // Use event delegation for dynamically added elements
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                });
+            },
+            
+            saveAnswer(e) {
+                if (e.target.id || e.target.name) {
+                    const id = e.target.id || e.target.name;
+                     if (e.target.type === 'radio') {
+                        if (e.target.checked) {
+                            this.userAnswers[id] = e.target.value;
+                        }
+                    } else {
+                         this.userAnswers[id] = e.target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const radioInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        radioInputs.forEach(radio => {
+                            if (radio.value === value) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                }
+            },
+
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex, 10)));
+                });
+                
+                this.restoreAnswers();
+                this.addReadingExerciseButtons();
+
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+            
+            getReadingExerciseTypes() {
+                const exerciseTypes = {
+                    0: [ 
+                        { type: 'heading_matching', startQ: 1, endQ: 7, title: 'Heading Matching (Q1-7)' },
+                        { type: 'true_false', startQ: 8, endQ: 13, title: 'True/False/Not Given (Q8-13)' }
+                    ],
+                    1: [ 
+                        { type: 'paragraph_matching', startQ: 14, endQ: 17, title: 'Paragraph Matching (Q14-17)' },
+                        { type: 'people_matching', startQ: 18, endQ: 22, title: 'Matching People to Statements (Q18-22)' },
+                        { type: 'sentence_completion', startQ: 23, endQ: 26, title: 'Sentence Completion (Q23-26)' }
+                    ],
+                    2: [ 
+                        { type: 'summary_completion', startQ: 27, endQ: 31, title: 'Summary Completion (Q27-31)' },
+                        { type: 'multiple_choice', startQ: 32, endQ: 35, title: 'Multiple Choice (Q32-35)' },
+                        { type: 'yes_no', startQ: 36, endQ: 40, title: 'Yes/No/Not Given (Q36-40)' }
+                    ]
+                };
+                return exerciseTypes[this.currentSection] || [];
+            },
+
+            addReadingExerciseButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `
+                        <p class="font-semibold mb-2">${exercise.title}</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">
+                            ${buttonText}
+                        </button>
+                    `;
+
+                    const firstQuestionInput = document.getElementById(`q${exercise.startQ}`) || document.querySelector(`input[name="q${exercise.startQ}"]`);
+                    if (firstQuestionInput) {
+                        const questionBlock = firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6');
+                        if (questionBlock) {
+                            questionBlock.appendChild(buttonContainer);
+                        } else {
+                            this.questionsSection.appendChild(buttonContainer);
+                        }
+                    } else {
+                        // Fallback for summary completion where inputs are scattered
+                         if (exercise.type === 'summary_completion') {
+                             const summaryBlock = this.questionsSection.querySelector('.p-4.border.rounded-lg.bg-white.mb-6');
+                             if(summaryBlock) summaryBlock.appendChild(buttonContainer);
+                         } else {
+                             this.questionsSection.appendChild(buttonContainer);
+                         }
+                    }
+                });
+            },
+            
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+
+                for (let i = startQ; i <= endQ; i++) {
+                    const qId = `q${i}`;
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const correctAnswer = (answers[qId] || "").toLowerCase();
+                    
+                    let isCorrect = false;
+                    if(correctAnswer.includes('/')) {
+                        isCorrect = correctAnswer.split('/').includes(userAnswer);
+                    } else {
+                        isCorrect = userAnswer === correctAnswer;
+                    }
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+
+                    if (inputElement) {
+                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') || inputElement : inputElement;
+                         if (isCorrect) {
+                            elementToStyle.classList.add('correct-answer');
+                            elementToStyle.classList.remove('incorrect-answer');
+                            if(inputElement.type === 'text') inputElement.style.backgroundColor = '#dcfce7';
+                        } else {
+                            elementToStyle.classList.add('incorrect-answer');
+                            elementToStyle.classList.remove('correct-answer');
+                             if(inputElement.type === 'text') {
+                                 inputElement.style.backgroundColor = '#fef2f2';
+                                 inputElement.placeholder = `Correct: ${answers[qId]}`;
+                             }
+                        }
+                    } else if (inputs[0].type === 'radio') {
+                         const firstRadioLabel = inputs[0].closest('label');
+                         if(firstRadioLabel) firstRadioLabel.classList.add('incorrect-answer');
+                    } else if(inputs[0].type === 'text') { // Handle blank text inputs
+                        inputs[0].classList.add('incorrect-answer');
+                        inputs[0].style.backgroundColor = '#fef2f2';
+                        inputs[0].placeholder = `Correct: ${answers[qId]}`;
+                    }
+
+                     if (inputs[0].type === 'radio') {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId]}"]`);
+                         if(correctRadio && !isCorrect) {
+                              const label = correctRadio.closest('label');
+                              if (label) {
+                                label.classList.add('correct-answer');
+                                label.style.border = '2px solid #16a34a';
+                            }
+                         }
+                    }
+                }
+
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        const rect = range.getBoundingClientRect();
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                                // Ignore error
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
