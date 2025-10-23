@@ -469,6 +469,53 @@
         q36: "not given", q37: "no", q38: "yes", q39: "not given", q40: "no"
     };
 
+    // --- NEW: Explanations for Cambridge 10, Test 2 ---
+    const explanations = {
+        // Reading Passage 1
+        q1: "Paragraph A introduces the 'enigma' of the Industrial Revolution, specifically 'Why... in Britain?' and 'why... at the end of the 18th century?'. This matches heading <strong>iv (The time and place of the Industrial Revolution)</strong>.",
+        q2: "Paragraph B lists the '20 different factors' or 'conditions' needed for industry, such as technology, urban populations, and transport. This matches heading <strong>viii (Conditions required for industrialisation)</strong>.",
+        q3: "Paragraph C introduces the 'missing factors': 'Tea and beer'. It states these 'two of the nation’s favourite drinks, fuelled the revolution.' This matches heading <strong>vii (Two keys to Britain’s industrial revolution)</strong>.",
+        q4: "Paragraph D discusses the 'burst in population growth' after 1740 and details the 'Efforts to explain this sudden reduction in child deaths'. This matches heading <strong>i (The search for the reasons for an increase in population)</strong>.",
+        q5: "Paragraph E links the population burst to disease and drinking habits. It notes the tax on malt led the poor to 'turn to water and gin and in the 1720s the mortality rate began to rise again.' This matches heading <strong>vi (Changes in drinking habits in Britain)</strong>.",
+        q6: "Paragraph F makes a comparison with Japan, noting their 'prevalence of tea' and low disease rates, which leads Macfarlane to his 'answer' about tea in Britain. This matches heading <strong>ix (Comparisons with Japan lead to the answer)</strong>.",
+        q7: "Paragraph G explains why Japan did not industrialise despite having tea: it 'had turned its back on... labour-saving devices... afraid that they would put people out of work.' This matches heading <strong>ii (Industrialisation and the fear of unemployment)</strong>.",
+        q8: "The answer is NOT GIVEN. Paragraph B says China 'had many of these factors' (required for industrialisation), but it never mentions its transport system.",
+        q9: "The answer is TRUE. Paragraph C states that the 'antiseptic properties' of both tea and beer 'allowed urban communities to flourish... without succumbing to water-borne diseases such as dysentery.'",
+        q10: "The answer is FALSE. Paragraph C states that Roy Porter 'recently wrote a <strong>favourable appraisal</strong> of his research.' This means he supported or agreed with it.",
+        q11: "The answer is FALSE. Paragraph D states that between 1650 and 1740 the population was 'static', but '<strong>then there was a burst in population growth</strong>' (after 1740).",
+        q12: "The answer is NOT GIVEN. The passage mentions beer, malt, and a tax, but it never states *where* the beer was made (e.g., at home or in breweries).",
+        q13: "The answer is TRUE. Paragraph E explains the tax on malt (beer ingredient) 'The poor turned to water and gin and in the 1720s the <strong>mortality rate began to rise again</strong>.' The tax *indirectly* caused this rise.",
+        // Reading Passage 2
+        q14: "Paragraph A: '...a very close positive relationship was found when children’s IQ scores were compared with their <strong>home educational provision</strong>... measured in terms of reported verbal interactions with <strong>parents</strong>, number of <strong>books and activities in their home</strong> etc.'",
+        q15: "Paragraph D: 'Conversely, teachers who have a tendency to ‘overdirect’ can <strong>diminish</strong> their gifted pupils’ learning <strong>autonomy</strong>. ... Too much dependence on the teachers risks <strong>loss of autonomy and motivation to discover</strong>.'",
+        q16: "Paragraph F: 'Positive emotions facilitate the creative aspects of earning and negative emotions inhibit it. <strong>Fear</strong> [a form of anxiety], for example, can <strong>limit the development of curiosity</strong>, which is a strong force in scientific advance...'",
+        q17: "Paragraph D: 'There are quite a number of new methods which can help, such as <strong>child- initiated learning, ability-peer tutoring</strong>, etc. Such practices have been found to be particularly useful for bright children from <strong>deprived areas</strong> [socially-disadvantaged].'",
+        q18: "Paragraph C, quoting Shore and Kanevsky (B): 'If they merely make fewer errors, then we can <strong>shorten the practice</strong>.' 'Shorten the practice' is another way of saying 'less time can be spent on exercises'.",
+        q19: "Paragraph E, citing Simonton (D): '...characteristics such as <strong>independence</strong> [self-reliance] seemed to <strong>contribute more to reaching the highest levels of expertise</strong> than intellectual skills...'",
+        q20: "Paragraph F, citing Boekaerts (E): '...she found <strong>emotional forces in harness</strong>. They were not only curious, but often had a strong desire to ... improve their learning efficiency...'",
+        q21: "Paragraph A, citing Freeman (A): '...a very close positive relationship was found when children’s IQ scores were compared with their <strong>home educational provision</strong>... measured in terms of reported verbal interactions with <strong>parents</strong>...'",
+        q22: "Paragraph E, citing Elshout (C): '...individuals who <strong>know a great deal about a specific domain</strong> [their subject] will <strong>achieve at a higher level</strong> than those who do not.'",
+        q23: "Paragraph A: '...measured in terms of reported verbal interactions with parents, number of <strong>books and activities</strong> in their home etc.'",
+        q24: "Paragraph B: '...compared with more average-ability or older pupils, for whom external regulation by the teacher often compensates for <strong>lack of internal regulation</strong>.'",
+        q25: "Paragraph B: '<strong>Emotional awareness</strong> is also part of metacognition, so children should be helped to be aware of their feelings...'",
+        q26: "Paragraph D: 'Although ‘<strong>spoon-feeding</strong>’ can produce extremely high examination results...'",
+        // Reading Passage 3
+        q27: "Paragraph 2 states the novel's availability 'has evolved precisely because of technological developments that made it possible to print out huge numbers of texts'. This refers to <strong>B (mass production)</strong>.",
+        q28: "Paragraph 2 contrasts novels and paintings: 'With novels, the reader attends mainly to the <strong>meaning of words</strong>...' 'Meaning of words' corresponds to <strong>H (underlying ideas)</strong>.",
+        q29: "Paragraph 3 states: '...artists seemed perfectly content to assign the reproduction of their creations to their workshop <strong>apprentices</strong>...' 'Apprentices' corresponds to <strong>L (assistants)</strong>.",
+        q30: "Paragraph 3 mentions 'reprographic techniques that allow the production of high-quality prints made exactly to the original <strong>scale</strong>...' 'Scale' corresponds to <strong>G (size)</strong>.",
+        q31: "Paragraph 11 (final) suggests that high-fidelity reproductions would allow the '<strong>public</strong>' to 'feel somewhat less in awe'. The writer implies the current system is not in the interests of the <strong>D (public)</strong>.",
+        q32: "Paragraph 6 uses the National Gallery as an example of a 'treasure house' where works are 'worth more than all the average visitor possesses,' making it 'difficult not to be impressed by one’s own relative ‘worthlessness’.' This directly supports <strong>C</strong>.",
+        q33: "Paragraph 7 argues that the 'huge monetary value' assigned by a 'more powerful' institution 'deters' the viewer from a 'self-reliant kind of reading.' This implies the viewer feels their own reaction doesn't matter. This supports <strong>D</strong>.",
+        q34: "Paragraph 8 defines the 'displacement effect' as 'seeing such <strong>diverse</strong> paintings, drawings and sculptures brought together in an <strong>environment for which they were not originally created</strong>.' This matches the 'variety' and 'arrangement' in <strong>A</strong>.",
+        q35: "Paragraph 9 contrasts paintings with opera, plays, novels, and poems, which have a 'prescribed temporal sequence' or 'duration'. A painting 'has <strong>no clear place at which to start viewing, or at which to finish</strong>.' This matches <strong>D</strong>.",
+        q36: "The answer is NOT GIVEN. Paragraph 10 describes the *current* approach of art historians (focusing on cultural context and meaning) but does not state what the writer believes they *should* focus on (like using 'a range of media').",
+        q37: "The answer is NO. Paragraph 10 states the art historian's approach 'is in <strong>perfect harmony with the museum's function</strong>'. They do not conflict; they support each other.",
+        q38: "The answer is YES. The final paragraph states: 'The museum public... experience art more rewardingly when given the <strong>confidence to express their views</strong>.' This is a clear statement of what the writer believes should happen.",
+        q39: "The answer is NOT GIVEN. The final paragraph mentions 'high-fidelity reproductions', but the writer does not state that *only* high-quality ones should be sold. This condition is not mentioned.",
+        q40: "The answer is NO. The final sentence says making art more accessible 'may be too much to ask from those who seek to <strong>maintain and control</strong> the art establishment.' This implies those with power will *resist* this change, not encourage it."
+    };
+
 
     // --- APPLICATION LOGIC ---
     document.addEventListener('DOMContentLoaded', () => {
@@ -492,6 +539,7 @@
                 this.loadContent();
                 this.initSplitter();
                 this.initHighlighter();
+                this.initVocabulary(); // <-- ADD THIS
             },
 
             setupEventListeners() {
@@ -702,6 +750,42 @@
                             }
                          }
                     }
+
+                    // --- ADD THIS EXPLANATION LOGIC ---
+                    const explanationText = explanations[qId];
+                    if (explanationText && !document.querySelector(`.explanation-box[data-q="${qId}"]`)) {
+                        const explanationBox = document.createElement('div');
+                        explanationBox.className = 'explanation-box p-3 mt-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-gray-800';
+                        explanationBox.innerHTML = `<strong>Explanation:</strong> ${explanationText}`;
+                        explanationBox.dataset.q = qId; // Add a data attribute to prevent duplicates
+
+                        const inputParent = inputs[0].closest('.q-item, p');
+                        if (inputParent) {
+                             // For summary completion, find the main block
+                            if (exerciseKey.includes('summary_completion')) {
+                                const summaryBlock = inputs[0].closest('.space-y-3');
+                                if (summaryBlock) {
+                                    // Check if an explanation for this block is already added
+                                    if (!summaryBlock.querySelector('.explanation-box')) {
+                                        summaryBlock.appendChild(explanationBox);
+                                    } else {
+                                        // find the specific input and add after
+                                        inputs[0].closest('p')?.after(explanationBox);
+                                    }
+                                }
+                            } else {
+                                inputParent.after(explanationBox);
+                            }
+                        } else if (inputs[0].closest('tr')) { // For tables
+                             // This test doesn't have tables, but good to keep
+                             const tableRow = inputs[0].closest('tr');
+                             const explanationCell = tableRow.cells[tableRow.cells.length - 1];
+                             if (!explanationCell.querySelector('.explanation-box')) {
+                                 explanationCell.appendChild(explanationBox);
+                             }
+                        }
+                    }
+                    // --- END OF ADDED LOGIC ---
                 }
 
                 const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
@@ -784,7 +868,67 @@
                         this.highlightTooltip.style.display = 'none';
                    }
                 });
+            },
+
+            // --- ADD THIS NEW FUNCTION ---
+            initVocabulary() {
+                const modal = document.getElementById('vocab-modal');
+                const closeBtn = document.getElementById('close-vocab-modal');
+                const playBtn = document.getElementById('play-audio-btn');
+                const wordEl = document.getElementById('vocab-word');
+                const meaningEl = document.getElementById('vocab-meaning');
+                const pronunciationEl = document.getElementById('vocab-pronunciation-text');
+                let utterance = null;
+
+                // Use event delegation on the left pane
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const word = e.target.dataset.word;
+                        const vocabData = vocabulary[word];
+                        if (vocabData) {
+                            wordEl.textContent = word;
+                            meaningEl.textContent = vocabData.meaning;
+                            pronunciationEl.textContent = vocabData.phonetic || '';
+                            
+                            // Use SpeechSynthesis API for pronunciation
+                            if ('speechSynthesis' in window) {
+                                utterance = new SpeechSynthesisUtterance(word);
+                                utterance.lang = 'en-US';
+                                playBtn.style.display = 'flex';
+                            } else {
+                                // Hide button if API not supported
+                                playBtn.style.display = 'none';
+                            }
+
+                            modal.classList.remove('hidden');
+                        }
+                    }
+                });
+                
+                playBtn.addEventListener('click', () => {
+                    if (utterance && window.speechSynthesis) {
+                        // Cancel any previous speech before starting a new one
+                        window.speechSynthesis.cancel();
+                        window.speechSynthesis.speak(utterance);
+                    }
+                });
+
+                const closeModal = () => {
+                    modal.classList.add('hidden');
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.cancel(); // Stop speaking when modal closes
+                    }
+                    utterance = null;
+                };
+
+                closeBtn.addEventListener('click', closeModal);
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                });
             }
+            // --- END OF NEW FUNCTION ---
         };
 
         app.init();
@@ -793,3 +937,4 @@
 
 </body>
 </html>
+
