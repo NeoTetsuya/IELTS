@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Practice Test 6</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .questions-section {
+            width: 100%;
+        }
+        .script-section {
+            width: 100%;
+            background-color: #faf5ff; /* purple-50 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 2px solid #e9d5ff; /* purple-200 */
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db; /* gray-300 */
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 6px;
+            background-color: #f9fafb; /* gray-50 */
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .tab-btn.active {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 6px;
+            background-color: #f9fafb; /* gray-50 */
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb; /* gray-200 */
+        }
+        .section-btn.active {
+            background-color: #1d4ed8; /* blue-700 */
+            color: white;
+            border-color: #1d4ed8; /* blue-700 */
+        }
+        .play-audio-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-audio-btn:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        .play-audio-btn:disabled {
+            background-color: #9ca3af; /* gray-400 */
+            cursor: not-allowed;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937; /* gray-800 */
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a; /* yellow-200 */
+            border-radius: 2px;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af; /* gray-400 */
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6; /* blue-500 */
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .audio-seeker {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb; /* gray-200 */
+            outline: none;
+            border-radius: 0.5rem;
+        }
+        .audio-seeker::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6; /* blue-500 */
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .audio-seeker::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6; /* blue-500 */
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151; /* gray-700 */
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937; /* gray-800 */
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .explanation-box:hover {
+            background-color: #dbeafe !important; /* blue-100 */
+            transform: scale(1.02);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a; /* green-600 */
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626; /* red-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Practice Test 6</h1>
+        <div class="flex items-center space-x-4">
+            <button id="toggle-script-btn" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition-colors">
+                Show Script
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions (Reading) or Script (Listening) -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <!-- Questions Section (for Reading) -->
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+            
+            <!-- Script Section (for Listening) -->
+            <div id="script-section" class="script-section" style="display: none;">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-purple-800 mb-2">Listening Script</h3>
+                </div>
+                <div id="script-content" class="text-sm leading-relaxed overflow-y-auto">
+                    <!-- Script will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="listening">Listening</button>
+                <button class="tab-btn" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+
+<script>
+    // --- DATA ---
+    // This object contains all the content for Test 6, parsed from the PDF.
+    const testData = {
+        listening: {
+            duration: 1800, // 30 minutes
+            sections: [
+                {
+                    title: "Section 1",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 1</h3>
+                        <p class="mb-4">You will hear a conversation about a tour booking.</p>
+                        <p class="mb-4 text-sm text-red-600">Note: The audio file below is a placeholder. The content will not match the questions.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Placeholder audio. In a real scenario, this would be Test 6, Section 1. -->
+                            <audio id="audio-sec1" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-1.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec1" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 1-10</h4>
+                        <p class="mb-4">Complete the table below. Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-lg">Tour Booking Enquiry</h5>
+                            <p><strong>Type of holiday:</strong> <strong>1</strong> <input type="text" id="q1"></p>
+                            
+                            <p class="font-semibold mt-4">Hotel:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>Meal:</strong> including <strong>2</strong> <input type="text" id="q2"></li>
+                                <li><strong>Facilities:</strong> a pool, a nightclub and a <strong>3</strong> <input type="text" id="q3"></li>
+                                <li><strong>Prices:</strong> reduce from <strong>4</strong> £<input type="text" id="q4"> to £315</li>
+                            </ul>
+
+                            <p class="font-semibold mt-4">Self-catering Apartment:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>Stay in a</strong> <strong>5</strong> <input type="text" id="q5"> room</li>
+                            </ul>
+
+                            <p class="font-semibold mt-4">Equipment Rental:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>Rental for one week:</strong> <strong>6</strong> £<input type="text" id="q6"></li>
+                            </ul>
+
+                            <p class="font-semibold mt-4">Types of Insurance:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>7</strong> <input type="text" id="q7"> Cover: £30</li>
+                                <li><strong>Premier cover:</strong> <strong>8</strong> £<input type="text" id="q8"></li>
+                            </ul>
+
+                            <p class="font-semibold mt-4">Transport:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>The cheapest way of going to airport:</strong> by <strong>9</strong> <input type="text" id="q9"></li>
+                            </ul>
+
+                            <p class="font-semibold mt-4">Payment method:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li><strong>Pay by</strong> <strong>10</strong> <input type="text" id="q10">: no extra fee</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 2",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 2</h3>
+                        <p class="mb-4">You will hear a talk about a community centre.</p>
+                        <p class="mb-4 text-sm text-red-600">Note: The audio file below is a placeholder. The content will not match the questions.</p>
+                         <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Placeholder audio -->
+                            <audio id="audio-sec2" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-2.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec2" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 11-12</h4>
+                        <p class="mb-4">Choose TWO letters, <strong>A-E</strong>.</p>
+                        <p class="mb-4">Which TWO items will participants receive when they check in?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q11_12" value="A"> A a class list</label>
+                            <label class="block"><input type="checkbox" name="q11_12" value="B"> B a face towel</label>
+                            <label class="block"><input type="checkbox" name="q11_12" value="C"> C a name tag</label>
+                            <label class="block"><input type="checkbox" name="q11_12" value="D"> D a shoe bag</label>
+                            <label class="block"><input type="checkbox" name="q11_12" value="E"> E a water bottle</label>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 13-14</h4>
+                        <p class="mb-4">Choose TWO letters, <strong>A-E</strong>.</p>
+                        <p class="mb-4">Which TWO activities will be hosted in the first afternoon and evening?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q13_14" value="A"> A costume making</label>
+                            <label class="block"><input type="checkbox" name="q13_14" value="B"> B a musical show</label>
+                            <label class="block"><input type="checkbox" name="q13_14" value="C"> C an informal dance</label>
+                            <label class="block"><input type="checkbox" name="q13_14" value="D"> D a talk on dance history</label>
+                            <label class="block"><input type="checkbox" name="q13_14" value="E"> E a dance test</label>
+                        </div>
+                        
+                        <h4 class="font-bold mb-2 mt-6">Questions 15-20</h4>
+                        <p class="mb-4">Label the map below. Write the correct letter, <strong>A-J</strong>, next to Questions 15-20.</p>
+                        <div class="p-4 border rounded-lg bg-white mb-6">
+                            <img src="https://i.imgur.com/g0tX8fM.png" alt="Plan of Community Centre" class="mb-4">
+                            <p><strong>15</strong> shower room <input type="text" id="q15" class="w-16 ml-2"></p>
+                            <p><strong>16</strong> bunkroom <input type="text" id="q16" class="w-16 ml-2"></p>
+                            <p><strong>17</strong> games room <input type="text" id="q17" class="w-16 ml-2"></p>
+                            <p><strong>18</strong> reception <input type="text" id="q18" class="w-16 ml-2"></p>
+                            <p><strong>19</strong> medical centre <input type="text" id="q19" class="w-16 ml-2"></p>
+                            <p><strong>20</strong> store <input type="text" id="q20" class="w-16 ml-2"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 3",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 3</h3>
+                        <p class="mb-4">You will hear a conversation about an assignment.</p>
+                        <p class="mb-4 text-sm text-red-600">Note: The audio file below is a placeholder. The content will not match the questions.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Placeholder audio -->
+                            <audio id="audio-sec3" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-3.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec3" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                           <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 21-22</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">Assignment Feedback</h5>
+                            <p class="font-semibold mt-2">Things that need to be done:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Hand in book reports with the next assignment</li>
+                                <li>Check accuracy of the <strong>21</strong> <input type="text" id="q21"> in the last section</li>
+                                <li>Give more <strong>22</strong> <input type="text" id="q22"></li>
+                                <li>Expand ideas to improve the grade</li>
+                            </ul>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 23-27</h4>
+                        <p class="mb-4">Answer the questions below. Write <strong>NO MORE THAN THREE WORDS</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>23</strong> When will Karen give her presentation? <input type="text" id="q23"></p>
+                            <p><strong>24</strong> What must she do during the presentation? <input type="text" id="q24"></p>
+                            <p><strong>25</strong> By which date does she have to submit an abstract? <input type="text" id="q25"></p>
+                            <p><strong>26</strong> Where will the presentation take place? <input type="text" id="q26"></p>
+                            <p><strong>27</strong> Who will grade her presentation? <input type="text" id="q27"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 28-30</h4>
+                        <p class="mb-4">Choose THREE letters, <strong>A-H</strong>.</p>
+                        <p class="mb-4">Which THREE modules will Karen study next year?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q28_30" value="A"> A Communication Skills</label>
+                            <label class="block"><input type="checkbox" name="q28_30" value="B"> B Data collection</label>
+                            <label class="block"><input type="checkbox" name="q28_30" value="C"> C Discourse Analysis</label>
+                            <label class="block"><input type="checkbox" name="q28_30" value="D"> D Language and Society</label>
+                            <label class="block"><input type="checkbox" name="q28_30" value="E"> E Phonology</label>
+                            <label class="block"><input type="checkbox" name="q28_30" value="F"> F Psycholinguistics</label>
+                            <label class="block"><input type="checkbox" name="q28_30" value="G"> G Research Methodology</label>
+                            <label class="block"><input type="checkbox" name="q28_30" value="H"> H Social interaction</label>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 4",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 4</h3>
+                        <p class="mb-4">You will hear a lecture about research on birds in Australia.</p>
+                        <p class="mb-4 text-sm text-red-600">Note: The audio file below is a placeholder. The content will not match the questions.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Placeholder audio -->
+                            <audio id="audio-sec4" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-4.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec4" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 31-40</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">Research on birds in Australia</h5>
+                            
+                            <h6 class="font-semibold mt-2">The study by Cunningham in 1995</h6>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>It aimed to study birds which were <strong>31</strong> <input type="text" id="q31"> in cities</li>
+                            </ul>
+                            
+                            <p class="font-semibold mt-2">Methodology</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Researchers were able to <strong>32</strong> <input type="text" id="q32"> rather than count the number of birds by some methods, such as random sampling.</li>
+                                <li>Researchers studied bird's companionship habits using a <strong>33</strong> <input type="text" id="q33"> system.</li>
+                                <li>Research attached tags to birds's legs to identify their <strong>34</strong> <input type="text" id="q34"> over time.</li>
+                            </ul>
+
+                            <p class="font-semibold mt-2">Findings</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Birds tended to choose the same nesting site in which they were raised</li>
+                                <li>Human activities such <strong>35</strong> <input type="text" id="q35"> had a negative effect on the reproduction of birds</li>
+                            </ul>
+                            
+                            <p class="font-semibold mt-2">Measures taken by local organisation:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>To increase birds' rate of <strong>36</strong> <input type="text" id="q36"> in various ways</li>
+                                <li>To reduce the dangers caused by <strong>37</strong> <input type="text" id="q37"> farms, e.g., colliding with turbines</li>
+                            </ul>
+
+                            <p class="font-semibold mt-2">The study by Conway in 2006</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Researchers monitored the <strong>38</strong> <input type="text" id="q38"> of birds' nocturnal callings during flight</li>
+                                <li><strong>39</strong> <input type="text" id="q39"> were taken to listen to birds' sounds</li>
+                                <li>Data could be collected through noise detection devices placed at a great <strong>40</strong> <input type="text" id="q40"></li>
+                            </ul>
+                        </div>
+                    `
+                }
+            ]
+        },
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The history of tea</h3>
+                        <p>The story of tea begins in China. According to legend, in 2737 BC, the Chinese emperor Shen Nung was sitting beneath a tree while his servant boiled drinking water, when some leaves from the tree blew into the water. Shen Nung, a renowned herbalist, decided to try the infusion that his servant had accidentally created. The tree was a Camellia sinensis, and the resulting drink was what we now call tea. It is impossible to know whether there is any truth in this story. But tea drinking certainly became established in China many centuries before it had even been heard of in the West. Containers for tea have been found in tombs dating from the Han Dynasty (206 BC-220 AD) but it was under the Tang Dynasty (618-906 AD), that tea became firmly established as the national drink of China.</p>
+                        <p>It became such a favourite that during the late eighth century a writer called Lu Yu wrote the first book entirely about tea, the Ch'a Ching, or Tea Classic. It was shortly after this that tea was first introduced to Japan, by Japanese Buddhist monks who had travelled to China to study. Tea received almost instant imperial sponsorship and spread rapidly from the royal court and monasteries to the other sections of Japanese society.</p>
+                        <p>So at this stage in the history of tea, Europe was rather lagging behind. In the latter half of the sixteenth century there are the first brief mentions of tea as a drink among Europeans. These are mostly from Portuguese who were living in the East as traders and missionaries. But although some of these individuals may have brought back samples of tea to their native country, it was not the Portuguese who were the first to ship back tea as a commercial import. This was done by the Dutch, who in the last years of the sixteenth century began to encroach on Portuguese trading routes in the East. By the turn of the century they had established a trading post on the island of Java, and it was via Java that in 1606 the first consignment of tea was shipped from China to Holland. Tea soon became a fashionable drink among the Dutch, and from there spread to other countries in continental western Europe, but because of its high price it remained a drink for the wealthy.</p>
+                        <p>Britain, always a little suspicious of continental trends, had yet to become the nation of tea drinkers that it is today. Starting in 1600, the British East India Company had a monopoly on importing goods from outside Europe, and it is likely that sailors on these ships brought tea home as gifts. The first coffee house had been established in London in 1652, and tea was still somewhat unfamiliar to most readers, so it is fair to assume that the drink was still something of a curiosity. Gradually, it became a popular drink in coffee houses, which were as many locations for the transaction of business as they were for relaxation or pleasure. They were though the preserve of middle- and upper-class men; women drank tea in their own homes, and as yet tea was still too expensive to be widespread among the working classes. In part, its high price was due to a punitive system of taxation.</p>
+                        <p>One unforeseen consequence of the taxation of tea was the growth of methods to avoid taxation - smuggling and adulteration. By the eighteenth century many Britons wanted to drink tea but could not afford the high prices, and their enthusiasm for the drink was matched by the enthusiasm of criminal gangs to smuggle it in. What began as a small time illegal trade, selling a few pounds of tea to personal contacts, developed by the late eighteenth century into an astonishing organised crime network, perhaps importing as much as 7 million lbs annually, compared to a legal import of 5 million lbs! Worse for the drinkers was that taxation also encouraged the adulteration of tea, particularly of smuggled tea which was not quality controlled through customs and excise. Leaves from other plants, or leaves which had already been brewed and then dried, were added to tea leaves. By 1784, the government realised that enough was enough, and that heavy taxation was creating more problems than it was worth. The new Prime Minister, William Pitt the Younger, slashed the tax from 119 per cent to 12.5 per cent. Suddenly legal tea was affordable, and smuggling stopped virtually overnight.</p>
+                        <p>Another great impetus to tea drinking resulted from the end of the East India Company's monopoly on trade with China, in 1834. Before that date, China was the country of origin of the vast majority of the tea imported to Britain, but the end of its monopoly stimulated the East India Company to consider growing tea outside China. India had always been the centre of the Company's operations, which led to the increased cultivation of tea in India, beginning in Assam. There were a few false starts, including the destruction by cattle of one of the earliest tea nurseries, but by 1888 British tea imports from India were for the first time greater than those from China.</p>
+                        <p>The end of the East India Company's monopoly on trade with China also had another result, which was more dramatic though less important in the long term: it ushered in the era of the tea clippers. While the Company had had the monopoly on trade, there was no rush to bring the tea from China to Britain, but after 1834 the tea trade became a virtual free for all. Individual merchants and sea captains with their own ships raced to bring home the tea and make the most money, using fast new clippers which had sleek lines, tall masts and huge sails. In particular there was a competition between British and American merchants, leading to the famous clipper races of the 1860s. But these races soon came to an end with the opening of the Suez Canal, which made the trade routes to China viable for steamships for the first time.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-7</h4>
+                        <p class="mb-4">Complete the sentences below. Use <strong>ONE WORD</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>1</strong> Researchers believed the tea containers detected in <input type="text" id="q41"> from the Han Dynasty was the first evidence of the use of tea.</p>
+                           <p><strong>2</strong> Lu Yu wrote a <input type="text" id="q42"> about tea before anyone else in the eighth century.</p>
+                           <p><strong>3</strong> It was <input type="text" id="q43"> from Japan who brought tea to their native country from China.</p>
+                           <p><strong>4</strong> Tea was carried from China to Europe actually by the <input type="text" id="q44">.</p>
+                           <p><strong>5</strong> The British government had to cut down the taxation on tea due to the serious crime of <input type="text" id="q45">.</p>
+                           <p><strong>6</strong> Tea was planted in <input type="text" id="q46"> besides China in the 19th century.</p>
+                           <p><strong>7</strong> In order to compete in shipping speed, traders used <input type="text" id="q47"> for the race.</p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 8-13</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>8</strong> Tea was popular in Britain in the 16th century. <input type="text" id="q48" class="w-32 ml-2"></p>
+                            <p><strong>9</strong> Tea was more fashionable than coffee in Europe in the late 16th century. <input type="text" id="q49" class="w-32 ml-2"></p>
+                            <p><strong>10</strong> Tea was enjoyed by all classes in Britain in the seventeenth century. <input type="text" id="q50" class="w-32 ml-2"></p>
+                            <p><strong>11</strong> The adulteration of tea also prompted William Pitt the Younger to reduce the tax. <input type="text" id="q51" class="w-32 ml-2"></p>
+                            <p><strong>12</strong> Initial problems occurred when tea was planted outside China by the East India Company. <input type="text" id="q52" class="w-32 ml-2"></p>
+                            <p><strong>13</strong> The fastest vessels were owned by America during the 19th century clipper races. <input type="text" id="q53" class="w-32 ml-2"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Biodiversity</h3>
+                        <p><strong>A</strong> It seems biodiversity has become a buzzword beloved of politicians, conservationists, protesters and scientists alike. But what exactly is it? The Convention on Biological Diversity, an international agreement to conserve and share the planet's biological riches, provides a good working definition: biodiversity comprises every form of life, from the smallest microbe to the largest animal or plant, the genes that give them their specific characteristics and the ecosystems of which they are apart.</p>
+                        <p><strong>B</strong> In October, the World Conservation Union (also known as the IUCN) published its updated Red List of Threatened Species, a roll call of 11,167 creatures facing extinction - 121 more than when the list was last published in 2000. But the new figures almost certainly underestimate the crisis. Some 1.2 million species of animal and 270,000 species of plant have been classified, but the well-being of only a fraction has been assessed. The resources are simply not available. The IUCN reports that 5714 plants are threatened, for example, but admits that only 4 per cent of known plants has been assessed. And, of course, there are thousands of species that we have yet to discover. Many of these could also be facing extinction.</p>
+                        <p><strong>C</strong> It is important to develop a picture of the diversity of life on Earth now so that comparisons can be made in the future and trends identified. But it isn't necessary to observe every single type of organism in an area to get a snapshot of the health of the ecosystem. In many habitats, there are species that are particularly susceptible to shifting conditions, and these can be used as indicator species.</p>
+                        <p><strong>D</strong> In the media, it is usually large, charismatic animals such as pandas, elephants, tigers and whales that get all the attention when a loss of biodiversity is discussed. However, animals or plants far lower down the food chain are often the ones vital for preserving habitats - in the process saving the skins of those more glamorous species. There are known as keystone species.</p>
+                        <p><strong>E</strong> By studying the complex feeding relationships within habitats, species can be identified that have a particularly important impact on the environment. For example, the members of the fig family are the staple food for hundreds of different species in many different countries, so important that scientists sometimes call figs "jungle burgers". A whole range of animals, from tiny insects to birds and large mammals, feed on everything from the tree's bark and leaves to its flowers and fruits. Many fig species have very specific pollinators. There are several dozen species of the fig tree in Costa Rica, and a different type of wasp has evolved to pollinate each one. Chris Lyle of the Natural History Museum in London - who is also involved in the Global Taxonomy Initiative of the Convention on Biological Diversity - points out that if fig trees are affected by global warming, pollution, disease or any other catastrophe, the loss of biodiversity will be enormous.</p>
+                        <p><strong>F</strong> Similarly, sea otters play a major role in the survival of giant kelp forests along the coasts of California and Alaska. These "marine rainforests" provide a home for a wide range of other species. The kelp itself is the main food of purple and red sea urchins and in turn, the urchins are eaten by predators, particularly sea otters. They detach an urchin from the seabed then float to the surface and lie on their backs with the urchin shell on their tummy, smashing it open with a stone before eating the contents. Urchins that are not eaten tend to spend their time in rock crevices to avoid the predators. This allows the kelp to grow and it can grow many centimetres in a day. As the forests form, bits of kelp break off and fall to the bottom to provide food for the urchins in their crevices. The sea otters thrive hunting for sea urchins in the kelp, and many other fish and invertebrates live among the fronds. The problems start when the sea otter population declines. As large predators they are vulnerable - their numbers are relatively small so disease or human hunters can wipe them out. The result is that the sea urchin population grows unchecked and they roam the seafloor eating young kelp fronds. This tends to keep the kelp very short and stops forests developing, which has a huge impact on biodiversity.</p>
+                        <p><strong>G</strong> Conversely, keystone species can also make dangerous alien species: they can wreak havoc if they end up in the wrong ecosystem. The cactus moth, whose caterpillar is a voracious eater of prickly pear was introduced to Australia to control the rampant cacti. It was so successful that someone thought it would be a good idea to introduce it to Caribbean islands that had the same problem. It solved the cactus menace, but unfortunately, some of the moths have now reached the US mainland - borne on winds and in tourists' luggage where they are devastating the native cactus populations of Florida.</p>
+                        <p><strong>H</strong> Organisations like the Convention on Biological Diversity work with groups such as the UN and with governments and scientists to raise awareness and fund research. A number of major international meetings - including the World Summit on Sustainable Development in Johannesburg this year - have set targets for governments around the world to slow the loss of biodiversity. And the CITES meeting in Santiago last month added several more names to its list of endangered species for which trade is controlled. Of course, these agreements will prove of limited value if some countries refuse to implement them.</p>
+                        <p><strong>I</strong> There is cause for optimism, however. There seems to be a growing understanding of the need for sustainable agriculture and sustainable tourism to conserve biodiversity. Problems such as illegal logging are being tackled through sustainable forestry programmes, with the emphasis on minimising the use of rainforest hardwoods in the developed world and on rigorous replanting of whatever trees are harvested. CITES is playing its part by controlling trade in wood from endangered tree species. In the same way, sustainable farming techniques that minimise environmental damage and avoid monoculture.</p>
+                        <p><strong>J</strong> Action at a national level often means investing in public education and awareness. Getting people like you and me involved can be very effective. Australia and many European countries are becoming increasingly efficient at recycling much of their domestic waste, for example, preserving natural resources and reducing the use of fossil fuels. This, in turn, has a direct effect on biodiversity by minimising pollution, and an indirect effect by reducing the number of greenhouse gases emitted from incinerators and landfill sites. Preserving ecosystems intact for future generations to enjoy is obviously important, but biodiversity is not some kind of optional extra. Variety may be "the spice of life", but biological variety is also our life-support system.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-20</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 2? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> The term "biodiversity" consists of living creatures and the environment that they live in. <input type="text" id="q54" class="w-32 ml-2"></p>
+                            <p><strong>15</strong> There are species that have not been researched because it's unnecessary to study all creatures. <input type="text" id="q55" class="w-32 ml-2"></p>
+                            <p><strong>16</strong> It is not necessary to investigate all creatures in a certain place. <input type="text" id="q56" class="w-32 ml-2"></p>
+                            <p><strong>17</strong> The press more often than not focuses on animals well-known. <input type="text" id="q57" class="w-32 ml-2"></p>
+                            <p><strong>18</strong> There is a successful case that cactus moth plays a positive role in the US. <input type="text" id="q58" class="w-32 ml-2"></p>
+                            <p><strong>19</strong> Usage of hardwoods is forbidden in some European countries. <input type="text" id="q59" class="w-32 ml-2"></p>
+                            <p><strong>20</strong> Agriculture experts advise farmers to plant single crops in the field in terms of sustainable farming. <input type="text" id="q60" class="w-32 ml-2"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 21-26</h4>
+                        <p class="mb-4">Complete the following summary. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p>Because of the ignorance brought by media, people tend to neglect significant creatures called <strong>21</strong> <input type="text" id="q61">. Every creature has diet connections with others, such as <strong>22</strong> <input type="text" id="q62"> which provide a majority of foods for other species. In some states of America, the decline in a number of sea otters leads to the boom of <strong>23</strong> <input type="text" id="q63">. An impressing case is that imported <strong>24</strong> <input type="text" id="q64"> successfully tackles the plant cacti in <strong>25</strong> <input type="text" id="q65">. However, the operation is needed for the government to increase its financial support in <strong>26</strong> <input type="text" id="q66">.</p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Nature works Polylactic acid</h3>
+                        <p><strong>A</strong> A dozen years ago, scientists at Cargill got the idea of converting lactic acid made from corn into plastic while examining possible new uses for materials produced from corn wet milling processes. In the past, several efforts had been made to develop plastics from lactic acid, but with limited success. Achieving this technological breakthrough didn't come easily, but in time the efforts did succeed. A fermentation and distillation process using com was designed to create a polymer suitable for a broad variety of applications.</p>
+                        <p><strong>B</strong> As an agricultural based firm, Cargill had taken this product as far as it could by 1997. The company needed a partner with access to plastics markets and polymerization capabilities, and began discussions with The Dow Chemical Company. The next step was the formation of the joint venture that created Cargill Dow LLC. Cargill Dow's product is the world's first commercially available plastic made from annually renewable resources such as com: Nature Works ™™ PLA is a family of packaging polymers (carbon-based molecules) made from non-petroleum based resources. Ingeo is a family of polymers for fibers made in a similar manner.</p>
+                        <p><strong>C</strong> By applying their unique technology to the processing of natural plant sugars, Cargill Dow has created a more environmentally friendly material that reaches the consumer in clothes, cups, packaging and other products. While Cargill Dow is a stand-alone business, it continues to leverage the agricultural processing, manufacturing and polymer expertise of the two parent companies in order to bring the best possible products to market.</p>
+                        <p><strong>D</strong> The basic raw materials for PLA are carbon dioxide and water. Growing plants, like com, take these building blocks from the atmosphere and the soil. They are combined in the plant to make carbohydrates (sucrose and starch) through a process driven by photosynthesis. The process for making Nature Works PLA begins when a renewable resource such as corn is milled, separating starch from the raw material. Unrefined dextrose, in turn, is processed from the starch.</p>
+                        <p><strong>E</strong> Cargill Dow turns the unrefined dextrose into lactic acid using a fermentation process similar to that used by beer and wine producers. This is the same lactic acid that is used as a food additive and is found in muscle tissue in the human body. Through a special condensation process, a lactide is formed. This lactide is purified through vacuum distillation and becomes a polymer (the base for NatureWorks PLA) that is ready for use through a solvent-free melt process. Development of this new technology allows the company to "harvest" the carbon that living plants remove from the air through photosynthesis. Carbon is stored in plant starches, which can be broken down into natural plant sugars. The carbon and other elements in these natural sugars are then used to make NatureWorks PLA.</p>
+                        <p><strong>F</strong> Nature Works PLA fits all disposal systems and is fully compostable in commercial composting facilities. With the proper infrastructure, products made from this polymer can be recycled back to a monomer and re-used as a polymer. Thus, at the end of its life cycle, a product made from Nature Works PLA can be broken down into its simplest parts so that no sign of it remains.</p>
+                        <p><strong>G</strong> PLA is now actively competing with traditional materials in packaging and fiber applications throughout the world; based on the technology's success and promise, Cargill Dow is quickly becoming a premier player in the polymers market. This new polymer now competes head-on with petroleum-based materials like polyester. A wide range of products that vary in molecular weight and crystallinity can be produced, and the blend of physical properties of PLA makes it suited for a broad range of fiber and packaging applications. Fiber and non-woven applications include clothing, fiberfill, blankets and wipes. Packaging applications include packaging films and food and beverage containers.</p>
+                        <p><strong>H</strong> As Nature Works PLA polymers are more oil- and grease-resistant and provide a better flavor and aroma barrier than existing petroleum-based polymers, grocery retailers are increasingly using this packaging for their fresh foods. As companies begin to explore this family of polymers, more potential applications are being identified. For example, PLA possess two properties that are particularly useful for drape fabrics and window furnishings. Their resistance to ultraviolet light is particularly appealing as this reduces the amount of fading in such fabrics, and their refractive index is low, which means fabrics constructed from these polymers can be made with deep colors without requiring large amounts of dye. In addition, sportswear makers have been drawn to the product as it has an inherent ability to take moisture away from the skin and when blended with cotton and wool, the result is garments that are lighter and better at absorbing moisture.</p>
+                        <p><strong>I</strong> PLA combines inexpensive large-scale fermentation with chemical processing to produce a value-added polymer product that improves the environment as well. The source material for PLA is a natural sugar found in plants such as com and using such renewable feedstock presents several environmental benefits. As an alternative to traditional petroleum-based polymers, the production of PLA uses 20%-50% less fossil fuel and releases a lower amount of greenhouse gasses than comparable petroleum-based plastic; carbon dioxide in the atmosphere is removed when the feedstock is grown and is returned to the earth when the polymer is degraded. Because the company is using raw materials that can be regenerated year after year, it is both cost-competitive and environmentally responsible.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-30</h4>
+                        <p class="mb-4">Match the items A-F with questions 27-30.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> make things like clothes</p>
+                            <p><strong>B</strong> produce plastic from plant</p>
+                            <p><strong>C</strong> selling plastic in market</p>
+                            <p><strong>D</strong> fermentation process</p>
+                            <p><strong>E</strong> drape fabrics</p>
+                            <p><strong>F</strong> wrapping products</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>27</strong> scientists manage to <input type="text" id="q67" class="w-16 ml-2"></p>
+                           <p><strong>28</strong> Cargill needs to have contacts with <input type="text" id="q68" class="w-16 ml-2"></p>
+                           <p><strong>29</strong> Nature work is used for <input type="text" id="q69" class="w-16 ml-2"></p>
+                           <p><strong>30</strong> Ingeo is used to <input type="text" id="q70" class="w-16 ml-2"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 31-34</h4>
+                        <p class="mb-4">Complete the flow chart. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="p-4 border rounded-lg bg-white mb-6">
+                            <img src="https://i.imgur.com/8N4kGkM.png" alt="Process diagram for Polylactic acid" class="mb-4">
+                            <p><strong>31</strong> <input type="text" id="q71"></p>
+                            <p><strong>32</strong> <input type="text" id="q72"></p>
+                            <p><strong>33</strong> <input type="text" id="q73"></p>
+                            <p><strong>34</strong> <input type="text" id="q74"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 35-40</h4>
+                        <p class="mb-4">Choose the correct letter, A, B, C or D for questions 35-36.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <div class="q-item">
+                                <p><strong>35</strong> Why did choose the PLA as material for food packaging?</p>
+                                <label class="block"><input type="radio" name="q75" value="A"> A It smells good</label>
+                                <label class="block"><input type="radio" name="q75" value="B"> B It can save food freshness</label>
+                                <label class="block"><input type="radio" name="q75" value="C"> C It can be used on other materials</label>
+                                <label class="block"><input type="radio" name="q75" value="D"> D Some other things need to be revised about it.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>36</strong> What is PLA packaging is used for?</p>
+                                <label class="block"><input type="radio" name="q76" value="A"> A absorbing moisture</label>
+                                <label class="block"><input type="radio" name="q76" value="B"> B composting facilities</label>
+                                <label class="block"><input type="radio" name="q76" value="C"> C Packaging fresh food</label>
+                                <label class="block"><input type="radio" name="q76" value="D"> D manufacturing</label>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 37-38</h4>
+                        <p class="mb-4">Which TWO features of PLA are correct?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q77_78" value="A"> A It takes in moisture of skin</label>
+                            <label class="block"><input type="checkbox" name="q77_78" value="B"> B It is waterproof</label>
+                            <label class="block"><input type="checkbox" name="q77_78" value="C"> C comfortable sportswear</label>
+                            <label class="block"><input type="checkbox" name="q77_78" value="D"> D It's fading under the sun</label>
+                            <label class="block"><input type="checkbox" name="q77_78" value="E"> E It is only made in deep color</label>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 39-40</h4>
+                        <p class="mb-4">Which TWO features of PLA are correct?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q79_80" value="A"> A It is made of renewable raw materials</label>
+                            <label class="block"><input type="checkbox" name="q79_80" value="B"> B It involves the removal of carbon dioxide</label>
+                            <label class="block"><input type="checkbox" name="q79_80" value="C"> C It is no use of fossil fuel product</label>
+                            <label class="block"><input type="checkbox" name="q79_80" value="D"> D It uses renewable raw resources</label>
+                            <label class="block"><input type="checkbox" name="q79_80" value="E"> E It is sustenance which can absorb the CO2 in the atmosphere</label>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+    
+    // Placeholder scripts for Test 6.
+    const listeningScripts = {
+        section1: `
+            <p><strong>Speaker:</strong> Good morning. Can I help you?</p>
+            <p><strong>Customer:</strong> Yes, I'd like to book a holiday...</p>
+            <p>...[Script continues]... This is placeholder text for the Test 6 Section 1 audio script. The full script would be transcribed here.</p>
+        `,
+        section2: `
+            <p><strong>Guide:</strong> Welcome everyone to the community centre. I'll show you around...</p>
+            <p>...[Script continues]... This is placeholder text for the Test 6 Section 2 audio script. The full script would be transcribed here.</p>
+        `,
+        section3: `
+            <p><strong>Tutor:</strong> Hi Karen. You wanted to talk about your assignment?</p>
+            <p><strong>Karen:</strong> Yes, Dr. Smith. I was hoping for some feedback...</p>
+            <p>...[Script continues]... This is placeholder text for the Test 6 Section 3 audio script. The full script would be transcribed here.</p>
+        `,
+        section4: `
+            <p><strong>Lecturer:</strong> Today we're looking at some research on birds in Australia...</p>
+            <p>...[Script continues]... This is placeholder text for the Test 6 Section 4 audio script. The full script would be transcribed here.</p>
+        `
+    };
+
+    // Answer key for Test 6, from the PDF.
+    const answers = {
+        // Listening Answers
+        q1: "surfing", q2: "breakfast", q3: "gym", q4: "360", q5: "shared", q6: "75", q7: "basic", q8: "42.5", q9: "taxi", q10: "cheque/check",
+        "q11_12": "A/D",
+        "q13_14": "C/D",
+        q15: "C", q16: "E", q17: "I", q18: "F", q19: "D", q20: "B",
+        q21: "references", q22: "examples", q23: "next seminar", q24: "explain the experiment", q25: "26th november", q26: "the chemistry lab", q27: "the professor",
+        "q28_30": "A/C/F",
+        q31: "protected", q32: "mapping", q33: "mapping", q34: "trends", q35: "pollution", q36: "survival", q37: "wind", q38: "frequency", q39: "recordings", q40: "distance",
+        
+        // Reading Answers (q41-q80)
+        q41: "tombs", q42: "book", q43: "monks", q44: "dutch", q45: "smuggling", q46: "india", q47: "clippers",
+        q48: "false", q49: "not given", q50: "false", q51: "true", q52: "true", q53: "not given",
+        q54: "true", q55: "false", q56: "true", q57: "true", q58: "false", q59: "not given", q60: "not given",
+        q61: "keystone", q62: "fig family", q63: "sea urchins", q64: "cactus moth", q65: "australia", q66: "public education",
+        q67: "B", q68: "C", q69: "F", q70: "A",
+        q71: "starch", q72: "fermentation", q73: "condensation", q74: "polymer",
+        q75: "B", q76: "C",
+        "q77_78": "A/D",
+        "q79_80": "A/C"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    // This logic is identical to test5.html, but with updated getQId, getExerciseTypes, and checkExerciseAnswers
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            userAnswers: {},
+            currentTab: 'listening',
+            currentSection: 0,
+            answersChecked: {},
+            scriptVisible: false,
+
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            scriptSection: document.getElementById('script-section'),
+            scriptContent: document.getElementById('script-content'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            toggleScriptBtn: document.getElementById('toggle-script-btn'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                this.toggleScriptBtn.addEventListener('click', () => this.toggleScript());
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                    if (e.target.classList.contains('section-btn')) {
+                        this.switchSection(parseInt(e.target.dataset.sectionIndex, 10));
+                    }
+                });
+            },
+            
+            saveAnswer(e) {
+                const target = e.target;
+                if (target.id || target.name) {
+                    const id = target.id || target.name;
+                    if (target.type === 'radio') {
+                        if (target.checked) this.userAnswers[id] = target.value;
+                    } else if (target.type === 'checkbox') {
+                        // Store checkbox answers sorted and joined by '/'
+                        const checked = Array.from(document.querySelectorAll(`input[name="${id}"]:checked`)).map(cb => cb.value).sort().join('/');
+                        this.userAnswers[id] = checked;
+                    } else {
+                         this.userAnswers[id] = target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const multiInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        if (multiInputs.length > 0) {
+                            if (multiInputs[0].type === 'checkbox') {
+                                const values = value.split('/');
+                                multiInputs.forEach(input => {
+                                    input.checked = values.includes(input.value);
+                                });
+                            } else {
+                                multiInputs.forEach(radio => {
+                                    if (radio.value === value) radio.checked = true;
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+            
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                this.scriptVisible = false;
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+
+                this.toggleScriptBtn.style.display = (tabName === 'listening') ? 'block' : 'none';
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.scriptVisible = false;
+                 this.loadContent();
+            },
+
+            toggleScript() {
+                if (this.currentTab !== 'listening') return;
+                this.scriptVisible = !this.scriptVisible;
+                this.updatePaneVisibility();
+            },
+
+            updatePaneVisibility() {
+                if (this.currentTab === 'listening') {
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = this.scriptVisible ? 'flex' : 'none';
+                    this.questionsSection.style.display = this.scriptVisible ? 'none' : 'block';
+                    this.toggleScriptBtn.textContent = this.scriptVisible ? 'Hide Script' : 'Show Script';
+                    
+                    if (this.scriptVisible) {
+                        const scriptKey = `section${this.currentSection + 1}`;
+                        this.scriptContent.innerHTML = listeningScripts[scriptKey] || "<p class='text-gray-500'>Script not available.</p>";
+                    }
+
+                } else { // Reading
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = 'none';
+                    this.questionsSection.style.display = 'block';
+                }
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                if (this.currentTab === 'listening') {
+                    this.leftPane.innerHTML = sectionData.instructions;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                } else { // reading
+                    this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                }
+                
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+
+                this.updatePaneVisibility();
+                this.addAudioListeners();
+                this.restoreAnswers();
+                this.addCheckButtons();
+                
+                // Re-apply checked styles if answers were already checked
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+
+            addAudioListeners() {
+                document.querySelectorAll('.play-audio-btn').forEach(btn => {
+                    const audioId = btn.dataset.audioId;
+                    const audioEl = document.getElementById(audioId);
+                    if (!audioEl) return;
+
+                    const timeDisplay = btn.nextElementSibling;
+                    const seeker = btn.parentElement.nextElementSibling;
+                    const playText = btn.querySelector('.play-text');
+
+                    const formatTime = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+                    btn.onclick = () => {
+                        if (audioEl.paused) audioEl.play();
+                        else audioEl.pause();
+                    };
+                    audioEl.onplay = () => playText.textContent = 'Pause';
+                    audioEl.onpause = () => playText.textContent = 'Play';
+                    audioEl.onloadedmetadata = () => {
+                        timeDisplay.textContent = `${formatTime(0)} / ${formatTime(audioEl.duration)}`;
+                    };
+                    audioEl.ontimeupdate = () => {
+                        timeDisplay.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`;
+                        seeker.value = audioEl.duration ? (audioEl.currentTime / audioEl.duration) * 100 : 0;
+                    };
+                    seeker.oninput = () => {
+                        if (audioEl.duration) {
+                            audioEl.currentTime = (seeker.value / 100) * audioEl.duration;
+                        }
+                    };
+                });
+            },
+
+            // Define the question blocks for Test 6
+            getExerciseTypes() {
+                const types = {
+                    listening: {
+                        0: [ { type: 'table_completion', startQ: 1, endQ: 10, title: 'Table Completion (Q1-10)' } ],
+                        1: [ { type: 'multiple_selection', startQ: 11, endQ: 12, title: 'Multiple Selection (Q11-12)' }, { type: 'multiple_selection_2', startQ: 13, endQ: 14, title: 'Multiple Selection (Q13-14)' }, { type: 'map_labelling', startQ: 15, endQ: 20, title: 'Map Labelling (Q15-20)' } ],
+                        2: [ { type: 'notes_completion', startQ: 21, endQ: 22, title: 'Notes Completion (Q21-22)' }, { type: 'short_answer', startQ: 23, endQ: 27, title: 'Short Answer (Q23-27)' }, { type: 'multiple_selection', startQ: 28, endQ: 30, title: 'Multiple Selection (Q28-30)' }],
+                        3: [ { type: 'notes_completion', startQ: 31, endQ: 40, title: 'Notes Completion (Q31-40)' } ]
+                    },
+                    reading: {
+                        0: [ { type: 'sentence_completion', startQ: 1, endQ: 7, title: 'Sentence Completion (Q1-7)' }, { type: 'tfng', startQ: 8, endQ: 13, title: 'TRUE/FALSE/NOT GIVEN (Q8-13)' } ],
+                        1: [ { type: 'tfng', startQ: 14, endQ: 20, title: 'TRUE/FALSE/NOT GIVEN (Q14-20)' }, { type: 'summary_completion', startQ: 21, endQ: 26, title: 'Summary Completion (Q21-26)' } ],
+                        2: [ { type: 'matching', startQ: 27, endQ: 30, title: 'Matching (Q27-30)' }, { type: 'flow_chart', startQ: 31, endQ: 34, title: 'Flow Chart Completion (Q31-34)' }, { type: 'multiple_choice', startQ: 35, endQ: 36, title: 'Multiple Choice (Q35-36)' }, { type: 'multiple_selection', startQ: 37, endQ: 38, title: 'Multiple Selection (Q37-38)' }, { type: 'multiple_selection_2', startQ: 39, endQ: 40, title: 'Multiple Selection (Q39-40)' } ]
+                    }
+                };
+                return types[this.currentTab][this.currentSection] || [];
+            },
+            
+            // Helper to get correct qId, updated for Test 6
+            getQId(index) {
+                if (this.currentTab === 'listening') {
+                    if (index >= 11 && index <= 12) return 'q11_12';
+                    if (index >= 13 && index <= 14) return 'q13_14';
+                    if (index >= 28 && index <= 30) return 'q28_30';
+                    return `q${index}`;
+                }
+                
+                if (this.currentTab === 'reading') {
+                    // Reading Passage 3 (Q27-40) -> q67-q80
+                    if (index >= 37 && index <= 38) return 'q77_78';
+                    if (index >= 39 && index <= 40) return 'q79_80';
+                    
+                    // All other reading questions map 1:1
+                    // Q1-13 -> q41-q53
+                    // Q14-26 -> q54-q66
+                    // Q27-36 -> q67-q76
+                    return `q${index + 40}`;
+                }
+                return `q${index}`; // fallback
+            },
+            
+            getAnswerKey(qId) {
+                 return answers[qId];
+            },
+
+            addCheckButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                const container = this.questionsSection;
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `<p class="font-semibold mb-2">${exercise.title}</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">${buttonText}</button>`;
+
+                    const qId = this.getQId(exercise.startQ);
+                    const firstQuestionInput = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]`);
+                    // Find the parent block. This is a bit fragile.
+                    const questionBlock = firstQuestionInput ? firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6, .space-y-2') : null;
+                    
+                    if (questionBlock) {
+                        questionBlock.appendChild(buttonContainer);
+                    } else {
+                        // Fallback for blocks not easily found
+                        container.appendChild(buttonContainer);
+                    }
+                });
+            },
+            
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent(); // Reload to clear styles
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+                const checkboxGroups = ['q11_12', 'q13_14', 'q28_30', 'q77_78', 'q79_80'];
+
+                for (let i = startQ; i <= endQ; i++) {
+                    let qId = this.getQId(i);
+                    let answerKey = this.getAnswerKey(qId) || "";
+
+                    // Special handling for checkbox groups
+                    if (checkboxGroups.includes(qId)) {
+                        const userAnswer = (this.userAnswers[qId] || '').toLowerCase();
+                        const correctAnswer = answerKey.toLowerCase().split('/');
+                        const correctAnswerSorted = answerKey.toLowerCase().split('/').sort().join('/');
+                        
+                        document.querySelectorAll(`input[name="${qId}"]`).forEach(input => {
+                            const label = input.closest('label');
+                            if (input.checked) {
+                                if (correctAnswer.includes(input.value.toLowerCase())) {
+                                    label.classList.add('correct-answer');
+                                } else {
+                                    label.classList.add('incorrect-answer');
+                                }
+                            } else if (correctAnswer.includes(input.value.toLowerCase())) {
+                                     // Show missed correct answers
+                                     label.style.border = '2px solid #fbbf24'; // amber-400
+                                     label.style.borderRadius = '4px';
+                            }
+                        });
+                        
+                        // Skip to the end of this group
+                        i = endQ;
+                        continue;
+                    }
+
+                    // Standard handling for text and radio
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+                    
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const isCorrect = answerKey.toLowerCase().split('/').some(ans => ans.trim() === userAnswer);
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+                    const elementToStyle = inputElement ? (inputElement.type === 'radio' ? inputElement.closest('label') : inputElement) : inputs[0];
+
+                    if (!elementToStyle) continue; // Safety check
+
+                    if (isCorrect) {
+                        elementToStyle.classList.add('correct-answer');
+                        if(elementToStyle.type === 'text') elementToStyle.style.backgroundColor = '#dcfce7'; // green-100
+                    } else {
+                        elementToStyle.classList.add('incorrect-answer');
+                         if(elementToStyle.type === 'text') {
+                             elementToStyle.value = ''; // Clear wrong answer
+                             // Show first correct option. Handle / for multiple correct spellings (e.g., cheque/check)
+                             elementToStyle.placeholder = `Correct: ${answerKey.split('/')[0]}`;
+                         }
+                    }
+                    
+                     // If it was a radio and wrong, highlight the correct one
+                     if (inputs[0] && inputs[0].type === 'radio' && !isCorrect) {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answerKey}"]`);
+                         if(correctRadio) correctRadio.closest('label').classList.add('correct-answer');
+                    }
+                }
+
+                // Update button text after checking
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = this.splitter.parentElement.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        this.splitter.parentElement.style.gridTemplateColumns = `${newLeftWidth}px 5px 1fr`;
+                    }
+                });
+                document.addEventListener('mouseup', () => isDragging = false);
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                         // Only show tooltip if selection is within the panes
+                         if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) { console.warn("Highlighting partial nodes failed, which is expected.", ex); }
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>

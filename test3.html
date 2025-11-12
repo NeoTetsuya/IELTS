@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title updated to Test 3 -->
+    <title>IELTS Academic Test Simulator - Practice Test 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .questions-section {
+            width: 100%;
+        }
+        .script-section {
+            width: 100%;
+            background-color: #faf5ff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 2px solid #e9d5ff;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        .play-audio-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2563eb;
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-audio-btn:hover {
+            background-color: #1d4ed8;
+        }
+        .play-audio-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .audio-seeker {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb;
+            outline: none;
+            border-radius: 0.5rem;
+        }
+        .audio-seeker::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .audio-seeker::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .explanation-box:hover {
+            background-color: #dbeafe !important;
+            transform: scale(1.02);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <!-- Title updated to Test 3 -->
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Practice Test 3</h1>
+        <div class="flex items-center space-x-4">
+            <button id="toggle-script-btn" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition-colors">
+                Show Script
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions (Reading) or Script (Listening) -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <!-- Questions Section (for Reading) -->
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+            
+            <!-- Script Section (for Listening) -->
+            <div id="script-section" class="script-section" style="display: none;">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-purple-800 mb-2">Listening Script</h3>
+                </div>
+                <div id="script-content" class="text-sm leading-relaxed overflow-y-auto">
+                    <!-- Script will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="listening">Listening</button>
+                <button class="tab-btn" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+
+<script>
+    // --- DATA ---
+    
+    // This object contains placeholder scripts as they were not in the PDF
+    const listeningScripts = {
+        section1: `<p class='text-gray-500'>Listening script for Test 3, Section 1 is not available in the provided document.</p>`,
+        section2: `<p class='text-gray-500'>Listening script for Test 3, Section 2 is not available in the provided document.</p>`,
+        section3: `<p class='text-gray-500'>Listening script for Test 3, Section 3 is not available in the provided document.</p>`,
+        section4: `<p class='text-gray-500'>Listening script for Test 3, Section 4 is not available in the provided document.</p>`
+    };
+
+    // All data for Test 3, parsed from the PDF
+    const testData = {
+        listening: {
+            duration: 1800, // 30 minutes
+            sections: [
+                {
+                    title: "Section 1",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 1</h3>
+                        <p class="mb-4">You will hear a conversation about a pre-school.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Audio file reused from Test 2 as placeholder -->
+                            <audio id="audio-sec1" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-1.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec1" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 1-10</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-center text-lg">Riverdale Pre-school</h5>
+                            <p><strong>Example:</strong> Children: 20 in a class</p>
+                            <p><strong>Classes:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>First group - Mrs. Oliver</li>
+                                <li>Second group - Mrs. <strong>1</strong> <input type="text" id="q1" class="w-24"></li>
+                            </ul>
+                            <p><strong>Hours & Days:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Suzie will attend 3 days a week for a total of <strong>2</strong> <input type="text" id="q2" class="w-24"> hours</li>
+                            </ul>
+                            <p><strong>Activities:</strong></p>
+                            <p class="ml-4"><strong>Outside time</strong></p>
+                            <ul class="list-disc list-inside ml-8">
+                                <li>running, playing, or something quieter</li>
+                                <li>just got a new piece of equipment</li>
+                                <li>intend to make a <strong>3</strong> <input type="text" id="q3" class="w-24"></li>
+                            </ul>
+                            <p class="ml-4"><strong>Indoors</strong></p>
+                            <ul class="list-disc list-inside ml-8">
+                                <li>this year, <strong>4</strong> <input type="text" id="q4" class="w-24"> activities are popular</li>
+                                <li>they hear a <strong>5</strong> <input type="text" id="q5" class="w-24"> every day</li>
+                            </ul>
+                            <p><strong>Fees:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Now costs $<strong>6</strong> <input type="text" id="q6" class="w-24"> per term</li>
+                            </ul>
+                            <p><strong>Fees include:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>a trip to a <strong>7</strong> <input type="text" id="q7" class="w-24"> this year</li>
+                                <li>chance to take home a <strong>8</strong> <input type="text" id="q8" class="w-24"> every week</li>
+                            </ul>
+                            <p><strong>Do not forget:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Put a <strong>9</strong> <input type="text" id="q9" class="w-24"> in Suzie's bag</li>
+                                <li>Arrange a visit; phone number: <strong>10</strong> <input type="text" id="q10"></li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 2",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 2</h3>
+                        <p class="mb-4">You will hear a talk about the university Job Centre.</p>
+                         <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Audio file reused from Test 2 as placeholder -->
+                            <audio id="audio-sec2" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-2.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec2" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 11-15</h4>
+                        <p class="mb-4">Complete the sentences below. Write <strong>NO MORE THAN TWO WORDS AND/OR A NUMBER</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>11</strong> Special conditions may apply to <input type="text" id="q11"> students looking for a job.</p>
+                            <p><strong>12</strong> The university Job Centre is located on the <input type="text" id="q12"> Campus.</p>
+                            <p><strong>13</strong> The Job Centre remains open until <input type="text" id="q13"> every evening.</p>
+                            <p><strong>14</strong> The only day the employment lawyer is available is <input type="text" id="q14">.</p>
+                            <p><strong>15</strong> The university <input type="text" id="q15"> regularly advertises new jobs.</p>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 16-20</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                             <div class="q-item">
+                                <p><strong>16</strong> At present, the university is offering part-time work in</p>
+                                <label class="block"><input type="radio" name="q16" value="A"> A its offices.</label>
+                                <label class="block"><input type="radio" name="q16" value="B"> B the IT centre.</label>
+                                <label class="block"><input type="radio" name="q16" value="C"> C the car parks.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>17</strong> Local employers visit the university</p>
+                                <label class="block"><input type="radio" name="q17" value="A"> A only in the first term.</label>
+                                <label class="block"><input type="radio" name="q17" value="B"> B twice a term.</label>
+                                <label class="block"><input type="radio" name="q17" value="C"> C throughout the year.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>18</strong> According to the speaker, a part-time job can</p>
+                                <label class="block"><input type="radio" name="q18" value="A"> A lead to a full-time job after graduation.</label>
+                                <label class="block"><input type="radio" name="q18" value="B"> B provide a useful work record for the future.</label>
+                                <label class="block"><input type="radio" name="q18" value="C"> C give the chance to develop team-work skills.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>19</strong> Students who work part-time</p>
+                                <label class="block"><input type="radio" name="q19" value="A"> A will be taxed.</label>
+                                <label class="block"><input type="radio" name="q19" value="B"> B will be paid every week.</label>
+                                <label class="block"><input type="radio" name="q19" value="C"> C will need private insurance.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>20</strong> Part-time student workers are advised to</p>
+                                <label class="block"><input type="radio" name="q20" value="A"> A give notice in writing.</label>
+                                <label class="block"><input type="radio" name="q20" value="B"> B communicate by email.</label>
+                                <label class="block"><input type="radio" name="q20" value="C"> C have a mobile phone.</label>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 3",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 3</h3>
+                        <p class="mb-4">You will hear a conversation about a research project.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Audio file reused from Test 2 as placeholder -->
+                            <audio id="audio-sec3" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-3.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec3" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                           <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 21-26</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold mb-2">Research Project</h5>
+                             <div class="q-item">
+                                <p><strong>21</strong> How did John choose the topic of his research project?</p>
+                                <label class="block"><input type="radio" name="q21" value="A"> A He thought the information would be useful for town planning.</label>
+                                <label class="block"><input type="radio" name="q21" value="B"> B He has a special interest in the use of public services.</label>
+                                <label class="block"><input type="radio" name="q21" value="C"> C He read about a similar study which had been done earlier.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>22</strong> During his research, John is expecting to find that</p>
+                                <label class="block"><input type="radio" name="q22" value="A"> A The use of public services has altered very little.</label>
+                                <label class="block"><input type="radio" name="q22" value="B"> B A group of people has changed its habits.</label>
+                                <label class="block"><input type="radio" name="q22" value="C"> C The most frequently used facility is the library.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>23</strong> What is the problem with using official records?</p>
+                                <label class="block"><input type="radio" name="q23" value="A"> A They may be lacking in detail.</label>
+                                <label class="block"><input type="radio" name="q23" value="B"> B They may not be readily available.</label>
+                                <label class="block"><input type="radio" name="q23" value="C"> C They may be difficult to analyse.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>24</strong> What does the tutor think about John using a questionnaire to get information?</p>
+                                <label class="block"><input type="radio" name="q24" value="A"> A He needs to do a course in questionnaire design first.</label>
+                                <label class="block"><input type="radio" name="q24" value="B"> B He should use this method instead of looking at public records.</label>
+                                <label class="block"><input type="radio" name="q24" value="C"> C He will find the practice he gets useful the following year.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>25</strong> Which new variable does John agree to add to his investigation?</p>
+                                <label class="block"><input type="radio" name="q25" value="A"> A Occupation</label>
+                                <label class="block"><input type="radio" name="q25" value="B"> B Income group</label>
+                                <label class="block"><input type="radio" name="q25" value="C"> C Qualifications</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>26</strong> How many questionnaires will John distribute?</p>
+                                <label class="block"><input type="radio" name="q26" value="A"> A The same number as in the previous study</label>
+                                <label class="block"><input type="radio" name="q26" value="B"> B A greater number than he needs for analysis</label>
+                                <label class="block"><input type="radio" name="q26" value="C"> C The number recommended in the project guidelines</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 27 and 28</h4>
+                        <p class="mb-4">Choose TWO letters A-E.</p>
+                        <p class="mb-4">Which TWO strategies will John use to encourage people to fill out his questionnaire?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q27_28" value="A"> A Using simple language</label>
+                            <label class="block"><input type="checkbox" name="q27_28" value="B"> B Delivering the questionnaires in person</label>
+                            <label class="block"><input type="checkbox" name="q27_28" value="C"> C Making the questionnaires anonymous</label>
+                            <label class="block"><input type="checkbox" name="q27_28" value="D"> D Providing return envelopes</label>
+                            <label class="block"><input type="checkbox" name="q27_28" value="E"> E Trialing the questionnaire on friends</label>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 29 and 30</h4>
+                        <p class="mb-4">Choose TWO letters, A-E.</p>
+                        <p class="mb-4">Which TWO pieces of advice does the tutor give John about his questionnaire?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white">
+                            <label class="block"><input type="checkbox" name="q29_30" value="A"> A There should be a mixture of question types.</label>
+                            <label class="block"><input type="checkbox" name="q29_30" value="B"> B Some questions should elicit personal information.</label>
+                            <label class="block"><input type="checkbox" name="q29_30" value="C"> C There should be an introduction to explain the survey's purpose.</label>
+                            <label class="block"><input type="checkbox" name="q29_30" value="D"> D A telephone number should be provided for queries.</label>
+                            <label class="block"><input type="checkbox" name="q29_30" value="E"> E The questions should only take a few minutes to answer.</label>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 4",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 4</h3>
+                        <p class="mb-4">You will hear a lecture about a driverless vehicle competition.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Audio file reused from Test 2 as placeholder -->
+                            <audio id="audio-sec4" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-4.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec4" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 31-33</h4>
+                        <p class="mb-4">Complete the sentences below. Write <strong>NO MORE THAN TWO WORDS</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold mb-2">Driverless vehicle competition</h5>
+                            <p><strong>31</strong> Undergraduates from both the engineering school and the <input type="text" id="q31"> department can definitely take part in the project.</p>
+                            <p><strong>32</strong> The automated vehicles will have to avoid obstacles such as <input type="text" id="q32">.</p>
+                            <p><strong>33</strong> The tutor mentions one vehicle which used technology such as <input type="text" id="q33">, lasers, and laptops to measure its surroundings.</p>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 34-36</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <div class="q-item">
+                                <p><strong>34</strong> The purpose of holding the race is to</p>
+                                <label class="block"><input type="radio" name="q34" value="A"> A Interest students in careers in industry.</label>
+                                <label class="block"><input type="radio" name="q34" value="B"> B Help provide finance for universities.</label>
+                                <label class="block"><input type="radio" name="q34" value="C"> C Find useful new design features.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>35</strong> The tutor says success will depend on</p>
+                                <label class="block"><input type="radio" name="q35" value="A"> A The software design.</label>
+                                <label class="block"><input type="radio" name="q35" value="B"> B Good, solid construction.</label>
+                                <label class="block"><input type="radio" name="q35" value="C"> C Sophisticated mechanisms.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>36</strong> This year's competitors were surprised that the vehicles</p>
+                                <label class="block"><input type="radio" name="q36" value="A"> A Were so easy to design.</label>
+                                <label class="block"><input type="radio" name="q36" value="B"> B Were as successful as they were.</label>
+                                <label class="block"><input type="radio" name="q36" value="C"> C Took such a short time to construct.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 37-40</h4>
+                        <p class="mb-4">Complete the table below. Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                        <div class="p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-center text-lg mb-2">Schedule</h5>
+                            <table class="w-full border-collapse border">
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th class="p-2 border text-left">Date</th>
+                                        <th class="p-2 border text-left">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="p-2 border">Early May</td>
+                                        <td class="p-2 border">Introductory <strong>37</strong> <input type="text" id="q37" class="w-32"> about the project</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border">Late May</td>
+                                        <td class="p-2 border">Essay giving information about relevant <strong>38</strong> <input type="text" id="q38" class="w-32"> and experience</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border">June</td>
+                                        <td class="p-2 border">Visit to a factory</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border"></td>
+                                        <td class="p-2 border">Workshop</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border">September</td>
+                                        <td class="p-2 border">discuss <strong>39</strong> <input type="text" id="q39" class="w-32"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border"></td>
+                                        <td class="p-2 border">learn to use design package</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border">December</td>
+                                        <td class="p-2 border">Submission of initial designs</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border">January</td>
+                                        <td class="p-2 border">Selection of the <strong>40</strong> <input type="text" id="q40" class="w-32"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `
+                }
+            ]
+        },
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">An important language development</h3>
+                        <p>Cuneiform, the world's first known system of handwriting, originated some 6,000 years ago in Summer in what is now southern Iraq. It was most often inscribed on palm-sized, rectangular clay tablets measuring several centimetres across, although occasionally, larger tablets or cylinders were used. Clay was an excellent medium for writing. Other surfaces which have been employed - for example, parchment, papyrus and paper are not long-lasting and are easily destroyed by fire and water. But clay has proved to be resistant to those particular kinds of damage.</p>
+                        <p>The word 'cuneiform' actually refers to the marks or signs inscribed in the clay. The original cuneiform signs consisted of a series of lines triangular, vertical, diagonal and horizontal. Sumerian writers would impress these lines into the wet clay with a stylus a long, thin, pointed instrument which looked somewhat like a pen. Oddly, the signs were often almost too small to see with the naked eye. Cuneiform signs were used for the writing of at least a dozen languages. This is similar to how the Latin alphabet is used today for writing English, French, Spanish and German for example.</p>
+                        <p>Before the development of cuneiform, tokens were used by the Sumerians to record certain information. For example, they might take small stones and use them as tokens or representations of something else, like a goat. A number of tokens, then, might mean a herd of goat. These tokens might then be placed in a cloth container and provided to a buyer as a receipt for a transaction, perhaps five tokens for five animals. It was not that different from what we do today when we buy some bread and the clerk gives us back a piece of paper with numbers on it to confirm the exchange.</p>
+                        <p>By the 4th century BCE, the Sumerians had adapted this system to a form of writing. They began putting tokens in a container resembling an envelope, and now made of clay instead of cloth. They then stamped the outside to indicate the number and type of tokens inside. A person could then 'read' what was stamped on the container and know what was inside.</p>
+                        <p>Gradually, Sumerians developed symbols for words. When first developed, each symbol looked like the concrete thing it represented. For example, an image which resembled the drawing of a sheep meant just that. Then another level of abstraction was introduced when symbols were developed for intangible ideas such as 'female' of 'hot' or 'God'. Cuneiform, in other words, evolved from a way used primarily to track and store information into a way to represent the world symbolically. Over the centuries, the marks became ever more abstract, finally evolving into signs that looked nothing like what they referred to, just as the letters 'h-o-u-s-e' have no visual connection to the place we live in. At this last stage in the evolution of cuneiform, the signs took the form of triangles, which became common cuneiform signs.</p>
+                        <p>As the marks became more abstract, the system became more efficient because there were fewer marks a 'reader' needed to learn. But cuneiform also became more complex because society itself was becoming more complex, so there were more ideas and concepts that needed to be expressed. However, most linguists and historians agree cuneiform developed primarily as a tool for accounting. Of the cuneiform tablets that have been discovered, excavated and translated, about 75 percent contain this type of practical information, rather than artistic or imaginative work.</p>
+                        <p>Cuneiform writing was used for thousands of years, but it eventually ceased to be used in everyday life. In fact, it died out and remained unintelligible for almost 2,000 years. In the late 19th century, a British army officer, Henry Rawlinson, discovered cuneiform inscriptions which had been carved in the surface of rocks in the Behistun mountains in what is present-day Iran. Rawlinson made impressions of the marks on large pieces of paper, as he balanced dangerously on the surrounding rocks.</p>
+                        <p>Rawlinson took his copies home to Britain and studied them for years to determine what each line stood for, and what each group of symbols meant. He found that in the writing on those particular rocks every word was repeated three times in three languages: Old Persian, Elamite and Babylonian. Since the meanings in these languages were already known to linguists, he could thus translate the cuneiform. Eventually, he fully decoded the cuneiform marks and he discovered that they described the life of Darius, a king of the Persian Empire in the 5th century BCE.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-5</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>1</strong> Cuneiform tablets were produced in different shapes and sizes. <input type="text" id="q41" class="w-32"></p>
+                           <p><strong>2</strong> When Sumerian writers marked on the clay tablets, the tablets were dry. <input type="text" id="q42" class="w-32"></p>
+                           <p><strong>3</strong> Cuneiform was often difficult to read because of its size. <input type="text" id="q43" class="w-32"></p>
+                           <p><strong>4</strong> A number of languages adopted cuneiform. <input type="text" id="q44" class="w-32"></p>
+                           <p><strong>5</strong> Cuneiform signs can be found in some modern alphabets. <input type="text" id="q45" class="w-32"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 6-13</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <h5 class="font-bold">The development and translation of cuneiform</h5>
+                            <p><strong>Before cuneiform</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>tokens, for example, <strong>6</strong> <input type="text" id="q46" class="w-24"> were often used</li>
+                                <li>the first tokens were kept in containers made of <strong>7</strong> <input type="text" id="q47" class="w-24"></li>
+                                <li>tokens were used as a <strong>8</strong> <input type="text" id="q48" class="w-24"> to give when selling something</li>
+                            </ul>
+                            <p><strong>By 4th century BCE</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>tokens were put in a container that looked like a clay <strong>9</strong> <input type="text" id="q49" class="w-24"></li>
+                            </ul>
+                            <p><strong>Complex, abstract symbols developed</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>at first, signs looked like what they indicated, e.g. <strong>10</strong> <input type="text" id="q50" class="w-24"></li>
+                                <li>then signs became more abstract</li>
+                                <li>eventually, cuneiform signs shaped like <strong>11</strong> <input type="text" id="q51" class="w-24"></li>
+                                <li>according to experts, cuneiform was mainly used for <strong>12</strong> <input type="text" id="q52" class="w-24"></li>
+                            </ul>
+                            <p><strong>19th-century translation of cuneiform inscriptions by Henry Rawlinson</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Rawlinson found cuneiform inscriptions in the Behistun mountains</li>
+                                <li>Rawlinson copied inscriptions onto <strong>13</strong> <input type="text" id="q53" class="w-24"></li>
+                                <li>Rawlinson realised that each word of the inscriptions appeared in different languages</li>
+                                <li>When translated, Rawlinson found the writings were about a 5th-century BCE king</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                         <h3 class="text-xl font-bold mb-4">Children's comprehension of television advertising</h3>
+                        <p><strong>A</strong> In 1874, long before the advent of television, the English Parliament passed a law to protect children 'from their own lack of experience and from the wiles of pushing tradesmen and moneylenders' (James, 1965). The act is one of the earliest governmental policies to address children's vulnerability to commercial exploitation and was produced before major corporations earned huge profits by marketing products directly to children. Yet the issues underlying this 19th-century policy remain much the same in the 21st century.</p>
+                        <p><strong>B</strong> Television has long been the predominant medium that advertisers have chosen for marketing products to children. It is estimated that the average child sees more than 40,000 television commercials a year, most of which are 15 to 30 seconds in length (Kunkel, 2001). According to another estimate, children aged 14 years and under make $24 billion in direct purchases and influence $190 billion in family purchases, underscoring the high stakes involved (McNeal, 1987).</p>
+                        <p><strong>C</strong> A number of factors have contributed to an unprecedented growth in both the amount and type of advertising directed at children. First and foremost among these are changes in the media environment. In decades past, television programming targeted at children was limited and relegated to time slots unpopular with their parents, such as Saturday mornings (Turow, 1981). Today, the number of channels received in the average US home has escalated with the diffusion of cable television and satellite technologies. In this new multi-channel era, there are numerous national program services devoted exclusively to children. Naturally, these channels deliver significant amounts of child-oriented marketing messages. Although parent may be pleased that their youngsters can now watch children's programming at any hour of the day, they may not recognize that such viewing opportunities entail much greater exposure to advertising than any previous generation of youth has experienced.</p>
+                        <p><strong>D</strong> Approximately 80% of all advertising targeted at children falls within four product categories: toys, cereals, candies, and fast-food restaurants (Kunkel et al, 1992). Commercials are highly effective at employing specific features designed to attract children's attention. For example, they use the strategy of introducing unique sound effects and rapidly moving images (Greer et al, 1982). The other most common persuasive strategy employed in advertising to children is to associate the product with playfulness and happiness, rather than to provide any actual product-related information (Kunkel et al, 1992). For example, a commercial featuring Ronald McDonald dancing, singing, and smiling in McDonald's restaurants without any mention of the actual food products available reflects a playful or happy theme. This strategy is also found frequently with cereal ads, which often include cartoon characters to help children identify the product. In contrast, most commercials fail to mention even the major grain used in each cereal.</p>
+                        <p><strong>E</strong> Another common feature of advertising to children is the use of product disclosures such as 'batteries not included' or 'each part sold separately'. Studies make clear that young children do not comprehend the intended meaning of these disclaimers. For example, fewer than one in four kindergarten through second grade children could grasp the meaning of 'some assembly required' in a commercial. In contrast, the use of child-friendly language such as 'you have to put it together' more than doubled the proportion of children who understood the qualifying message (Liebert et al, 1977). The phrase 'part of a balanced breakfast' is also a frequent disclosure included in most cereal ads to combat the concern that sugared cereal holds little nutritional value for children. Research shows that most children below age 7 years have no idea what the term 'balanced breakfast' means (Palmer & McDowell, 1981). Rather than informing young viewers about the importance of a nutritious breakfast, this common disclaimer actually leaves many children with the misimpression that cereal alone is sufficient for a meal. This pattern of employing creative terminology in advertising content so as to obscure certain information that might be unhelpful to the sponsor is a long-standing practice that often misleads the consumer (Geis, 1982).</p>
+                        <p><strong>F</strong> Very young children do not recognize that there are two fundamentally different categories of television content: programs and commercials. Most children below the age of 4 or 6 exhibit low awareness of the concept of commercials, frequently explaining them as if they were a scene in the program itself. Once this confusion diminishes, children first recognize the difference between programs and commercials based on either affective ('commercials are funnier than TV programs') or perceptual ('commercials are short and programs are long') cues (Blatt et al, 1972).</p>
+                        <p><strong>G</strong> Although most children's programs indicate that a commercial break is coming (e.g. by saying 'We'll be right back after these messages'), research reveals that these 'separators' generally do not help children to recognize advertising content (Palmer & McDowell, 1979). This likely occurs because they are not perceptually distinct from the adjacent programming that surrounds them; in fact, many separators feature characters that appear in the same show that the commercial has just interrupted. When an ad includes one of the characters featured in a program, this is known as host-selling. This type of advertising makes the task of discriminating between program and commercial content particularly difficult for young children (Kunkel, 1988) and is thus restricted in the US by the Federal Communications Commission during children's programs.</p>
+                        <p><strong>H</strong> In sum, because young children lack the cognitive skills and abilities of older children and adults, they do not comprehend commercial messages in the same way as more mature audiences, and are therefore uniquely susceptible to advertising influence.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-18</h4>
+                        <p class="mb-4">Reading Passage 2 has eight paragraphs, A-H. Which paragraph contains the following information?</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> a description of recent innovations in TV broadcasting <input type="text" id="q54" class="w-16"></p>
+                            <p><strong>15</strong> a mention of the main goods and services advertised to children <input type="text" id="q55" class="w-16"></p>
+                            <p><strong>16</strong> a reference to a current limitation on television advertising aimed at children <input type="text" id="q56" class="w-16"></p>
+                            <p><strong>17</strong> two techniques used to encourage children to watch TV commercials <input type="text" id="q57" class="w-16"></p>
+                            <p><strong>18</strong> a type of advertisement that may make children believe the opposite of what is true <input type="text" id="q58" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 19-22</h4>
+                        <p class="mb-4">Look at the following statements (Questions 19-22) and the list of researchers below. Match each statement with the correct researcher(s), A-H.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p class="font-bold mb-2">List of Researchers</p>
+                            <p><strong>A</strong> Kunkel</p>
+                            <p><strong>B</strong> Kunkel et al</p>
+                            <p><strong>C</strong> McNeal</p>
+                            <p><strong>D</strong> Turow</p>
+                            <p><strong>E</strong> Greer et al</p>
+                            <p><strong>F</strong> Liebert et al</p>
+                            <p><strong>G</strong> Palmer & McDowell</p>
+                            <p><strong>H</strong> Geis</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>19</strong> Ads often aim to teach children that a brand is fun rather than telling them about what is being sold. <input type="text" id="q59" class="w-16"></p>
+                            <p><strong>20</strong> Originally, children's programmes were only broadcast when adults rarely watched TV. <input type="text" id="q60" class="w-16"></p>
+                            <p><strong>21</strong> Children have a significant impact on what adults buy. <input type="text" id="q61" class="w-16"></p>
+                            <p><strong>22</strong> Tests showed that children can follow information if simple words are used. <input type="text" id="q62" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 23-26</h4>
+                        <p class="mb-4">Complete the summary below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <h5 class="font-bold">How very young children perceive commercials</h5>
+                            <p>Children below the age of 4 or 6 do not understand the difference between television programmes and commercials. In fact, these children often mistake an advertisement for a <strong>23</strong> <input type="text" id="q63" class="w-32"> from the programe they are watching. This is despite the fact that children's TV programmes usually include announcements called <strong>24</strong> <input type="text" id="q64" class="w-32"> to show that there is going to be a commercial break. The problem is made more difficult because of a technique called <strong>25</strong> <input type="text" id="q65" class="w-32">, whereby a person or cartoon figure from the programme is used to sell a product during the commercial break. From the age of 4 or 6, children begin to realise that commercials are different from TV programmes; for example, they may recognise that there is a difference in length or that advertisements are <strong>26</strong> <input type="text" id="q66" class="w-32"> than actual TV.</p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">A New Voyage Round the World</h3>
+                        <h4 class="text-lg font-semibold mb-3 italic">A very old travel book that holds an unusual place in English literature</h4>
+                        <p>Part travelogue, part historical record of the Caribbean pirates, part scientific treatise, A New Voyage Round the World was William Dampier's account of his twelve-year series of journeys around the globe from 1679 to 1691.</p>
+                        <p>The wealth and novelty of Dampier's descriptions, combined with the highly coloured accounts of his comrades', escapades, proved so popular with a public hungry for tales of discovery and adventure that A New Voyage went into its third reprint within a year of publication. So ground-breaking was Dampier's account that the writers Swift and Defoe were inspired to create two of the most famous books in the English language, Gulliver's Travels and Robinson Crusoe.</p>
+                        <p>Dampier's commentators have portrayed him as an unusual, not to say peculiar, man. Notwithstanding his undoubted qualities as an observer, he has been variously characterised as aloof, arrogant, hot-tempered and a weak leader of men. When he arrived on the western coast of Australia, he promptly elected to leave and head north out of dislike for the cold of more southerly latitudes. This physical sensitivity has often been seized on by his detractors, who point out that, as a result, Dampier missed out on becoming the name forever associated with the European discovery of Australia, that honour instead going to Captain James Cook some 80 years later. Yet it should be remembered that he was able to endure a never-ending plague of discomforts and ailments in the tropics. And once, wrecked off Ascension Island in the South Atlantic Ocean, he managed with his crew to survive for five weeks without help, living entirely on turtles and goats.</p>
+                        <p>What of his early life, then? Dampier was born in 1651 in Somerset, England, the son of a tenant farmer, George, and his wife Ann. His birthplace, Hymerford House, stands to this day. His parents died before he reached seniority and his guardians apprenticed the young William to a ship's captain, the boy having shown 'very early inclinations to see the world'. There was nothing in his childhood to set Dampier apart from the numerous other young boys who were sent to sea at this time.</p>
+                        <p>Having made brief passages to France and Newfoundland, he completed a more extended voyage to Java, where he began to learn the art of navigation. Returning briefly to Somerset, a neighbour offered Dampier a position overseeing his plantation in Jamaica, which he took up for a time, but he soon returned to sea on a trading voyage among the Caribbean islands. From the viewpoint of posterity, the most significant aspect of this time was that, as plantation manager, Dampier first started to keep a journal.</p>
+                        <p>Although Dampier wrote several books, A New Voyage Round the World is the most important and it is worth considering just why this text met with such success. Certainly, the book would not have done so well purely on the merits of Dampier's findings regarding meteorology and natural history, even though they broke new ground at the time. What appealed more to book buyers of this era was his narrative of life among the pirates of the Caribbean islands, whom he joined for several years after leaving Jamaica. These tales of adventure among rogues and villains who had no regard for the law sparked widespread interest among his countrymen back home. More important even than this, however, it is the superb nature of Dampier's prose, and his ability to communicate so vividly that raised the book above the common lot.</p>
+                        <p>Dampier himself admits in the book's preface that he received help with the writing of the book, and other evidence exists to suggest that he was assisted by an unknown source. But whatever outside assistance he may have had, the book still has certain problems. In particular, his observations about nature are sometimes roughly dropped into the narrative at very odd junctures and these asides can sometimes interrupt the flow of the story. Dampier himself kept his observations about nature entirely separate from the main body of his travels, and we should therefore hold James Knapton responsible, as he was in charge of checking and revising Dampier's text, and his publishing company brought the finished book to a wider audience.</p>
+                        <p>Dampier's life has been chronicled in full by numerous biographers, and I refer the reader in particular to Clennell Wilkinson's excellent (and sadly out-of-print) 1929 biography, as well as the recent portrait by Anton Gill. In short, despite wide acclaim for his writing, Dampier was not blessed in the art of wealth accumulation. Travelling with the pirates, while providing subsistence and adventure, never netted him the treasure chest that a more astute financial operative might have acquired. He died in 1715, aged sixty-three, in Colerman Street, London.</p>
+                        <p>We have then a man of myriad and colourful parts, and perhaps not always the easiest of sailors to get along with because of his arrogance and hot temper. But to dwell on these aspects today is to miss the point: it is A New Voyage Round the World that should provide the most illuminating and entertaining of Dampier's legacies. Above all, the text is studded with some wonderfully colourful expressions, and readers will enjoy some of the finest descriptions of storms in the English language, and the liberal wit throughout.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-31</h4>
+                        <p class="mb-4">Choose the correct letter, A, B, C or D.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <div class="q-item">
+                                <p><strong>27</strong> Which of the following best summarises the writer's point in the first paragraph?</p>
+                                <label class="block"><input type="radio" name="q67" value="A"> A Dampier's book does not fall into a single category.</label>
+                                <label class="block"><input type="radio" name="q67" value="B"> B Readers were not interested in books on the subject of travel.</label>
+                                <label class="block"><input type="radio" name="q67" value="C"> C Today's readers do not appreciate the style of Dampier's writing.</label>
+                                <label class="block"><input type="radio" name="q67" value="D"> D Dampier sailed round the world more quickly than anyone before.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>28</strong> The writer refers to Swift and Defoe in order to</p>
+                                <label class="block"><input type="radio" name="q68" value="A"> A give an example of Dampier's influence.</label>
+                                <label class="block"><input type="radio" name="q68" value="B"> B highlight two of Dampier's critics.</label>
+                                <label class="block"><input type="radio" name="q68" value="C"> C provide information regarding Dampier's sources.</label>
+                                <label class="block"><input type="radio" name="q68" value="D"> D compare Dampier to two earlier writers.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>29</strong> Dampier left the western coast of Australia because</p>
+                                <label class="block"><input type="radio" name="q69" value="A"> A He wanted to get to the north before Cook arrived.</label>
+                                <label class="block"><input type="radio" name="q69" value="B"> B He found the temperature there unpleasant.</label>
+                                <label class="block"><input type="radio" name="q69" value="C"> C He had problems with his crews.</label>
+                                <label class="block"><input type="radio" name="q69" value="D"> D He requested medical attention.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>30</strong> What does the writer imply about Dampier in the second paragraph?</p>
+                                <label class="block"><input type="radio" name="q70" value="A"> A He could cope with physical hardship.</label>
+                                <label class="block"><input type="radio" name="q70" value="B"> B He was a more adventurous explorer than Cook was.</label>
+                                <label class="block"><input type="radio" name="q70" value="C"> C He had a kinder personality than he is given credit for.</label>
+                                <label class="block"><input type="radio" name="q70" value="D"> D He was calm in a crisis.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>31</strong> What information is given about Dampier's early life?</p>
+                                <label class="block"><input type="radio" name="q71" value="A"> A He had a difficult relationship with the people looking after him.</label>
+                                <label class="block"><input type="radio" name="q71" value="B"> B He was different from other youths who went to sea.</label>
+                                <label class="block"><input type="radio" name="q71" value="C"> C He wanted to travel from a young age.</label>
+                                <label class="block"><input type="radio" name="q71" value="D"> D He came from a family of sailors.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 32-35</h4>
+                        <p class="mb-4">Complete the summary using the list of words, A-I below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> Detailed illustrations</p>
+                            <p><strong>B</strong> Traveller</p>
+                            <p><strong>C</strong> Nature</p>
+                            <p><strong>D</strong> Editor</p>
+                            <p><strong>E</strong> Writer</p>
+                            <p><strong>F</strong> Scientific observations</p>
+                            <p><strong>G</strong> The crew</p>
+                            <p><strong>H</strong> Artist</p>
+                            <p><strong>I</strong> Plain language</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">The Text of A New Voyage Round the World</h5>
+                            <p>The success of the book cannot solely be attributed to the originality of Dampier's <strong>32</strong> <input type="text" id="q72" class="w-16">. Readers of the time were fascinated with his stories of the time he spent with outlaws and his colorful way of writing. It seems certain that Dampier worked on the book with a mystery <strong>33</strong> <input type="text" id="q73" class="w-16">. Some aspects of A New Voyage Round the World are problematic, descriptions of <strong>34</strong> <input type="text" id="q74" class="w-16"> were inserted into the account of Dampier's adventures in a way that distracted the reader. It seems that the responsibility for the final version of the book lies with the <strong>35</strong> <input type="text" id="q75" class="w-16">.</p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 36-40</h4>
+                        <p class="mb-4">Do the following statements agree with the claims of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>36</strong> Many people wrote biographies of Dampier as a result of personal contact with him. <input type="text" id="q76" class="w-32"></p>
+                            <p><strong>37</strong> Dampier was skilled at making money. <input type="text" id="q77" class="w-32"></p>
+                            <p><strong>38</strong> The writer's patience was represented by the writer. <input type="text" id="q78" class="w-32"></p>
+                            <p><strong>39</strong> A New Voyage Round the World is considered as one of the most modern books. <input type="text" id="q79" class="w-32"></p>
+                            <p><strong>40</strong> Dampier supervised his neighbour's plantation in Jamaica. <input type="text" id="q80" class="w-32"></p>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    // All answers for Test 3, parsed from the PDF
+    const answers = {
+        // Listening Answers
+        q1: "keogh", q2: "15", q3: "garden", q4: "music", q5: "story", q6: "470", q7: "farm", q8: "toy", q9: "pillow", q10: "0914638520",
+        q11: "overseas", q12: "woodside", q13: "8", q14: "tuesday", q15: "website", q16: "C", q17: "C", q18: "B", q19: "A", q20: "C",
+        q21: "C", q22: "B", q23: "A", q24: "C", q25: "C", q26: "B", "q27_28": "D/E", "q29_30": "B/C",
+        q31: "computer science", q32: "rocks", q33: "video cameras", q34: "C", q35: "A", q36: "B",
+        q37: "seminar", q38: "skills", q39: "ideas", q40: "team",
+        // Reading Answers
+        q41: "true", q42: "false", q43: "true", q44: "true", q45: "not given",
+        q46: "stones", q47: "cloth", q48: "receipt", q49: "envelope", q50: "sheep", q51: "triangles", q52: "accounting", q53: "paper",
+        q54: "C", q55: "D", q56: "G", q57: "D", q58: "E",
+        q59: "B", q60: "D", q61: "C", q62: "F",
+        q63: "scene", q64: "separators", q65: "host-selling", q66: "funnier",
+        q67: "A", q68: "C", q69: "B", q70: "A", q71: "C",
+        q72: "F", q73: "E", q74: "C", q75: "D",
+        q76: "not given", q77: "no", q78: "no", q79: "not given", q80: "yes"
+    };
+
+
+    // --- APPLICATION LOGIC (Copied from test2.html, with minor adjustments) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            userAnswers: {},
+            currentTab: 'listening',
+            currentSection: 0,
+            answersChecked: {},
+            scriptVisible: false,
+
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            scriptSection: document.getElementById('script-section'),
+            scriptContent: document.getElementById('script-content'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            toggleScriptBtn: document.getElementById('toggle-script-btn'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                this.toggleScriptBtn.addEventListener('click', () => this.toggleScript());
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                    if (e.target.classList.contains('section-btn')) {
+                        this.switchSection(parseInt(e.target.dataset.sectionIndex, 10));
+                    }
+                });
+            },
+            
+            saveAnswer(e) {
+                const target = e.target;
+                if (target.id || target.name) {
+                    const id = target.id || target.name;
+                    if (target.type === 'radio') {
+                        if (target.checked) this.userAnswers[id] = target.value;
+                    } else if (target.type === 'checkbox') {
+                        const checked = Array.from(document.querySelectorAll(`input[name="${id}"]:checked`)).map(cb => cb.value).sort().join('/');
+                        this.userAnswers[id] = checked;
+                    } else {
+                         this.userAnswers[id] = target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const multiInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        if (multiInputs.length > 0) {
+                            if (multiInputs[0].type === 'checkbox') {
+                                const values = value.split('/');
+                                multiInputs.forEach(input => {
+                                    input.checked = values.includes(input.value);
+                                });
+                            } else {
+                                multiInputs.forEach(radio => {
+                                    if (radio.value === value) radio.checked = true;
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+            
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                this.scriptVisible = false;
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+
+                this.toggleScriptBtn.style.display = (tabName === 'listening') ? 'block' : 'none';
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.scriptVisible = false;
+                 this.loadContent();
+            },
+
+            toggleScript() {
+                if (this.currentTab !== 'listening') return;
+                this.scriptVisible = !this.scriptVisible;
+                this.updatePaneVisibility();
+            },
+
+            updatePaneVisibility() {
+                if (this.currentTab === 'listening') {
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = this.scriptVisible ? 'flex' : 'none';
+                    this.questionsSection.style.display = this.scriptVisible ? 'none' : 'block';
+                    this.toggleScriptBtn.textContent = this.scriptVisible ? 'Hide Script' : 'Show Script';
+                    
+                    if (this.scriptVisible) {
+                        // Use the new listeningScripts object
+                        const scriptKey = `section${this.currentSection + 1}`;
+                        this.scriptContent.innerHTML = listeningScripts[scriptKey] || "<p class='text-gray-500'>Script not available.</p>";
+                    }
+
+                } else { // Reading
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = 'none';
+                    this.questionsSection.style.display = 'block';
+                }
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                if (this.currentTab === 'listening') {
+                    this.leftPane.innerHTML = sectionData.instructions;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                } else { // reading
+                    this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                }
+                
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+
+                this.updatePaneVisibility();
+                this.addAudioListeners();
+                this.restoreAnswers();
+                this.addCheckButtons();
+                
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+
+            addAudioListeners() {
+                document.querySelectorAll('.play-audio-btn').forEach(btn => {
+                    const audioId = btn.dataset.audioId;
+                    const audioEl = document.getElementById(audioId);
+                    if (!audioEl) return;
+
+                    const timeDisplay = btn.nextElementSibling;
+                    const seeker = btn.parentElement.nextElementSibling;
+                    const playText = btn.querySelector('.play-text');
+
+                    const formatTime = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+                    btn.onclick = () => {
+                        if (audioEl.paused) audioEl.play();
+                        else audioEl.pause();
+                    };
+                    audioEl.onplay = () => playText.textContent = 'Pause';
+                    audioEl.onpause = () => playText.textContent = 'Play';
+                    audioEl.onloadedmetadata = () => {
+                        timeDisplay.textContent = `${formatTime(0)} / ${formatTime(audioEl.duration)}`;
+                    };
+                    audioEl.ontimeupdate = () => {
+                        timeDisplay.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`;
+                        seeker.value = audioEl.duration ? (audioEl.currentTime / audioEl.duration) * 100 : 0;
+                    };
+                    seeker.oninput = () => {
+                        if (audioEl.duration) {
+                            audioEl.currentTime = (seeker.value / 100) * audioEl.duration;
+                        }
+                    };
+                });
+            },
+
+            // Updated function for Test 3 question types
+            getExerciseTypes() {
+                const types = {
+                    listening: {
+                        0: [ { type: 'form_completion', startQ: 1, endQ: 10, title: 'Form Completion' } ],
+                        1: [ { type: 'sentence_completion', startQ: 11, endQ: 15, title: 'Sentence Completion' }, { type: 'multiple_choice', startQ: 16, endQ: 20, title: 'Multiple Choice' } ],
+                        2: [ { type: 'multiple_choice', startQ: 21, endQ: 26, title: 'Multiple Choice' }, { type: 'multiple_selection', startQ: 27, endQ: 28, title: 'Multiple Selection' }, { type: 'multiple_selection_2', startQ: 29, endQ: 30, title: 'Multiple Selection' }],
+                        3: [ { type: 'sentence_completion', startQ: 31, endQ: 33, title: 'Sentence Completion' }, { type: 'multiple_choice', startQ: 34, endQ: 36, title: 'Multiple Choice' }, { type: 'table_completion', startQ: 37, endQ: 40, title: 'Table Completion' } ]
+                    },
+                    reading: {
+                        0: [ { type: 'true_false', startQ: 41, endQ: 45, title: 'True/False/Not Given' }, { type: 'notes_completion', startQ: 46, endQ: 53, title: 'Notes Completion' } ],
+                        1: [ { type: 'paragraph_matching', startQ: 54, endQ: 58, title: 'Paragraph Matching' }, { type: 'matching_points', startQ: 59, endQ: 62, title: 'Matching Points' }, { type: 'summary_completion', startQ: 63, endQ: 66, title: 'Summary Completion' } ],
+                        2: [ { type: 'multiple_choice', startQ: 67, endQ: 71, title: 'Multiple Choice' }, { type: 'sentence_completion', startQ: 72, endQ: 75, title: 'Sentence Completion' }, { type: 'yes_no', startQ: 76, endQ: 80, title: 'Yes/No/Not Given' } ]
+                    }
+                };
+                return types[this.currentTab][this.currentSection] || [];
+            },
+
+            addCheckButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                const container = this.currentTab === 'listening' ? this.questionsSection : this.questionsSection;
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `<p class="font-semibold mb-2">${exercise.title} (Q${exercise.startQ}-${exercise.endQ})</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">${buttonText}</button>`;
+                    
+                    // Determine the correct first question ID
+                    let firstQuestionId;
+                    if (exercise.startQ >= 41) { // Reading questions
+                        firstQuestionId = `q${exercise.startQ}`;
+                    } else { // Listening questions
+                        if (exercise.startQ === 27) firstQuestionId = 'q27_28';
+                        else if (exercise.startQ === 29) firstQuestionId = 'q29_30';
+                        else firstQuestionId = `q${exercise.startQ}`;
+                    }
+
+                    const firstQuestionInput = document.getElementById(firstQuestionId) || document.querySelector(`input[name="${firstQuestionId}"]`);
+                    const questionBlock = firstQuestionInput ? firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6, .space-y-2') : null;
+                    if (questionBlock) {
+                        questionBlock.appendChild(buttonContainer);
+                    } else {
+                        container.appendChild(buttonContainer);
+                    }
+                });
+            },
+            
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+                let readingQ = startQ >= 41;
+                
+                for (let i = startQ; i <= endQ; i++) {
+                    let qId;
+                    
+                    // Determine the correct qId
+                    if (readingQ) {
+                        qId = `q${i}`;
+                    } else {
+                        if (i >= 27 && i <= 28) qId = 'q27_28';
+                        else if (i >= 29 && i <= 30) qId = 'q29_30';
+                        else qId = `q${i}`;
+                    }
+
+                    // Special handling for checkbox groups
+                    if (qId === 'q27_28' || qId === 'q29_30') {
+                        const userAnswer = this.userAnswers[qId] || '';
+                        const correctAnswer = answers[qId].toLowerCase().split('/');
+                        
+                        document.querySelectorAll(`input[name="${qId}"]`).forEach(input => {
+                            const label = input.closest('label');
+                            if (input.checked) {
+                                if (correctAnswer.includes(input.value.toLowerCase())) {
+                                    label.classList.add('correct-answer');
+                                } else {
+                                    label.classList.add('incorrect-answer');
+                                }
+                            } else if (correctAnswer.includes(input.value.toLowerCase())) {
+                                     label.style.border = '2px solid #fbbf24';
+                            }
+                        });
+                        if (i === 28 || i === 30) continue; // Skip the second number in the pair
+                        else continue; // Move to next 'i'
+                    }
+
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const correctAnswer = (answers[qId] || "").toLowerCase();
+                    
+                    // Handle answers with slashes like "D/E"
+                    const isCorrect = correctAnswer.split('/').some(ans => ans.trim() === userAnswer);
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+
+                    if (inputElement) {
+                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') : inputElement;
+                         if (isCorrect) {
+                            elementToStyle.classList.add('correct-answer');
+                            if(inputElement.type === 'text') inputElement.style.backgroundColor = '#dcfce7';
+                        } else {
+                            elementToStyle.classList.add('incorrect-answer');
+                             if(inputElement.type === 'text') {
+                                 inputElement.placeholder = `Correct: ${answers[qId]}`;
+                             }
+                        }
+                    } else if (inputs[0] && inputs[0].type === 'text') {
+                        // This handles text inputs that are empty
+                        inputs[0].classList.add('incorrect-answer');
+                        inputs[0].placeholder = `Correct: ${answers[qId]}`;
+                    }
+                    
+                     if (inputs[0] && inputs[0].type === 'radio' && !isCorrect) {
+                         // Highlight the correct radio answer if the user was wrong
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId]}"]`);
+                         if(correctRadio) correctRadio.closest('label').classList.add('correct-answer');
+                    }
+                }
+
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = this.splitter.parentElement.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        this.splitter.parentElement.style.gridTemplateColumns = `${newLeftWidth}px 5px 1fr`;
+                    }
+                });
+                document.addEventListener('mouseup', () => isDragging = false);
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                         if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) { console.warn(ex); }
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>

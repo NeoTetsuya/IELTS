@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Practice Test 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .questions-section {
+            width: 100%;
+        }
+        .script-section {
+            width: 100%;
+            background-color: #faf5ff; /* purple-50 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 2px solid #e9d5ff; /* purple-200 */
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db; /* gray-300 */
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 6px;
+            background-color: #f9fafb; /* gray-50 */
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .tab-btn.active {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 6px;
+            background-color: #f9fafb; /* gray-50 */
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb; /* gray-200 */
+        }
+        .section-btn.active {
+            background-color: #1d4ed8; /* blue-700 */
+            color: white;
+            border-color: #1d4ed8; /* blue-700 */
+        }
+        .play-audio-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-audio-btn:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        .play-audio-btn:disabled {
+            background-color: #9ca3af; /* gray-400 */
+            cursor: not-allowed;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937; /* gray-800 */
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a; /* yellow-200 */
+            border-radius: 2px;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af; /* gray-400 */
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6; /* blue-500 */
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .audio-seeker {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb; /* gray-200 */
+            outline: none;
+            border-radius: 0.5rem;
+        }
+        .audio-seeker::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6; /* blue-500 */
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .audio-seeker::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6; /* blue-500 */
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151; /* gray-700 */
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937; /* gray-800 */
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .explanation-box:hover {
+            background-color: #dbeafe !important; /* blue-100 */
+            transform: scale(1.02);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a; /* green-600 */
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626; /* red-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Practice Test 4</h1>
+        <div class="flex items-center space-x-4">
+            <button id="toggle-script-btn" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition-colors">
+                Show Script
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions (Reading) or Script (Listening) -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <!-- Questions Section (for Reading) -->
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+            
+            <!-- Script Section (for Listening) -->
+            <div id="script-section" class="script-section" style="display: none;">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-purple-800 mb-2">Listening Script</h3>
+                </div>
+                <div id="script-content" class="text-sm leading-relaxed overflow-y-auto">
+                    <!-- Script will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="listening">Listening</button>
+                <button class="tab-btn" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+
+<script>
+    // --- DATA ---
+    // This object contains all the content for Test 4, parsed from the PDF.
+    const testData = {
+        listening: {
+            duration: 1800, // 30 minutes
+            sections: [
+                {
+                    title: "Section 1",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 1</h3>
+                        <p class="mb-4">You will hear a conversation about the 'Music Alive Agency'.</p>
+                        <p class="mb-4 text-sm text-red-600">Note: The audio file below is a placeholder from a different test. The content will not match the questions.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Placeholder audio. In a real scenario, this would be Test 4, Section 1. -->
+                            <audio id="audio-sec1" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-1.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec1" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 1-10</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD AND/OR A NUMBER</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold text-center text-lg">Music Alive Agency</h5>
+                            <p><strong>Example:</strong> Contact person: <em>Jim Granley</em></p>
+                            <p>Members' details are on a <strong>1</strong> <input type="text" id="q1"></p>
+                            <p>Type of music represented: modern music (<strong>2</strong> <input type="text" id="q2"> and jazz)</p>
+                            <p>Newsletter comes out once a <strong>3</strong> <input type="text" id="q3"></p>
+                            <p>Cost of adult membership: <strong>4</strong> £ <input type="text" id="q4"></p>
+                            <p>Current number of member: <strong>5</strong> <input type="text" id="q5"></p>
+                            <p>Facilities include: rehearsal rooms and a <strong>6</strong> <input type="text" id="q6"></p>
+                            <p>There is no charge for <strong>7</strong> <input type="text" id="q7"> advice</p>
+                            <p>To become a member, send:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>a letter with contact details</li>
+                                <li>a recent <strong>8</strong> <input type="text" id="q8"></li>
+                            </ul>
+                            <p>Address: 707, <strong>9</strong> <input type="text" id="q9"> Street, Marbury</p>
+                            <p>Contact email: music.<strong>10</strong> <input type="text" id="q10">@bsu.co.uk</p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 2",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 2</h3>
+                        <p class="mb-4">You will hear a talk about the Albany fishing competition.</p>
+                        <p class="mb-4 text-sm text-red-600">Note: The audio file below is a placeholder from a different test. The content will not match the questions.</p>
+                         <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Placeholder audio -->
+                            <audio id="audio-sec2" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-2.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec2" class="play-audio-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 11-14</h4>
+                        <p class="mb-4">Choose the correct letter <strong>A, B or C</strong>.</p>
+                        <h5 class="font-bold mb-2">Information for participants in the Albany fishing competition</h5>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                             <div class="q-item">
+                                <p><strong>11</strong> What do participants need to take to the registration desk?</p>
+                                <label class="block"><input type="radio" name="q11" value="A"> A a form of identification</label>
+                                <label class="block"><input type="radio" name="q11" value="B"> B a competitor number</label>
+                                <label class="block"><input type="radio" name="q11" value="C"> C cash for the entrance fee</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>12</strong> What does the entrance fee to the competition include?</p>
+                                <label class="block"><input type="radio" name="q12" value="A"> A equipment for fishing</label>
+                                <label class="block"><input type="radio" name="q12" value="B"> B all food for both days</label>
+                                <label class="block"><input type="radio" name="q12" value="C"> C fuel for the fishing</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>13</strong> Participants without a fishing license are recommended to apply for one</p>
+                                <label class="block"><input type="radio" name="q13" value="A"> A at the registration desk.</label>
+                                <label class="block"><input type="radio" name="q13" value="B"> B on the internet.</label>
+                                <label class="block"><input type="radio" name="q13" value="C"> C over the phone.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>14</strong> What will happen at 6pm on Sunday?</p>
+                                <label class="block"><input type="radio" name="q14" value="A"> A The time allocated for fishing will end.</label>
+                                <label class="block"><input type="radio" name="q14" value="B"> B The fish caught will be judged.</label>
+                                <label class="block"><input type="radio" name="q14" value="C"> C The prizes will be awarded to the winners.</label>
+                            </div>
+                        </div>
+                        
+                        <h4 class="font-bold mb-2 mt-6">Questions 15-20</h4>
+                        <p class="mb-4">Label the map below. Write the correct letter, <strong>A-I</strong>, next to questions 15-20.</p>
+                        <div class="p-4 border rounded-lg bg-white mb-6">
+                            <img src="https://placehold.co/600x450/e2e8f0/9ca3af?text=Map+of+Albany+Fishing+Competition" alt="Map of Albany Fishing Competition" class="w-full h-auto rounded-md mb-4">
+                            <h5 class="font-bold mb-2">Albany Fishing Competition Map</h5>
+                            <p><strong>15</strong> Registration area <input type="text" id="q15" class="w-16 ml-2"></p>
+                            <p><strong>16</strong> Shore fishing area <input type="text" id="q16" class="w-16 ml-2"></p>
+                            <p><strong>17</strong> Boat launching area <input type="text" id="q17" class="w-16 ml-2"></p>
+                            <p><strong>18</strong> Judging area <input type="text" id="q18" class="w-16 ml-2"></p>
+                            <p><strong>19</strong> Dining area <input type="text" id="q19" class="w-16 ml-2"></p>
+                            <p><strong>20</strong> Prize-giving area <input type="text" id="q20" class="w-16 ml-2"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 3",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 3</h3>
+                        <p class="mb-4">You will hear a conversation about preparing for an end-of-year art exhibition.</p>
+                        <p class="mb-4 text-sm text-red-600">Note: The audio file below is a placeholder from a different test. The content will not match the questions.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Placeholder audio -->
+                            <audio id="audio-sec3" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-3.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec3" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                           <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 21-26</h4>
+                        <p class="mb-4">Choose the correct letter, <strong>A, B or C</strong>.</p>
+                        <h5 class="font-bold mb-2">Preparing for the end-of-year art exhibition</h5>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                             <div class="q-item">
+                                <p><strong>21</strong> Max and Abby agree that in the art exhibition they are looking forward to</p>
+                                <label class="block"><input type="radio" name="q21" value="A"> A showing people their work.</label>
+                                <label class="block"><input type="radio" name="q21" value="B"> B getting feedback from their tutor.</label>
+                                <label class="block"><input type="radio" name="q21" value="C"> C talking to other students about their displays.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>22</strong> In last year's exhibition, both students were impressed by</p>
+                                <label class="block"><input type="radio" name="q22" value="A"> A a set of metal sculptures.</label>
+                                <label class="block"><input type="radio" name="q22" value="B"> B a series of wooden models.</label>
+                                <label class="block"><input type="radio" name="q22" value="C"> C a collection of textile designs.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>23</strong> What has Max decided to call his display?</p>
+                                <label class="block"><input type="radio" name="q23" value="A"> A Mother Nature</label>
+                                <label class="block"><input type="radio" name="q23" value="B"> B Views of Farmland</label>
+                                <label class="block"><input type="radio" name="q23" value="C"> C Seasons</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>24</strong> What does Abby think will be difficult about preparing for their displays?</p>
+                                <label class="block"><input type="radio" name="q24" value="A"> A having enough time to set it up</label>
+                                <label class="block"><input type="radio" name="q24" value="B"> B choosing which pieces to show</label>
+                                <label class="block"><input type="radio" name="q24" value="C"> C filling up all the available space</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>25</strong> What does Abby say about the summary they have to write?</p>
+                                <label class="block"><input type="radio" name="q25" value="A"> A She isn't sure whether people will read it.</label>
+                                <label class="block"><input type="radio" name="q25" value="B"> B It will be difficult to keep it short enough.</label>
+                                <label class="block"><input type="radio" name="q25" value="C"> C It will be hard to clarify the reasons for her work.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>26</strong> What aspect of the display will the students organise themselves?</p>
+                                <label class="block"><input type="radio" name="q26" value="A"> A arranging the lighting</label>
+                                <label class="block"><input type="radio" name="q26" value="B"> B inviting local journalists</label>
+                                <label class="block"><input type="radio" name="q26" value="C"> C providing comment forms</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-6">Questions 27-30</h4>
+                        <p class="mb-4">Which feature do the speakers identify as particularly interesting for each of the following exhibitions they saw? Choose FOUR answers from the box and write the correct letter, <strong>A-F</strong>, next to questions 27-30.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p class="font-bold mb-2">Interesting features</p>
+                            <p><strong>A</strong> the realistic colours</p>
+                            <p><strong>B</strong> the sense of space</p>
+                            <p><strong>C</strong> the unusual interpretation of the theme</p>
+                            <p><strong>D</strong> the painting technique</p>
+                            <p><strong>E</strong> the variety of materials use</p>
+                            <p><strong>F</strong> the use of light and shade</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                           <p><strong>Exhibitions</strong></p>
+                           <p><strong>27</strong> On the Water <input type="text" id="q27" class="w-16 ml-2"></p>
+                           <p><strong>28</strong> City Life <input type="text" id="q28" class="w-16 ml-2"></p>
+                           <p><strong>29</strong> Faces <input type="text" id="q29" class="w-16 ml-2"></p>
+                           <p><strong>30</strong> Moods <input type="text" id="q30" class="w-16 ml-2"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Section 4",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Section 4</h3>
+                        <p class="mb-4">You will hear a lecture about the Mangrove Regeneration Project.</p>
+                        <p class="mb-4 text-sm text-red-600">Note: The audio file below is a placeholder from a different test. The content will not match the questions.</p>
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <p class="font-semibold mb-2">Audio Control</p>
+                            <!-- Placeholder audio -->
+                            <audio id="audio-sec4" src="https://raw.githubusercontent.com/NeoTetsuya/audio-files/main/Test2-4.mp3" preload="metadata"></audio>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <button data-audio-id="audio-sec4" class="play-audio-btn">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                                    <span class="play-text">Play</span>
+                                </button>
+                                <span class="time-display text-sm text-gray-600">0:00 / 0:00</span>
+                            </div>
+                            <input type="range" class="audio-seeker w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 31-40</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>NO MORE THAN TWO WORDS</strong> for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">The Mangrove Regeneration Project</h5>
+                            
+                            <p><strong>Background:</strong></p>
+                            <p>Mangrove forests:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>protect coastal areas from <strong>31</strong> <input type="text" id="q31"> by the sea</li>
+                                <li>are an important habitat for wildlife</li>
+                            </ul>
+
+                            <p><strong>Problems:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>mangroves had been used by farmers as <strong>32</strong> <input type="text" id="q32"></li>
+                                <li>mangroves were poisoned by the use of <strong>33</strong> <input type="text" id="q33"></li>
+                                <li>Local people used the mangroves as a place to put their <strong>34</strong> <input type="text" id="q34"></li>
+                            </ul>
+
+                            <p><strong>Actions taken to protect the mangroves:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>a barrier which was made of <strong>35</strong> <input type="text" id="q35"> was constructed - but it failed</li>
+                                <li>new mangroves had to be grown from seed</li>
+                                <li>the seeds of the <strong>36</strong> <input type="text" id="q36"> mangrove were used</li>
+                            </ul>
+
+                            <p><strong>First set of seedlings:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>kept in small pots in a <strong>37</strong> <input type="text" id="q37"></li>
+                                <li>Watered with <strong>38</strong> <input type="text" id="q38"> water</li>
+                                <li>planted out on south side of a small island</li>
+                                <li>at risk from the large <strong>39</strong> <input type="text" id="q39"> population</li>
+                            </ul>
+
+                            <p><strong>Second set of seedlings:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>planted in the seabed near established mangrove roots</li>
+                                <li>the young plants were destroyed in a <strong>40</strong> <input type="text" id="q40"></li>
+                            </ul>
+                            
+                            <p><strong>Results:</strong></p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>The first set of seedlings was successful</li>
+                            </ul>
+                        </div>
+                    `
+                }
+            ]
+        },
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Why good ideas fail</h3>
+                        <p>As part of a marketing course, two marketing experts comment on a hypothetical case study involving TF, a fictional retail giant specializing in home furnishing. The experts give concrete solutions and advice to assist students.</p>
+                        
+                        <h4 class="font-semibold mt-4 mb-2">Hypothetical case study:</h4>
+                        <p>TF became a retail success in the 1970s when it succeeded in spotting homeware trends and meeting the needs of its then trendy young customers. However, by 2004, the TF stores were failing and a rethink was clearly necessary. Tibal Fisher, TF's founder and CEO, decided to change its focus under the new brand name of TF's NextStage. His aim was to recapture the now ageing customers that had given him his early success and target consumers aged 60+ with devices and gadgets specifically designed to assist them with the problems associated with ageing: mobile phones with screens that were easy to read; kitchen gadgets with comfortable grips; electronic devices that were easy to set and adjust. TF's market research proved to be very positive, showing strong consumer support for the products.</p>
+                        <p>In 2007, the stores were remodelled at a cost of US $40 million and the new brand was launched. Each store was made more comfortable and featured a coffee shop to help increase traffic. Tibal had predicted that if they could get customers into the stores then the products would sell themselves. However, by 2009 it was clear that the idea was a failure and the stores consistently remained empty. Customers complained that the new stores felt like a senior center and reminded them that they were growing old.</p>
+
+                        <h4 class="font-semibold mt-4 mb-2">Feedback from expert</h4>
+                        <p><strong>Expert 1: Donna Sturgess, global head of innovation, GlaxoSmithKline</strong></p>
+                        <p>The TF team's customer research efforts are a classic case of missing the subconscious associations at work in consumers' minds. Tibal and his executives looked only at surface attitudes. Since those attitudes make up a relatively small part of the total consumer response, the executives are clueless about the reason for the poor sales. It's critical for companies to understand that every customer relates to a brand emotionally, and it's those emotions that trigger or block - purchases.</p>
+                        <p>That's why we've focused on using emotional strategies behind branding for a number of years now. A great example Is Alli (pronounced 'ally'), a drug to aid weight loss. The product deals with a highly emotional issue, so in marketing it, we faced the same challenge that the new TF stores are facing: the very thought of buying the product reminds customers that they have problems they feel negatively about. In the case of TF's NextStage, the problems are age and infirmity. In the case of Alli, the problems are excessive weight and all its consequences. There's always a risk that consumers' negative feelings will discourage them from starting or staying on a diet. So, after extensive market research, we took a number of steps to inject emotions into the whole process of using the product.</p>
+                        <p>First we came up with a name that sounds like a helpful partner. We also aimed to make the container both beautiful and functional - something that didn't just hold pills but could later be used to store diet guides and recipes. Traditional market research is unlikely to uncover ideas like this, so we use a wide variety of techniques. Even simple techniques such as one-on-one interviews, or ethnographical observation that involves going into people's houses to examine their behaviour, can provide valuable data.</p>
+                        
+                        <p><strong>Expert 2: Alex Lee, president of OXO International, maker of OXO Good Grips household products</strong></p>
+                        <p>This retailer can get back on track by remembering a principle that applies to consumers in general and those aged 60+ in particular: they're attracted by brands they associate with the type of people they'd like to be - not the type they really are. That's why marketing campaigns for surf gear feature surfers, not the city dwellers who will wear the products while doing their shopping.</p>
+                        <p>I was reminded of this principle a few years ago when we wanted to find out how far we could apply our design philosophy of makings things easier to use in order to move from our core business, kitchen tools, into other products. We conducted what are known as focus groups, where participants were asked to look at photos of people and pick those they perceived to be users and non-users of our products. Consistently they picked people who looked fit as the sort who would use our products, and people who look old and boring as the sort who wouldn't. Yet the participants, all owners of our products, looked a lot more like the latter than the former.</p>
+                        <p>Although the needs of elderly users and those with deteriorating vision or dexterity are very much taken into consideration when we develop new designs, we try to offer that appeal to 20- and 30-year-olds. We believe that referring to these products as helping tools would serve only to harm the brand in our customers' eyes. That's why our philosophy of universal design, which involves creating products that are comfortably useable by the largest possible range of people, is never explicitly stated as part of our marketing position.</p>
+                        <p>We've found that market research does not need to be very sophisticated. For instance, we have conducted simple surveys in the lobby of our building offering free products in exchange for people's opinions. Some may call this unscientific but we have uncovered great insights this way. Sometimes the most important signals come from an executive's own instincts. In Tibal Fisher's case, this could have told him what his surveys and focus groups didn't: 60-plus-year-olds won't support a business that expects them to act their age.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-5</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>1</strong> The TF NextStage stores planned to sell products to make life easier for older people. <input type="text" id="q41" class="w-32 ml-2"></p>
+                           <p><strong>2</strong> TF's market research indicated that people liked the products. <input type="text" id="q42" class="w-32 ml-2"></p>
+                           <p><strong>3</strong> It cost more than expected to remodel the TF stores. <input type="text" id="q43" class="w-32 ml-2"></p>
+                           <p><strong>4</strong> The TF NextStage coffee shops sold their own brand of food and drink. <input type="text" id="q44" class="w-32 ml-2"></p>
+                           <p><strong>5</strong> TF NextStage customers liked the atmosphere in the new stores. <input type="text" id="q45" class="w-32 ml-2"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 6-13</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <h5 class="font-bold">Feedback from experts</h5>
+                            <p><strong>Donna Sturgess</strong></p>
+                            <p>Problems with customer research:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>TF team limited their research to attitudes that occur at a <strong>6</strong> <input type="text" id="q46"> level in customers' minds</li>
+                                <li>TF didn't consider customers' emotions</li>
+                            </ul>
+                            <p>How my company dealt with a similar problem:</p>
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Product: Alli</li>
+                                <li>Use: help people achieve <strong>7</strong> <input type="text" id="q47"></li>
+                                <li>Marketing aim: help customers see the product a positive way by:</li>
+                                <ul class="list-disc list-inside ml-8">
+                                    <li>Giving the product a <strong>8</strong> <input type="text" id="q48"> that seems helpful and supportive</li>
+                                    <li>Giving the product a reusable <strong>9</strong> <input type="text" id="q49"></li>
+                                </ul>
+                            </ul>
+                            <p>Market research:</p>
+                             <ul class="list-disc list-inside ml-4">
+                                <li>Does not need to be complex</li>
+                                <li>Good information can come from interviews or studying the <strong>10</strong> <input type="text" id="q50"> of consumers in the home</li>
+                            </ul>
+                            <p class="mt-4"><strong>Alex Lee</strong></p>
+                            <p>Problem:</p>
+                             <ul class="list-disc list-inside ml-4">
+                                <li>Customers are attracted to the ideal not the reality, e.g. ads for surf gear</li>
+                            </ul>
+                            <p>How my company dealt with a similar problem:</p>
+                             <ul class="list-disc list-inside ml-4">
+                                <li>We organised <strong>11</strong> <input type="text" id="q51"> to find out what images customers associate with our products</li>
+                                <li>we do not call our products helping tools in our marketing campaigns</li>
+                            </ul>
+                            <p>Market research:</p>
+                             <ul class="list-disc list-inside ml-4">
+                                <li>Can be basic, e.g. by doing <strong>12</strong> <input type="text" id="q52"></li>
+                                <li>Company executives should follow their <strong>13</strong> <input type="text" id="q53"></li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                         <h3 class="text-xl font-bold mb-4">Keeping the water away</h3>
+                         <h4 class="font-semibold mb-4">New approaches to flood control</h4>
+                        <p><strong>A</strong> Recently, winter floods on the rivers of central Europe have been among the worst for 600 to 700 years, and dams and dykes (protective sea walls) have failed to solve the problem. Traditionally, river engineers have tried to get rid of the water quickly, draining it off the land and down to the sea in rivers re-engineered as high-performance drains. But however high they build the artificial riverbanks, the floods keep coming back. And when they come, they seem to be worse than ever.</p>
+                        <p><strong>B</strong> Engineers are now turning to a different plan: to sap the water's destructive strength by dispersing it into fields, forgotten lakes and floods plains. They are reviving river bends and marshes to curb the flow, and even plugging city drains to encourage floodwater to use other means to go underground. Back in the days when rivers took a winding path to the sea, floodwaters lost force and volume while meandering across flood plains and inland deltas, but today the water tends to have a direct passage to the sea. This means that, when it rains in the uplands, the water comes down all at once.</p>
+                        <p><strong>C</strong> Worse, when the flood plains are closed off, the river's flow downstream becomes more violent and uncontrollable; by turning complex river systems into the simple mechanics of a water pipe, engineers have often created danger where they promised safety. The Rhine, Europe's most engineered river, is a good example. For a long time engineers have erased its backwaters and cut it off from its plain. The aim was partly to improve navigation, and partly to speed floodwaters out of Alps and down to the North Sea. Now, when it rains in the Alps, the peak flows from several branches of the Rhine coincide where once they arrived separately, and with four-fifths of the Lower Rhine's flood plain barricaded off, the waters rise. The result is more frequent flooding and greater damage. The same thing has happened in the US on the Mississippi river, which drains the world's second largest river catchment into the Gulf of Mexico. Despite some $7 billion spent over the last century on levees (embankments) the situation is growing worse.</p>
+                        <p><strong>D</strong> Specialists in water control now say that a new approach is needed - one which takes the whole landscape into consideration. To help keep London's feet dry, the UK Environment Agency is reflooding 10 square kilometres of the ancient flood plain of the River Thames outside Oxford. Nearer to London, it has spent £100 million creating new wetlands and a relief channel across 16 kilometres of flood plain. Similar ideas are being tested in Austria, in one of Europe's largest river restorations to date. The engineers calculate that the restored flood plain of the Drava River can now store up to 10 million cubic metres of floodwater, and slow down storm surges coming out of the Alps by more than an hour, protecting towns not only in Austria, but as far downstream as Slovenia and Croatia.</p>
+                        <p><strong>E</strong> The Dutch, for whom preventing floods is a matter of survival, have gone furthest. This nation, built largely on drained marshes and seabed, has had several severe shocks in the last two decades, when very large numbers of people have had to be evacuated. Since that time, the Dutch have broken one of their most enduring national stereotypes by allowing engineers to punch holes in dykes. They plan to return up to a sixth of the country to its former waterlogged state in order to better protect the rest.</p>
+                        <p><strong>F</strong> Water use in cities also needs to change. At the moment, cities seem to create floods; they are concreted and paved so that rains flow quickly into rivers. A new breed of 'soft engineers' wants cities to be porous. Berlin is one place where this is being done. Tough new rules for new developments mean that drains will be prevented from becoming overloaded after heavy rains. Architects of new urban buildings are diverting rainwater from the roofs for use in toilets and the irrigation of roof gardens, while water falling onto the ground is collected in ponds, or passes underground through porous paving. One high-tech urban development can store a sixth of its annual rainfall, and reuse most of the rest.</p>
+                        <p><strong>G</strong> Could this be expanded to protect a whole city? The test case could be Los Angeles. With non-porous surfaces covering 70% of the city, drainage is a huge challenge. Billions of dollars have been spent digging huge drains and concreting riverbeds, but many communities still flood regularly. Meanwhile this desert city ships water from hundreds of kilometres away to fill its taps and swimming pool. Los Angeles has recently launched a new scheme to utilise floodwater in the Sun Valley section of the city. The plan is to catch the rain that falls on thousands of driveways, parking lots and rooftops in the valley. Trees will soak up water from parking lots; houses and public buildings will capture roof water to irrigate gardens and parks, and road drains will empty into old gravel pits to recharge the city's underground water reserves. Result: less flooding and more water for the city. It may sound expensive, until we realise how much is spent trying to drain cities and protect areas from flooding, and how little this method achieves.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-19</h4>
+                        <p class="mb-4">Reading Passage 2 has seven paragraphs, A-G. Which paragraph contains the following information?</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> how legislation has forced building designers to improve water use <input type="text" id="q54" class="w-16 ml-2"></p>
+                            <p><strong>15</strong> two reasons why one river was isolated from its flood plain <input type="text" id="q55" class="w-16 ml-2"></p>
+                            <p><strong>16</strong> how natural water courses in the past assisted flood control <input type="text" id="q56" class="w-16 ml-2"></p>
+                            <p><strong>17</strong> an example of flood control on one river, affecting three countries <input type="text" id="q57" class="w-16 ml-2"></p>
+                            <p><strong>18</strong> a country which has partly destroyed one of its most typical features in order to control water <input type="text" id="q58" class="w-16 ml-2"></p>
+                            <p><strong>19</strong> the writer's comment on the comparative cost effectiveness of traditional flood control and newer methods <input type="text" id="q59" class="w-16 ml-2"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 20 and 21</h4>
+                        <p class="mb-4">According to the article, which TWO of these statements are true of the new approach to flood control? Choose TWO letters A-E.</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q60_61" value="A"> A It aims to slow the movement of water to the sea.</label>
+                            <label class="block"><input type="checkbox" name="q60_61" value="B"> B It aims to channel water more directly into rivers.</label>
+                            <label class="block"><input type="checkbox" name="q60_61" value="C"> C It will cost more than twice as much as former measures.</label>
+                            <label class="block"><input type="checkbox" name="q60_61" value="D"> D It will involve the loss of some areas of land.</label>
+                            <label class="block"><input type="checkbox" name="q60_61" value="E"> E It has been tested only in The Netherlands.</label>
+                        </div>
+
+                        <h4 class="font-bold mb-2 mt-6">Questions 22-26</h4>
+                        <p class="mb-4">Complete the sentences below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>22</strong> Some of the most severe floods for many centuries have recently occurred in parts of <input type="text" id="q62">.</p>
+                            <p><strong>23</strong> The Rhine and the <input type="text" id="q63"> rivers have experienced similar problems with water control.</p>
+                            <p><strong>24</strong> An area near Oxford will be reflooded to protect the city of <input type="text" id="q64">.</p>
+                            <p><strong>25</strong> Planners who wish to allow water to pass more freely through city surfaces are called <input type="text" id="q65">.</p>
+                            <p><strong>26</strong> A proposal for part of the city of <input type="text" id="q66"> could show whether small-scale water projects could apply on a large scale.</p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Australia's Megafauna Controversy</h3>
+                        <p class="mb-4"><em>Just how long did humans live side by side with megafauna in Australia? Barry Brook, Richard Gillespie and Paul Martin dispute previous claims of a lengthy coexistence.</em></p>
+                        
+                        <p>Over the past 50 millennia, Australia has witnessed the extinction of many species of large animals, including a rhinoceros-sized wombat and goannas the size of crocodiles. Debate about the possible cause of these extinctions has continued for more than 150 years and one of the crucial questions raised is how long humans and megafauna coexisted in Australia. We need to know the overlap of time to make an informed choice between the two main theories regarding the causes of these extinctions. If humans and megafauna coexisted for a protracted period then climate change is the more likely cause. However, if the megafauna became extinct shortly after the arrival of humans, then humans are the likely culprits.</p>
+                        <p>The archaeological site at Cuddie Springs in eastern Australia appears to be well preserved. This dusty claypan holds within its sediments a rich cache of flaked stone and seed-grinding tools, and side by side with these clear signals of human culture are the bones of a dozen or more species of megafauna. Drs Judith Field and Stephen Wroe of the University of Sydney, who excavated the site, claim that it provides unequivocal evidence of a long overlap of humans and megafauna, and conclude that aridity leading up to the last Ice Age brought about their eventual demise. In the long-standing explanation of this site, artefacts such as stone tools and extinct animals remain were deposited over many thousands of years in an ephemeral lake - a body of water existing for a relatively short time - and remained in place and undisturbed until the present day.</p>
+                        <p>There is no disputing the close association of bones and stones at Cuddie Springs, as both are found 1 to 1.7 metres below the modern surface. The dating of these layers is accurate: ages for the sediments were obtained through radiocarbon dating of charcoal fragments and luminescence dating of sand grains from the same levels (revealing when a sample was last exposed to sunlight). Intriguingly, some of the stone tools show surface features indicating their use for processing plants, and a few even have well-preserved blood and hair residues suggesting they were used in butchering animals.</p>
+                        <p>But is the case proposed by Field and Wroe clear-cut? We carried out a re-analysis of the scientific data from Cuddie Springs that brings into question their conclusions. The amount of anthropological evidence found at the site is remarkable: we estimate there are more than 3 tonnes of charcoal and more than 300 tonnes of stone buried there. Field and Wroe estimate that there are approximately 20 million artefacts. This plethora of tools is hard to reconcile with a site that was only available for occupation when the lake was dry. Furthermore, no cultural features such as oven pits have been discovered. If the sediment layers have remained undisturbed since being laid down, as Field and Wroe contend, then the ages of those sediments should increase with depth. However, our analysis revealed a number of inconsistencies.</p>
+                        <p>First, the charcoal samples are all roughly 36,000 years old. Second, sand in the two upper levels is considerably younger than charcoal from the same levels. Third, Field and Wroe say that the tools and seed-grinding stones used for plant and animal processing are ancient, yet they are very similar to implements found elsewhere that were in use only a few thousand years ago. Also of interest is the fact that a deep drill core made a mere 60 metres from the site recovered no stone artefact or fossil bones whatsoever. These points suggest strongly that the sediments have been moved about and some of the old charcoal has been re-deposited in younger layers. Indeed, one sample of cow bone found 1 metre below the surface came from sediments where charcoal dated at 6,000 and 23,000 years old is mixed with 17,000-year-old sand. The megafauna bones themselves have not yet been dated, although new technological developments make this a possibility in the near future.</p>
+                        <p>We propose that the archaeologists have actually been sampling the debris carried by ancient flood channels beneath the site, including charcoal transported from bushfires that intermittently occurred within the catchment. Flood events more likely explain the accumulation of megafauna remains, and could have mixed old bones with fresh deposits. European graziers also disturbed the site in 1876 by constructing a well to provide water for their cattle. Given the expense of well-digging, we speculate that the graziers made sure it was protected from the damage caused by cattle hooves by lining the surface with small stones collected from further afield, including prehistoric quarries. This idea is consistent with the thin layer of stones spread over a large area, with cattle occasionally breaking through the gravel surface and forcing the stone and even cattle bones deeper into the waterlogged soil.</p>
+                        <p>The lack of conclusive evidence that humans and megafauna coexisted for a lengthy period casts doubt on Field and Wroe's assertion that climate change was responsible for the extinction of Australia's megafauna. However, we do not suggest that newly arrived, well-armed hunters systematically slaughtered all the large beasts they encountered. Recent studies based on the biology of modern-day large mammals, combined with observations of people who still practise a traditional hunter-gatherer lifestyle, reveal an unexpected paradox and suggest a further possible explanation as to what happened. Using a mathematical model, it was found that a group of 10 people killing only one juvenile Diprotodon each year would be sufficient to bring about the extinction of that species within 1,000 years. This suggests that here, as in other parts of the word, the arrival of humans in lands previously inhabited only by animals created a volatile combination in which large animals fared badly.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-30</h4>
+                        <p class="mb-4">Do the following statements agree with the claims of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>27</strong> Field and Wroe argue that findings at the Cuddie Springs site show that people lived in this area at the same time as megafauna. <input type="text" id="q67" class="w-32 ml-2"></p>
+                           <p><strong>28</strong> Field and Wroe believe it is likely that smaller megafauna species survived the last Ice Age. <input type="text" id="q68" class="w-32 ml-2"></p>
+                           <p><strong>29</strong> The writers believe that the dating of earth up to 1.7m below the present surface at Cuddie Springs is unreliable. <input type="text" id="q69" class="w-32 ml-2"></p>
+                           <p><strong>30</strong> Some artefacts found at Cuddie Springs were preserved well enough to reveal their function. <input type="text" id="q70" class="w-32 ml-2"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 31-35</h4>
+                        <p class="mb-4">Complete the summary using the list of words, A-I, below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p><strong>A</strong> seeds</p>
+                            <p><strong>B</strong> stone</p>
+                            <p><strong>C</strong> sand</p>
+                            <p><strong>D</strong> cooking</p>
+                            <p><strong>E</strong> deep drill core</p>
+                            <p><strong>F</strong> water</p>
+                            <p><strong>G</strong> fossil bones</p>
+                            <p><strong>H</strong> sediment</p>
+                            <p><strong>I</strong> storage</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold mb-2">The writers' arguments against Field and Wroe's analysis</h5>
+                            <p>One objection to Field and Wroe's interpretation is the large quantity of charcoal, <strong>31</strong> <input type="text" id="q71" class="w-16"> and artefacts found at Cuddie Springs. Such large numbers of artefacts would be impossible if the area had been covered with <strong>32</strong> <input type="text" id="q72" class="w-16"> for a period. There is also a complete lack of man-made structures, for instance those used for <strong>33</strong> <input type="text" id="q73" class="w-16">.</p>
+                            <p>Other evidence that casts doubt on Field and Wroe's claim is the fact that while some material in the highest levels of sediment is 36,000 years old, the <strong>34</strong> <input type="text" id="q74" class="w-16"> in the same levels is much more recent. The tools used to process plants and animals may also be newer than Field and Wroe believe. Further evidence against human occupation of the area is the absence of tools and <strong>35</strong> <input type="text" id="q75" class="w-16"> a short distance away.</p>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 36-40</h4>
+                        <p class="mb-4">Choose the correct letter, A, B, C or D.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white">
+                            <div class="q-item">
+                                <p><strong>36</strong> What conclusions did the writers reach about the inconsistencies in the data from Cuddie Springs?</p>
+                                <label class="block"><input type="radio" name="q76" value="A"> A The different layers of sediment have been mixed over time.</label>
+                                <label class="block"><input type="radio" name="q76" value="B"> B The sand evidence is unhelpful and should be disregarded.</label>
+                                <label class="block"><input type="radio" name="q76" value="C"> C The area needs to be re-examined when technology improves.</label>
+                                <label class="block"><input type="radio" name="q76" value="D"> D The charcoal found in the area cannot be dated.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>37</strong> According to the writers, what impact could a natural phenomenon have had on this site?</p>
+                                <label class="block"><input type="radio" name="q77" value="A"> A Floods could have caused the death of the megafauna.</label>
+                                <label class="block"><input type="radio" name="q77" value="B"> B Floods could have disturbed the archaeological evidence.</label>
+                                <label class="block"><input type="radio" name="q77" value="C"> C Bushfires could have prevented humans from settling in the area for any length of time.</label>
+                                <label class="block"><input type="radio" name="q77" value="D"> D Bushfires could have destroyed much of the evidence left by megafauna and humans.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>38</strong> What did the writers speculate about the people who lived at this site in 1876?</p>
+                                <label class="block"><input type="radio" name="q78" value="A"> A They bred cattle whose bones could have been confused with megafauna.</label>
+                                <label class="block"><input type="radio" name="q78" value="B"> B They found that the soil was too waterlogged for farming.</label>
+                                <label class="block"><input type="radio" name="q78" value="C"> C They allowed cattle to move around freely at the site.</label>
+                                <label class="block"><input type="radio" name="q78" value="D"> D They brought stones there from another area.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>39</strong> In the final paragraph what suggestion do the writers make about Australia's megafauna?</p>
+                                <label class="block"><input type="radio" name="q79" value="A"> A A rapid change in climate may have been responsible for the extinction of the megafauna.</label>
+                                <label class="block"><input type="radio" name="q79" value="B"> B Megafauna could have died out as a result of small numbers being killed year after year.</label>
+                                <label class="block"><input type="radio" name="q79" value="C"> C The population of humans at that time was probably insufficient to cause the extinction of the megafauna.</label>
+                                <label class="block"><input type="radio" name="q79" value="D"> D The extinction of ancient animals should not be compared to that of modern-day species.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>40</strong> Which of the following best represents the writers' criticism of Field and Wroe?</p>
+                                <label class="block"><input type="radio" name="q80" value="A"> A Their methods were not well thought out.</label>
+                                <label class="block"><input type="radio" name="q80" value="B"> B Their excavations did not go deep enough.</label>
+                                <label class="block"><input type="radio" name="q80" value="C"> C Their technology failed to obtain precise data.</label>
+                                <label class="block"><input type="radio" name="q80" value="D"> D Their conclusions were based on inconsistent data.</label>
+                            </div>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+    
+    // Placeholder scripts for Test 4.
+    const listeningScripts = {
+        section1: `
+            <p><strong>Agent:</strong> Music Alive Agency, Jim Granley speaking.</p>
+            <p><strong>Caller:</strong> Hello, I'm calling about the agency. I'm a musician and I'm interested in joining.</p>
+            <p><strong>Agent:</strong> Yes, certainly. I can give you the main details now...</p>
+            <p>...[Script continues]... This is placeholder text for the Test 4 Section 1 audio script. The full script would be transcribed here.</p>
+        `,
+        section2: `
+            <p><strong>Speaker:</strong> Good morning everyone and welcome to Albany! I'm here to tell you about this year's fishing competition...</p>
+            <p>...[Script continues]... This is placeholder text for the Test 4 Section 2 audio script. The full script would be transcribed here.</p>
+        `,
+        section3: `
+            <p><strong>Max:</strong> Hi Abby. How are you getting on with your preparation for the art exhibition?</p>
+            <p><strong>Abby:</strong> Hi Max. I'm okay. I've decided what I'm going to display...</p>
+            <p>...[Script continues]... This is placeholder text for the Test 4 Section 3 audio script. The full script would be transcribed here.</p>
+        `,
+        section4: `
+            <p><strong>Lecturer:</strong> Good morning. Today's lecture is about a very important coastal ecosystem: mangrove forests. And we'll be looking at a specific case study, the Mangrove Regeneration Project...</p>
+            <p>...[Script continues]... This is placeholder text for the Test 4 Section 4 audio script. The full script would be transcribed here.</p>
+        `
+    };
+
+    // Answer key for Test 4, from the PDF.
+    const answers = {
+        // Listening Answers
+        q1: "database", q2: "rock", q3: "month", q4: "45", q5: "750", q6: "studio", q7: "legal", q8: "recording", q9: "KIPPAX", q10: "talent",
+        q11: "A", q12: "B", q13: "C", q14: "B", q15: "G", q16: "A", q17: "C", q18: "H", q19: "D", q20: "B",
+        q21: "A", q22: "B", q23: "A", q24: "A", q25: "B", q26: "C", q27: "D", q28: "B", q29: "A", q30: "C",
+        q31: "flooding", q32: "firewood", q33: "fertilizer", q34: "trash", q35: "sand", q36: "grey/gray", q37: "hot house", q38: "rain", q39: "rabbit", q40: "storm",
+        
+        // Reading Answers
+        q41: "true", q42: "true", q43: "not given", q44: "not given", q45: "false",
+        q46: "surface", q47: "weight loss", q48: "name", q49: "container", q50: "behavior", q51: "focus groups", q52: "(simple) surveys", q53: "instincts",
+        q54: "F", q55: "C", q56: "B", q57: "D", q58: "E", q59: "G",
+        "q60_61": "A/D", // Multiple selection answers are sorted and joined by '/'
+        q62: "Europe", q63: "Mississippi", q64: "London", q65: "soft engineers", q66: "Los Angeles",
+        q67: "yes", q68: "not given", q69: "no", q70: "yes", 
+        q71: "B", q72: "F", q73: "D", q74: "C", q75: "G",
+        q76: "A", q77: "B", q78: "D", q79: "B", q80: "D"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    // This logic is identical to test2.html, but it will use the new data objects above.
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            userAnswers: {},
+            currentTab: 'listening',
+            currentSection: 0,
+            answersChecked: {},
+            scriptVisible: false,
+
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            scriptSection: document.getElementById('script-section'),
+            scriptContent: document.getElementById('script-content'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            toggleScriptBtn: document.getElementById('toggle-script-btn'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                this.toggleScriptBtn.addEventListener('click', () => this.toggleScript());
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                    if (e.target.classList.contains('section-btn')) {
+                        this.switchSection(parseInt(e.target.dataset.sectionIndex, 10));
+                    }
+                });
+            },
+            
+            saveAnswer(e) {
+                const target = e.target;
+                if (target.id || target.name) {
+                    const id = target.id || target.name;
+                    if (target.type === 'radio') {
+                        if (target.checked) this.userAnswers[id] = target.value;
+                    } else if (target.type === 'checkbox') {
+                        // Store checkbox answers sorted and joined by '/'
+                        const checked = Array.from(document.querySelectorAll(`input[name="${id}"]:checked`)).map(cb => cb.value).sort().join('/');
+                        this.userAnswers[id] = checked;
+                    } else {
+                         this.userAnswers[id] = target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const multiInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        if (multiInputs.length > 0) {
+                            if (multiInputs[0].type === 'checkbox') {
+                                const values = value.split('/');
+                                multiInputs.forEach(input => {
+                                    input.checked = values.includes(input.value);
+                                });
+                            } else {
+                                multiInputs.forEach(radio => {
+                                    if (radio.value === value) radio.checked = true;
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+            
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                this.scriptVisible = false;
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+
+                this.toggleScriptBtn.style.display = (tabName === 'listening') ? 'block' : 'none';
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.scriptVisible = false;
+                 this.loadContent();
+            },
+
+            toggleScript() {
+                if (this.currentTab !== 'listening') return;
+                this.scriptVisible = !this.scriptVisible;
+                this.updatePaneVisibility();
+            },
+
+            updatePaneVisibility() {
+                if (this.currentTab === 'listening') {
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = this.scriptVisible ? 'flex' : 'none';
+                    this.questionsSection.style.display = this.scriptVisible ? 'none' : 'block';
+                    this.toggleScriptBtn.textContent = this.scriptVisible ? 'Hide Script' : 'Show Script';
+                    
+                    if (this.scriptVisible) {
+                        const scriptKey = `section${this.currentSection + 1}`;
+                        this.scriptContent.innerHTML = listeningScripts[scriptKey] || "<p class='text-gray-500'>Script not available.</p>";
+                    }
+
+                } else { // Reading
+                    this.leftPane.style.display = 'block';
+                    this.splitter.style.display = 'block';
+                    this.rightPane.style.display = 'block';
+                    this.scriptSection.style.display = 'none';
+                    this.questionsSection.style.display = 'block';
+                }
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                if (this.currentTab === 'listening') {
+                    this.leftPane.innerHTML = sectionData.instructions;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                } else { // reading
+                    this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                    this.questionsSection.innerHTML = sectionData.questions;
+                }
+                
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+
+                this.updatePaneVisibility();
+                this.addAudioListeners();
+                this.restoreAnswers();
+                this.addCheckButtons();
+                
+                // Re-apply checked styles if answers were already checked
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+
+            addAudioListeners() {
+                document.querySelectorAll('.play-audio-btn').forEach(btn => {
+                    const audioId = btn.dataset.audioId;
+                    const audioEl = document.getElementById(audioId);
+                    if (!audioEl) return;
+
+                    const timeDisplay = btn.nextElementSibling;
+                    const seeker = btn.parentElement.nextElementSibling;
+                    const playText = btn.querySelector('.play-text');
+
+                    const formatTime = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+                    btn.onclick = () => {
+                        if (audioEl.paused) audioEl.play();
+                        else audioEl.pause();
+                    };
+                    audioEl.onplay = () => playText.textContent = 'Pause';
+                    audioEl.onpause = () => playText.textContent = 'Play';
+                    audioEl.onloadedmetadata = () => {
+                        timeDisplay.textContent = `${formatTime(0)} / ${formatTime(audioEl.duration)}`;
+                    };
+                    audioEl.ontimeupdate = () => {
+                        timeDisplay.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`;
+                        seeker.value = audioEl.duration ? (audioEl.currentTime / audioEl.duration) * 100 : 0;
+                    };
+                    seeker.oninput = () => {
+                        if (audioEl.duration) {
+                            audioEl.currentTime = (seeker.value / 100) * audioEl.duration;
+                        }
+                    };
+                });
+            },
+
+            // Define the question blocks for Test 4
+            getExerciseTypes() {
+                const types = {
+                    listening: {
+                        0: [ { type: 'form_completion', startQ: 1, endQ: 10, title: 'Form Completion (Q1-10)' } ],
+                        1: [ { type: 'multiple_choice', startQ: 11, endQ: 14, title: 'Multiple Choice (Q11-14)' }, { type: 'map_labelling', startQ: 15, endQ: 20, title: 'Map Labelling (Q15-20)' } ],
+                        2: [ { type: 'multiple_choice', startQ: 21, endQ: 26, title: 'Multiple Choice (Q21-26)' }, { type: 'matching', startQ: 27, endQ: 30, title: 'Matching (Q27-30)' }],
+                        3: [ { type: 'notes_completion', startQ: 31, endQ: 40, title: 'Notes Completion (Q31-40)' } ]
+                    },
+                    reading: {
+                        0: [ { type: 'true_false_ng', startQ: 41, endQ: 45, title: 'TRUE/FALSE/NOT GIVEN (Q1-5)' }, { type: 'notes_completion', startQ: 46, endQ: 53, title: 'Notes Completion (Q6-13)' } ],
+                        1: [ { type: 'paragraph_matching', startQ: 54, endQ: 59, title: 'Paragraph Matching (Q14-19)' }, { type: 'multiple_selection', startQ: 60, endQ: 61, title: 'Multiple Selection (Q20-21)' }, { type: 'sentence_completion', startQ: 62, endQ: 66, title: 'Sentence Completion (Q22-26)' }],
+                        2: [ { type: 'yes_no_ng', startQ: 67, endQ: 70, title: 'YES/NO/NOT GIVEN (Q27-30)' }, { type: 'summary_completion', startQ: 71, endQ: 75, title: 'Summary Completion (Q31-35)' }, { type: 'multiple_choice', startQ: 76, endQ: 80, title: 'Multiple Choice (Q36-40)' } ]
+                    }
+                };
+                // Renumber reading questions to match PDF
+                if (this.currentTab === 'reading') {
+                    if (this.currentSection === 0) {
+                         types.reading[0][0].title = 'TRUE/FALSE/NOT GIVEN (Q1-5)';
+                         types.reading[0][1].title = 'Notes Completion (Q6-13)';
+                         types.reading[0][0].startQ = 1; types.reading[0][0].endQ = 5;
+                         types.reading[0][1].startQ = 6; types.reading[0][1].endQ = 13;
+                    } else if (this.currentSection === 1) {
+                        types.reading[1][0].title = 'Paragraph Matching (Q14-19)';
+                        types.reading[1][1].title = 'Multiple Selection (Q20-21)';
+                        types.reading[1][2].title = 'Sentence Completion (Q22-26)';
+                        types.reading[1][0].startQ = 14; types.reading[1][0].endQ = 19;
+                        types.reading[1][1].startQ = 20; types.reading[1][1].endQ = 21;
+                        types.reading[1][2].startQ = 22; types.reading[1][2].endQ = 26;
+                    } else if (this.currentSection === 2) {
+                         types.reading[2][0].title = 'YES/NO/NOT GIVEN (Q27-30)';
+                         types.reading[2][1].title = 'Summary Completion (Q31-35)';
+                         types.reading[2][2].title = 'Multiple Choice (Q36-40)';
+                         types.reading[2][0].startQ = 27; types.reading[2][0].endQ = 30;
+                         types.reading[2][1].startQ = 31; types.reading[2][1].endQ = 35;
+                         types.reading[2][2].startQ = 36; types.reading[2][2].endQ = 40;
+                    }
+                }
+                
+                return types[this.currentTab][this.currentSection] || [];
+            },
+            
+            // Helper to get correct qId for reading questions
+            getQId(index) {
+                if (this.currentTab === 'listening') return `q${index}`;
+                
+                // Remap reading question numbers
+                if (this.currentTab === 'reading') {
+                    if (this.currentSection === 0) { // Passage 1: Q1-13
+                        if (index >= 1 && index <= 5) return `q${index + 40}`; // 1-5 -> q41-q45
+                        if (index >= 6 && index <= 13) return `q${index + 40}`; // 6-13 -> q46-q53
+                    } else if (this.currentSection === 1) { // Passage 2: Q14-26
+                        if (index >= 14 && index <= 19) return `q${index + 40}`; // 14-19 -> q54-q59
+                        if (index >= 20 && index <= 21) return 'q60_61'; // 20-21 -> q60_61
+                        if (index >= 22 && index <= 26) return `q${index + 40}`; // 22-26 -> q62-q66
+                    } else if (this.currentSection === 2) { // Passage 3: Q27-40
+                        if (index >= 27 && index <= 30) return `q${index + 40}`; // 27-30 -> q67-q70
+                        if (index >= 31 && index <= 35) return `q${index + 40}`; // 31-35 -> q71-q75
+                        if (index >= 36 && index <= 40) return `q${index + 40}`; // 36-40 -> q76-q80
+                    }
+                }
+                return `q${index}`; // fallback
+            },
+            
+            getAnswerKey(qId) {
+                 // Handle reading questions q1-q40 using their mapped IDs
+                 if (this.currentTab === 'reading') {
+                     if(qId === 'q1') return answers['q41'];
+                     if(qId === 'q2') return answers['q42'];
+                     if(qId === 'q3') return answers['q43'];
+                     if(qId === 'q4') return answers['q44'];
+                     if(qId === 'q5') return answers['q45'];
+                     if(qId === 'q6') return answers['q46'];
+                     if(qId === 'q7') return answers['q47'];
+                     if(qId === 'q8') return answers['q48'];
+                     if(qId === 'q9') return answers['q49'];
+                     if(qId === 'q10') return answers['q50'];
+                     if(qId === 'q11') return answers['q51'];
+                     if(qId === 'q12') return answers['q52'];
+                     if(qId === 'q13') return answers['q53'];
+                     if(qId === 'q14') return answers['q54'];
+                     if(qId === 'q15') return answers['q55'];
+                     if(qId === 'q16') return answers['q56'];
+                     if(qId === 'q17') return answers['q57'];
+                     if(qId === 'q18') return answers['q58'];
+                     if(qId === 'q19') return answers['q59'];
+                     if(qId === 'q20_21') return answers['q60_61'];
+                     if(qId === 'q22') return answers['q62'];
+                     if(qId === 'q23') return answers['q63'];
+                     if(qId === 'q24') return answers['q64'];
+                     if(qId === 'q25') return answers['q65'];
+                     if(qId === 'q26') return answers['q66'];
+                     if(qId === 'q27') return answers['q67'];
+                     if(qId === 'q28') return answers['q68'];
+                     if(qId === 'q29') return answers['q69'];
+                     if(qId === 'q30') return answers['q70'];
+                     if(qId === 'q31') return answers['q71'];
+                     if(qId === 'q32') return answers['q72'];
+                     if(qId === 'q33') return answers['q73'];
+                     if(qId === 'q34') return answers['q74'];
+                     if(qId === 'q35') return answers['q75'];
+                     if(qId === 'q36') return answers['q76'];
+                     if(qId === 'q37') return answers['q77'];
+                     if(qId === 'q38') return answers['q78'];
+                     if(qId === 'q39') return answers['q79'];
+                     if(qId === 'q40') return answers['q80'];
+                 }
+                 return answers[qId];
+            },
+
+            addCheckButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getExerciseTypes();
+                const container = this.questionsSection;
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `<p class="font-semibold mb-2">${exercise.title}</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">${buttonText}</button>`;
+
+                    const qId = this.getQId(exercise.startQ);
+                    const firstQuestionInput = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]`);
+                    const questionBlock = firstQuestionInput ? firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6, .space-y-2') : null;
+                    
+                    if (questionBlock) {
+                        questionBlock.appendChild(buttonContainer);
+                    } else {
+                        // Fallback for blocks not easily found
+                        container.appendChild(buttonContainer);
+                    }
+                });
+            },
+            
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent(); // Reload to clear styles
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+
+                for (let i = startQ; i <= endQ; i++) {
+                    let qId = this.getQId(i);
+                    let answerKey = this.getAnswerKey(qId) || "";
+
+                    // Special handling for checkbox groups
+                    if (qId === 'q27_28' || qId === 'q29_30' || qId === 'q60_61') {
+                        const userAnswer = (this.userAnswers[qId] || '').toLowerCase();
+                        const correctAnswer = answerKey.toLowerCase().split('/');
+                        const correctAnswerSorted = answerKey.toLowerCase().split('/').sort().join('/');
+                        
+                        document.querySelectorAll(`input[name="${qId}"]`).forEach(input => {
+                            const label = input.closest('label');
+                            if (input.checked) {
+                                if (correctAnswer.includes(input.value.toLowerCase())) {
+                                    label.classList.add('correct-answer');
+                                } else {
+                                    label.classList.add('incorrect-answer');
+                                }
+                            } else if (correctAnswer.includes(input.value.toLowerCase())) {
+                                     // Show missed correct answers
+                                     label.style.border = '2px solid #fbbf24'; // amber-400
+                                     label.style.borderRadius = '4px';
+                            }
+                        });
+                        
+                        // Handle the case where 'i' is the *last* number in the checkbox range
+                        if (i === endQ) continue;
+                    }
+
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+                    
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const isCorrect = answerKey.toLowerCase().split('/').some(ans => ans.trim() === userAnswer);
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+                    const elementToStyle = inputElement ? (inputElement.type === 'radio' ? inputElement.closest('label') : inputElement) : inputs[0];
+
+                    if (isCorrect) {
+                        elementToStyle.classList.add('correct-answer');
+                        if(elementToStyle.type === 'text') elementToStyle.style.backgroundColor = '#dcfce7'; // green-100
+                    } else {
+                        elementToStyle.classList.add('incorrect-answer');
+                         if(elementToStyle.type === 'text') {
+                             elementToStyle.value = ''; // Clear wrong answer
+                             elementToStyle.placeholder = `Correct: ${answerKey.split('/')[0]}`; // Show first correct option
+                         }
+                    }
+                    
+                     // If it was a radio and wrong, highlight the correct one
+                     if (inputs[0] && inputs[0].type === 'radio' && !isCorrect) {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answerKey}"]`);
+                         if(correctRadio) correctRadio.closest('label').classList.add('correct-answer');
+                    }
+                }
+
+                // Update button text after checking
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = this.splitter.parentElement.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        this.splitter.parentElement.style.gridTemplateColumns = `${newLeftWidth}px 5px 1fr`;
+                    }
+                });
+                document.addEventListener('mouseup', () => isDragging = false);
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                         // Only show tooltip if selection is within the panes
+                         if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) { console.warn("Highlighting partial nodes failed, which is expected.", ex); }
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
