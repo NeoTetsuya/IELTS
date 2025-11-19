@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Cambridge 17 Test 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .explanation-box:hover {
+            background-color: #dbeafe !important;
+            transform: scale(1.02);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Cambridge 17 Test 4</h1>
+        <div class="flex items-center space-x-4">
+            <div class="text-lg font-semibold text-gray-600">IELTS Academic Reading</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+
+<script>
+    // --- DATA ---
+    const testData = {
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Bats to the rescue</h3>
+                        <p><em>How Madagascar’s bats are helping to save the rainforest</em></p>
+                        <p>There are few places in the world where relations between agriculture and conservation are more strained. Madagascar’s forests are being converted to agricultural land at a rate of one percent every year. Much of this destruction is fuelled by the cultivation of the country’s main staple crop: rice. And a key reason for this destruction is that insect pests are destroying vast quantities of what is grown by local subsistence farmers, leading them to clear forest to create new paddy fields. The result is devastating habitat and biodiversity loss on the island, but not all species are suffering. In fact, some of the island’s insectivorous bats are currently thriving and this has important implications for farmers and conservationists alike.</p>
+                        <p>Enter University of Cambridge zoologist Ricardo Rocha. He’s passionate about conservation, and bats. More specifically, he’s interested in how bats are responding to human activity and deforestation in particular. Rocha’s new study shows that several species of bats are giving Madagascar’s rice farmers a vital pest control service by feasting on plagues of insects. And this, he believes, can ease the financial pressure on farmers to turn forest into fields.</p>
+                        <p>Bats comprise roughly one-fifth of all mammal species in Madagascar and thirty-six recorded bat species are native to the island, making it one of the most important regions for conservation of this animal group anywhere in the world.</p>
+                        <p>Co-leading an international team of scientists, Rocha found that several species of indigenous bats are taking advantage of habitat modification to hunt insects swarming above the country’s rice fields. They include the Malagasy mouse-eared bat, Major’s long-fingered bat, the Malagasy white-bellied free-tailed bat and Peters’ wrinkle-lipped bat.</p>
+                        <p>‘These winner species are providing a valuable free service to Madagascar as biological pest suppressors,’ says Rocha. ‘We found that six species of bat are preying on rice pests, including the paddy swarming caterpillar and grass webworm. The damage which these insects cause puts the island’s farmers under huge financial pressure and that encourages deforestation.’</p>
+                        <p>The study, now published in the journal <em>Agriculture, Ecosystems and Environment</em>, set out to investigate the feeding activity of insectivorous bats in the farmland bordering the Ranomafana National Park in the southeast of the country.</p>
+                        <p>Rocha and his team used state-of-the-art ultrasonic recorders to record over a thousand bat ‘feeling buzzes’ (echolocation sequences used by bats to target their prey) at 54 sites, in order to identify the favourite feeding spots of the bats. The next used DNA barcoding techniques to analyse droppings collected from bats at the different sites.</p>
+                        <p>The recordings revealed that bat activity over rice fields was much higher than it was in continuous forest – seven times higher over rice fields which were on flat ground, and sixteen times higher over fields on the sides of hills – leaving no doubt that the animals are preferentially foraging in these man-made ecosystems. The researchers suggest that the bats favour these fields because lack of water and nutrient run-off make these crops more susceptible to insect pest infestations. DNA analysis showed that all six species of bat had fed on economically important insect pests. While the findings indicated that rice farming benefits most from the bats, the scientists also found indications that the bats were consuming pests of other crops, including the black twig borer (which infests coffee plants), the sugarcane cicada, the macadamia nut-borer, and the sober tabby (a pest of citrus fruits).</p>
+                        <p>‘The effectiveness of bats as pest controllers has already been proven in the USA and Catalonia,’ said co-author James Kemp, from the University of Lisbon. ‘But our study is the first to show this happening in Madagascar, where the stakes for both farmers and conservationists are so high.’</p>
+                        <p>Local people may have a further reason to be grateful to their bats. While the animal is often associated with spreading disease, Rocha and his team found evidence that Malagasy bats feed not just on crop pests but also on mosquitoes – carriers of malaria, Rift Valley fever virus and elephantiasis – as well as blackflies, which spread river blindness.</p>
+                        <p>Rocha points out that the relationship is complicated. When food is scarce, bats become a crucial source of protein for local people. Even the children will hunt them. And as well as roosting in trees, the bats sometimes roost in buildings, but are not welcomed there because they make them unclean. At the same time, however, they are associated with sacred caves and the ancestors, so they can be viewed as beings between worlds, which makes them very significant in the culture of the people. And one potential problem is that while these bats are benefiting from farming, at the same time deforestation is reducing the places where they can roost, which could have long-term effects on their numbers. Rocha says, ‘With the right help, we hope that farmers can promote this mutually beneficial relationship by installing bat houses.’</p>
+                        <p>Rocha and his colleagues believe that maximising bat populations can help to boost crop yields and promote sustainable livelihoods. The team is now calling for further research to quantify this contribution. ‘I’m very optimistic,’ says Rocha. ‘If we give nature a hand, we can speed up the process of regeneration.’</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-6</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>1</strong> Many Madagascan forests are being destroyed by attacks from insects. <input type="text" id="q1" class="w-32"></p>
+                           <p><strong>2</strong> Loss of habitat has badly affected insectivorous bats in Madagascar. <input type="text" id="q2" class="w-32"></p>
+                           <p><strong>3</strong> Ricardo Rocha has carried out studies of bats in different parts of the world. <input type="text" id="q3" class="w-32"></p>
+                           <p><strong>4</strong> Habitat modification has resulted in indigenous bats in Madagascar becoming useful to farmers. <input type="text" id="q4" class="w-32"></p>
+                           <p><strong>5</strong> The Malagasy mouse-eared bat is more common than other indigenous bat species in Madagascar. <input type="text" id="q5" class="w-32"></p>
+                           <p><strong>6</strong> Bats may feed on paddy swarming caterpillars and grass webworms. <input type="text" id="q6" class="w-32"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 7-13</h4>
+                        <p class="mb-4">Complete the table below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="p-4 border rounded-lg bg-white mb-6">
+                            <table class="w-full border-collapse border">
+                                <thead>
+                                    <tr><th colspan="2" class="p-2 border bg-gray-100 text-left">The study carried out by Rocha’s team</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="p-2 border font-bold align-top">Aim</td><td class="p-2 border">to investigate the feeding habits of bats in farmland near the Ranomafana National Park</td></tr>
+                                    <tr><td class="p-2 border font-bold align-top">Method</td><td class="p-2 border"><ul class="list-disc list-inside"><li>ultrasonic recording to identify favourite feeding spots</li><li>DNA analysis of bat <strong>7</strong> <input type="text" id="q7" class="w-24"></li></ul></td></tr>
+                                    <tr><td class="p-2 border font-bold align-top">Findings</td><td class="p-2 border"><p>the bats</p><ul class="list-disc list-inside"><li>were most active in rice fields located on hills</li><li>ate pests of rice, <strong>8</strong> <input type="text" id="q8" class="w-24">, sugarcane, nuts and fruit</li><li>prevent the spread of disease by eating <strong>9</strong> <input type="text" id="q9" class="w-24"> and blackflies</li></ul><p>local attitudes to bats are mixed:</p><ul class="list-disc list-inside"><li>they provide food rich in <strong>10</strong> <input type="text" id="q10" class="w-24"></li><li>the buildings where they roost become <strong>11</strong> <input type="text" id="q11" class="w-24"></li><li>they play an important role in local <strong>12</strong> <input type="text" id="q12" class="w-24"></li></ul></td></tr>
+                                    <tr><td class="p-2 border font-bold align-top">Recommendation</td><td class="p-2 border">farmers should provide special <strong>13</strong> <input type="text" id="q13" class="w-24"> to support the bat population</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Does education fuel economic growth?</h3>
+                        <p><strong>A</strong> Over the last decade, a huge database about the lives of southwest German villagers between 1600 and 1900 has been compiled by a team led by Professor Sheilagh Ogilvie at Cambridge University’s Faculty of Economics. It includes court records, guild ledgers, parish registers, village censuses, tax lists and – the most recent addition – 9,000 handwritten inventories listing over a million personal possessions belonging to ordinary women and men across three centuries. Ogilvie, who discovered the inventories in the archives of two German communities 30 years ago, believes they may hold the answer to a conundrum that has long puzzled economists: the lack of evidence for a causal link between education and a country’s economic growth.</p>
+                        <p><strong>B</strong> As Ogilvie explains, ‘Education helps us to work more productively, invent better technology, and earn more ... surely it must be critical for economic growth? But, if you look back through history, there’s no evidence that having a high literacy rate made a country industrialise earlier.’ Between 1600 and 1900, England had only mediocre literacy rates by European standards, yet its economy grew fast and it was the first country to industrialise. During this period, Germany and Scandinavia had excellent literacy rates, but their economies grew slowly and they industrialised late. ‘Modern cross-country analyses have also struggled to find evidence that education causes economic growth, even though there is plenty of evidence that growth increases education,’ she adds.</p>
+                        <p><strong>C</strong> In the handwritten inventories that Ogilvie is analysing are the belongings of women and men at marriage, remarriage and death. From badger skins to Bibles, sewing machines to scarlet bodices – the villagers’ entire worldly goods are included. Inventories of agricultural equipment and craft tools reveal economic activities; ownership of books and education-related objects like pens and slates suggests how people learned. In addition, the tax lists included in the database record the value of farms, workshops, assets and debts; signatures and people’s estimates of their age indicate literacy and numeracy levels; and court records reveal obstacles (such as the activities of the guilds*) that stifled industry.</p>
+                        <p>Previous studies usually had just one way of linking education with economic growth – the presence of schools and printing presses, perhaps, or school enrolment, or the ability to sign names. According to Ogilvie, the database provides multiple indicators for the same individuals, making it possible to analyse links between literacy, numeracy, wealth, and industriousness, for individual women and men over the long term.</p>
+                        <p><strong>D</strong> Ogilvie and her team have been building the vast database of material possessions on top of their full demographic reconstruction of the people who lived in these two German communities. ‘We can follow the same people – and their descendants – across 300 years of educational and economic change,’ she says. Individual lives have unfolded before their eyes. Stories like that of the 24-year-olds Ana Regina and Magdalena Riethmüllerin, who were chastised in 1707 for reading books in church instead of listening to the sermon. ‘This tells us they were continuing to develop their reading skills at least a decade after leaving school,’ explains Ogilvie. The database also reveals the case of Juliana Schweickherdt, a 50-year-old spinster living in the small Black Forest community of Wildberg, who was reprimanded in 1752 by the local weavers’ guild for ‘weaving cloth and combing wool, counter to the guide ordinance’. When Juliana continued taking jobs reserved for male guild members, she was summoned before the guild court and told to pay a fine equivalent to one third of a servant’s annual wage. It was a small act of defiance by today’s standards, but it reflects a time when laws in Germany and elsewhere regulated people’s access to labour markets. The dominance of guilds not only prevented people from using their skills, but also held back even the simplest industrial innovation.</p>
+                        <p><strong>E</strong> The data-gathering phase of the project has been completed and now, according to Ogilvie, it is time ‘to ask the big questions’. One way to look at whether education causes economic growth is to ‘hold wealth constant’. This involves following the lives of different people with the same level of wealth over a period of time. If wealth is constant, it is possible to discover whether education was, for example, linked to the cultivation of new crops, or to the adoption of industrial innovations like sewing machines. The team will also ask what aspect of education helped people engage more with productive and innovative activities. Was it, for instance, literacy, numeracy, book ownership, years of schooling? Was there a threshold level – a tipping point – that needed to be reached to affect economic performance?</p>
+                        <p><strong>F</strong> Ogilvie hopes to start finding answers to these questions over the next few years. One thing is already clear, she says: the relationship between education and economic growth is far from straightforward. ‘German-speaking central Europe is an excellent laboratory for testing theories of economic growth,’ she explains. Between 1600 and 1900, literacy rates and book ownership were high and yet the region remained poor. It was also the case that local guilds and merchant associations were extremely powerful and legislated against anything that undermined their monopolies. In villages throughout the region, guilds blocked labour migration and resisted changes that might reduce their influence.</p>
+                        <p>‘Early findings suggest that the potential benefits of education for the economy can be held back by other barriers, and this has implications for today,’ says Ogilvie. ‘Huge amounts are spent improving education in developing countries, but this spending can fail to deliver economic growth if restrictions block people – especially women and the poor – from using their education in economically productive ways. If economic institutions are poorly set up, for instance, education can’t lead to growth.’</p>
+                        <p><small>* guild: an association of artisans or merchants which oversees the practice of their craft or trade in a particular area</small></p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-18</h4>
+                        <p class="mb-4">Reading Passage 2 has six paragraphs, A-F. Which paragraph contains the following information?</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> an explanation of the need for research to focus on individuals with a fairly consistent income <input type="text" id="q14" class="w-16"></p>
+                            <p><strong>15</strong> examples of the sources the database has been compiled from <input type="text" id="q15" class="w-16"></p>
+                            <p><strong>16</strong> an account of one individual’s refusal to obey an order <input type="text" id="q16" class="w-16"></p>
+                            <p><strong>17</strong> a reference to a region being particularly suited to research into the link between education and economic growth <input type="text" id="q17" class="w-16"></p>
+                            <p><strong>18</strong> examples of the items included in a list of personal possessions <input type="text" id="q18" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 19-22</h4>
+                        <p class="mb-4">Complete the summary below. Choose <strong>ONE WORD</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">Demographic reconstruction of two German communities</h5>
+                            <p>The database that Ogilvie and her team has compiled sheds light on the lives of a range of individuals, as well as those of their <strong>19</strong> <input type="text" id="q19" class="w-24">, over a 300-year period. For example, Ana Regina and Magdalena Riethmüllerin were reprimanded for reading while they should have been paying attention to a <strong>20</strong> <input type="text" id="q20" class="w-24">. There was also Juliana Schweickherdt, who came to the notice of the weavers’ guild in the year 1752 for breaking guild rules. As a punishment, she was later given a <strong>21</strong> <input type="text" id="q21" class="w-24">. Cases like this illustrate how the guilds could prevent <strong>22</strong> <input type="text" id="q22" class="w-24"> and stop skilled people from working.</p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 23 and 24</h4>
+                        <p class="mb-4">Choose <strong>TWO</strong> letters, A-E.</p>
+                        <p class="mb-4">Which <strong>TWO</strong> of the following statements does the writer make about literacy rates in Section B?</p>
+                        <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q23_24" value="A"> A Very little research has been done into the link between high literacy rates and improved earnings.</label>
+                            <label class="block"><input type="checkbox" name="q23_24" value="B"> B Literacy rates in Germany between 1600 and 1900 were very good.</label>
+                            <label class="block"><input type="checkbox" name="q23_24" value="C"> C There is strong evidence that high literacy rates in the modern world result in economic growth.</label>
+                            <label class="block"><input type="checkbox" name="q23_24" value="D"> D England is a good example of how high literacy rates helped a country industrialise.</label>
+                            <label class="block"><input type="checkbox" name="q23_24" value="E"> E Economic growth can help to improve literacy rates.</label>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 25 and 26</h4>
+                        <p class="mb-4">Choose <strong>TWO</strong> letters, A-E.</p>
+                        <p class="mb-4">Which <strong>TWO</strong> of the following statements does the writer make in Section F about guilds in German-speaking Central Europe between 1600 and 1900?</p>
+                         <div class="space-y-2 p-4 border rounded-lg bg-white mb-6">
+                            <label class="block"><input type="checkbox" name="q25_26" value="A"> A They helped young people to learn a skill.</label>
+                            <label class="block"><input type="checkbox" name="q25_26" value="B"> B They were opposed to people moving to an area for work.</label>
+                            <label class="block"><input type="checkbox" name="q25_26" value="C"> C They kept better records than guilds in other parts of the world.</label>
+                            <label class="block"><input type="checkbox" name="q25_26" value="D"> D They opposed practices that threatened their control over a trade.</label>
+                            <label class="block"><input type="checkbox" name="q25_26" value="E"> E They predominantly consisted of wealthy merchants.</label>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Timur Gareyev – blindfold chess champion</h3>
+                        <p><strong>A</strong> Next month, a chess player named Timur Gareyev will take on nearly 50 opponents at once. But that is not the hard part. While his challengers will play the games as normal, Gareyev himself will be blindfolded. Even by world record standards, it sets a high bar for human performance. The 28-year-old already stands out in the rarefied world of blindfold chess. He has a fondness for bright clothes and unusual hairstyles, and he gets his kicks from the adventure sport of BASE jumping. He has already proved himself a strong chess player, too. In a 10-hour chess marathon in 2013, Gareyev played 33 games in his head simultaneously. He won 29 and lost none. The skill has become his brand: he calls himself the Blindfold King.</p>
+                        <p><strong>B</strong> But Gareyev’s prowess has drawn interest from beyond the chess-playing community. In the hope of understanding how he and others like him can perform such mental feats, researchers at the University of California in Los Angeles (UCLA) called him in for tests. They now have their first results. ‘The ability to play a game of chess with your eyes closed is not a far reach for most accomplished player,’ said Jesse Rissman, who runs a memory lab at UCLA. ‘But the thing that’s so remarkable about Timur and a few other individuals is the number of games they can keep active at once. To me it is simply astonishing.’</p>
+                        <p><strong>C</strong> Gareyev learned to play chess in his native Uzbekistan when he was six years old. Tutored by his grandfather, he entered his first tournament aged eight and soon became obsessed with competitions. At 16, he was crowned Asia’s youngest ever chess grandmaster. He moved to the US soon after, and as a student helped his university win its first national chess championship. In 2013, Gareyev was ranked the third best chess player in the US.</p>
+                        <p><strong>D</strong> To the uninitiated, blindfold chess seems to call for superhuman skill. But displays of the feat go back centuries. The first recorded game in Europe was played in 13th-century Florence. In 1947, the Argentinian grandmaster Miguel Najdorf played 45 simultaneous games in his mind, winning 39 in the 24-hour session.</p>
+                        <p><strong>E</strong> Accomplished players can develop the skill of playing blind even without realising it. The nature of the game is to run through possible moves in the mind to see how they play out. From this, regular players develop a memory for the patterns the pieces make, the defences and attacks. ‘You recreate it in your mind,’ said Gareyev. ‘A lot of players are capable of doing what I’m doing.’ The real mental challenge comes from playing multiple games at once in the head. Not only must the positions of each piece on every board be memorised, they must be recalled faithfully when needed, updated with each player’s moves, and then reliably stored again, so the brain can move on to the next board. First moves can be tough to remember because they are fairly uninteresting. But the ends of games are taxing too, as exhaustion sets in. When Gareyev is tired, his recall can get patchy. He sometimes makes moves based on only a fragmented memory of the pieces’ positions.</p>
+                        <p><strong>F</strong> The scientists first had Gareyev perform some standard memory tests. These assessed his ability to hold numbers, pictures and words in mind. One classic test measures how many numbers a person can repeat, both forwards and backwards, soon after hearing them. Most people manage about seven. ‘He was not exceptional on any of these standard tests,’ said Rissman. ‘We didn’t find anything other than playing chess that he seems to be supremely gifted at.’ But next came the brain scans. With Gareyev lying down in the machine, Rissman looked at how well connected the various regions of the chess player’s brain were. Though the results are tentative and as yet unpublished, the scans found much greater than average communication between parts of Gareyev’s brain that make up what is called the frontoparietal control network. Of 63 people scanned alongside the chess player, only one or two scored more highly on the measure. ‘You use this network in almost any complex task. It helps you to allocate attention, keep rules in mind, and work out whether you should be responding or not,’ said Rissman.</p>
+                        <p><strong>G</strong> It was not the only hint of something special in Gareyev’s brain. The scans also suggest that Gareyev’s visual network is more highly connected to other brain parts than usual. Initial results suggest that the areas of his brain that process visual images – such as chess boards – may have stronger links to other brain regions, and so be more powerful than normal. While the analyses are not finalised yet, they may hold the first clues to Gareyev’s extraordinary ability.</p>
+                        <p><strong>H</strong> For the world record attempt, Gareyev hopes to play 47 blindfold games at once in about 16 hours. He will need to win 80% to claim the title. ‘I don’t worry too much about the winning percentage, that’s never been an issue for me,’ he said. ‘The most important part of blindfold chess for me is that I have found the one thing that I can fully dedicate myself to. I miss having an obsession.’</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-32</h4>
+                        <p class="mb-4">Reading Passage 3 has eight paragraphs, A-H. Which paragraph contains the following information?</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>27</strong> a reference to earlier examples of blindfold chess <input type="text" id="q27" class="w-16"></p>
+                           <p><strong>28</strong> an outline of what blindfold chess involves <input type="text" id="q28" class="w-16"></p>
+                           <p><strong>29</strong> a claim that Gareyev’s skill is limited to chess <input type="text" id="q29" class="w-16"></p>
+                           <p><strong>30</strong> why Gareyev’s skill is of interest to scientists <input type="text" id="q30" class="w-16"></p>
+                           <p><strong>31</strong> an outline of Gareyev’s priorities <input type="text" id="q31" class="w-16"></p>
+                           <p><strong>32</strong> a reason why the last part of a game may be difficult <input type="text" id="q32" class="w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 33-36</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 3? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>33</strong> In the forthcoming games, all the participants will be blindfolded. <input type="text" id="q33" class="w-32"></p>
+                           <p><strong>34</strong> Gareyev has won competitions in BASE jumping. <input type="text" id="q34" class="w-32"></p>
+                           <p><strong>35</strong> UCLA is the first university to carry out research into blindfold chess players. <input type="text" id="q35" class="w-32"></p>
+                           <p><strong>36</strong> Good chess players are likely to be able to play blindfold chess. <input type="text" id="q36" class="w-32"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 37-40</h4>
+                        <p class="mb-4">Complete the summary below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <h5 class="font-bold">How the research was carried out</h5>
+                            <p>The researchers started by testing Gareyev’s <strong>37</strong> <input type="text" id="q37" class="w-24">; for example, he was required to recall a string of <strong>38</strong> <input type="text" id="q38" class="w-24"> in order and also in reverse order. Although his performance was normal, scans showed an unusual amount of <strong>39</strong> <input type="text" id="q39" class="w-24"> within the areas of Gareyev’s brain that are concerned with directing attention. In addition, the scans raised the possibility of unusual strength in the parts of his brain that deal with <strong>40</strong> <input type="text" id="q40" class="w-24"> input.</p>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        // Reading Passage 1
+        q1: "false", q2: "false", q3: "not given", q4: "true", q5: "not given", q6: "true",
+        q7: "droppings", q8: "coffee", q9: "mosquitoes", q10: "protein", q11: "unclean",
+        q12: "culture", q13: "houses",
+        // Reading Passage 2
+        q14: "E", q15: "A", q16: "D", q17: "F", q18: "C",
+        q19: "descendants", q20: "sermon", q21: "fine", q22: "innovation",
+        "q23_24": "B/E", "q25_26": "B/D",
+        // Reading Passage 3
+        q27: "D", q28: "E", q29: "F", q30: "B", q31: "H", q32: "E",
+        q33: "false", q34: "not given", q35: "not given", q36: "true",
+        q37: "memory", q38: "numbers", q39: "communication", q40: "visual"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentTab: 'reading',
+            currentSection: 0,
+            answersChecked: {},
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                // Use event delegation for dynamically added elements
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                });
+            },
+            
+            saveAnswer(e) {
+                const target = e.target;
+                if (target.id || target.name) {
+                    const id = target.id || target.name;
+                    if (target.type === 'radio') {
+                        if (target.checked) this.userAnswers[id] = target.value;
+                    } else if (target.type === 'checkbox') {
+                        const checked = Array.from(document.querySelectorAll(`input[name="${id}"]:checked`)).map(cb => cb.value).sort().join('/');
+                        this.userAnswers[id] = checked;
+                    } else {
+                         this.userAnswers[id] = target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const multiInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        if (multiInputs.length > 0) {
+                            if (multiInputs[0].type === 'checkbox') {
+                                const values = value.split('/');
+                                multiInputs.forEach(input => {
+                                    input.checked = values.includes(input.value);
+                                });
+                            } else { // radio
+                                multiInputs.forEach(radio => {
+                                    if (radio.value === value) radio.checked = true;
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex, 10)));
+                });
+                
+                this.restoreAnswers();
+                this.addReadingExerciseButtons();
+
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+            
+            getReadingExerciseTypes() {
+                const exerciseTypes = {
+                    0: [ 
+                        { type: 'true_false', startQ: 1, endQ: 6, title: 'True/False/Not Given (Q1-6)' },
+                        { type: 'table_completion', startQ: 7, endQ: 13, title: 'Table Completion (Q7-13)' }
+                    ],
+                    1: [ 
+                        { type: 'paragraph_matching', startQ: 14, endQ: 18, title: 'Paragraph Matching (Q14-18)' },
+                        { type: 'summary_completion', startQ: 19, endQ: 22, title: 'Summary Completion (Q19-22)' },
+                        { type: 'multiple_selection', startQ: 23, endQ: 24, title: 'Multiple Selection (Q23-24)' },
+                        { type: 'multiple_selection_2', startQ: 25, endQ: 26, title: 'Multiple Selection (Q25-26)' }
+                    ],
+                    2: [ 
+                        { type: 'paragraph_matching_2', startQ: 27, endQ: 32, title: 'Paragraph Matching (Q27-32)' },
+                        { type: 'true_false_2', startQ: 33, endQ: 36, title: 'True/False/Not Given (Q33-36)' },
+                        { type: 'summary_completion_2', startQ: 37, endQ: 40, title: 'Summary Completion (Q37-40)' }
+                    ]
+                };
+                return exerciseTypes[this.currentSection] || [];
+            },
+
+            addReadingExerciseButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `
+                        <p class="font-semibold mb-2">${exercise.title}</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">
+                            ${buttonText}
+                        </button>
+                    `;
+
+                    const firstQuestionInput = document.getElementById(`q${exercise.startQ}`) || document.querySelector(`input[name="q${exercise.startQ}"]`)  || document.querySelector(`input[name="q${exercise.startQ}_${exercise.endQ}"]`);
+                    if (firstQuestionInput) {
+                        const questionBlock = firstQuestionInput.closest('.space-y-3, .space-y-4, .space-y-2, .mb-6');
+                        if (questionBlock) {
+                            questionBlock.appendChild(buttonContainer);
+                        } else {
+                            this.questionsSection.appendChild(buttonContainer);
+                        }
+                    } else {
+                         this.questionsSection.appendChild(buttonContainer);
+                    }
+                });
+            },
+            
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+
+                for (let i = startQ; i <= endQ; i++) {
+                    let qId = `q${i}`;
+                    // Handle checkbox groups
+                    if ((i >= 23 && i <= 24) || (i >= 25 && i <= 26)) {
+                        const group = (i >= 23 && i <= 24) ? '23_24' : '25_26';
+                        qId = `q${group}`;
+                        const userAnswer = this.userAnswers[qId] || '';
+                        const correctAnswers = answers[qId].toLowerCase().split('/');
+                        
+                        document.querySelectorAll(`input[name="${qId}"]`).forEach(input => {
+                            const label = input.closest('label');
+                            const isCorrectChoice = correctAnswers.includes(input.value.toLowerCase());
+                            if (input.checked) {
+                                if (isCorrectChoice) {
+                                    label.classList.add('correct-answer');
+                                } else {
+                                    label.classList.add('incorrect-answer');
+                                }
+                            } else if (isCorrectChoice) {
+                                label.style.border = '2px solid #fbbf24';
+                            }
+                        });
+                        if (i === 24 || i === 26) continue; // Process group only once
+                    }
+
+
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const correctAnswer = (answers[qId] || "").toLowerCase();
+                    const isCorrect = correctAnswer.split('/').some(ans => ans.trim() === userAnswer);
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+
+                    if (inputElement) {
+                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') : inputElement;
+                         if (isCorrect) {
+                            elementToStyle.classList.add('correct-answer');
+                            if(inputElement.type === 'text') inputElement.style.backgroundColor = '#dcfce7';
+                        } else {
+                            elementToStyle.classList.add('incorrect-answer');
+                             if(inputElement.type === 'text') {
+                                 inputElement.style.backgroundColor = '#fef2f2';
+                                 inputElement.placeholder = `Correct: ${answers[qId]}`;
+                             }
+                        }
+                    } else if (inputs[0] && inputs[0].type === 'text') {
+                        inputs[0].classList.add('incorrect-answer');
+                        inputs[0].style.backgroundColor = '#fef2f2';
+                        inputs[0].placeholder = `Correct: ${answers[qId]}`;
+                    }
+                    
+                     if (inputs[0] && inputs[0].type === 'radio' && !isCorrect) {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId]}"]`);
+                         if(correctRadio) correctRadio.closest('label').classList.add('correct-answer');
+                    }
+                }
+
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        const rect = range.getBoundingClientRect();
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) { console.warn(ex); }
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
