@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Cambridge 10 Test 3 (Enhanced)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        /* Vocabulary Styles */
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+        }
+        #vocab-modal {
+            animation: fadeInModal 0.3s ease-out;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+         @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Cambridge 10 Test 3</h1>
+        <div class="flex items-center space-x-4">
+            <div class="text-lg font-semibold text-gray-600">IELTS Academic Reading</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative transform transition-all" style="animation: zoomIn 0.3s ease-out;">
+        <button id="close-vocab-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 text-3xl leading-none">&times;</button>
+        <div class="flex items-center mb-4">
+            <h3 id="vocab-word" class="text-3xl font-bold text-blue-600 capitalize"></h3>
+        </div>
+        <div class="flex items-center mb-4">
+            <button id="play-audio-btn" class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white mr-3 transition-colors">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-600 text-lg"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 leading-relaxed"></p>
+    </div>
+</div>
+
+<script>
+    // --- DATA ---
+    const vocabulary = {
+        // Passage 1: Tourism
+        'traversing': { meaning: 'Traveling across or through.', phonetic: '/trəˈvɜːrsɪŋ/' },
+        'compelling': { meaning: 'Evoking interest, attention, or admiration in a powerfully irresistible way.', phonetic: '/kəmˈpɛlɪŋ/' },
+        'advent': { meaning: 'The arrival of a notable person, thing, or event.', phonetic: '/ˈædvent/' },
+        'entity': { meaning: 'A thing with distinct and independent existence.', phonetic: '/ˈɛntɪti/' },
+        'amorphous': { meaning: 'Without a clearly defined shape or form; vague.', phonetic: '/əˈmɔːrfəs/' },
+        'institutionalised': { meaning: 'Established as a norm or convention in an organization or culture.', phonetic: '/ˌɪnstɪˈtjuːʃənəlaɪzd/' },
+        'commodity': { meaning: 'A raw material or primary agricultural product that can be bought and sold.', phonetic: '/kəˈmɒdɪti/' },
+        'fragmentation': { meaning: 'The process or state of breaking or being broken into small or separate parts.', phonetic: '/ˌfræɡmɛnˈteɪʃən/' },
+        
+        // Passage 2: Autumn Leaves
+        'captivating': { meaning: 'Capable of attracting and holding interest; charming.', phonetic: '/ˈkæptɪveɪtɪŋ/' },
+        'chlorophyll': { meaning: 'A green pigment, responsible for the absorption of light to provide energy for photosynthesis.', phonetic: '/ˈklɒrəfɪl/' },
+        'conifers': { meaning: 'A tree that bears cones and evergreen needle-like or scale-like leaves.', phonetic: '/ˈkɒnɪfərz/' },
+        'redundant': { meaning: 'Not or no longer needed or useful.', phonetic: '/rɪˈdʌndənt/' },
+        'depleted': { meaning: 'Used up the supply or resources of.', phonetic: '/dɪˈpliːtɪd/' },
+        'unmasking': { meaning: 'Exposing the true character of or hidden truth about.', phonetic: '/ʌnˈmɑːskɪŋ/' },
+        'anthocyanins': { meaning: 'A blue, violet, or red flavonoid pigment found in plants.', phonetic: '/ˌænθəˈsaɪənɪnz/' },
+        'minted': { meaning: 'Produced or created (usually referring to money, but here metaphorically for chemicals).', phonetic: '/ˈmɪntɪd/' },
+        'scrambling': { meaning: 'Performing an action or achieving a result hurriedly, clumsily, or with difficulty.', phonetic: '/ˈskræmblɪŋ/' },
+        'plausible': { meaning: '(Of an argument or statement) seeming reasonable or probable.', phonetic: '/ˈplɔːzɪbl/' },
+        'paradoxical': { meaning: 'Seemingly absurd or self-contradictory.', phonetic: '/ˌpærəˈdɒksɪkəl/' },
+        'salvage': { meaning: 'Rescue (a wrecked or disabled ship or its cargo) from loss at sea; here, to save resources.', phonetic: '/ˈsælvɪdʒ/' },
+        'susceptible': { meaning: 'Likely or liable to be influenced or harmed by a particular thing.', phonetic: '/səˈsɛptɪbl/' },
+        
+        // Passage 3: The Lapita
+        'archipelago': { meaning: 'A group of islands.', phonetic: '/ˌɑːrkɪˈpɛləɡoʊ/' },
+        'derelict': { meaning: 'In a very poor condition as a result of disuse and neglect.', phonetic: '/ˈdɛrəlɪkt/' },
+        'pioneers': { meaning: 'A person who is among the first to explore or settle a new country or area.', phonetic: '/ˌpaɪəˈnɪərz/' },
+        'outliers': { meaning: 'A place or person situated away from the main body or system.', phonetic: '/ˈaʊtˌlaɪərz/' },
+        'urn': { meaning: 'A tall, rounded vase with a base, and often a stem, especially one used for storing the ashes of a cremated person.', phonetic: '/ɜːrn/' },
+        'rigging': { meaning: 'The system of ropes, cables, or chains employed to support a ship\'s masts.', phonetic: '/ˈrɪɡɪŋ/' },
+        'mariners': { meaning: 'A sailor.', phonetic: '/ˈmærɪnərz/' },
+        'prevailing': { meaning: 'Existing at a particular time; current; having most appeal or influence.', phonetic: '/prɪˈveɪlɪŋ/' },
+        'abundant': { meaning: 'Existing or available in large quantities; plentiful.', phonetic: '/əˈbʌndənt/' },
+        'presupposes': { meaning: 'Tacitly assume at the beginning of a line of argument or course of action that something is the case.', phonetic: '/ˌpriːsəˈpoʊzɪz/' }
+    };
+
+    const explanations = {
+        // Passage 1
+        q1: "Paragraph B describes the history of mass tourism, starting from the industrial revolution to the jet aircraft era.",
+        q2: "Paragraph C details the economic size (largest industry) and social importance of tourism.",
+        q3: "Paragraph D explains that the diversity and fragmentation of the industry hide its true economic impact.",
+        q4: "Paragraph E discusses how tourism is a major world export and source of income for many nations.",
+        q5: "Paragraph C states that the travel and tourism industry is the world's largest employer.",
+        q6: "The text mentions world GNP figures but does not give a specific percentage for Australia.",
+        q7: "The text mentions social impact and education, but does not explicitly link it to promoting recreation.",
+        q8: "Paragraph D states that the 'diversity and fragmentation' of the industry are the major problems.",
+        q9: "Paragraph D mentions visitor spending can be overlooked, but doesn't compare it directly to resident spending in a 'always greater' context.",
+        q10: "Paragraph E states it is 'not possible with any degree of certainty to provide precise, valid or reliable data'.",
+        q11: "Paragraph E: 'tourism is the major <strong>source of income</strong> in Bermuda, Greece...'",
+        q12: "Paragraph E: 'number one ranked <strong>employer</strong> in... Jamaica'.",
+        q13: "Paragraph E: 'similar difficulties arise when attempts are made to measure <strong>domestic tourism</strong>'.",
+
+        // Passage 2
+        q14: "Paragraph C mentions 'anthocyanins', the water-soluble pigments responsible for the red colour.",
+        q15: "Paragraph B explains that trees discard leaves to save resources ('precious resources') and avoid maintaining redundant leaves.",
+        q16: "Paragraph H provides clues like the side of the tree facing the sun being redder.",
+        q17: "Paragraph B describes chlorophyll as the molecule that captures sunlight and converts energy.",
+        q18: "Paragraph E discusses the theory that red leaves act as a warning ('advertisements') to insects of the tree's chemical defences.",
+        q19: "Paragraph H: 'leaves that are the reddest are those on the side of the tree which gets most <strong>sun</strong>'.",
+        q20: "Paragraph H: 'the red is brighter on the <strong>upper</strong> side of the leaf'.",
+        q21: "Paragraph H: 'best conditions... are <strong>dry</strong>, sunny days and cool nights'.",
+        q22: "Paragraph H: 'trees... usually get much redder the more <strong>north</strong> you travel'.",
+        q23: "Paragraph D mentions the freezing tolerance theory but states 'there are problems with each of these theories'.",
+        q24: "Paragraph F introduces the 'light screen' hypothesis which protects chlorophyll, seeming paradoxical since chlorophyll absorbs light.",
+        q25: "Paragraph I asks about other trees but does not state they are more likely to be damaged.",
+        q26: "Paragraph B explains the unmasking of yellow and orange colours ('how leaves turn orange and yellow').",
+
+        // Passage 3
+        q27: "Paragraph 1: 'digging in the grounds of a derelict <strong>plantation</strong>'.",
+        q28: "Paragraph 1: 'important <strong>archaeological discovery</strong>'.",
+        q29: "Paragraph 2: 'livestock' refers to <strong>animals</strong>.",
+        q30: "Paragraph 3: 'Lapita <strong>burial urn</strong>'.",
+        q31: "Paragraph 3: 'human remains' corresponds to <strong>bones</strong>.",
+        q32: "Paragraph 5 mentions that no canoes have been found and oral histories turn into myths, making accuracy difficult.",
+        q33: "Paragraph 6: 'sailed out of sight of land', distinguishing them from ancestors.",
+        q34: "Paragraph 7 describes the strategy of sailing against the wind to ensure a safe return ('turn about and catch a swift ride back').",
+        q35: "Paragraph 8: 'intervisible islands forming a backstop' provided a safety net/navigational aid.",
+        q36: "Paragraph 9: Anderson states 'there's no proof they could do any such thing' as sailing against the wind.",
+        q37: "Paragraph 10 suggests El Nino 'might have taken the Lapita on long unplanned voyages'.",
+        q38: "Paragraph 10 mentions the frequency of El Ninos but not that the Lapita could predict their duration.",
+        q39: "Paragraph 11: 'called it quits for reasons known only to them'.",
+        q40: "Paragraph 11 mentions they encountered islands in Fiji, but not that the *majority* settled there."
+    };
+
+    const testData = {
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The Context, Meaning and Scope of Tourism</h3>
+                        <p class="mb-4"><strong>A</strong> Travel has existed since the beginning of time, when primitive man set out, often <span class="vocab-word" data-word="traversing">traversing</span> great distances in search of game, which provided the food and clothing necessary for his survival. Throughout the course of history, people have travelled for purposes of trade, religious conviction, economic gain, war, migration and other equally <span class="vocab-word" data-word="compelling">compelling</span> motivations. In the Roman era, wealthy aristocrats and high government officials also travelled for pleasure. Seaside resorts located at Pompeii and Herculaneum afforded citizens the opportunity to escape to their vacation villas in order to avoid the summer heat of Rome. Travel, except during the Dark Ages, has continued to grow and, throughout recorded history, has played a vital role in the development of civilisations and their economies.</p>
+                        <p class="mb-4"><strong>B</strong> Tourism in the mass form as we know it today is a distinctly twentieth-century phenomenon. Historians suggest that the <span class="vocab-word" data-word="advent">advent</span> of mass tourism began in England during the industrial revolution with the rise of the middle class and the availability of relatively inexpensive transportation. The creation of the commercial airline industry following the Second World War and the subsequent development of the jet aircraft in the 1950s signalled the rapid growth and expansion of international travel. This growth led to the development of a major new industry: tourism. In turn, international tourism became the concern of a number of world governments since it not only provided new employment opportunities but also produced a means of earning foreign exchange.</p>
+                        <p class="mb-4"><strong>C</strong> Tourism today has grown significantly in both economic and social importance. In most industrialised countries over the past few years the fastest growth has been seen in the area of services. One of the largest segments of the service industry, although largely unrecognised as an <span class="vocab-word" data-word="entity">entity</span> in some of these countries, is travel and tourism. According to the World Travel and Tourism Council (1992), Travel and tourism is the largest industry in the world on virtually any economic measure including value-added capital investment, employment and tax contributions. In 1992 ‘the industry’s gross output was estimated to be $3.5 trillion, over 12 per cent of all consumer spending. The travel and tourism industry is the world’s largest employer the almost 130 million jobs, or almost 7 per cent of all employees. This industry is the world’s leading industrial contributor, producing over 6 per cent of the world’s national product and accounting for capital investment in excess of $422 billion m direct indirect and personal taxes each year. Thus, tourism has a profound impact both on the world economy and, because of the educative effect of travel and the effects on employment, on society itself.</p>
+                        <p class="mb-4"><strong>D</strong> However, the major problems of the travel and tourism industry that have hidden, or obscured, its economic impact are the diversity and <span class="vocab-word" data-word="fragmentation">fragmentation</span> of the industry itself. The travel industry includes: hotels, motels and other types of accommodation; restaurants and other food services; transportation services and facilities; amusements, attractions and other leisure facilities; gift shops and a large number of other enterprises. Since many of these businesses also serve local residents, the impact of spending by visitors can easily be overlooked or underestimated. In addition, Meis (1992) points out that the tourism industry involves concepts that have remained <span class="vocab-word" data-word="amorphous">amorphous</span> to both analysts and decision makers. Moreover, in all nations this problem has made it difficult for the industry to develop any type of reliable or credible tourism information base in order to estimate the contribution it makes to regional, national and global economies. However, the nature of this very diversity makes travel and tourism ideal vehicles for economic development in a wide variety of countries, regions or communities.</p>
+                        <p class="mb-4"><strong>E</strong> Once the exclusive province of the wealthy, travel and tourism have become an <span class="vocab-word" data-word="institutionalised">institutionalised</span> way of life for most of the population. In fact, McIntosh and Goeldner (1990) suggest that tourism has become the largest <span class="vocab-word" data-word="commodity">commodity</span> in international trade for many nations and, for a significant number of other countries, it ranks second or third. For example, tourism is the major source of income in Bermuda, Greece, Italy, Spain, Switzerland and most Caribbean countries. In addition, Hawkins and Ritchie, quoting from data published by the American Express Company, suggest that the travel and tourism industry is the number one ranked employer in the Bahamas, Brazil, Canada, France, (the former) West Germany, Hong Kong, Italy, Jamaica, Japan, Singapore, the United Kingdom and the United States. However, because of problems of definition, which directly affect statistical measurement, it is not possible with any degree of certainty to provide precise, valid or reliable data about the extent of world-wide tourism participation or its economic impact. In many cases, similar difficulties arise when attempts are made to measure domestic tourism.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-4</h4>
+                        <p class="mb-4">Reading Passage 1 has five paragraphs, A-E. Choose the correct heading for paragraphs B-E from the list of headings below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p class="font-bold mb-2">List of Headings</p>
+                            <p><strong>i</strong> Economic and social significance of tourism</p>
+                            <p><strong>ii</strong> The development of mass tourism</p>
+                            <p><strong>iii</strong> Travel for the wealthy</p>
+                            <p><strong>iv</strong> Earning foreign exchange through tourism</p>
+                            <p><strong>v</strong> Difficulty in recognising the economic effects of tourism</p>
+                            <p><strong>vi</strong> The contribution of air travel to tourism</p>
+                            <p><strong>vii</strong> The world impact of tourism</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>1</strong> Paragraph <strong>B</strong> <input type="text" id="q1" data-q="1" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>2</strong> Paragraph <strong>C</strong> <input type="text" id="q2" data-q="2" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>3</strong> Paragraph <strong>D</strong> <input type="text" id="q3" data-q="3" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>4</strong> Paragraph <strong>E</strong> <input type="text" id="q4" data-q="4" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 5-10</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p><strong>5</strong> The largest employment figures in the world are found in the travel and tourism industry. <input type="text" id="q5" data-q="5" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>6</strong> Tourism contributes over six per cent of the Australian gross national product. <input type="text" id="q6" data-q="6" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>7</strong> Tourism has a social impact because it promotes recreation. <input type="text" id="q7" data-q="7" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>8</strong> Two main features of the travel and tourism industry make its economic significance difficult to ascertain. <input type="text" id="q8" data-q="8" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>9</strong> Visitor spending is always greater than the spending of residents in tourist areas. <input type="text" id="q9" data-q="9" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>10</strong> It is easy to show statistically how tourism affects individual economies. <input type="text" id="q10" data-q="10" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 11-13</h4>
+                        <p class="mb-4">Complete the sentences below. Choose <strong>NO MORE THAN THREE WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                           <p><strong>11</strong> In Greece, tourism is the most important .................. <input type="text" id="q11" data-q="11"></p>
+                           <p><strong>12</strong> The travel and tourism industry in Jamaica is the major .................. <input type="text" id="q12" data-q="12"></p>
+                           <p><strong>13</strong> The problems associated with measuring international tourism are often reflected in the measurement of .................. <input type="text" id="q13" data-q="13"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Autumn leaves</h3>
+                        <p class="mb-4"><em>Canadian writer Jay Ingram investigates the mystery of why leaves turn red in the fall</em></p>
+                        <p class="mb-4"><strong>A</strong> One of the most <span class="vocab-word" data-word="captivating">captivating</span> natural events of the year in many areas throughout North America is the turning of the leaves in the fall. The colours are magnificent, but the question of exactly why some trees turn yellow or orange, and others red or purple, is something which has long puzzled scientists.</p>
+                        <p class="mb-4"><strong>B</strong> Summer leaves are green because they are full of <span class="vocab-word" data-word="chlorophyll">chlorophyll</span>, the molecule that captures sunlight converts that energy into new building materials for the tree. As fall approaches in the northern hemisphere, the amount of solar energy available declines considerably. For many trees – evergreen <span class="vocab-word" data-word="conifers">conifers</span> being an exception – the best strategy is to abandon photosynthesis* until the spring. So rather than maintaining the now <span class="vocab-word" data-word="redundant">redundant</span> leaves throughout the winter, the tree saves its precious resources and discards them. But before letting its leaves go, the tree dismantles their chlorophyll molecules and ships their valuable nitrogen back into the twigs. As chlorophyll is <span class="vocab-word" data-word="depleted">depleted</span>, other colours that have been dominated by it throughout the summer begin to be revealed. This <span class="vocab-word" data-word="unmasking">unmasking</span> explains the autumn colours of yellow and orange, but not the brilliant reds and purples of trees such as the maple or sumac.</p>
+                        <p class="mb-4"><strong>C</strong> The source of the red is widely known: it is created by <span class="vocab-word" data-word="anthocyanins">anthocyanins</span>, water-soluble plant pigments reflecting the red to blue range of the visible spectrum. They belong to a class of sugar-based chemical compounds also known as flavonoids. What’s puzzling is that anthocyanins are actually newly <span class="vocab-word" data-word="minted">minted</span>, made in the leaves at the same time as the tree is preparing to drop them. But it is hard to make sense of the manufacture of anthocyanins – why should a tree bother making new chemicals in its leaves when it’s already <span class="vocab-word" data-word="scrambling">scrambling</span> to withdraw and preserve the ones already there?</p>
+                        <p class="mb-4"><strong>D</strong> Some theories about anthocyanins have argued that they might act as a chemical defence against attacks by insects or fungi, or that they might attract fruit-eating birds or increase a leafs tolerance to freezing. However there are problems with each of these theories, including the fact that leaves are red for such a relatively short period that the expense of energy needed to manufacture the anthocyanins would outweigh any anti-fungal or anti-herbivore activity achieved.</p>
+                        <p class="mb-4"><strong>E</strong> It has also been proposed that trees may produce vivid red colours to convince herbivorous insects that they are healthy and robust and would be easily able to mount chemical defences against infestation. If insects paid attention to such advertisements, they might be prompted to lay their eggs on a duller, and presumably less resistant host. The flaw in this theory lies in the lack of proof to support it. No one has as yet ascertained whether more robust trees sport the brightest leaves, or whether insects make choices according to colour intensity.</p>
+                        <p class="mb-4"><strong>F</strong> Perhaps the most <span class="vocab-word" data-word="plausible">plausible</span> suggestion as to why leaves would go to the trouble of making anthocyanins when they’re busy packing up for the winter is the theory known as the ‘light screen’ hypothesis. It sounds <span class="vocab-word" data-word="paradoxical">paradoxical</span>, because the idea behind this hypothesis is that the red pigment is made in autumn leaves to protect chlorophyll, the light-absorbing chemical, from too much light. Why does chlorophyll need protection when it is the natural world’s supreme light absorber? Why protect chlorophyll at a time when the tree is breaking it down to <span class="vocab-word" data-word="salvage">salvage</span> as much of it as possible?</p>
+                        <p class="mb-4"><strong>G</strong> Chlorophyll, although exquisitely evolved to capture the energy of sunlight, can sometimes be overwhelmed by it, especially in situations of drought, low temperatures, or nutrient deficiency. Moreover, the problem of oversensitivity to light is even more acute in the fall, when the leaf is busy preparing for winter by dismantling its internal machinery. The energy absorbed by the chlorophyll molecules of the unstable autumn leaf is not immediately channelled into useful products and processes, as it would be in an intact summer leaf. The weakened fall leaf then becomes vulnerable to the highly destructive effects of the oxygen created by the excited chlorophyll molecules.</p>
+                        <p class="mb-4"><strong>H</strong> Even if you had never suspected that this is what was going on when leaves turn red, there are clues out there. One is straightforward: on many trees, the leaves that are the reddest are those on the side of the tree which gets most sun. Not only that, but the red is brighter on the upper side of the leaf. It has also been recognised for decades that the best conditions for intense red colours are dry, sunny days and cool nights, conditions that nicely match those that make leaves <span class="vocab-word" data-word="susceptible">susceptible</span> to excess light. And finally, trees such as maples usually get much redder the more north you travel in the northern hemisphere. It’s colder there, they’re more stressed, their chlorophyll is more sensitive and it needs more sunblock.</p>
+                        <p class="mb-4"><strong>I</strong> What is still not fully understood, however, is why some trees resort to producing red pigments while others don’t bother, and simply reveal their orange or yellow hues. Do these trees have other means at their disposal to prevent overexposure to light in autumn? Their story, though not as spectacular to the eye, will surely turn out to be as subtle and as complex.</p>
+                        <p class="mb-4"><small>* photosynthesis: the production of new material from sunlight, water and carbon dioxide.</small></p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-18</h4>
+                        <p class="mb-4">Reading Passage 2 has nine paragraphs, A-l. Which paragraph contains the following information?</p>
+                         <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>14</strong> a description of the substance responsible for the red colouration of leaves <input type="text" id="q14" data-q="14" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>15</strong> the reason why trees drop their leaves in autumn <input type="text" id="q15" data-q="15" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>16</strong> some evidence to confirm a theory about the purpose of the red leaves <input type="text" id="q16" data-q="16" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>17</strong> an explanation of the function of chlorophyll <input type="text" id="q17" data-q="17" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>18</strong> a suggestion that the red colouration in leaves could serve as a warning signal <input type="text" id="q18" data-q="18" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 19-22</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">Why believe the ‘light screen’ hypothesis?</h5>
+                           <p>● The most vividly coloured red leaves are found on the side of the tree facing the <strong>19</strong> .................. <input type="text" id="q19" data-q="19"></p>
+                           <p>● The <strong>20</strong> ............... surfaces of leaves contain the most red pigment. <input type="text" id="q20" data-q="20"></p>
+                           <p>● Red leaves are most abundant when daytime weather conditions are <strong>21</strong> ................ and sunny. <input type="text" id="q21" data-q="21"></p>
+                           <p>● The intensity of the red colour of leaves increases as you go further <strong>22</strong> ................. <input type="text" id="q22" data-q="22"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 23-25</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 2? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>23</strong> It is likely that the red pigments help to protect the leaf from freezing temperatures. <input type="text" id="q23" data-q="23" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>24</strong> The ‘light screen’ hypothesis would initially seem to contradict what is known about chlorophyll. <input type="text" id="q24" data-q="24" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>25</strong> Leaves which turn colours other than red are more likely to be damaged by sunlight. <input type="text" id="q25" data-q="25" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                        </div>
+                         <h4 class="font-bold mb-2">Question 26</h4>
+                        <p class="mb-4">Choose the correct letter A, B, C or D.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>26</strong> For which of the following questions does the writer offer an explanation?</p>
+                             <label class="block"><input type="radio" name="q26" value="A"> A why conifers remain green in winter</label>
+                             <label class="block"><input type="radio" name="q26" value="B"> B how leaves turn orange and yellow in autumn</label>
+                             <label class="block"><input type="radio" name="q26" value="C"> C how herbivorous insects choose which trees to lay their eggs in</label>
+                             <label class="block"><input type="radio" name="q26" value="D"> D why anthocyanins are restricted to certain trees</label>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Beyond the blue horizon</h3>
+                        <p class="mb-4"><em>Ancient voyagers who settled the far-flung islands of the Pacific Ocean</em></p>
+                        <p class="mb-4">An important archaeological discovery on the island of Efate in the Pacific <span class="vocab-word" data-word="archipelago">archipelago</span> of Vanuatu has revealed traces of an ancient seafaring people, the distant ancestors of today’s Polynesians. The site came to light only by chance. An agricultural worker, digging in the grounds of a <span class="vocab-word" data-word="derelict">derelict</span> plantation, scraped open a grave – the first of dozens in a burial ground some 3,000 years old. It is the oldest cemetery ever found in the Pacific islands, and it harbors the remains of an ancient people archaeologists call the Lapita.</p>
+                        <p class="mb-4">They were daring blue-water adventurers who used basic canoes to rove across the ocean. But they were not just explorers. They were also <span class="vocab-word" data-word="pioneers">pioneers</span> who carried with them everything they would need to build new lives – their livestock, taro seedlings and stone tools. Within the span of several centuries, the Lapita stretched the boundaries of their world from the jungle-clad volcanoes of Papua New Guinea to the loneliest coral <span class="vocab-word" data-word="outliers">outliers</span> of Tonga.</p>
+                        <p class="mb-4">The Lapita left precious few clues about themselves, but Efate expands the volume of data available to researchers dramatically. The remains of 62 individuals have been uncovered so far, and archaeologists were also thrilled to find six complete Lapita pots. Other items included a Lapita burial <span class="vocab-word" data-word="urn">urn</span> with modeled birds arranged on the rim as though peering down at the human remains sealed inside. ‘It’s an important discovery,’ says Matthew Spriggs, professor of archaeology at the Australian National University and head of the international team digging up the site, ‘for it conclusively identifies the remains as Lapita.’</p>
+                        <p class="mb-4">DNA teased from these human remains may help answer one of the most puzzling questions in Pacific anthropology: did all Pacific islanders spring from one source or many? Was there only one outward migration from a single point in Asia, or several from different points? ‘This represents the best opportunity we’ve had yet,’ says Spriggs, ‘to find out who the Lapita actually were, where they came from, and who their closest descendants are today.’</p>
+                        <p class="mb-4">There is one stubborn question for which archaeology has yet to provide any answers: how did the Lapita accomplish the ancient equivalent of a moon landing, many times over? No-one has found one of their canoes or any <span class="vocab-word" data-word="rigging">rigging</span>, which could reveal how the canoes were sailed. Nor do the oral histories and traditions of later Polynesians offer any insights, for they turn into myths long before they reach as far back in time as the Lapita.</p>
+                        <p class="mb-4">‘All we can say for certain is that the Lapita had canoes that were capable of ocean voyages, and they had the ability to sail them,’ says Geoff Irwin, a professor of archaeology at the University of Auckland. Those sailing skills, he says, were developed and passed down over thousands of years by earlier <span class="vocab-word" data-word="mariners">mariners</span> who worked their way through the archipelagoes of the western Pacific, making short crossings to nearby islands. The real adventure didn’t begin, however, until their Lapita descendants sailed out of sight of land, with empty horizons on every side. This must have been as difficult for them as landing on the moon is for us today. Certainly it distinguished them from their ancestors, but what gave them the courage to launch out on such risky voyages?</p>
+                        <p class="mb-4">The Lap it as thrust into the Pacific was eastward, against the <span class="vocab-word" data-word="prevailing">prevailing</span> trade winds, Irwin notes. Those nagging headwinds, he argues, may have been the key to their success. ‘They could sail out for days into the unknown and assess the area, secure in the knowledge that if they didn’t find anything, they could turn about and catch a swift ride back on the trade winds. This is what would have made the whole thing work.’ Once out there, skilled seafarers would have detected <span class="vocab-word" data-word="abundant">abundant</span> leads to follow to land: seabirds, coconuts and twigs carried out to sea by the tides, and the afternoon pile-up of clouds on the horizon which often indicates an island in the distance.</p>
+                        <p class="mb-4">For returning explorers, successful or not, the geography of their own archipelagoes would have provided a safety net. Without this to go by, overshooting their home ports, getting lost and sailing off into eternity would have been all too easy. Vanuatu, for example, stretches more than 500 miles in a northwest-southeast trend, its scores of intervisible islands forming a backstop for mariners riding the trade winds home.</p>
+                        <p class="mb-4">All this <span class="vocab-word" data-word="presupposes">presupposes</span> one essential detail, says Atholl Anderson, professor of prehistory at the Australian National University: the Lapita had mastered the advanced art of sailing against the wind. ‘And there’s no proof they could do any such thing,’ Anderson says. ‘There has been this assumption they did, and people have built canoes to re-create those early voyages based on that assumption. But nobody has any idea what their canoes looked like or how they were rigged.’</p>
+                        <p class="mb-4">Rather than give all the credit to human skill, Anderson invokes the winds of chance. El Nino, the same climate disruption that affects the Pacific today, may have helped scatter the Lapita, Anderson suggests. He points out that climate data obtained from slow-growing corals around the Pacific indicate a series of unusually frequent El Ninos around the time of the Lapita expansion. By reversing the regular east-to-west flow of the trade winds for weeks at a time, these super El Ninos might have taken the Lapita on long unplanned voyages.</p>
+                        <p class="mb-4">However they did it, the Lapita spread themselves a third of the way across the Pacific, then called it quits for reasons known only to them. Ahead lay the vast emptiness of the central Pacific and perhaps they were too thinly stretched to venture farther. They probably never numbered more than a few thousand in total, and in their rapid migration eastward they encountered hundreds of islands – more than 300 in Fiji alone.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-31</h4>
+                        <p class="mb-4">Complete the summary using the list of words and phrases, A-J, below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                           <p><strong>A</strong> proof <strong>B</strong> plantation <strong>C</strong> harbour</p>
+                           <p><strong>D</strong> bones <strong>E</strong> data <strong>F</strong> archaeological discovery</p>
+                           <p><strong>G</strong> burial urn <strong>H</strong> source <strong>I</strong> animals</p>
+                           <p><strong>J</strong> maps</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>The Éfaté burial site</strong></p>
+                            <p>A 3,000-year-old burial ground of a seafaring people called the Lapita has been found on an abandoned <strong>27</strong> ................ on the Pacific island of Efate. The cemetery, which is a significant <strong>28</strong> ................. , was uncovered accidentally by an agricultural worker. <input type="text" id="q27" data-q="27" class="border border-gray-300 rounded px-2 py-1 w-16"> <input type="text" id="q28" data-q="28" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p>The Lapita explored and colonised many Pacific islands over several centuries. They took many things with them on their voyages including <strong>29</strong> .................. and tools. <input type="text" id="q29" data-q="29" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p>The burial ground increases the amount of information about the Lapita available to scientists. A team of researchers, led by Matthew Spriggs from the Australian National University, are helping with the excavation of the site. Spriggs believes the <strong>30</strong> ................... which was found at the site is very important since it confirms that the <strong>31</strong> .................. found inside are Lapita. <input type="text" id="q30" data-q="30" class="border border-gray-300 rounded px-2 py-1 w-16"> <input type="text" id="q31" data-q="31" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 32-35</h4>
+                        <p class="mb-4">Choose the correct letter A, B, C or D.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <div class="q-item">
+                                <p><strong>32</strong> According to the writer, there are difficulties explaining how the Lapita accomplished their journeys because</p>
+                                <label class="block"><input type="radio" name="q32" value="A"> A the canoes that have been discovered offer relatively few clues.</label>
+                                <label class="block"><input type="radio" name="q32" value="B"> B archaeologists have shown limited interest in this area of research.</label>
+                                <label class="block"><input type="radio" name="q32" value="C"> C little information relating to this period can be relied upon for accuracy.</label>
+                                <label class="block"><input type="radio" name="q32" value="D"> D technological advances have altered the way such achievements are viewed.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>33</strong> According to the sixth paragraph, what was extraordinary about the Lapita?</p>
+                                <label class="block"><input type="radio" name="q33" value="A"> A They sailed beyond the point where land was visible.</label>
+                                <label class="block"><input type="radio" name="q33" value="B"> B Their cultural heritage discouraged the expression of fear.</label>
+                                <label class="block"><input type="radio" name="q33" value="C"> C They were able to build canoes that withstood ocean voyages.</label>
+                                <label class="block"><input type="radio" name="q33" value="D"> D Their navigational skills were passed on from one generation to the next.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>34</strong> What does ‘This’ refer to in the seventh paragraph?</p>
+                                <label class="block"><input type="radio" name="q34" value="A"> A the Lapita’s seafaring talent</label>
+                                <label class="block"><input type="radio" name="q34" value="B"> B the Lapita s ability to detect signs of land</label>
+                                <label class="block"><input type="radio" name="q34" value="C"> C the Lapita’s extensive knowledge of the region</label>
+                                <label class="block"><input type="radio" name="q34" value="D"> D the Lapita’s belief they would be able to return home</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>35</strong> According to the eighth paragraph, how was the geography of the region significant?</p>
+                                <label class="block"><input type="radio" name="q35" value="A"> A It played an important role in Lapita culture.</label>
+                                <label class="block"><input type="radio" name="q35" value="B"> B It meant there were relatively few storms at sea.</label>
+                                <label class="block"><input type="radio" name="q35" value="C"> C It provided a navigational aid for the Lapita.</label>
+                                <label class="block"><input type="radio" name="q35" value="D"> D It made a large number of islands habitable.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 36-40</h4>
+                        <p class="mb-4">Do the following statements agree with the views of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>36</strong> It is now clear that the Lapita could sail into a prevailing wind. <input type="text" id="q36" data-q="36" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>37</strong> Extreme climate conditions may have played a role in Lapita migration. <input type="text" id="q37" data-q="37" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>38</strong> The Lapita learnt to predict the duration of El Ninos. <input type="text" id="q38" data-q="38" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>39</strong> It remains unclear why the Lapita halted their expansion across the Pacific. <input type="text" id="q39" data-q="39" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>40</strong> It is likely that the majority of Lapita settled on Fiji. <input type="text" id="q40" data-q="40" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        // Reading Passage 1
+        q1: "ii", q2: "i", q3: "v", q4: "vii", 
+        q5: "true", q6: "not given", q7: "not given", q8: "true", q9: "not given", q10: "false",
+        q11: "source of income", q12: "employer", q13: "domestic tourism",
+        // Reading Passage 2
+        q14: "C", q15: "B", q16: "H", q17: "B", q18: "E",
+        q19: "sun", q20: "upper", q21: "dry", q22: "north",
+        q23: "false", q24: "true", q25: "not given", q26: "B",
+        // Reading Passage 3
+        q27: "B", q28: "F", q29: "I", q30: "G", q31: "D",
+        q32: "C", q33: "A", q34: "D", q35: "C",
+        q36: "no", q37: "yes", q38: "not given", q39: "yes", q40: "not given"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentTab: 'reading',
+            currentSection: 0,
+            answersChecked: {},
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabModal: document.getElementById('vocab-modal'),
+            closeVocabModalBtn: document.getElementById('close-vocab-modal'),
+            vocabWordEl: document.getElementById('vocab-word'),
+            vocabMeaningEl: document.getElementById('vocab-meaning'),
+            vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
+            playAudioBtn: document.getElementById('play-audio-btn'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                
+                // Close modal events
+                this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
+                this.vocabModal.addEventListener('click', (e) => {
+                   if (e.target === this.vocabModal) this.closeModal();
+                });
+
+                // Use event delegation for dynamically added elements
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                
+                // Delegated event listener for vocab words (since content is dynamic)
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const wordKey = e.target.dataset.word;
+                        this.openVocabModal(wordKey);
+                    }
+                });
+
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                });
+
+                // Audio button (mock functionality)
+                this.playAudioBtn.addEventListener('click', () => {
+                   const word = this.vocabWordEl.textContent;
+                   // In a real app, this would play an audio file
+                   console.log(`Playing audio for: ${word}`);
+                   
+                   // Visual feedback
+                   this.playAudioBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                   this.playAudioBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                   setTimeout(() => {
+                       this.playAudioBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                       this.playAudioBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                   }, 500);
+                });
+            },
+
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                }
+            },
+
+            closeModal() {
+                this.vocabModal.classList.add('hidden');
+            },
+            
+            saveAnswer(e) {
+                if (e.target.id || e.target.name) {
+                    const id = e.target.id || e.target.name;
+                     if (e.target.type === 'radio') {
+                        if (e.target.checked) {
+                            this.userAnswers[id] = e.target.value;
+                        }
+                    } else {
+                         this.userAnswers[id] = e.target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const radioInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        radioInputs.forEach(radio => {
+                            if (radio.value === value) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                }
+            },
+
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex, 10)));
+                });
+                
+                this.restoreAnswers();
+                this.addReadingExerciseButtons();
+
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+            
+            getReadingExerciseTypes() {
+                const exerciseTypes = {
+                    0: [ 
+                        { type: 'heading_matching', startQ: 1, endQ: 4, title: 'Heading Matching (Q1-4)' },
+                        { type: 'true_false', startQ: 5, endQ: 10, title: 'True/False/Not Given (Q5-10)' },
+                        { type: 'sentence_completion', startQ: 11, endQ: 13, title: 'Sentence Completion (Q11-13)' }
+                    ],
+                    1: [ 
+                        { type: 'paragraph_matching', startQ: 14, endQ: 18, title: 'Paragraph Matching (Q14-18)' },
+                        { type: 'notes_completion', startQ: 19, endQ: 22, title: 'Notes Completion (Q19-22)' },
+                        { type: 'true_false_2', startQ: 23, endQ: 25, title: 'True/False/Not Given (Q23-25)' },
+                        { type: 'multiple_choice', startQ: 26, endQ: 26, title: 'Multiple Choice (Q26)' }
+                    ],
+                    2: [ 
+                        { type: 'summary_completion', startQ: 27, endQ: 31, title: 'Summary Completion (Q27-31)' },
+                        { type: 'multiple_choice_2', startQ: 32, endQ: 35, title: 'Multiple Choice (Q32-35)' },
+                        { type: 'yes_no', startQ: 36, endQ: 40, title: 'Yes/No/Not Given (Q36-40)' }
+                    ]
+                };
+                return exerciseTypes[this.currentSection] || [];
+            },
+
+            addReadingExerciseButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `
+                        <p class="font-semibold mb-2">${exercise.title}</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">
+                            ${buttonText}
+                        </button>
+                    `;
+
+                    const firstQuestionInput = document.getElementById(`q${exercise.startQ}`) || document.querySelector(`input[name="q${exercise.startQ}"]`);
+                    if (firstQuestionInput) {
+                        const questionBlock = firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6');
+                        if (questionBlock) {
+                            questionBlock.appendChild(buttonContainer);
+                        } else {
+                            this.questionsSection.appendChild(buttonContainer);
+                        }
+                    } else {
+                         if (exercise.type === 'summary_completion') {
+                             const summaryBlock = this.questionsSection.querySelector('.p-4.border.rounded-lg.bg-white.mb-6');
+                             if(summaryBlock) summaryBlock.appendChild(buttonContainer);
+                         } else {
+                             this.questionsSection.appendChild(buttonContainer);
+                         }
+                    }
+                });
+            },
+            
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+
+                for (let i = startQ; i <= endQ; i++) {
+                    const qId = `q${i}`;
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const correctAnswer = (answers[qId] || "").toLowerCase();
+                    
+                    let isCorrect = false;
+                    if(correctAnswer.includes('/')) {
+                        isCorrect = correctAnswer.split('/').includes(userAnswer);
+                    } else {
+                        isCorrect = userAnswer === correctAnswer;
+                    }
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+
+                    if (inputElement) {
+                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') || inputElement : inputElement;
+                         if (isCorrect) {
+                            elementToStyle.classList.add('correct-answer');
+                            elementToStyle.classList.remove('incorrect-answer');
+                            if(inputElement.type === 'text') inputElement.style.backgroundColor = '#dcfce7';
+                        } else {
+                            elementToStyle.classList.add('incorrect-answer');
+                            elementToStyle.classList.remove('correct-answer');
+                             if(inputElement.type === 'text') {
+                                 inputElement.style.backgroundColor = '#fef2f2';
+                                 inputElement.placeholder = `Correct: ${answers[qId]}`;
+                             }
+                        }
+                    } else if (inputs[0].type === 'radio') {
+                         const firstRadioLabel = inputs[0].closest('label');
+                         if(firstRadioLabel) firstRadioLabel.classList.add('incorrect-answer');
+                    } else if(inputs[0].type === 'text') { // Handle blank text inputs
+                        inputs[0].classList.add('incorrect-answer');
+                        inputs[0].style.backgroundColor = '#fef2f2';
+                        inputs[0].placeholder = `Correct: ${answers[qId]}`;
+                    }
+
+                     if (inputs[0].type === 'radio') {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId]}"]`);
+                         if(correctRadio && !isCorrect) {
+                              const label = correctRadio.closest('label');
+                              if (label) {
+                                label.classList.add('correct-answer');
+                                label.style.border = '2px solid #16a34a';
+                            }
+                         }
+                    }
+
+                    // Add Explanation
+                    if (explanations[qId]) {
+                        // Avoid duplicates if clicked multiple times
+                         const existingExpl = document.getElementById(`expl-${qId}`);
+                         if (!existingExpl) {
+                            const explDiv = document.createElement('div');
+                            explDiv.id = `expl-${qId}`;
+                            explDiv.className = 'explanation-box';
+                            explDiv.innerHTML = `<strong>Explanation:</strong> ${explanations[qId]}`;
+                            
+                            // Determine where to insert
+                            let insertTarget = null;
+                            if (inputElement) {
+                                // Try to find a logical parent to append after
+                                // Case 1: Standard P tag wrapper
+                                if (inputElement.closest('p')) {
+                                     insertTarget = inputElement.closest('p');
+                                } 
+                                // Case 2: Label wrapper (radio)
+                                else if (inputElement.closest('div.q-item')) {
+                                     insertTarget = inputElement.closest('div.q-item');
+                                }
+                                // Case 3: Summary completion (mixed text and inputs)
+                                else if (inputElement.closest('div')) {
+                                     // Careful not to break flow, maybe append to the line?
+                                     // For now, appending after the parent P seems safest for this layout
+                                     insertTarget = inputElement.closest('p') || inputElement.parentElement;
+                                }
+                            } else {
+                                // Fallback for unmatched inputs (e.g. unchecked radios)
+                                // Find the container by name
+                                const radios = document.getElementsByName(qId);
+                                if(radios.length > 0) {
+                                     insertTarget = radios[0].closest('div.q-item') || radios[0].closest('p');
+                                } else {
+                                     const textInput = document.getElementById(qId);
+                                     if(textInput) insertTarget = textInput.closest('p');
+                                }
+                            }
+
+                            if (insertTarget) {
+                                insertTarget.insertAdjacentElement('afterend', explDiv);
+                            }
+                         }
+                    }
+                }
+
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        const rect = range.getBoundingClientRect();
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                                // Ignore error
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
