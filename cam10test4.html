@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Cambridge 10 Test 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        /* Explanation Box Styles */
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        /* Vocabulary Styles */
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+        }
+        #vocab-modal {
+            animation: fadeInModal 0.3s ease-out;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+         @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Cambridge 10 Test 4 (Enhanced)</h1>
+        <div class="flex items-center space-x-4">
+            <div class="text-lg font-semibold text-gray-600">IELTS Academic Reading</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative transform transition-all" style="animation: zoomIn 0.3s ease-out;">
+        <button id="close-vocab-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 text-3xl leading-none">&times;</button>
+        <div class="flex items-center mb-4">
+            <h3 id="vocab-word" class="text-3xl font-bold text-blue-600 capitalize"></h3>
+        </div>
+        <div class="flex items-center mb-4">
+            <button id="play-audio-btn" class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white mr-3 transition-colors">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-600 text-lg"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 leading-relaxed"></p>
+    </div>
+</div>
+
+
+<script>
+    // --- DATA ---
+    const vocabulary = {
+        // Passage 1: Megafires
+        'menace': { meaning: 'A person or thing that is likely to cause harm; a threat or danger.', phonetic: '/ˈmɛnɪs/' },
+        'erratically': { meaning: 'In a manner that is not even or regular in pattern or movement; unpredictably.', phonetic: '/ɪˈrætɪkli/' },
+        'precipitation': { meaning: 'Rain, snow, sleet, or hail that falls to the ground.', phonetic: '/prɪˌsɪpɪˈteɪʃən/' },
+        'eradication': { meaning: 'The complete destruction of something.', phonetic: '/ɪˌrædɪˈkeɪʃən/' },
+        'dilapidated': { meaning: '(Of a building or object) in a state of disrepair or ruin as a result of age or neglect.', phonetic: '/dɪˈlæpɪdeɪtɪd/' },
+        'infrastructure': { meaning: 'The basic physical and organizational structures and facilities (e.g. buildings, roads, power supplies) needed for the operation of a society or enterprise.', phonetic: '/ˈɪnfrəˌstrʌktʃər/' },
+        'jurisdictions': { meaning: 'The official power to make legal decisions and judgments; the territory over which authority is exercised.', phonetic: '/ˌdʒʊərɪsˈdɪkʃənz/' },
+        'procurement': { meaning: 'The action of obtaining or procuring something.', phonetic: '/prəˈkjʊərmənt/' },
+
+        // Passage 2: Personality
+        'reticence': { meaning: 'The quality of being reticent; reserve; the state of being uncommunicative.', phonetic: '/ˈrɛtɪsns/' },
+        'stamina': { meaning: 'The ability to sustain prolonged physical or mental effort.', phonetic: '/ˈstæmɪnə/' },
+        'intimidating': { meaning: 'Frightening or overawing someone, especially in order to make them do what one wants.', phonetic: '/ɪnˈtɪmɪdeɪtɪŋ/' },
+        'mitigate': { meaning: 'Make less severe, serious, or painful.', phonetic: '/ˈmɪtɪɡeɪt/' },
+        'optimism': { meaning: 'Hopefulness and confidence about the future or the successful outcome of something.', phonetic: '/ˈɒptɪmɪzəm/' },
+        'rehabilitation': { meaning: 'The action of restoring someone to health or normal life through training and therapy.', phonetic: '/ˌriːhəˌbɪlɪˈteɪʃən/' },
+        'allegations': { meaning: 'A claim or assertion that someone has done something illegal or wrong, typically one made without proof.', phonetic: '/ˌælɪˈɡeɪʃənz/' },
+        'temperaments': { meaning: 'A person\'s or animal\'s nature, especially as it permanently affects their behavior.', phonetic: '/ˈtɛmpərəmənts/' },
+
+        // Passage 3: Evolution
+        'controversial': { meaning: 'Giving rise or likely to give rise to public disagreement.', phonetic: '/ˌkɒntrəˈvɜːrʃəl/' },
+        'atavism': { meaning: 'An evolutionary throwback, such as traits reappearing which had disappeared generations before.', phonetic: '/ˈætəvɪzəm/' },
+        'irreversible': { meaning: 'Not able to be undone or altered.', phonetic: '/ˌɪrɪˈvɜːrsəbl/' },
+        'appendages': { meaning: 'A projecting part of an invertebrate or other living organism, with a distinct function.', phonetic: '/əˈpɛndɪdʒɪz/' },
+        'metamorphose': { meaning: '(Of an insect or amphibian) undergo metamorphosis, especially into the adult form.', phonetic: '/ˌmɛtəˈmɔːrfəʊz/' },
+        'lineage': { meaning: 'Lineal descent from an ancestor; ancestry or pedigree.', phonetic: '/ˈlɪniɪdʒ/' },
+        'minuscule': { meaning: 'Extremely small; tiny.', phonetic: '/ˈmɪnəskjuːl/' },
+        'embryos': { meaning: 'An unborn or unhatched offspring in the process of development.', phonetic: '/ˈɛmbriˌoʊz/' }
+    };
+
+    const explanations = {
+        // Passage 1: Megafires
+        q1: "Paragraph 1 mentions that fires are 'generally hotter, faster, and spread more erratically than in the past'.",
+        q2: "Paragraph 2 states that megafires are '10 times the size of the average forest fire of 20 years ago'.",
+        q3: "Paragraph 3 explains that the region has had 'significantly below normal precipitation'.",
+        q4: "Paragraph 4 mentions 'unintentional consequence has been to halt the natural eradication of underbrush, now the primary fuel for megafires'.",
+        q5: "Paragraph 5 lists 'fire seasons that on average are 78 days longer than they were 20 years ago'.",
+        q6: "Paragraph 5 mentions 'increased construction of homes in wooded areas'.",
+        q7: "Paragraph 6 mentions 'What once was open space is now residential homes', implying open space has diminished.",
+        q8: "Paragraph 7 actually states 'many experts give California high marks for making progress on preparedness'. The statement contradicts the text.",
+        q9: "Paragraph 7 mentions they were 'Stung in the past by criticism of bungling that allowed fires to spread'.",
+        q10: "Paragraph 8 confirms 'State promises to provide more up-to-date engines, planes, and helicopters to fight fires have been fulfilled'.",
+        q11: "The text mentions increased funding and equipment, but does not explicitly state that 'more firefighters have been hired'.",
+        q12: "Paragraph 10 says there is a 'sense among both government officials and residents that the speed... [is] resulting in greater efficiency'. The statement contradicts this positive view.",
+        q13: "Paragraph 11 quotes Randy Jacobs saying 'we will no longer suffer the loss of life endured in the past'. This directly contradicts the statement.",
+
+        // Passage 2: Second Nature
+        q14: "Paragraph A states psychologists held that 'character cannot undergo a transformation in any meaningful way'.",
+        q15: "Paragraph A mentions traits are determined at a very 'young age'.",
+        q16: "Paragraph A mentions 'Some qualities are less challenging to develop than others, optimism being one of them'.",
+        q17: "Paragraph A states 'developing qualities requires mastering a range of skills'.",
+        q18: "Paragraph A gives the example: 'you must be open to experiencing negative emotions' to bring more joy.",
+        q19: "Paragraph F (Todd Kashdan) says: 'As a newcomer, you also have to tolerate and laugh at your own ignorance.'",
+        q20: "Paragraph D (Suzanne Segerstrom) recommends you 'train yourself to pay attention to good fortune'.",
+        q21: "Paragraph H (Cynthia Pury) believes 'courage is not motivated by fearlessness, but by moral obligation'.",
+        q22: "Paragraph B (Christopher Peterson) cites himself as an example of an introvert who 'learned to be more outgoing' for lectures.",
+        q23: "Paragraph E describes Tanya Streeter who 'learned to untangle her fears from her judgment of what her body and mind could do'.",
+        q24: "Paragraph C describes David Fajgenbaum who launched a support group 'despite his own pain'.",
+        q25: "Paragraph G describes Mauro Zappaterra who 'switched labs' because his research wasn't compatible with his curiosity.",
+        q26: "Paragraph H describes Kenneth Pedeleose who spoke out against a manager 'knowing his own job security would be threatened'.",
+
+        // Passage 3: Evolution
+        q27: "Paragraph 4 explains that early 20th-century biologists qualified Dollo's findings, and the idea of irreversibility 'came to be known as Dollo's law'.",
+        q28: "Paragraph 5 discusses the whale as an exception ('Example') to Dollo's law, leading the explorer to argue it must be a 'throwback'.",
+        q29: "Paragraph 7 explains Raff's argument that if silent genes are switched back on, 'long-lost traits could reappear'.",
+        q30: "Paragraph 9 uses the mole salamander as a 'possible example' that fits 'Raff's 10million-year time frame' (supporting his theory).",
+        q31: "Paragraph 10 states Wagner found that 'digit loss and gain has occurred on more than one occasion', implying features were lost and regained.",
+        q32: "Paragraph 4 states 'an organism is unable to return... to a previous stage', meaning the possibility of evolution being reversible (F) was rejected.",
+        q33: "Dollo argued for irreversibility, while Lombroso argued for atavisms (throwbacks). This represents opposing views (G).",
+        q34: "Paragraph 6 asks 'how can characteristics that disappeared... suddenly reappear?'. This leads to the question of how traits reappear (A).",
+        q35: "Paragraph 11 mentions sharks/killer whales dorsal fins as 'similar structures can independently arise', illustrating the occurrence of a feature in different species (B).",
+        q36: "Paragraph 11 suggests one possibility for Wagner's findings is that genetic information 'survived... and was reactivated' (D).",
+        q37: "The text mentions Wagner published a paper, but does not claim he was the *first* person ever to do research on South American lizards.",
+        q38: "Paragraph 10 states 'According to his analysis... the toed species re-evolved toes from toeless ancestors'.",
+        q39: "Paragraph 13 says 'Early embryos of many species develop ancestral features', implying it is common, not rare.",
+        q40: "Paragraph 13 explains that if the developmental program to 'lose the leg' does not happen, it leads to an atavism."
+    };
+
+    const testData = {
+        reading: {
+            duration: 3600, // 60 minutes
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The megafires of California</h3>
+                        <p class="mb-4"><em>Drought, housing expansion, and oversupply of tinder make for bigger, hotter fires in the western United States</em></p>
+                        <p class="mb-4">Wildfires are becoming an increasing <span class="vocab-word" data-word="menace">menace</span> in the western United States, with Southern California being the hardest hit area. There’s a reason fire squads battling more frequent blazes in Southern California are having such difficulty containing the flames, despite better preparedness than ever and decades of experience fighting fires fanned by the ‘Santa Ana Winds’. The wildfires themselves, experts say, are generally hotter, faster, and spread more <span class="vocab-word" data-word="erratically">erratically</span> than in the past.</p>
+                        <p class="mb-4">Megafires, also called ‘siege fires’, are the increasingly frequent blazes that burn 500,000 acres or more – 10 times the size of the average forest fire of 20 years ago. Some recent wildfires are among the biggest ever in California in terms of acreage burned, according to state figures and news reports.</p>
+                        <p class="mb-4">One explanation for the trend to more superhot fires is that the region, which usually has dry summers, has had significantly below normal <span class="vocab-word" data-word="precipitation">precipitation</span> in many recent years. Another reason, experts say, is related to the century- long policy of the US Forest Service to stop wildfires as quickly as possible.</p>
+                        <p class="mb-4">The unintentional consequence has been to halt the natural <span class="vocab-word" data-word="eradication">eradication</span> of underbrush, now the primary fuel for megafires.</p>
+                        <p class="mb-4">Three other factors contribute to the trend, they add. First is climate change, marked by a 1-degree Fahrenheit rise in average yearly temperature across the western states. Second is fire seasons that on average are 78 days longer than they were 20 years ago. Third is increased construction of homes in wooded areas.</p>
+                        <p class="mb-4">‘We are increasingly building our homes in fire-prone ecosystems,’ says Dominik Kulakowski, adjunct professor of biology at Clark University Graduate School of Geography in Worcester, Massachusetts. ‘Doing that in many of the forests of the western US is like building homes on the side of an active volcano.’</p>
+                        <p class="mb-4">In California, where population growth has averaged more than 600,000 a year for at least a decade, more residential housing is being built. ‘What once was open space is now residential homes providing fuel to make fires burn with greater intensity,’ says Terry McHale of the California Department of Forestry firefighters’ union. ‘With so much dryness, so many communities to catch fire, so many fronts to fight, it becomes an almost incredible job.’</p>
+                        <p class="mb-4">That said, many experts give California high marks for making progress on preparedness in recent years, after some of the largest fires in state history scorched thousands of acres, burned thousands of homes, and killed numerous people. Stung in the past by criticism of bungling that allowed fires to spread when they might have been contained, personnel are meeting the peculiar challenges of neighborhood – and canyon-hopping fires better than previously, observers say.</p>
+                        <p class="mb-4">State promises to provide more up-to-date engines, planes, and helicopters to fight fires have been fulfilled. Firefighters’ unions that in the past complained of <span class="vocab-word" data-word="dilapidated">dilapidated</span> equipment, old fire engines, and insufficient blueprints for fire safety are now praising the state’s commitment, noting that funding for firefighting has increased, despite huge cuts in many other programs. ‘We are pleased that the current state administration has been very proactive in its support of us, and [has] come through with budgetary support of the <span class="vocab-word" data-word="infrastructure">infrastructure</span> needs we have long sought,’ says Mr. McHale of the firefighters’ union.</p>
+                        <p class="mb-4">Besides providing money to upgrade the fire engines that must traverse the mammoth state and wind along serpentine canyon roads, the state has invested in better command-and-control facilities as well as in the strategies to run them. ‘In the fire sieges of earlier years, we found that other <span class="vocab-word" data-word="jurisdictions">jurisdictions</span> and states were willing to offer mutual-aid help, but we were not able to communicate adequately with them,’ says Kim Zagaris, chief of the state’s Office of Emergency Services Fire and Rescue Branch.</p>
+                        <p class="mb-4">After a commission examined and revamped communications procedures, the statewide response ‘has become far more professional and responsive,’ he says. There is a sense among both government officials and residents that the speed, dedication, and coordination of firefighters from several states and jurisdictions are resulting in greater efficiency than in past ‘siege fire’ situations.</p>
+                        <p class="mb-4">In recent years, the Southern California region has improved building codes, evacuation procedures, and <span class="vocab-word" data-word="procurement">procurement</span> of new technology. ‘I am extraordinarily impressed by the improvements we have witnessed,’ says Randy Jacobs, a Southern California- based lawyer who has had to evacuate both his home and business to escape wildfires. ‘Notwithstanding all the damage that will continue to be caused by wildfires, we will no longer suffer the loss of life endured in the past because of the fire prevention and firefighting measures that have been put in place,’ he says.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-6</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>ONE WORD AND/OR A NUMBER</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold">Wildfires</h5>
+                            <p>● Characteristics of wildfires and wildfire conditions today compared to the past:</p>
+                            <ul class="list-disc list-inside">
+                                <li>occurrence: more frequent</li>
+                                <li>temperature: hotter</li>
+                                <li>speed: faster</li>
+                                <li>movement: <strong>1</strong> ................ more unpredictably <input type="text" id="q1" data-q="1"></li>
+                                <li>size of fires: <strong>2</strong> ................ greater on average than two decades ago <input type="text" id="q2" data-q="2"></li>
+                            </ul>
+                            <p>● Reasons wildfires cause more damage today compared to the past:</p>
+                             <ul class="list-disc list-inside">
+                                <li>rainfall: <strong>3</strong> ................ average <input type="text" id="q3" data-q="3"></li>
+                                <li>more brush to act as <strong>4</strong> ................. <input type="text" id="q4" data-q="4"></li>
+                                <li>increase in yearly temperature</li>
+                                <li>extended fire <strong>5</strong> ................. <input type="text" id="q5" data-q="5"></li>
+                                <li>more building of <strong>6</strong> ................ in vulnerable places <input type="text" id="q6" data-q="6"></li>
+                            </ul>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 7-13</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                           <p><strong>7</strong> The amount of open space in California has diminished over the last ten years. <input type="text" id="q7" data-q="7" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>8</strong> Many experts believe California has made little progress in readying itself to fight fires. <input type="text" id="q8" data-q="8" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>9</strong> Personnel in the past have been criticised for mishandling fire containment. <input type="text" id="q9" data-q="9" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>10</strong> California has replaced a range of firefighting tools. <input type="text" id="q10" data-q="10" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>11</strong> More firefighters have been hired to improve fire-fighting capacity. <input type="text" id="q11" data-q="11" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>12</strong> Citizens and government groups disapprove of the efforts of different states and agencies working together. <input type="text" id="q12" data-q="12" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                           <p><strong>13</strong> Randy Jacobs believes that loss of life from fires will continue at the same levels, despite changes made. <input type="text" id="q13" data-q="13" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 2",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Second nature</h3>
+                        <p class="mb-4"><em>Your personality isn’t necessarily set in stone. With a little experimentation, people can reshape their temperaments and inject passion, optimism, joy and courage into their lives</em></p>
+                        <p class="mb-4"><strong>A</strong> Psychologists have long held that a person’s character cannot undergo a transformation in any meaningful way and that the key traits of personality are determined at a very young age. However, researchers have begun looking more closely at ways we can change. Positive psychologists have identified 24 qualities we admire, such as loyalty and kindness, and are studying them to find out why they come so naturally to some people. What they’re discovering is that many of these qualities amount to habitual behaviour that determines the way we respond to the world. The good news is that all this can be learned.</p>
+                        <p class="mb-4">Some qualities are less challenging to develop than others, <span class="vocab-word" data-word="optimism">optimism</span> being one of them. However, developing qualities requires mastering a range of skills which are diverse and sometimes surprising. For example, to bring more joy and passion into your life, you must be open to experiencing negative emotions. Cultivating such qualities will help you realise your full potential.</p>
+                        <p class="mb-4"><strong>B</strong> ‘The evidence is good that most personality traits can be altered,’ says Christopher Peterson, professor of psychology at the University of Michigan, who cites himself as an example. Inherently introverted, he realised early on that as an academic, his <span class="vocab-word" data-word="reticence">reticence</span> would prove disastrous in the lecture hall. So he learned to be more outgoing and to entertain his classes. ‘Now my extroverted behaviour is spontaneous,’ he says.</p>
+                        <p class="mb-4"><strong>C</strong> David Fajgenbaum had to make a similar transition. He was preparing for university, when he had an accident that put an end to his sports career. On campus, he quickly found that beyond ordinary counselling, the university had no services for students who were undergoing physical <span class="vocab-word" data-word="rehabilitation">rehabilitation</span> and suffering from depression like him. He therefore launched a support group to help others in similar situations. He took action despite his own pain – a typical response of an optimist.</p>
+                        <p class="mb-4"><strong>D</strong> Suzanne Segerstrom, professor of psychology at the University of Kentucky, believes that the key to increasing optimism is through cultivating optimistic behaviour, rather than positive thinking. She recommends you train yourself to pay attention to good fortune by writing down three positive things that come about each day. This will help you convince yourself that favourable outcomes actually happen all the time, making it easier to begin taking action.</p>
+                        <p class="mb-4"><strong>E</strong> You can recognise a person who is passionate about a pursuit by the way they are so strongly involved in it. Tanya Streeter’s passion is freediving – the sport of plunging deep into the water without tanks or other breathing equipment. Beginning in 1998, she set nine world records and can hold her breath for six minutes. The physical <span class="vocab-word" data-word="stamina">stamina</span> required for this sport is intense but the psychological demands are even more overwhelming. Streeter learned to untangle her fears from her judgment of what her body and mind could do. ‘In my career as a competitive freediver, there was a limit to what I could do – but it wasn’t anywhere near what I thought it was/ she says.</p>
+                        <p class="mb-4"><strong>F</strong> Finding a pursuit that excites you can improve anyone’s life. The secret about consuming passions, though, according to psychologist Paul Silvia of the University of North Carolina, is that ‘they require discipline, hard work and ability, which is why they are so rewarding.’ Psychologist Todd Kashdan has this advice for those people taking up a new passion: ‘As a newcomer, you also have to tolerate and laugh at your own ignorance. You must be willing to accept the negative feelings that come your way,’ he says.</p>
+                        <p class="mb-4"><strong>G</strong> In 2004, physician-scientist Mauro Zappaterra began his PhD research at Harvard Medical School. Unfortunately, he was miserable as his research wasn’t compatible with his curiosity about healing. He finally took a break and during eight months in Santa Fe, Zappaterra learned about alternative healing techniques not taught at Harvard. When he got back, he switched labs to study how cerebrospinal fluid nourishes the developing nervous system. He also vowed to look for the joy in everything, including failure, as this could help him learn about his research and himself.</p>
+                        <p class="mb-4">One thing that can hold joy back is a person’s concentration on avoiding failure rather than their looking forward to doing something well. ‘Focusing on being safe might get in the way of your reaching your goals,’ explains Kashdan. For example, are you hoping to get through a business lunch without embarrassing yourself, or are you thinking about how fascinating the conversation might be?</p>
+                        <p class="mb-4"><strong>H</strong> Usually, we think of courage in physical terms but ordinary life demands something else. For marketing executive Kenneth Pedeleose, it meant speaking out against something he thought was ethically wrong. The new manager was <span class="vocab-word" data-word="intimidating">intimidating</span> staff so Pedeleose carefully recorded each instance of bullying and eventually took the evidence to a senior director, knowing his own job security would be threatened. Eventually the manager was the one to go. According to Cynthia Pury, a psychologist at Clemson University, Pedeleose’s story proves the point that courage is not motivated by fearlessness, but by moral obligation. Pury also believes that people can acquire courage. Many of her students said that faced with a risky situation, they first tried to calm themselves down, then looked for a way to <span class="vocab-word" data-word="mitigate">mitigate</span> the danger, just as Pedeleose did by documenting his <span class="vocab-word" data-word="allegations">allegations</span>.</p>
+                        <p class="mb-4">Over the long term, picking up a new character trait may help you move toward being the person you want to be. And in the short term, the effort itself could be surprisingly rewarding, a kind of internal adventure.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 14-18</h4>
+                        <p class="mb-4">Complete the summary below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                           <p>Psychologists have traditionally believed that a personality <strong>14</strong> ............... was impossible and that by a <strong>15</strong> ............... a person’s character tends to be fixed. This is not true according to positive psychologists, who say that our personal qualities can be seen as habitual behaviour. One of the easiest qualities to acquire is <strong>16</strong> .................. However, regardless of the quality, it is necessary to learn a wide variety of different <strong>17</strong> ................. in order for a new quality to develop; for example, a person must understand and feel some <strong>18</strong> .................. in order to increase their happiness. <input type="text" id="q14" data-q="14"> <input type="text" id="q15" data-q="15"> <input type="text" id="q16" data-q="16"> <input type="text" id="q17" data-q="17"> <input type="text" id="q18" data-q="18"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 19-22</h4>
+                        <p class="mb-4">Look at the following statements (Questions 19-22) and the list of people below. Match each statement with the correct person, A-G.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                            <p class="font-bold mb-2">List of People</p>
+                            <p><strong>A</strong> Christopher Peterson</p>
+                            <p><strong>B</strong> David Fajgenbaum</p>
+                            <p><strong>C</strong> Suzanne Segerstrom</p>
+                            <p><strong>D</strong> Tanya Streeter</p>
+                            <p><strong>E</strong> Todd Kashdan</p>
+                            <p><strong>F</strong> Kenneth Pedeleose</p>
+                            <p><strong>G</strong> Cynthia Pury</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>19</strong> People must accept that they do not know much when first trying something new. <input type="text" id="q19" data-q="19" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>20</strong> It is important for people to actively notice when good things happen. <input type="text" id="q20" data-q="20" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>21</strong> Courage can be learned once its origins in a sense of responsibility are understood. <input type="text" id="q21" data-q="21" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>22</strong> It is possible to overcome shyness when faced with the need to speak in public. <input type="text" id="q22" data-q="22" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+                         <h4 class="font-bold mb-2">Questions 23-26</h4>
+                        <p class="mb-4">Reading Passage 2 has eight sections, A-H. Which section contains the following information?</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                           <p><strong>23</strong> a mention of how rational thinking enabled someone to achieve physical goals <input type="text" id="q23" data-q="23" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                           <p><strong>24</strong> an account of how someone overcame a sad experience <input type="text" id="q24" data-q="24" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                           <p><strong>25</strong> a description of how someone decided to rethink their academic career path <input type="text" id="q25" data-q="25" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                           <p><strong>26</strong> an example of how someone risked his career out of a sense of duty <input type="text" id="q26" data-q="26" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Passage 3",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">When evolution runs backwards</h3>
+                        <p class="mb-4"><em>Evolution isn’t supposed to run backwards – yet an increasing number of examples show that it does and that it can sometimes represent the future of a species.</em></p>
+                        <p class="mb-4">The description of any animal as an ‘evolutionary throwback’ is <span class="vocab-word" data-word="controversial">controversial</span>. For the better part of a century, most biologists have been reluctant to use those words, mindful of a principle of evolution that says ‘evolution cannot run backwards. But as more and more examples come to light and modern genetics enters the scene, that principle is having to be rewritten. Not only are evolutionary throwbacks possible, they sometimes play an important role in the forward march of evolution.</p>
+                        <p class="mb-4">The technical term for an evolutionary throwback is an ‘<span class="vocab-word" data-word="atavism">atavism</span>’, from the Latin atavus, meaning forefather. The word has ugly connotations thanks largely to Cesare Lombroso, a 19th-century Italian medic who argued that criminals were born not made and could be identified by certain physical features that were throwbacks to a primitive, sub-human state.</p>
+                        <p class="mb-4">While Lombroso was measuring criminals, a Belgian palaeontologist called Louis Dollo was studying fossil records and coming to the opposite conclusion. In 1890 he proposed that evolution was <span class="vocab-word" data-word="irreversible">irreversible</span>: that ‘an organism is unable to return, even partially, to a previous stage already realised in the ranks of its ancestors. Early 20th-century biologists came to a similar conclusion, though they qualified it in terms of probability, stating that there is no reason why evolution cannot run backwards -it is just very unlikely. And so the idea of irreversibility in evolution stuck and came to be known as ‘Dollo’s law.</p>
+                        <p class="mb-4">If Dollo’s law is right, atavisms should occur only very rarely, if at all. Yet almost since the idea took root, exceptions have been cropping up. In 1919, for example, a humpback whale with a pair of leglike <span class="vocab-word" data-word="appendages">appendages</span> over a metre long, complete with a full set of limb bones, was caught off Vancouver Island in Canada. Explorer Roy Chapman Andrews argued at the time that the whale must be a throwback to a land-living ancestor. ‘I can see no other explanation,’ he wrote in 1921.</p>
+                        <p class="mb-4">Since then, so many other examples have been discovered that it no longer makes sense to say that evolution is as good as irreversible. And this poses a puzzle: how can characteristics that disappeared millions of years ago suddenly reappear?</p>
+                        <p class="mb-4">In 1994, Rudolf Raff and colleagues at Indiana University in the USA decided to use genetics to put a number on the probability of evolution going into reverse. They reasoned that while some evolutionary changes involve the loss of genes and are therefore irreversible, others may be the result of genes being switched off. If these silent genes are somehow switched back on, they argued, long-lost traits could reappear.</p>
+                        <p class="mb-4">Raff’s team went on to calculate the likelihood of it happening. Silent genes accumulate random mutations, they reasoned, eventually rendering them useless. So how long can a gene survive in a species if it is no longer used? The team calculated that there is a good chance of silent genes surviving for up to 6 million years in at least a few individuals in a population, and that some might survive as long as 10 million years. In other words, throwbacks are possible, but only to the relatively recent evolutionary past.</p>
+                        <p class="mb-4">As a possible example, the team pointed to the mole salamanders of Mexico and California. Like most amphibians these begin life in a juvenile ‘tadpole’ state, then <span class="vocab-word" data-word="metamorphose">metamorphose</span> into the adult form – except for one species, the axolotl, which famously lives its entire life as a juvenile. The simplest explanation for this is that the axolotl <span class="vocab-word" data-word="lineage">lineage</span> alone lost the ability to metamorphose, while others retained it. From a detailed analysis of the salamanders’ family tree, however, it is clear that the other lineages evolved from an ancestor that itself had lost the ability to metamorphose. In other words, metamorphosis in mole salamanders is an atavism. The salamander example fits with Raff’s 10million-year time frame.</p>
+                        <p class="mb-4">More recently, however, examples have been reported that break the time limit, suggesting that silent genes may not be the whole story. In a paper published last year, biologist Gunter Wagner of Yale University reported some work on the evolutionary history of a group of South American lizards called Bachia. Many of these have <span class="vocab-word" data-word="minuscule">minuscule</span> limbs; some look more like snakes than lizards and a few have completely lost the toes on their hind limbs. Other species, however, sport up to four toes on their hind legs. The simplest explanation is that the toed lineages never lost their toes, but Wagner begs to differ. According to his analysis of the Bachia family tree, the toed species re-evolved toes from toeless ancestors and, what is more, digit loss and gain has occurred on more than one occasion over tens of millions of years.</p>
+                        <p class="mb-4">So what’s going on? One possibility is that these traits are lost and then simply reappear, in much the same way that similar structures can independently arise in unrelated species, such as the dorsal fins of sharks and killer whales. Another more intriguing possibility is that the genetic information needed to make toes somehow survived for tens or perhaps hundreds of millions of years in the lizards and was reactivated.</p>
+                        <p class="mb-4">These atavistic traits provided an advantage and spread through the population, effectively reversing evolution.</p>
+                        <p class="mb-4">But if silent genes degrade within 6 to million years, how can long-lost traits be reactivated over longer timescales? The answer may lie in the womb. Early <span class="vocab-word" data-word="embryos">embryos</span> of many species develop ancestral features. Snake embryos, for example, sprout hind limb buds. Later in development these features disappear thanks to developmental programs that say ‘lose the leg’. If for any reason this does not happen, the ancestral feature may not disappear, leading to an atavism.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 27-31</h4>
+                        <p class="mb-4">Choose the correct letter, A, B, C or D.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <div class="q-item">
+                                <p><strong>27</strong> When discussing the theory developed by Louis Dollo, the writer says that</p>
+                                <label class="block"><input type="radio" name="q27" value="A"> A it was immediately referred to as Dollo’s law.</label>
+                                <label class="block"><input type="radio" name="q27" value="B"> B it supported the possibility of evolutionary throwbacks.</label>
+                                <label class="block"><input type="radio" name="q27" value="C"> C it was modified by biologists in the early twentieth century.</label>
+                                <label class="block"><input type="radio" name="q27" value="D"> D it was based on many years of research.</label>
+                            </div>
+                             <div class="q-item">
+                                <p><strong>28</strong> The humpback whale caught off Vancouver Island is mentioned because of</p>
+                                <label class="block"><input type="radio" name="q28" value="A"> A the exceptional size of its body.</label>
+                                <label class="block"><input type="radio" name="q28" value="B"> B the way it exemplifies Dollo’s law.</label>
+                                <label class="block"><input type="radio" name="q28" value="C"> C the amount of local controversy it caused.</label>
+                                <label class="block"><input type="radio" name="q28" value="D"> D the reason given for its unusual features.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>29</strong> What is said about ‘silent genes’?</p>
+                                <label class="block"><input type="radio" name="q29" value="A"> A Their numbers vary according to species.</label>
+                                <label class="block"><input type="radio" name="q29" value="B"> B Raff disagreed with the use of the term.</label>
+                                <label class="block"><input type="radio" name="q29" value="C"> C They could lead to the re-emergence of certain characteristics.</label>
+                                <label class="block"><input type="radio" name="q29" value="D"> D They can have an unlimited life span.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>30</strong> The writer mentions the mole salamander because</p>
+                                <label class="block"><input type="radio" name="q30" value="A"> A it exemplifies what happens in the development of most amphibians.</label>
+                                <label class="block"><input type="radio" name="q30" value="B"> B it suggests that Raff’s theory is correct.</label>
+                                <label class="block"><input type="radio" name="q30" value="C"> C it has lost and regained more than one ability.</label>
+                                <label class="block"><input type="radio" name="q30" value="D"> D its ancestors have become the subject of extensive research.</label>
+                            </div>
+                            <div class="q-item">
+                                <p><strong>31</strong> Which of the following does Wagner claim?</p>
+                                <label class="block"><input type="radio" name="q31" value="A"> A Members of the Bachia lizard family have lost and regained certain features several times.</label>
+                                <label class="block"><input type="radio" name="q31" value="B"> B Evidence shows that the evolution of the Bachia lizard is due to the environment.</label>
+                                <label class="block"><input type="radio" name="q31" value="C"> C His research into South American lizards supports Raff’s assertions.</label>
+                                <label class="block"><input type="radio" name="q31" value="D"> D His findings will apply to other species of South American lizards.</label>
+                            </div>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 32-36</h4>
+                        <p class="mb-4">Complete each sentence with the correct ending, A-G, below.</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+                           <p><strong>A</strong> the question of how certain long-lost traits could reappear.</p>
+                           <p><strong>B</strong> the occurrence of a particular feature in different species.</p>
+                           <p><strong>C</strong> parallels drawn between behaviour and appearance.</p>
+                           <p><strong>D</strong> the continued existence of certain genetic information.</p>
+                           <p><strong>E</strong> the doubts felt about evolutionary throwbacks.</p>
+                           <p><strong>F</strong> the possibility of evolution being reversible.</p>
+                           <p><strong>G</strong> Dollo’s findings and the convictions held by Lombroso.</p>
+                        </div>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>32</strong> For a long time biologists rejected <input type="text" id="q32" data-q="32" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>33</strong> Opposing views on evolutionary throwbacks are represented by <input type="text" id="q33" data-q="33" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>34</strong> Examples of evolutionary throwbacks have led to <input type="text" id="q34" data-q="34" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>35</strong> The shark and killer whale are mentioned to exemplify <input type="text" id="q35" data-q="35" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                            <p><strong>36</strong> One explanation for the findings of Wagner’s research is <input type="text" id="q36" data-q="36" class="border border-gray-300 rounded px-2 py-1 w-16"></p>
+                        </div>
+                        <h4 class="font-bold mb-2">Questions 37-40</h4>
+                        <p class="mb-4">Do the following statements agree with the claims of the writer in Reading Passage 3? Write <strong>YES</strong>, <strong>NO</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white">
+                            <p><strong>37</strong> Wagner was the first person to do research on South American lizards. <input type="text" id="q37" data-q="37" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>38</strong> Wagner believes that Bachia lizards with toes had toeless ancestors. <input type="text" id="q38" data-q="38" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>39</strong> The temporary occurrence of long-lost traits in embryos is rare. <input type="text" id="q39" data-q="39" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                            <p><strong>40</strong> Evolutionary throwbacks might be caused by developmental problems in the womb. <input type="text" id="q40" data-q="40" class="border border-gray-300 rounded px-2 py-1 w-32"></p>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        // Reading Passage 1
+        q1: "spread", q2: "10 times", q3: "below", q4: "fuel", q5: "seasons", q6: "homes",
+        q7: "true", q8: "false", q9: "true", q10: "true", q11: "not given", q12: "false", q13: "false",
+        // Reading Passage 2
+        q14: "transformation", q15: "young age", q16: "optimism", q17: "skills", q18: "negative emotions",
+        q19: "E", q20: "C", q21: "G", q22: "A",
+        q23: "E", q24: "C", q25: "G", q26: "H",
+        // Reading Passage 3
+        q27: "C", q28: "D", q29: "C", q30: "B", q31: "A",
+        q32: "F", q33: "G", q34: "A", q35: "B", q36: "D",
+        q37: "not given", q38: "yes", q39: "no", q40: "yes"
+    };
+
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentTab: 'reading',
+            currentSection: 0,
+            answersChecked: {},
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabModal: document.getElementById('vocab-modal'),
+            closeVocabModalBtn: document.getElementById('close-vocab-modal'),
+            vocabWordEl: document.getElementById('vocab-word'),
+            vocabMeaningEl: document.getElementById('vocab-meaning'),
+            vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
+            playAudioBtn: document.getElementById('play-audio-btn'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+
+                // Close modal events
+                this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
+                this.vocabModal.addEventListener('click', (e) => {
+                   if (e.target === this.vocabModal) this.closeModal();
+                });
+
+                // Use event delegation for dynamically added elements
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                
+                 // Delegated event listener for vocab words (since content is dynamic)
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const wordKey = e.target.dataset.word;
+                        this.openVocabModal(wordKey);
+                    }
+                });
+
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('check-exercise-btn')) {
+                        this.checkExerciseAnswers(e.target.dataset.exercise, e.target.dataset.range);
+                    }
+                });
+
+                // Audio button (mock functionality)
+                this.playAudioBtn.addEventListener('click', () => {
+                   const word = this.vocabWordEl.textContent;
+                   // In a real app, this would play an audio file
+                   console.log(`Playing audio for: ${word}`);
+                   
+                   // Visual feedback
+                   this.playAudioBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                   this.playAudioBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                   setTimeout(() => {
+                       this.playAudioBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                       this.playAudioBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                   }, 500);
+                });
+            },
+            
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                }
+            },
+
+            closeModal() {
+                this.vocabModal.classList.add('hidden');
+            },
+
+            saveAnswer(e) {
+                if (e.target.id || e.target.name) {
+                    const id = e.target.id || e.target.name;
+                     if (e.target.type === 'radio') {
+                        if (e.target.checked) {
+                            this.userAnswers[id] = e.target.value;
+                        }
+                    } else {
+                         this.userAnswers[id] = e.target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const radioInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        radioInputs.forEach(radio => {
+                            if (radio.value === value) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                }
+            },
+
+            checkExerciseAnswers(exerciseKey, range) {
+                if (this.answersChecked[exerciseKey]) {
+                    this.answersChecked[exerciseKey] = false;
+                    this.loadContent();
+                    return;
+                }
+                this.answersChecked[exerciseKey] = true;
+                this.showExerciseAnswers(exerciseKey, range);
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex, 10)));
+                });
+                
+                this.restoreAnswers();
+                this.addReadingExerciseButtons();
+
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+                exercises.forEach(ex => {
+                    const exerciseKey = `${sectionKey}_${ex.type}`;
+                    if(this.answersChecked[exerciseKey]) {
+                        this.showExerciseAnswers(exerciseKey, `${ex.startQ}-${ex.endQ}`);
+                    }
+                });
+            },
+            
+            getReadingExerciseTypes() {
+                const exerciseTypes = {
+                    0: [ 
+                        { type: 'notes_completion', startQ: 1, endQ: 6, title: 'Notes Completion (Q1-6)' },
+                        { type: 'true_false', startQ: 7, endQ: 13, title: 'True/False/Not Given (Q7-13)' }
+                    ],
+                    1: [ 
+                        { type: 'summary_completion', startQ: 14, endQ: 18, title: 'Summary Completion (Q14-18)' },
+                        { type: 'people_matching', startQ: 19, endQ: 22, title: 'Matching People to Statements (Q19-22)' },
+                        { type: 'paragraph_matching', startQ: 23, endQ: 26, title: 'Paragraph Matching (Q23-26)' }
+                    ],
+                    2: [ 
+                        { type: 'multiple_choice', startQ: 27, endQ: 31, title: 'Multiple Choice (Q27-31)' },
+                        { type: 'matching', startQ: 32, endQ: 36, title: 'Matching Sentence Endings (Q32-36)' },
+                        { type: 'yes_no', startQ: 37, endQ: 40, title: 'Yes/No/Not Given (Q37-40)' }
+                    ]
+                };
+                return exerciseTypes[this.currentSection] || [];
+            },
+
+            addReadingExerciseButtons() {
+                const sectionKey = `${this.currentTab}_${this.currentSection}`;
+                const exercises = this.getReadingExerciseTypes();
+
+                exercises.forEach(exercise => {
+                    const exerciseKey = `${sectionKey}_${exercise.type}`;
+                    const isChecked = this.answersChecked[exerciseKey];
+                    const buttonText = isChecked ? 'Reset Answers' : 'Check Answers';
+                    const buttonColor = isChecked ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700';
+
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'mt-6 p-4 bg-gray-100 rounded-lg text-center';
+                    buttonContainer.innerHTML = `
+                        <p class="font-semibold mb-2">${exercise.title}</p>
+                        <button class="check-exercise-btn ${buttonColor} text-white font-bold py-2 px-6 rounded-md transition-colors" data-exercise="${exerciseKey}" data-range="${exercise.startQ}-${exercise.endQ}">
+                            ${buttonText}
+                        </button>
+                    `;
+
+                    const firstQuestionInput = document.getElementById(`q${exercise.startQ}`) || document.querySelector(`input[name="q${exercise.startQ}"]`);
+                    if (firstQuestionInput) {
+                        const questionBlock = firstQuestionInput.closest('.space-y-3, .space-y-4, .mb-6');
+                        if (questionBlock) {
+                            questionBlock.appendChild(buttonContainer);
+                        } else {
+                            this.questionsSection.appendChild(buttonContainer);
+                        }
+                    } else {
+                         if (exercise.type === 'summary_completion') {
+                             const summaryBlock = this.questionsSection.querySelector('.p-4.border.rounded-lg.bg-white.mb-6');
+                             if(summaryBlock) summaryBlock.appendChild(buttonContainer);
+                         } else {
+                             this.questionsSection.appendChild(buttonContainer);
+                         }
+                    }
+                });
+            },
+            
+            showExerciseAnswers(exerciseKey, range) {
+                const [startQ, endQ] = range.split('-').map(Number);
+
+                for (let i = startQ; i <= endQ; i++) {
+                    const qId = `q${i}`;
+                    const inputs = document.querySelectorAll(`#${qId}, input[name="${qId}"]`);
+                    if (inputs.length === 0) continue;
+
+                    const userAnswer = (this.userAnswers[qId] || "").toLowerCase().trim();
+                    const correctAnswer = (answers[qId] || "").toLowerCase();
+                    
+                    let isCorrect = false;
+                    if(correctAnswer.includes('/')) { // For answers like "10/ten times"
+                        isCorrect = correctAnswer.split('/').some(ans => ans.trim() === userAnswer);
+                    } else {
+                        isCorrect = userAnswer === correctAnswer;
+                    }
+                    
+                    const inputElement = document.getElementById(qId) || document.querySelector(`input[name="${qId}"]:checked`);
+
+                    if (inputElement) {
+                         const elementToStyle = inputElement.type === 'radio' ? inputElement.closest('label') || inputElement : inputElement;
+                         if (isCorrect) {
+                            elementToStyle.classList.add('correct-answer');
+                            elementToStyle.classList.remove('incorrect-answer');
+                            if(inputElement.type === 'text') inputElement.style.backgroundColor = '#dcfce7';
+                        } else {
+                            elementToStyle.classList.add('incorrect-answer');
+                            elementToStyle.classList.remove('correct-answer');
+                             if(inputElement.type === 'text') {
+                                 inputElement.style.backgroundColor = '#fef2f2';
+                                 inputElement.placeholder = `Correct: ${answers[qId]}`;
+                             }
+                        }
+                    } else if (inputs[0].type === 'radio') {
+                         const firstRadioLabel = inputs[0].closest('label');
+                         if(firstRadioLabel) firstRadioLabel.classList.add('incorrect-answer');
+                    } else if(inputs[0].type === 'text') { // Handle blank text inputs
+                        inputs[0].classList.add('incorrect-answer');
+                        inputs[0].style.backgroundColor = '#fef2f2';
+                        inputs[0].placeholder = `Correct: ${answers[qId]}`;
+                    }
+
+                     if (inputs[0].type === 'radio' && !isCorrect) {
+                         const correctRadio = document.querySelector(`input[name="${qId}"][value="${answers[qId]}"]`);
+                         if(correctRadio) {
+                              const label = correctRadio.closest('label');
+                              if (label) {
+                                label.classList.add('correct-answer');
+                                label.style.border = '2px solid #16a34a';
+                            }
+                         }
+                    }
+
+                    // Add Explanation
+                    if (explanations[qId]) {
+                         const existingExpl = document.getElementById(`expl-${qId}`);
+                         if (!existingExpl) {
+                            const explDiv = document.createElement('div');
+                            explDiv.id = `expl-${qId}`;
+                            explDiv.className = 'explanation-box';
+                            explDiv.innerHTML = `<strong>Explanation:</strong> ${explanations[qId]}`;
+                            
+                            let insertTarget = null;
+                            if (inputElement) {
+                                if (inputElement.closest('p')) {
+                                     insertTarget = inputElement.closest('p');
+                                } else if (inputElement.closest('div.q-item')) {
+                                     insertTarget = inputElement.closest('div.q-item');
+                                } else if (inputElement.closest('div')) {
+                                     insertTarget = inputElement.closest('p') || inputElement.parentElement;
+                                }
+                            } else {
+                                const radios = document.getElementsByName(qId);
+                                if(radios.length > 0) {
+                                     insertTarget = radios[0].closest('div.q-item') || radios[0].closest('p');
+                                } else {
+                                     const textInput = document.getElementById(qId);
+                                     if(textInput) insertTarget = textInput.closest('p');
+                                }
+                            }
+
+                            if (insertTarget) {
+                                insertTarget.insertAdjacentElement('afterend', explDiv);
+                            }
+                         }
+                    }
+                }
+
+                const btn = document.querySelector(`button[data-exercise="${exerciseKey}"]`);
+                if (btn) {
+                    btn.textContent = 'Reset Answers';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                }
+            },
+
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        const rect = range.getBoundingClientRect();
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                                // Ignore error
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
