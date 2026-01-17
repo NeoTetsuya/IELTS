@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - The World Wide Web</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --app-font-size: 16px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+            font-size: var(--app-font-size);
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 140px;
+            text-align: center;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        /* Radio button styles */
+        input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            accent-color: #2563eb;
+            cursor: pointer;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: var(--app-font-size);
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        /* Explanation Box Styles */
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        /* Vocabulary Styles */
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+        }
+        #vocab-modal {
+            animation: fadeInModal 0.3s ease-out;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+         @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Spinner for submission */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #ffffff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600 truncate mr-4">IELTS Academic Test Simulator</h1>
+        <div class="flex items-center space-x-4">
+            <!-- Text Size Controls -->
+            <div class="flex items-center space-x-2 border-r pr-4 mr-2 hidden md:flex">
+                <span class="text-sm text-gray-500 font-medium mr-1">Text Size:</span>
+                <button id="decrease-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Decrease Font Size">
+                    A-
+                </button>
+                <button id="increase-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Increase Font Size">
+                    A+
+                </button>
+            </div>
+            
+            <!-- Submit Button (New) -->
+            <button id="submit-form-btn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow transition-colors flex items-center">
+                <span>Submit to Teacher</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative transform transition-all" style="animation: zoomIn 0.3s ease-out;">
+        <button id="close-vocab-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 text-3xl leading-none">&times;</button>
+        <div class="flex items-center mb-4">
+            <h3 id="vocab-word" class="text-3xl font-bold text-blue-600 capitalize"></h3>
+        </div>
+        <div class="flex items-center mb-4">
+            <button id="play-audio-btn" class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white mr-3 transition-colors">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-600 text-lg"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 leading-relaxed"></p>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="success-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center relative transform transition-all" style="animation: zoomIn 0.3s ease-out;">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Submitted Successfully!</h3>
+        <p class="text-gray-600 mb-6">Your answers have been sent to the teacher.</p>
+        <button id="close-success-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium w-full transition-colors">
+            Close
+        </button>
+    </div>
+</div>
+
+<script>
+    // ===========================================================================
+    // CONFIGURATION SECTION
+    // ===========================================================================
+    const GOOGLE_FORM_CONFIG = {
+        // Automatically extracted from your link:
+        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSej3Hh_88JIZAxXYGYiRU-iTWNApJo9JeJMFHk1wQPwY9xmoA/formResponse", 
+
+        // MAP QUESTION IDs TO GOOGLE FORM ENTRY IDs
+        mapping: {
+            'studentName': 'entry.200065966', // Added from your link for Student Name
+            'q1': 'entry.38283199',
+            'q2': 'entry.2063329171',
+            'q3': 'entry.451784455',
+            'q4': 'entry.59322356',
+            'q5': 'entry.1212742002',
+            'q6': 'entry.1914956235',
+            'q7': 'entry.1718775170',
+            'q8': 'entry.1296832006',
+            'q9': 'entry.1169284462',
+            'q10': 'entry.1054754827',
+            'q11': 'entry.487961617',
+            'q12': 'entry.217436332',
+            'q13': 'entry.1792999759'
+        }
+    };
+    // ===========================================================================
+
+
+    // --- DATA ---
+    const vocabulary = {
+        'bland': { meaning: 'Lacking strong features or characteristics and therefore uninteresting.', phonetic: '/blænd/' },
+        'ambitious': { meaning: 'Having or showing a strong desire and determination to succeed; intended to satisfy high aspirations.', phonetic: '/æmˈbɪʃəs/' },
+        'amateurs': { meaning: 'A person who engages in a pursuit, especially a sport or artistic work, on an unpaid rather than a professional basis.', phonetic: '/ˈæmətərz/' },
+        'successor': { meaning: 'A person or thing that succeeds another.', phonetic: '/səkˈsɛsər/' },
+        'clan': { meaning: 'A group of close-knit and interrelated families; a group of people with a strong common interest.', phonetic: '/klæn/' },
+        'collaborate': { meaning: 'Work jointly on an activity, especially to produce or create something.', phonetic: '/kəˈlæbəreɪt/' },
+        'incentive': { meaning: 'A thing that motivates or encourages one to do something.', phonetic: '/ɪnˈsɛntɪv/' }
+    };
+
+    const explanations = {
+        q1: "The text describes him as 'a then little-known computer scientist', which contradicts the statement that he was 'famous'.",
+        q2: "The text says 'the Web was invented to deal with a specific problem... keep track of such a large project', referring to the LHC.",
+        q3: "The text mentions the web has brought about 'political campaigning', but it does not say Tim Berners-Lee himself has been active in politics.",
+        q4: "The text states the web 'permits professional scientists to recruit thousands of amateurs to give them a hand'.",
+        q5: "The first project classified 'one million images'. The successor aimed to classify 'the brightest quarter of a million' (250,000), which is fewer, not more.",
+        q6: "The text says Herbaria@home allows them to 'track the changes... in response to climate change'. It does not claim this work will *reduce* the effects of climate change.",
+        q7: "The text says scientists 'made observations about the <strong>sizes</strong> of human social networks'.",
+        q8: "The text states: 'the majority of the <strong>messages</strong> were directed at a few specific friends'.",
+        q9: "Dr Huberman helped uncover 'several laws of <strong>web surfing</strong>'.",
+        q10: "The text describes a phenomenon where a few sites on a given subject 'attract most of the <strong>attention</strong>'.",
+        q11: "The text says 'many <strong>bloggers</strong> develop and refine their essays as a result of these comments'.",
+        q12: "The text discusses how '<strong>scientific research</strong>' (or scientific papers) is usually only reviewed by a few anonymous experts, unlike blogs.",
+        q13: "The text states: 'When <strong>Nature</strong>... experimented with open peer review in 2006'.",
+    };
+
+    const testData = {
+        reading: {
+            duration: 3600, 
+            sections: [
+                {
+                    title: "The World Wide Web",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">The World Wide Web from its origins</h3>
+                        <p class="mb-4"><em>Science inspired the World Wide Web, and the Web has responded by changing science.</em></p>
+                        <p class="mb-4">‘Information Management: A Proposal’. That was the <span class="vocab-word" data-word="bland">bland</span> title of a document written in March 1989 by a then little-known computer scientist called Tim Berners-Lee, who was working at CERN, Europe's particle physics laboratory, near Geneva. His proposal, modestly called the World Wide Web, has achieved far more than anyone expected at the time.</p>
+                        <p class="mb-4">In fact, the Web was invented to deal with a specific problem. In the late 1980s, CERN was planning one of the most <span class="vocab-word" data-word="ambitious">ambitious</span> scientific projects ever, the Large Hadron Collider*, or LHC. As the first few lines of the original proposal put it, 'Many of the discussions of the future at CERN and the LHC end with the question "Yes, but how will we ever keep track of such a large project?" This proposal provides an answer to such questions.'</p>
+                        <p class="mb-4">The Web, as everyone now knows, has many more uses than the original idea of linking electronic documents about particle physics in laboratories around the world. But among all the changes it has brought about, from personal social networks to political campaigning, it has also transformed the business of doing science itself, as the man who invented it hoped it would.</p>
+                        <p class="mb-4">It allows journals to be published online and links to be made from one paper to another. It also permits professional scientists to recruit thousands of <span class="vocab-word" data-word="amateurs">amateurs</span> to give them a hand. One project of this type, called GalaxyZoo, used these unpaid workers to classify one million images of galaxies into various types (spiral, elliptical and irregular). This project, which was intended to help astronomers understand how galaxies evolve, was so successful that a <span class="vocab-word" data-word="successor">successor</span> has now been launched, to classify the brightest quarter of a million of them in finer detail. People working for a more modest project called Herbaria@home examine scanned images of handwritten notes about old plants stored in British museums. This will allow them to track the changes in the distribution of species in response to climate change.</p>
+                        <p class="mb-4">Another new scientific application of the Web is to use it as an experimental laboratory. It is allowing social scientists, in particular, to do things that were previously impossible. In one project, scientists made observations about the sizes of human social networks using data from Facebook. A second investigation of these networks, produced by Bernardo Huberman of HP Labs, Hewlett-Packard's research arm in Palo Alto, California, looked at Twitter, a social networking website that allows people to post short messages to long lists of friends.</p>
+                        <p class="mb-4">At first glance, the networks seemed enormous – the 300,000 Twitterers sampled had 80 friends each, on average (those on Facebook had 120), but some listed up to 1,000. Closer statistical inspection, however, revealed that the majority of the messages were directed at a few specific friends. This showed that an individual's active social network is far smaller than his '<span class="vocab-word" data-word="clan">clan</span>'. Dr Huberman has also helped uncover several laws of web surfing, including the number of times an average person will go from web page to web page on a given site before giving up, and the details of the 'winner takes all' phenomenon, whereby a few sites on a given subject attract most of the attention, and the rest get very little.</p>
+                        <p class="mb-4">Scientists have been good at using the Web to carry out research. However, they have not been so effective at employing the latest web-based social-networking tools to open up scientific discussion and encourage more effective <span class="vocab-word" data-word="collaborate">collaboration</span>.</p>
+                        <p class="mb-4">Journalists are now used to having their articles commented on by dozens of readers. Indeed, many bloggers develop and refine their essays as a result of these comments. Yet although people have tried to have scientific research reviewed in the same way, most researchers only accept reviews from a few anonymous experts. When Nature, one of the world's most respected scientific journals, experimented with open peer review in 2006, the results were disappointing. Only 5% of the authors it spoke to agreed to have their article posted for review on the Web - and their instinct turned out to be right, because almost half of the papers attracted no comments. Michael Nielsen, an expert on quantum computers, belongs to a new wave of scientist bloggers who want to change this. He thinks the reason for the lack of comments is that potential reviewers lack <span class="vocab-word" data-word="incentive">incentive</span>.</p>
+                        <p class="text-sm text-gray-600 mt-4">* The Large Hadron Collider (LHC) is the world's largest particle accelerator and collides particle beams. It provides information on fundamental questions of physics.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-6</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in the reading passage? Write <strong>TRUE</strong>, <strong>FALSE</strong>, or <strong>NOT GIVEN</strong>.</p>
+                        <div class="space-y-6 p-4 border rounded-lg bg-white mb-6">
+                            
+                            <!-- Q1 -->
+                            <div class="q-item">
+                                <p class="mb-2"><strong>1</strong> Tim Berners-Lee was famous for his research in physics before he invented the World Wide Web.</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q1" value="TRUE" class="mr-2"> TRUE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q1" value="FALSE" class="mr-2"> FALSE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q1" value="NOT GIVEN" class="mr-2"> NOT GIVEN
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Q2 -->
+                            <div class="q-item">
+                                <p class="mb-2"><strong>2</strong> The original intention of the Web was to help manage one extremely complex project.</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q2" value="TRUE" class="mr-2"> TRUE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q2" value="FALSE" class="mr-2"> FALSE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q2" value="NOT GIVEN" class="mr-2"> NOT GIVEN
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Q3 -->
+                            <div class="q-item">
+                                <p class="mb-2"><strong>3</strong> Tim Berners-Lee has also been active in politics.</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q3" value="TRUE" class="mr-2"> TRUE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q3" value="FALSE" class="mr-2"> FALSE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q3" value="NOT GIVEN" class="mr-2"> NOT GIVEN
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Q4 -->
+                            <div class="q-item">
+                                <p class="mb-2"><strong>4</strong> The Web has allowed professional and amateur scientists to work together.</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q4" value="TRUE" class="mr-2"> TRUE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q4" value="FALSE" class="mr-2"> FALSE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q4" value="NOT GIVEN" class="mr-2"> NOT GIVEN
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Q5 -->
+                            <div class="q-item">
+                                <p class="mb-2"><strong>5</strong> The second galaxy project aims to examine more galaxies than the first.</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q5" value="TRUE" class="mr-2"> TRUE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q5" value="FALSE" class="mr-2"> FALSE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q5" value="NOT GIVEN" class="mr-2"> NOT GIVEN
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Q6 -->
+                            <div class="q-item">
+                                <p class="mb-2"><strong>6</strong> Herbaria@home's work will help to reduce the effects of climate change.</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q6" value="TRUE" class="mr-2"> TRUE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q6" value="FALSE" class="mr-2"> FALSE
+                                    </label>
+                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <input type="radio" name="q6" value="NOT GIVEN" class="mr-2"> NOT GIVEN
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 7-10</h4>
+                        <p class="mb-4">Complete the notes below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <h5 class="font-bold mb-2">Social network and internet use</h5>
+                            <p>Web use by social scientists (including Dr Huberman) to investigate the <strong>7</strong> ................ of social networks. <input type="text" id="q7" data-q="7"></p>
+                            <p>Most <strong>8</strong> ................ intended for limited number of people – not everyone on list. <input type="text" id="q8" data-q="8"></p>
+                            <p class="font-semibold mt-2">Dr Huberman has also investigated:</p>
+                            <p><strong>9</strong> ................ to discover how long people will spend on a particular website. <input type="text" id="q9" data-q="9"></p>
+                            <p>why a small number of sites get much more <strong>10</strong> ................ than others on the same subject. <input type="text" id="q10" data-q="10"></p>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 11-13</h4>
+                        <p class="mb-4">Answer the questions below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <div class="space-y-3 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>11</strong> Whose writing improves as a result of feedback received from readers? <input type="text" id="q11" data-q="11"></p>
+                            <p><strong>12</strong> What type of writing is not reviewed extensively on the Web? <input type="text" id="q12" data-q="12"></p>
+                            <p><strong>13</strong> Which publication invited authors to publish their articles on the World Wide Web? <input type="text" id="q13" data-q="13"></p>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        q1: "false", q2: "true", q3: "not given", q4: "true", q5: "false", q6: "not given",
+        q7: "sizes", q8: "messages", q9: "web surfing", q10: "attention",
+        q11: "bloggers", q12: "scientific research", q13: "nature"
+    };
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentTab: 'reading',
+            currentSection: 0,
+            answersChecked: {},
+            currentFontSize: 16,
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabModal: document.getElementById('vocab-modal'),
+            closeVocabModalBtn: document.getElementById('close-vocab-modal'),
+            vocabWordEl: document.getElementById('vocab-word'),
+            vocabMeaningEl: document.getElementById('vocab-meaning'),
+            vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
+            playAudioBtn: document.getElementById('play-audio-btn'),
+            
+            // New Elements for Submission
+            submitFormBtn: document.getElementById('submit-form-btn'),
+            successModal: document.getElementById('success-modal'),
+            closeSuccessBtn: document.getElementById('close-success-btn'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                
+                // Font Size Events
+                document.getElementById('increase-font-btn').addEventListener('click', () => this.changeFontSize(1));
+                document.getElementById('decrease-font-btn').addEventListener('click', () => this.changeFontSize(-1));
+
+                // Close modal events
+                this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
+                this.vocabModal.addEventListener('click', (e) => {
+                   if (e.target === this.vocabModal) this.closeModal();
+                });
+                
+                // Success modal events
+                this.closeSuccessBtn.addEventListener('click', () => {
+                    this.successModal.classList.add('hidden');
+                });
+                this.successModal.addEventListener('click', (e) => {
+                    if (e.target === this.successModal) this.successModal.classList.add('hidden');
+                });
+
+                // Google Form Submit Event
+                this.submitFormBtn.addEventListener('click', () => this.submitToGoogleForm());
+
+                // Use event delegation for dynamically added elements
+                // IMPORTANT: Listen for 'input' (text fields) AND 'change' (radio buttons)
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('change', (e) => this.saveAnswer(e));
+                
+                // Delegated event listener for vocab words
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const wordKey = e.target.dataset.word;
+                        this.openVocabModal(wordKey);
+                    }
+                });
+                
+                // Audio button (mock)
+                this.playAudioBtn.addEventListener('click', () => {
+                   const word = this.vocabWordEl.textContent;
+                   console.log(`Playing audio for: ${word}`);
+                   
+                   this.playAudioBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                   this.playAudioBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                   setTimeout(() => {
+                       this.playAudioBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                       this.playAudioBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                   }, 500);
+                });
+            },
+            
+            // --- GOOGLE FORM SUBMISSION LOGIC (Using FETCH instead of Iframe) ---
+            async submitToGoogleForm() {
+                // 1. Validation
+                if (GOOGLE_FORM_CONFIG.formUrl.includes("YOUR_FORM_ID")) {
+                    alert("Please configure the Google Form URL in the code (GOOGLE_FORM_CONFIG)!");
+                    return;
+                }
+
+                // PROMPT FOR NAME
+                const studentName = prompt("Please enter your name to submit:");
+                if (!studentName) {
+                    return; // User cancelled
+                }
+
+                // 2. Change button state
+                const originalBtnText = this.submitFormBtn.innerHTML;
+                this.submitFormBtn.disabled = true;
+                this.submitFormBtn.innerHTML = '<span class="spinner"></span> Sending...';
+                this.submitFormBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+                // 3. Prepare Data for Fetch
+                const formData = new FormData();
+                
+                // Map answers
+                for (const [key, entryId] of Object.entries(GOOGLE_FORM_CONFIG.mapping)) {
+                    let value = '';
+                    if (key === 'studentName') {
+                         value = studentName;
+                    } else {
+                         value = this.userAnswers[key] || ''; 
+                    }
+                    formData.append(entryId, value);
+                }
+
+                // 4. Submit using fetch (no-cors mode is required for Google Forms)
+                try {
+                    await fetch(GOOGLE_FORM_CONFIG.formUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: formData
+                    });
+
+                    // 5. Success UI
+                    setTimeout(() => {
+                        this.submitFormBtn.disabled = false;
+                        this.submitFormBtn.innerHTML = originalBtnText;
+                        this.submitFormBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                        this.successModal.classList.remove('hidden');
+                    }, 500);
+
+                } catch (error) {
+                    console.error("Submission Error:", error);
+                    alert("There was an error submitting the form. Please check your internet connection.");
+                    
+                    this.submitFormBtn.disabled = false;
+                    this.submitFormBtn.innerHTML = originalBtnText;
+                    this.submitFormBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            },
+
+            changeFontSize(delta) {
+                this.currentFontSize += delta;
+                if (this.currentFontSize < 12) this.currentFontSize = 12;
+                if (this.currentFontSize > 24) this.currentFontSize = 24;
+                document.documentElement.style.setProperty('--app-font-size', `${this.currentFontSize}px`);
+            },
+
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                }
+            },
+
+            closeModal() {
+                this.vocabModal.classList.add('hidden');
+            },
+            
+            saveAnswer(e) {
+                if (e.target.id || e.target.name) {
+                    const id = e.target.id || e.target.name;
+                     if (e.target.type === 'radio') {
+                        if (e.target.checked) {
+                            this.userAnswers[id] = e.target.value;
+                        }
+                    } else {
+                         this.userAnswers[id] = e.target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    if (textInput) {
+                        textInput.value = value;
+                    } else {
+                        const radioInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        radioInputs.forEach(radio => {
+                            if (radio.value === value) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                }
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex, 10)));
+                });
+                
+                this.restoreAnswers();
+                // Button generation removed
+            },
+            
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        const rect = range.getBoundingClientRect();
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                                // Ignore error
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
