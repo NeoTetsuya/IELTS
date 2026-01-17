@@ -272,6 +272,10 @@
     </div>
 </div>
 
+<!-- Hidden Elements for Form Submission -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form id="google-submit-form" action="" method="POST" target="hidden_iframe" style="display:none;"></form>
+
 <script>
     // ===========================================================================
     // CONFIGURATION SECTION
@@ -568,9 +572,9 @@
                 });
             },
             
-            // --- GOOGLE FORM SUBMISSION LOGIC (Using FETCH instead of Iframe) ---
-            async submitToGoogleForm() {
-                // 1. Validation
+            // --- GOOGLE FORM SUBMISSION LOGIC (Using Hidden Iframe - The "Gold Standard") ---
+            submitToGoogleForm() {
+                // 1. Validation check
                 if (GOOGLE_FORM_CONFIG.formUrl.includes("YOUR_FORM_ID")) {
                     alert("Please configure the Google Form URL in the code (GOOGLE_FORM_CONFIG)!");
                     return;
@@ -578,54 +582,54 @@
 
                 // PROMPT FOR NAME
                 const studentName = prompt("Please enter your name to submit:");
-                if (!studentName) {
+                if (studentName === null) {
                     return; // User cancelled
                 }
+                const finalName = studentName.trim() || "Anonymous";
 
-                // 2. Change button state
+                // 2. Change button state to indicate sending
                 const originalBtnText = this.submitFormBtn.innerHTML;
                 this.submitFormBtn.disabled = true;
                 this.submitFormBtn.innerHTML = '<span class="spinner"></span> Sending...';
                 this.submitFormBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
-                // 3. Prepare Data for Fetch
-                const formData = new FormData();
-                
-                // Map answers
+                // 3. Prepare the hidden form
+                const form = document.getElementById('google-submit-form');
+                form.action = GOOGLE_FORM_CONFIG.formUrl;
+                form.innerHTML = ''; // Clear previous inputs
+
+                // 4. Map answers to hidden inputs
                 for (const [key, entryId] of Object.entries(GOOGLE_FORM_CONFIG.mapping)) {
-                    let value = '';
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = entryId;
+                    
                     if (key === 'studentName') {
-                         value = studentName;
+                         input.value = finalName;
                     } else {
-                         value = this.userAnswers[key] || ''; 
+                         // Send value or empty string if not answered
+                         input.value = this.userAnswers[key] || ''; 
                     }
-                    formData.append(entryId, value);
+                    
+                    form.appendChild(input);
                 }
 
-                // 4. Submit using fetch (no-cors mode is required for Google Forms)
-                try {
-                    await fetch(GOOGLE_FORM_CONFIG.formUrl, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        body: formData
-                    });
+                // 5. Submit the form to the hidden iframe
+                // This mimics a standard browser form submission, which is less likely to be blocked.
+                form.submit();
 
-                    // 5. Success UI
-                    setTimeout(() => {
-                        this.submitFormBtn.disabled = false;
-                        this.submitFormBtn.innerHTML = originalBtnText;
-                        this.submitFormBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                        this.successModal.classList.remove('hidden');
-                    }, 500);
-
-                } catch (error) {
-                    console.error("Submission Error:", error);
-                    alert("There was an error submitting the form. Please check your internet connection.");
-                    
+                // 6. Handle "Completion"
+                // Since Google Forms redirects to a new page, and we are in an iframe, 
+                // we cannot detect the "load" event reliably due to Cross-Origin policies (it will throw an error).
+                // The most robust way is to simply assume success after a short delay.
+                setTimeout(() => {
                     this.submitFormBtn.disabled = false;
                     this.submitFormBtn.innerHTML = originalBtnText;
                     this.submitFormBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                }
+                    
+                    // Show success modal
+                    this.successModal.classList.remove('hidden');
+                }, 1500);
             },
 
             changeFontSize(delta) {
