@@ -161,23 +161,6 @@
             from { transform: scale(0.9); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-        
-        /* Spinner for submission */
-        .spinner {
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top: 3px solid #ffffff;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -258,47 +241,32 @@
     </div>
 </div>
 
-<!-- Success Modal with Manual Backup -->
-<div id="success-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+<!-- Submission Modal (Manual Open) -->
+<div id="submit-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
     <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center relative transform transition-all" style="animation: zoomIn 0.3s ease-out;">
-        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-2">Submitted!</h3>
-        <p class="text-gray-600 mb-4">The system has attempted to send your answers.</p>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Ready to Submit</h3>
+        <p class="text-gray-600 mb-6">Click the button below to open the Google Form with your answers pre-filled. <br><span class="text-red-600 font-bold">You must click "Submit" on the Google Form page to finish.</span></p>
         
-        <div class="bg-yellow-50 border border-yellow-200 rounded p-3 mb-6 text-sm text-left">
-            <p class="font-bold text-yellow-800 mb-1">⚠️ Important:</p>
-            <p class="text-yellow-700">If the teacher says they received <strong>0 answers</strong> or a <strong>blank form</strong>, please click the button below to open the Google Form with your answers pre-filled, and click "Submit" there.</p>
-        </div>
-
-        <a id="manual-submit-link" href="#" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-3 transition-colors">
-            Open in Google Forms (Backup)
+        <a id="manual-submit-link" href="#" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mb-3 transition-colors shadow-lg flex items-center justify-center">
+            <span>Open Google Form & Submit</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>
         
-        <button id="close-success-btn" class="text-gray-500 hover:text-gray-700 text-sm underline">
-            Close
+        <button id="close-submit-modal" class="text-gray-500 hover:text-gray-700 text-sm underline mt-2">
+            Cancel
         </button>
     </div>
 </div>
-
-<!-- Hidden Elements for Form Submission -->
-<!-- Removed display:none and used 1x1 pixel to avoid browser blocking optimization -->
-<iframe name="hidden_iframe" id="hidden_iframe" style="width:1px;height:1px;border:0;position:absolute;left:-9999px;"></iframe>
-<form id="google-submit-form" action="" method="POST" target="hidden_iframe" style="width:1px;height:1px;border:0;position:absolute;left:-9999px;"></form>
 
 <script>
     // ===========================================================================
     // CONFIGURATION SECTION
     // ===========================================================================
     const GOOGLE_FORM_CONFIG = {
-        // Form ID extracted
-        formId: "1FAIpQLSej3Hh_88JIZAxXYGYiRU-iTWNApJo9JeJMFHk1wQPwY9xmoA",
-        
-        // Full Action URL
-        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSej3Hh_88JIZAxXYGYiRU-iTWNApJo9JeJMFHk1wQPwY9xmoA/formResponse", 
-        
-        // Base View URL for Manual Backup
+        // Base View URL for Manual Submission
         viewUrl: "https://docs.google.com/forms/d/e/1FAIpQLSej3Hh_88JIZAxXYGYiRU-iTWNApJo9JeJMFHk1wQPwY9xmoA/viewform",
 
         // MAP QUESTION IDs TO GOOGLE FORM ENTRY IDs
@@ -526,8 +494,8 @@
             
             // New Elements for Submission
             submitFormBtn: document.getElementById('submit-form-btn'),
-            successModal: document.getElementById('success-modal'),
-            closeSuccessBtn: document.getElementById('close-success-btn'),
+            successModal: document.getElementById('submit-modal'), // Renamed to generic submit modal
+            closeSuccessBtn: document.getElementById('close-submit-modal'),
             manualSubmitLink: document.getElementById('manual-submit-link'),
 
             init() {
@@ -552,7 +520,7 @@
                    if (e.target === this.vocabModal) this.closeModal();
                 });
                 
-                // Success modal events
+                // Submit modal events
                 this.closeSuccessBtn.addEventListener('click', () => {
                     this.successModal.classList.add('hidden');
                 });
@@ -590,10 +558,10 @@
                 });
             },
             
-            // --- GOOGLE FORM SUBMISSION LOGIC (With Manual Backup) ---
+            // --- GOOGLE FORM SUBMISSION LOGIC (Manual ONLY) ---
             submitToGoogleForm() {
                 // 1. Validation check
-                if (GOOGLE_FORM_CONFIG.formUrl.includes("YOUR_FORM_ID")) {
+                if (GOOGLE_FORM_CONFIG.viewUrl.includes("YOUR_FORM_ID")) {
                     alert("Please configure the Google Form URL in the code (GOOGLE_FORM_CONFIG)!");
                     return;
                 }
@@ -605,57 +573,28 @@
                 }
                 const finalName = studentName.trim() || "Anonymous";
 
-                // 2. Change button state to indicate sending
-                const originalBtnText = this.submitFormBtn.innerHTML;
-                this.submitFormBtn.disabled = true;
-                this.submitFormBtn.innerHTML = '<span class="spinner"></span> Sending...';
-                this.submitFormBtn.classList.add('opacity-75', 'cursor-not-allowed');
-
-                // 3. Prepare the hidden form AND the manual link
-                const form = document.getElementById('google-submit-form');
-                form.action = GOOGLE_FORM_CONFIG.formUrl;
-                form.innerHTML = ''; // Clear previous inputs
-                
-                // Base for manual link
+                // 2. Prepare the manual link
                 let manualUrl = GOOGLE_FORM_CONFIG.viewUrl + "?usp=pp_url";
 
-                // 4. Map answers to hidden inputs and manual link
+                // 3. Map answers to URL parameters
                 for (const [key, entryId] of Object.entries(GOOGLE_FORM_CONFIG.mapping)) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = entryId;
-                    
                     let value = '';
                     if (key === 'studentName') {
                          value = finalName;
                     } else {
+                         // Send value or empty string if not answered
                          value = this.userAnswers[key] || ''; 
                     }
                     
-                    input.value = value;
-                    form.appendChild(input);
-                    
-                    // Add to manual URL (encode properly)
+                    // Add to URL
                     manualUrl += `&${entryId}=${encodeURIComponent(value)}`;
                 }
 
-                // Update the manual link button in the success modal
+                // 4. Update the link in the modal
                 this.manualSubmitLink.href = manualUrl;
 
-                // 5. Submit the form to the hidden iframe
-                // This mimics a standard browser form submission.
-                console.log("Attempting background submission...");
-                form.submit();
-
-                // 6. Show Success/Backup Modal
-                setTimeout(() => {
-                    this.submitFormBtn.disabled = false;
-                    this.submitFormBtn.innerHTML = originalBtnText;
-                    this.submitFormBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                    
-                    // Show success modal
-                    this.successModal.classList.remove('hidden');
-                }, 1500);
+                // 5. Show the Modal
+                this.successModal.classList.remove('hidden');
             },
 
             changeFontSize(delta) {
