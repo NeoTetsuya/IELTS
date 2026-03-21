@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Meet the Hedgehog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --app-font-size: 16px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+            font-size: var(--app-font-size);
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        input[type="text"], select {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: auto;
+            min-width: 50px;
+            text-align: center;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: var(--app-font-size);
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+        }
+         .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        /* Explanation Box Styles */
+        .explanation-box {
+            animation: fadeIn 0.3s ease-in-out;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            box-shadow: 0 0 0 2px #16a34a;
+        }
+        .incorrect-answer {
+            box-shadow: 0 0 0 2px #dc2626;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+        }
+        /* Vocabulary Styles */
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+        }
+        #vocab-modal {
+            animation: fadeInModal 0.3s ease-out;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+         @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">IELTS Academic Test Simulator - Meet the Hedgehog</h1>
+        <div class="flex items-center space-x-4">
+            <!-- Student Name -->
+            <div class="flex items-center space-x-2 border-r pr-4 mr-2">
+                <span class="text-sm text-gray-500 font-medium hidden sm:inline">Name:</span>
+                <input type="text" id="student-name" class="border border-gray-300 rounded px-2 py-1 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Your Name">
+            </div>
+            <!-- Text Size Controls -->
+            <div class="flex items-center space-x-2 border-r pr-4 mr-2">
+                <span class="text-sm text-gray-500 font-medium mr-1 hidden sm:inline">Text Size:</span>
+                <button id="decrease-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Decrease Font Size">
+                    A-
+                </button>
+                <button id="increase-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Increase Font Size">
+                    A+
+                </button>
+            </div>
+            <div class="text-lg font-semibold text-gray-600">IELTS Academic Reading</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages / Instructions -->
+        <div id="left-pane" class="pane bg-white">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer: Navigation -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex justify-between items-center">
+            <!-- Main Skill Tabs -->
+            <div>
+                <button class="tab-btn active" data-tab="reading">Reading</button>
+            </div>
+            <!-- Section Tabs -->
+            <div id="section-tabs">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative transform transition-all" style="animation: zoomIn 0.3s ease-out;">
+        <button id="close-vocab-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 text-3xl leading-none">&times;</button>
+        <div class="flex items-center mb-4">
+            <h3 id="vocab-word" class="text-3xl font-bold text-blue-600 capitalize"></h3>
+        </div>
+        <div class="flex items-center mb-4">
+            <button id="play-audio-btn" class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white mr-3 transition-colors">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-600 text-lg"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 leading-relaxed"></p>
+    </div>
+</div>
+
+<script>
+    // --- DATA ---
+    const vocabulary = {
+        'forage': { meaning: 'To search widely for food or provisions.', phonetic: '/ˈfɒrɪdʒ/' },
+        'lineages': { meaning: 'Lineal descent from an ancestor; ancestry or pedigree.', phonetic: '/ˈlɪniɪdʒɪz/' },
+        'proximity': { meaning: 'Nearness in space, time, or relationship.', phonetic: '/prɒkˈsɪmɪti/' },
+        'vulnerable': { meaning: 'Susceptible to physical or emotional attack or harm.', phonetic: '/ˈvʌlnərəbl/' },
+        'vermin': { meaning: 'Wild mammals and birds that are believed to be harmful to crops, farm animals, or game, or that carry disease.', phonetic: '/ˈvɜːmɪn/' },
+        'cull': { meaning: 'To reduce the population of (a wild animal) by selective slaughter.', phonetic: '/kʌl/' }
+    };
+
+    const explanations = {
+        q1: "Section B discusses how studying evolutionary steps helps 'to better understand how foetal defects occur' so you can 'make accurate inferences about one mammal from another'.",
+        q2: "Section C details different places hedgehogs live: 'cold winters in the north', 'desert heat', 'urban areas', and 'remote places'.",
+        q3: "Section F notes that any threat makes them 'roll up', so researchers had to invent a new measurement: 'ball length'.",
+        q4: "Section E mentions veterinarians trying to understand 'gum disease in domesticated hedgehogs', concluding it is linked to lacking hard insects in their diet.",
+        q5: "Section A mentions the beloved children's book character Mrs Tiggy-Winkle and the fact that they are 'good for gardens, eating vast numbers of slugs'.",
+        q6: "Section B lists four mysteries explained by recent studies: applying saliva to bodies, 30 million years of survival, chewing toxic toad skins, and evolution secrets.",
+        q7: "Section D discusses their interactions, noting they detect each other by scent, scrap over food, rival males have aggressive interactions, and they meet to mate.",
+        q8: "Section C directly states: 'We know of at least 14,' says hedgehog researcher Nigel Reeve.",
+        q9: "Section D mentions they meet primarily to mate, 'producing litters of four or five hoglets'.",
+        q10: "Section F describes human volunteers finding quills much more 'irritating and painful' after hedgehogs coated them with chewed venomous toad skin (Option B).",
+        q11: "Section G lists clinics (A), alerting people to check bonfires (D), and altering McDonald's containers (C). It does NOT mention imposing fines for littering (B).",
+        q12: "Section H states that 'gamekeepers were killing as many as 10,000 a year thinking they were... pests'. Now, on the Hebrides Islands, 'scientists are coming to the same conclusions all over again' because they are reducing rare birds (Option B).",
+        q13: "Section H notes that efforts to cull the animals have upset conservationists, who have 'countered with strategies to relocate the animals' (Option D)."
+    };
+
+    const testData = {
+        reading: {
+            duration: 3600, 
+            sections: [
+                {
+                    title: "Meet the Hedgehog",
+                    passage: `
+                        <h3 class="text-xl font-bold mb-4">Meet the hedgehog</h3>
+                        <p class="mb-4"><strong>A</strong> In Norwich, England, the first housing development designed for both hedgehogs and people has been built. All through the gardens and fences is a network of pathways and holes installed just for the ancient, spiny creatures. It's a paradise that Fay Vass, chief executive of the British Hedgehog Preservation Society, calls 'absolutely fantastic'. As for the developers, they have reason to think the animals will help make home sales fantastic, too. Part of the attraction is that many people simply love hedgehogs, particularly in Britain, where children's book writer Beatrix Potter introduced Mrs Tiggy-Winkle, a hedgehog character, over a century ago. But part of the attraction is also rooted in science. Studies have helped make clear that hedgehogs are good for gardens, eating vast numbers of slugs and other pests as they <span class="vocab-word" data-word="forage">forage</span> in the vegetation at night.</p>
+                        
+                        <p class="mb-4"><strong>B</strong> Recent scientific studies about hedgehogs have helped explain mysteries as varied as why hedgehogs apply saliva to their entire bodies, how they have survived on the planet for 30 million years, why they chew toxic toad skins and what secrets they may hold about evolution. As one of the most primitive mammals on the planet, the hedgehog has been helping geneticists understand evolutionary relationships among mammals and even uncover secrets of the human genome. At Duke University, for example, scientists chose the hedgehog and 14 other species to study the <span class="vocab-word" data-word="lineages">lineages</span> of mammals. They determined among other things that marsupials (e.g. kangaroos) are not related to monotremes (the egg-laying platypus and echidna), which had long been a subject of debate. Such questions are not just academic. 'If you are trying to trace, for example, the evolutionary steps of foetal heart development to better understand how foetal defects occur, it helps to know which mammals are related so that you can make accurate inferences about one mammal from another mammal's development,' says researcher Keith Killian.</p>
+                        
+                        <p class="mb-4"><strong>C</strong> Still, much about hedgehogs remains unknown. For one thing, scientists think they haven't even discovered all the hedgehog species. 'We know of at least 14,' says hedgehog researcher Nigel Reeve of Britain's University of Surrey, Roehampton. 'It's almost certain that there are more species.' The 14 known species are native to Africa and parts of Asia as well as Europe. Some hibernate through cold winters in the north. Others tolerate desert heat near the equator. Some live in urban areas, adapting well to living in close <span class="vocab-word" data-word="proximity">proximity</span> to humans. Others live in areas that rank among the most remote places on the planet.</p>
+                        
+                        <p class="mb-4"><strong>D</strong> Hedgehogs spend much of their time alone, but Reeve says it would be a mistake to think of them as solitary. 'Hedgehogs do approach each other and can detect the presence of others by their scent,' he says. 'It is true that they usually do not interact at close quarters, but that does not mean they are unaware of their neighbours. They may occasionally scrap over food items and rival males attracted to a female may also have aggressive interactions. Still, it's fair to say that, in adulthood, hedgehogs meet primarily to mate, producing litters of four or five hoglets as often as twice yearly.'</p>
+                        
+                        <p class="mb-4"><strong>E</strong> Adult hedgehogs eat just about anything they can find: insects, snakes, bird eggs, small rodents and more. Veterinarians trying to understand gum disease in domesticated hedgehogs have concluded that the varied diet of wild hedgehogs gives them more than nutrition — the hard bodies of insects also scrape the hedgehogs' teeth clean.</p>
+                        
+                        <p class="mb-4"><strong>F</strong> All hedgehogs also share the same defence mechanism: they retract their <span class="vocab-word" data-word="vulnerable">vulnerable</span> parts — head, feet, belly — into a quill-covered ball, using special skin down their sides and over their heads and feet. Any perceived threat can make them roll up, including the approach of a biologist, so researchers have invented a new measurement for the animals: ball length. Young hedgehogs have a few extra defence strategies. 'One is to spring up in the air,' says Reeve. 'A fox would get a face full of bristles. They make a little squeak while they do it.' Evidence suggests that hedgehogs may also add unpleasant chemicals to their quills to make them even less appealing. In behaviour that may be unique for a vertebrate, they chew substances laden with toxins and then apply frothy saliva to their entire bodies. In one 1977 study, human volunteers pricked themselves with quills from hedgehogs that had coated themselves after chewing on venomous toad skins. The volunteers found those quills much more irritating and painful than clean ones.</p>
+                        
+                        <p class="mb-4"><strong>G</strong> However, every year, many thousands of the animals die on roads in Europe and elsewhere as they go about their nightly business. Along with intensive farming and pesticides, road kill has taken its toll on hedgehog populations. One 2002 study found the animal numbers had dropped by between 20 and 30 per cent in a single decade. To help combat the decline, the British have established special clinics for injured hedgehogs, urged that anyone making a bonfire check for the animals underneath first, and ensured that hedgehogs can cope with cattle grids. Recently, they even persuaded McDonald's to alter the packaging of its McFlurry ice-cream container, which had been trapping foraging hedgehogs.</p>
+                        
+                        <p class="mb-4"><strong>H</strong> Ironically, for centuries the English considered these animals as <span class="vocab-word" data-word="vermin">vermin</span>. Even 50 years ago gamekeepers were killing as many as 10,000 a year thinking they were no more than bird-egg-eating pests. In some places today, scientists are coming to the same conclusions all over again. In the 1970s, hedgehogs were introduced to the Hebrides Islands off Scotland to help combat garden slugs. With no natural enemies there, a few hedgehogs soon turned into thousands. Wildlife researchers have watched the hedgehogs reduce the numbers of rare ground-nesting wading birds by feasting on their eggs. Efforts to <span class="vocab-word" data-word="cull">cull</span> the animals in the past two years have upset Britain's conservationists who have countered with strategies to relocate the animals.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-9</h4>
+                        <p class="mb-4">The reading passage has eight sections A—H. Which sections contain the following information?<br>Write the correct letter (<strong>A—H</strong>) next to questions 1—9 below.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-6">
+                            <p><strong>1</strong> 
+                                <select id="q1" name="q1" data-q="1" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                The significance of establishing the relationship between different species.
+                            </p>
+                            <p><strong>2</strong> 
+                                <select id="q2" name="q2" data-q="2" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                The different habitats where hedgehogs can be found.
+                            </p>
+                            <p><strong>3</strong> 
+                                <select id="q3" name="q3" data-q="3" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                The reason why standard forms of measurement cannot be used for the hedgehog.
+                            </p>
+                            <p><strong>4</strong> 
+                                <select id="q4" name="q4" data-q="4" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                A problem associated with hedgehogs kept as pets.
+                            </p>
+                            <p><strong>5</strong> 
+                                <select id="q5" name="q5" data-q="5" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                Two reasons why hedgehogs are popular with people in the UK.
+                            </p>
+                            <p><strong>6</strong> 
+                                <select id="q6" name="q6" data-q="6" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                Four findings from the latest research into hedgehogs.
+                            </p>
+                            <p><strong>7</strong> 
+                                <select id="q7" name="q7" data-q="7" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                The social habits of the hedgehog.
+                            </p>
+                            <p><strong>8</strong> 
+                                <select id="q8" name="q8" data-q="8" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                The number of hedgehog species already identified.
+                            </p>
+                            <p><strong>9</strong> 
+                                <select id="q9" name="q9" data-q="9" class="border border-gray-300 rounded px-2 py-1 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                                </select> 
+                                The name given to baby hedgehogs.
+                            </p>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 10-13</h4>
+                        <p class="mb-4">Choose the correct answer A, B, C or D.</p>
+                        <div class="space-y-4 p-4 border rounded-lg bg-white">
+                           <div class="q-item">
+                                <p><strong>10</strong> The study conducted in 1977 revealed a possible reason why</p>
+                                <label class="block mt-2"><input type="radio" name="q10" value="A"> A hedgehogs clean their quills.</label>
+                                <label class="block"><input type="radio" name="q10" value="B"> B hedgehogs chew poisonous animal skins.</label>
+                                <label class="block"><input type="radio" name="q10" value="C"> C adult hedgehogs do not leap into the air.</label>
+                                <label class="block"><input type="radio" name="q10" value="D"> D young hedgehogs make a high-pitched noise.</label>
+                           </div>
+                           <div class="q-item mt-6">
+                                <p><strong>11</strong> In Britain, which of the following has NOT been done to protect hedgehogs?</p>
+                                <label class="block mt-2"><input type="radio" name="q11" value="A"> A The opening of hospitals just for hedgehogs.</label>
+                                <label class="block"><input type="radio" name="q11" value="B"> B Imposing fines for littering in areas where hedgehogs live.</label>
+                                <label class="block"><input type="radio" name="q11" value="C"> C The alteration of a container produced by a fast-food chain.</label>
+                                <label class="block"><input type="radio" name="q11" value="D"> D Alerting people to the potential dangers faced by hedgehogs.</label>
+                           </div>
+                           <div class="q-item mt-6">
+                                <p><strong>12</strong> What are the 'conclusions' that scientists on the Hebrides Islands have reached again?</p>
+                                <label class="block mt-2"><input type="radio" name="q12" value="A"> A Hedgehog numbers are declining.</label>
+                                <label class="block"><input type="radio" name="q12" value="B"> B Hedgehogs pose a threat to other wildlife.</label>
+                                <label class="block"><input type="radio" name="q12" value="C"> C Hedgehogs can safely be introduced there.</label>
+                                <label class="block"><input type="radio" name="q12" value="D"> D Hedgehogs can be used effectively as a natural predator.</label>
+                           </div>
+                           <div class="q-item mt-6">
+                                <p><strong>13</strong> What would conservationists prefer to do on the Hebrides Islands?</p>
+                                <label class="block mt-2"><input type="radio" name="q13" value="A"> A Introduce a native predator of hedgehogs.</label>
+                                <label class="block"><input type="radio" name="q13" value="B"> B Kill a small number of hedgehogs.</label>
+                                <label class="block"><input type="radio" name="q13" value="C"> C Remove ground-nesting birds.</label>
+                                <label class="block"><input type="radio" name="q13" value="D"> D Move the hedgehogs elsewhere.</label>
+                           </div>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const answers = {
+        q1: "b", 
+        q2: "c", 
+        q3: "f", 
+        q4: "e", 
+        q5: "a", 
+        q6: "b", 
+        q7: "d", 
+        q8: "c", 
+        q9: "d",
+        q10: "b",
+        q11: "b",
+        q12: "b",
+        q13: "d"
+    };
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentTab: 'reading',
+            currentSection: 0,
+            answersChecked: {},
+            currentFontSize: 16,
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabModal: document.getElementById('vocab-modal'),
+            closeVocabModalBtn: document.getElementById('close-vocab-modal'),
+            vocabWordEl: document.getElementById('vocab-word'),
+            vocabMeaningEl: document.getElementById('vocab-meaning'),
+            vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
+            playAudioBtn: document.getElementById('play-audio-btn'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                
+                // Font Size Events
+                document.getElementById('increase-font-btn').addEventListener('click', () => this.changeFontSize(1));
+                document.getElementById('decrease-font-btn').addEventListener('click', () => this.changeFontSize(-1));
+
+                // Close modal events
+                this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
+                this.vocabModal.addEventListener('click', (e) => {
+                   if (e.target === this.vocabModal) this.closeModal();
+                });
+
+                // Use event delegation for dynamically added elements
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('change', (e) => this.saveAnswer(e)); // Ensure dropdown changes are caught
+                
+                // Delegated event listener for vocab words
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const wordKey = e.target.dataset.word;
+                        this.openVocabModal(wordKey);
+                    }
+                });
+
+                // Submit Form listener
+                document.body.addEventListener('click', (e) => {
+                    const submitBtn = e.target.closest('#submit-form-btn');
+                    if (submitBtn) {
+                        this.submitToGoogleForm();
+                    }
+                });
+                
+                // Audio button (mock)
+                this.playAudioBtn.addEventListener('click', () => {
+                   const word = this.vocabWordEl.textContent;
+                   console.log(`Playing audio for: ${word}`);
+                   
+                   this.playAudioBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                   this.playAudioBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                   setTimeout(() => {
+                       this.playAudioBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                       this.playAudioBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                   }, 500);
+                });
+            },
+            
+            changeFontSize(delta) {
+                this.currentFontSize += delta;
+                if (this.currentFontSize < 12) this.currentFontSize = 12;
+                if (this.currentFontSize > 24) this.currentFontSize = 24;
+                document.documentElement.style.setProperty('--app-font-size', `${this.currentFontSize}px`);
+            },
+
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                }
+            },
+
+            closeModal() {
+                this.vocabModal.classList.add('hidden');
+            },
+            
+            saveAnswer(e) {
+                if (e.target.id || e.target.name) {
+                    const id = e.target.id || e.target.name;
+                     if (e.target.type === 'radio') {
+                        if (e.target.checked) {
+                            this.userAnswers[id] = e.target.value;
+                        }
+                    } else {
+                         this.userAnswers[id] = e.target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const inputElement = document.getElementById(qId);
+                    if (inputElement) {
+                        inputElement.value = value;
+                    } else {
+                        const radioInputs = document.querySelectorAll(`input[name="${qId}"]`);
+                        radioInputs.forEach(radio => {
+                            if (radio.value === value) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                }
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            loadContent() {
+                const data = testData[this.currentTab];
+                if (!data) return;
+                const sectionData = data.sections[this.currentSection];
+
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex, 10)));
+                });
+                
+                this.restoreAnswers();
+                
+                this.addSubmitButton();
+            },
+            
+            addSubmitButton() {
+                const btnContainer = document.createElement('div');
+                btnContainer.className = 'mt-8 pt-6 border-t border-gray-200 text-center pb-8';
+                btnContainer.innerHTML = `
+                    <button id="submit-form-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-md transition-colors text-lg shadow-md inline-flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13 2 9L22 2z"></path></svg>
+                        <span>Submit to Google Form</span>
+                    </button>
+                    <p class="text-sm text-gray-500 mt-2">This will open a pre-filled Google Form in a new tab.</p>
+                `;
+                this.questionsSection.appendChild(btnContainer);
+            },
+            
+            submitToGoogleForm() {
+                const nameInput = document.getElementById('student-name');
+                const name = nameInput ? nameInput.value : '';
+
+                const q10Options = {
+                    'A': 'A hedgehogs clean their quills.',
+                    'B': 'B hedgehogs chew poisonous animal skins.',
+                    'C': 'C adult hedgehogs do not leap into the air.',
+                    'D': 'D young hedgehogs make a high-pitched noise.'
+                };
+                const q11Options = {
+                    'A': 'A The opening of hospitals just for hedgehogs.',
+                    'B': 'B Imposing fines for littering in areas where hedgehogs live.',
+                    'C': 'C The alteration of a container produced by a fast-food chain.',
+                    'D': 'D Alerting people to the potential dangers faced by hedgehogs.'
+                };
+                const q12Options = {
+                    'A': 'A Hedgehog numbers are declining.',
+                    'B': 'B Hedgehogs pose a threat to other wildlife.',
+                    'C': 'C Hedgehogs can safely be introduced there.',
+                    'D': 'D Hedgehogs can be used effectively as a natural predator.'
+                };
+                const q13Options = {
+                    'A': 'A Introduce a native predator of hedgehogs.',
+                    'B': 'B Kill a small number of hedgehogs.',
+                    'C': 'C Remove ground-nesting birds.',
+                    'D': 'D Move the hedgehogs elsewhere.'
+                };
+
+                const params = new URLSearchParams();
+                params.append('usp', 'pp_url');
+                if (name) params.append('entry.1763452612', name);
+                
+                const textEntries = {
+                    'q1': 'entry.42118931',
+                    'q2': 'entry.1157221476',
+                    'q3': 'entry.431422555',
+                    'q4': 'entry.2094153631',
+                    'q5': 'entry.213896453',
+                    'q6': 'entry.1833743656',
+                    'q7': 'entry.967821969',
+                    'q8': 'entry.306739145',
+                    'q9': 'entry.940723278'
+                };
+
+                for (const [qId, entryId] of Object.entries(textEntries)) {
+                    if (this.userAnswers[qId]) {
+                        params.append(entryId, this.userAnswers[qId].toUpperCase().trim());
+                    }
+                }
+                
+                if (this.userAnswers['q10'] && q10Options[this.userAnswers['q10']]) {
+                    params.append('entry.195297617', q10Options[this.userAnswers['q10']]);
+                }
+                if (this.userAnswers['q11'] && q11Options[this.userAnswers['q11']]) {
+                    params.append('entry.1665394156', q11Options[this.userAnswers['q11']]);
+                }
+                if (this.userAnswers['q12'] && q12Options[this.userAnswers['q12']]) {
+                    params.append('entry.1714421668', q12Options[this.userAnswers['q12']]);
+                }
+                if (this.userAnswers['q13'] && q13Options[this.userAnswers['q13']]) {
+                    params.append('entry.380595742', q13Options[this.userAnswers['q13']]);
+                }
+
+                const url = `https://docs.google.com/forms/d/e/1FAIpQLScfrbkU9j_XFCMbZwKB74mthOHLXr4mx2-a3x_9dIoBZFpCUw/viewform?${params.toString()}`;
+                window.open(url, '_blank');
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        const rect = range.getBoundingClientRect();
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                                // Ignore error
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
