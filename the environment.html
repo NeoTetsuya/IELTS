@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Environment - Interactive Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            line-height: 1.65;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab {
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .tab.active {
+            border-bottom-color: #10B981; /* Emerald green theme for Environment */
+            color: #047857;
+            font-weight: 700;
+        }
+        .vocab-term-interactive {
+            background-color: #D1FAE5;
+            color: #065F46;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid #6EE7B7;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .vocab-term-interactive:hover {
+            background-color: #A7F3D0;
+            border-color: #34D399;
+        }
+        .answer-feedback {
+            display: none;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .correct {
+            color: #15803D;
+        }
+        .incorrect {
+            color: #B91C1C;
+        }
+        .question-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: box-shadow 0.2s;
+        }
+        .question-container:hover {
+             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        #vocab-popover {
+            position: absolute;
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            transform: translateY(10px);
+            z-index: 50;
+        }
+        #vocab-popover-content::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 24px;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent #1f2937 transparent;
+        }
+        .lang-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .lang-btn.active {
+            background-color: #10B981;
+            color: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        .lang-vi, .lang-en {
+            display: none;
+        }
+        .action-btn {
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .form-input {
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            transition: ring 0.2s, border-color 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+            border-color: #10B981;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-700">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+        <header class="text-center mb-10">
+            <div class="flex justify-center space-x-2 mb-6">
+                <button id="lang-btn-vi" class="lang-btn px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Tiếng Việt</button>
+                <button id="lang-btn-en" class="lang-btn active px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">English</button>
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                <span class="lang-vi">Môi trường</span>
+                <span class="lang-en">The Environment</span>
+            </h1>
+        </header>
+
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="-mb-px flex flex-wrap justify-center sm:justify-start -mb-px space-x-6 sm:space-x-10" aria-label="Tabs">
+                <button class="tab active whitespace-nowrap pb-4 px-1 border-b-2 font-semibold text-base" data-tab="words">
+                    <span class="lang-vi">Từ vựng trong ngữ cảnh</span>
+                    <span class="lang-en">Words in Context</span>
+                </button>
+                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="explore">
+                    <span class="lang-vi">Khám phá kiến thức</span>
+                    <span class="lang-en">Explore Knowledge</span>
+                </button>
+                <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="apply">
+                    <span class="lang-vi">Hiểu & Áp dụng</span>
+                    <span class="lang-en">Understanding & Applying</span>
+                </button>
+                 <button class="tab whitespace-nowrap pb-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-semibold text-base" data-tab="essay">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </button>
+            </nav>
+        </div>
+
+        <div id="tab-contents">
+            <div id="words" class="tab-content active">
+                <div class="space-y-5 text-justify text-lg leading-relaxed">
+                    <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                         <span class="lang-vi">Các Vấn Đề Môi Trường</span>
+                         <span class="lang-en">Environmental Problems</span>
+                    </h2>
+                    
+                    <div class="lang-vi space-y-5">
+                        <p><span class="vocab-term-interactive" data-definition="Hoạt động con người">Human activities(1)</span> có ảnh hưởng đến môi trường ở nhiều khía cạnh khác nhau. Ngoài những tác động liên quan đến <span class="vocab-term-interactive" data-definition="Biến đổi khí hậu">climate change(2)</span>, con người còn gây ra rất nhiều loại ô nhiễm, ảnh hưởng trực tiếp đến môi trường sống của chính chúng ta.</p>
+                        <p><span class="vocab-term-interactive" data-definition="Ô nhiễm không khí">Air pollution(3)</span> ngày càng trầm trọng ở rất nhiều thành phố lớn trên thế giới là nguyên nhân chính của sự bùng nổ các <span class="vocab-term-interactive" data-definition="Các loại bệnh hô hấp">respiratory diseases(4)</span> hay thậm chí là ung thư phổi. <span class="vocab-term-interactive" data-definition="Sự đốt cháy năng lượng hóa thạch">Fossil fuel combustion(5)</span> trong hoạt động công nghiệp hay <span class="vocab-term-interactive" data-definition="Khí thải">exhaust fumes(6)</span> từ phương tiện giao thông vẫn hàng ngày thải ra một lượng lớn <span class="vocab-term-interactive" data-definition="Chất gây ô nhiễm không khí">air pollutants(7)</span> như CO2. Nếu không có những chính sách bảo vệ bầu không khí cứng rắn hơn, sức khỏe con người sẽ càng ngày trở nên tồi tệ hơn.</p>
+                        <p>Một vấn đề nghiêm trọng khác mà chúng ta đang phải đối mặt đó là <span class="vocab-term-interactive" data-definition="Ô nhiễm nguồn nước">water pollution(8)</span>, <span class="vocab-term-interactive" data-definition="Chất thải công nghiệp">Industrial waste(9)</span> chưa được xử lý trước khi thải ra sông, hồ cũng như <span class="vocab-term-interactive" data-definition="Sự lạm dụng thuốc trừ sâu và phân bón">overuse of fertilizers and pesticides(10)</span> là những tác nhân chính gây ra tình hình ô nhiễm nguồn nước như hiện nay. Điều này không chỉ ảnh hưởng đến các <span class="vocab-term-interactive" data-definition="Hệ sinh thái">ecosystems(11)</span> và sự sống còn của <span class="vocab-term-interactive" data-definition="Các loài thủy sinh">aquatic animal species(12)</span> mà còn ảnh hưởng đến sức khỏe của người dân sống ở vùng lân cận.</p>
+                        <p>Không chỉ chính phủ, từng người trong chúng ta đều có thể đóng góp cho công cuộc bảo vệ môi trường qua những hành động đơn giản. Sử dụng phương tiện công cộng hay đi xe đạp thay vì sử dụng xe hơi sẽ làm giảm <span class="vocab-term-interactive" data-definition="Khí thải CO2">carbon dioxide emissions(13)</span> trong không khí. Hạn chế sử dụng phân bón hay thuốc trừ sâu sẽ làm giảm tình hình ô nhiễm nguồn nước, điều này cũng có lợi cho sức khỏe của chính chúng ta. Bất cứ hành động làm giảm <span class="vocab-term-interactive" data-definition="Sự tiêu thụ năng lượng">energy consumption(14)</span> ở nhà đều có tác động tích cực lên bầu không khí chúng ta đang hít thở hàng ngày.</p>
+                    </div>
+
+                    <div class="lang-en space-y-5">
+                        <p><span class="vocab-term-interactive" data-definition="Hoạt động con người">Human activities(1)</span> have impacts on the environment in various aspects. Besides the effects related to <span class="vocab-term-interactive" data-definition="Biến đổi khí hậu">climate change(2)</span>, humans also cause many types of pollution, directly affecting our living environment.</p>
+                        <p><span class="vocab-term-interactive" data-definition="Ô nhiễm không khí">Air pollution(3)</span> is becoming increasingly severe in many major cities around the world and is the main cause of the outbreak of <span class="vocab-term-interactive" data-definition="Các loại bệnh hô hấp">respiratory diseases(4)</span> or even lung cancer. <span class="vocab-term-interactive" data-definition="Sự đốt cháy năng lượng hóa thạch">Fossil fuel combustion(5)</span> in industrial activities or <span class="vocab-term-interactive" data-definition="Khí thải">exhaust fumes(6)</span> from transportation continues to release a large amount of <span class="vocab-term-interactive" data-definition="Chất gây ô nhiễm không khí">air pollutants(7)</span> such as CO2 daily. Without stricter policies to protect the atmosphere, human health will continue to deteriorate.</p>
+                        <p>Another serious problem we are facing is <span class="vocab-term-interactive" data-definition="Ô nhiễm nguồn nước">water pollution(8)</span>. Untreated <span class="vocab-term-interactive" data-definition="Chất thải công nghiệp">industrial waste(9)</span> discharged into rivers and lakes, as well as the <span class="vocab-term-interactive" data-definition="Sự lạm dụng thuốc trừ sâu và phân bón">overuse of fertilizers and pesticides(10)</span>, are the main agents causing the current water pollution situation. This not only affects <span class="vocab-term-interactive" data-definition="Hệ sinh thái">ecosystems(11)</span> and the survival of <span class="vocab-term-interactive" data-definition="Các loài thủy sinh">aquatic animal species(12)</span> but also affects the health of residents living in the vicinity.</p>
+                        <p>Not only the government, but each of us can contribute to the protection of the environment through simple actions. Using public transportation or riding a bicycle instead of using a car will reduce <span class="vocab-term-interactive" data-definition="Khí thải CO2">carbon dioxide emissions(13)</span> in the air. Limiting the use of fertilizers or pesticides will reduce water pollution, which is also beneficial for our own health. Any action that reduces <span class="vocab-term-interactive" data-definition="Sự tiêu thụ năng lượng">energy consumption(14)</span> at home has a positive impact on the air we breathe every day.</p>
+                    </div>
+
+                    <p class="mt-8 text-center text-gray-500 italic">
+                        <span class="lang-vi">Nhấp vào các từ được đánh dấu để xem ý nghĩa của chúng.</span>
+                        <span class="lang-en">Click on the highlighted words to see their meaning.</span>
+                    </p>
+                </div>
+            </div>
+
+            <div id="explore" class="tab-content">
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Phần 1: Đánh giá độ phù hợp</span>
+                    <span class="lang-en">Part 1: Assess Suitability</span>
+                </h2>
+                <div id="suitability-questions" class="space-y-6"></div>
+
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 2: Điền từ</span>
+                    <span class="lang-en">Part 2: Fill in the blanks</span>
+                </h2>
+                 <div id="fill-in-questions" class="space-y-6"></div>
+            </div>
+
+            <div id="apply" class="tab-content">
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Phần 1: Mở rộng câu</span>
+                    <span class="lang-en">Part 1: Extend the Sentences</span>
+                </h2>
+                <div id="extend-sentence-questions" class="space-y-6"></div>
+
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 2: Xây dựng câu</span>
+                    <span class="lang-en">Part 2: Build Sentences (Expand Ideas)</span>
+                </h2>
+                 <div id="build-sentence-questions" class="space-y-6"></div>
+                 
+                <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6 mt-12">
+                    <span class="lang-vi">Phần 3: Viết đoạn văn ngắn</span>
+                    <span class="lang-en">Part 3: Write a short paragraph</span>
+                </h2>
+                <div class="question-container">
+                    <p class="font-semibold text-lg text-gray-800"><strong><span class="lang-vi">Viết một đoạn văn ngắn (100 – 120 từ) trả lời câu hỏi sau.</span><span class="lang-en">Write a short paragraph (100–120 words) answering the following question.</span></strong></p>
+                    <p class="mt-2 text-gray-700 text-xl font-medium text-center border-l-4 border-emerald-500 pl-4 py-2 my-4">What can we do to reduce our negative impacts on the environment?</p>
+                    <div class="mt-4 p-5 bg-emerald-50 rounded-lg text-center border border-emerald-200">
+                        <p class="font-bold text-emerald-800 mb-3"><span class="lang-vi">Gợi ý Ideas</span><span class="lang-en">Ideas Suggestions</span></p>
+                        <div class="flex flex-wrap justify-center gap-2">
+                            <span class="px-3 py-1 bg-white border border-emerald-300 text-emerald-700 rounded-full text-sm shadow-sm">Use environmentally friendly means of transport</span>
+                            <span class="px-3 py-1 bg-white border border-emerald-300 text-emerald-700 rounded-full text-sm shadow-sm">Improve waste treatment technology</span>
+                            <span class="px-3 py-1 bg-white border border-emerald-300 text-emerald-700 rounded-full text-sm shadow-sm">Use alternative energy sources</span>
+                            <span class="px-3 py-1 bg-white border border-emerald-300 text-emerald-700 rounded-full text-sm shadow-sm">Increase taxes on car ownership</span>
+                            <span class="px-3 py-1 bg-white border border-emerald-300 text-emerald-700 rounded-full text-sm shadow-sm">Restrict the use of plastic products</span>
+                        </div>
+                    </div>
+                    <textarea class="w-full mt-4 p-3 border border-gray-300 rounded-lg form-input" rows="6" placeholder="Start writing your paragraph here..."></textarea>
+                </div>
+            </div>
+            
+            <div id="essay" class="tab-content">
+                 <h2 class="text-3xl font-bold text-gray-800 border-b-2 border-gray-200 pb-3 mb-6">
+                    <span class="lang-vi">Luyện viết luận</span>
+                    <span class="lang-en">Essay Practice</span>
+                </h2>
+                <div id="essay-prompts" class="space-y-10"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vocab-popover" class="hidden">
+        <div id="vocab-popover-content" class="relative w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl border border-gray-700">
+            <h4 id="popover-term" class="font-bold text-lg text-emerald-300"></h4>
+            <p id="popover-definition" class="mt-1"></p>
+        </div>
+    </div>
+
+    <script>
+        let langButtons;
+
+        const suitabilityData = [
+            { en: "<strong>Fossil fuel combustion</strong> from industrial activities is a major cause for increased air pollution levels.", vi: "<strong>Fossil fuel combustion</strong> từ các hoạt động công nghiệp là một nguyên nhân lớn dẫn đến mức độ ô nhiễm không khí tăng cao.", correct: true },
+            { en: "<strong>Climate change</strong> causes a rise in global temperatures and more frequent extreme weather conditions, such as severe drought and acid rain.", vi: "<strong>Climate change</strong> làm cho nhiệt độ toàn cầu tăng lên và các điều kiện thời tiết khắc nghiệt, như hạn hán và mưa a-xít, trở nên thường xuyên hơn.", correct: true },
+            { en: "<strong>Aquatic animal species</strong> are directly affected by car exhaust and carbon dioxide emissions from industrial factories.", vi: "<strong>Aquatic animal species</strong> bị ảnh hưởng trực tiếp bởi khí thải từ xe hơi và carbon dioxide emissions từ các nhà máy công nghiệp.", correct: false },
+            { en: "A person can reduce <strong>energy consumption</strong> at home simply by using less water and electricity.", vi: "Một người có thể giảm <strong>energy consumption</strong> tại nhà đơn giản bằng cách sử dụng ít nước và điện đi.", correct: true },
+            { en: "<strong>Air pollutants</strong>, such as CO2 or SO2, which are released from waste incineration are responsible for reducing air quality in many places around the world.", vi: "<strong>Air pollutants</strong>, như là CO2 hay SO2, được thải ra từ việc đốt chất thải và là nguyên nhân cho chất lượng không khí ở nhiều nơi trên thế giới giảm xuống.", correct: true },
+            { en: "Drinking dirty water can cause a number of <strong>respiratory diseases</strong>.", vi: "Uống nước bẩn có thể gây ra nhiều <strong>respiratory diseases</strong>.", correct: false }
+        ];
+
+        const fillInData = [
+            { en: "In big cities, private cars emit a huge amount of e___ f___ into the atmosphere every day, which contributes to the increasing level of air pollution.", vi: "Ở những thành phố lớn, xe hơi cá nhân thải ra một lượng lớn e___ f___ vào bầu không khí, điều này góp phần làm tăng mức độ ô nhiễm không khí.", answer: "exhaust fumes" },
+            { en: "I___ w___ from steel factories around the world are polluting local water systems, threatening the lives of both animals and people who live nearby.", vi: "I___ w___ từ các nhà máy thép quanh thế giới đang ô nhiễm hệ thống sông nước ở trong vùng, đe dọa sự sống của cả động vật và con người đang sinh sống gần đó.", answer: "Industrial waste" },
+            { en: "Hanoi is being covered with thick smog that reduces visibility as well as causes r___ d___ such as asthma.", vi: "Hà Nội đang bị bao phủ bởi lớp khói sương dày đặc, làm giảm tầm nhìn cũng như gây ra r___ d___ như bệnh hen suyễn.", answer: "respiratory diseases" },
+            { en: "C___ c___ affects global weather conditions and makes them more unpredictable and extreme.", vi: "C___ c___ ảnh hưởng tới điều kiện thời tiết trên toàn thế giới và làm cho những điều kiện thời tiết ấy trở nên khó đoán và khắc nghiệt hơn.", answer: "Climate change" },
+            { en: "Huge amounts of plastic waste in landfills is being incinerated without any proper measure to prevent CO2 and other a___ p___ from being directly emitted into the atmosphere.", vi: "Lượng lớn rác thải nhựa ở các khu tập trung rác đang bị đốt cháy mà không hề có bất cứ biện pháp phù hợp nào để ngăn cản việc thải trực tiếp khí CO2 và a___ p___ khác vào bầu không khí.", answer: "air pollutants" },
+            { en: "Most industries are depending on f___ f___; however, it is widely recognized that we need to use alternative energy sources, such as solar or wind power.", vi: "Hầu như các ngành công nghiệp đang phụ thuộc vào f___ f___; tuy vậy, ai cũng nhận ra rằng chúng ta nên sử dụng các nguồn năng lượng thay thế...", answer: "fossil fuels" }
+        ];
+        
+        const extendSentenceData = [
+            { en: "International car-free days are thought to be ...", suggestions: "effective way, air pollutants" },
+            { en: "Due to high volumes of traffic, ...", suggestions: "air pollutants, release, contributor, respiratory disease, lung cancer" },
+            { en: "Deforestation can lead to ...", suggestions: "environmental problems, ecosystem, threaten, native species" },
+            { en: "The disposal of waste, especially ...", suggestions: "industrial waste, exhaust fumes, regulate and monitor" },
+            { en: "Governments could implement certain regulations on ...", suggestions: "the use of private vehicles, public transportation, fossil fuel combustion" }
+        ];
+
+        const buildSentenceData = [
+            { phrases: "Exhaust emissions from vehicles  &#10132; deteriorate air quality, affect public health" },
+            { phrases: "Waste from factories  &#10132; destroy aquatic ecosystems, pollute drinking water" },
+            { phrases: "Plastic waste incineration  &#10132; release pollutants, methane or carbon dioxide" },
+            { phrases: "Cutting down trees  &#10132; severe consequences, soil erosion, extreme weather conditions" },
+            { phrases: "Excessive use of fertilizers and pesticides  &#10132; contaminate nearby rivers, deaths of aquatic animals" }
+        ];
+
+        const essayData = [
+            {
+                prompt: "Some people think that international car-free days are an effective way of reducing air pollution, however, others think there are other ways. Discuss both views and give your opinion.",
+                ideas: [
+                    { title: "International car-free days", points: ["Car exhaust is the largest contributor to air pollution &rarr; people use other means of transport during those days &rarr; less pollution.", "Heighten people's awareness of using environmentally friendly vehicles."], color: "emerald" },
+                    { title: "Other ways", points: ["Use alternative energy sources &rarr; reduce the amount of air pollutants.", "Monitor the burning of plastic waste.", "Encourage people to use public transport or to cycle."], color: "teal" }
+                ]
+            },
+            {
+                prompt: "Some people believe that the responsibility for the protection of the environment is by a transnational organization, rather than by each individual country. To what extent do you agree or disagree?",
+                ideas: [
+                    { title: "Each country", points: ["Environmental problems directly affect people's well-being &rarr; the government should take responsibility.", "Citizens also need to be responsible for their own health &rarr; should act to protect their environment."], color: "indigo" },
+                    { title: "A transnational organization", points: ["Environmental problems of one country can have an impact on another country.", "Can help monitor and educate globally.", "Fosters international cooperation."], color: "blue" }
+                ]
+            },
+            {
+                prompt: "Individuals can do nothing to improve the environment; only governments and large companies can make a difference. To what extent do you agree or disagree?",
+                ideas: [
+                    { title: "Governments and large companies", points: ["Environmental degradation is a global issue and can only be tackled by the world's governments.", "Only governments and large companies have the resources to deal with environmental problems.", "They can enact laws and invest in sustainable development goals."], color: "red" },
+                    { title: "Individuals", points: ["Ordinary people can refrain from using private vehicles, helping to reduce air pollution.", "People can also manage their waste by separating biodegradable waste from non-biodegradable waste.", "All the combined actions of all people will have a profound impact on the bigger picture."], color: "green" }
+                ]
+            }
+        ];
+
+        function populateSuitability(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi}</em></p>
+                    <div class="mt-4">
+                        <button class="action-btn bg-emerald-600 text-white hover:bg-emerald-700" onclick="checkSuitability(this, ${q.correct})">
+                            <span class="lang-vi">Đánh giá</span><span class="lang-en">Evaluate</span>
+                        </button>
+                        <span class="answer-feedback ml-4"></span>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateFillIn(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="lang-vi text-sm text-gray-600 mt-1"><em>${q.vi}</em></p>
+                    <div class="mt-4 flex flex-wrap items-center gap-2">
+                        <input type="text" class="form-input p-2 flex-grow border-emerald-200 focus:border-emerald-500" placeholder="Your answer...">
+                        <button class="action-btn bg-emerald-600 text-white hover:bg-emerald-700" onclick="checkFillIn(this, '${q.answer}')">
+                           <span class="lang-vi">Kiểm tra</span><span class="lang-en">Check</span>
+                        </button>
+                        <span class="answer-feedback ml-4"></span>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateExtendSentence(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> ${q.en}</p>
+                    <p class="text-sm text-emerald-700 my-2 bg-emerald-50 p-2 rounded"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Suggestions</span>:</strong> ${q.suggestions}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg form-input" rows="3" placeholder="Type your extended sentence here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateBuildSentence(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-800"><strong>${index + 1}.</strong> <span class="lang-vi">Phát triển ý tưởng thành câu:</span><span class="lang-en">Develop the idea into sentences:</span></p>
+                    <p class="text-sm text-emerald-700 my-2 bg-emerald-50 p-2 rounded font-medium"><strong><span class="lang-vi">Gợi ý</span><span class="lang-en">Idea</span>:</strong> ${q.phrases}</p>
+                    <textarea class="w-full mt-2 p-3 border border-gray-300 rounded-lg form-input" rows="3" placeholder="Type your sentences here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function populateEssays(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            data.forEach((q, index) => {
+                const ideasHTML = q.ideas.map(idea => `
+                    <div class="bg-${idea.color}-50 p-4 rounded-lg border border-${idea.color}-200">
+                        <h4 class="font-semibold text-${idea.color}-800">${idea.title}</h4>
+                        <ul class="mt-2 list-disc list-inside space-y-2 text-sm text-${idea.color}-700">
+                            ${idea.points.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>`).join('');
+
+                const div = document.createElement('div');
+                div.className = 'question-container';
+                div.innerHTML = `
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <span class="lang-vi">Đề bài ${index + 1}</span>
+                        <span class="lang-en">Essay Prompt ${index + 1}</span>
+                    </h3>
+                    <p class="mt-2 text-gray-700 font-medium text-lg border-l-4 border-gray-400 pl-4 py-2 my-4">"${q.prompt}"</p>
+                    <hr class="my-4 border-gray-200">
+                    <h4 class="font-semibold text-gray-800">
+                        <span class="lang-vi">Gợi ý & Ý tưởng</span>
+                        <span class="lang-en">Brainstorming & Ideas</span>
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-3">${ideasHTML}</div>
+                    <textarea class="w-full mt-6 p-4 border border-gray-300 rounded-lg form-input text-gray-700" rows="10" placeholder="Start writing your essay here..."></textarea>`;
+                container.appendChild(div);
+            });
+        }
+
+        function checkSuitability(button, isCorrect) {
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (isCorrect) {
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Đúng.</strong>' : '<strong>Correct.</strong>';
+            } else {
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+                feedback.innerHTML = lang === 'vi' ? '<strong>Sai.</strong>' : '<strong>Incorrect.</strong>';
+            }
+        }
+
+        function checkFillIn(button, correctAnswer) {
+            const input = button.previousElementSibling;
+            const feedback = button.nextElementSibling;
+            feedback.style.display = 'inline';
+            const lang = langButtons.vi.classList.contains('active') ? 'vi' : 'en';
+
+            if (input.value.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                feedback.textContent = lang === 'vi' ? 'Đúng!' : 'Correct!';
+                feedback.className = 'answer-feedback correct';
+            } else {
+                feedback.textContent = lang === 'vi' ? `Sai. Đáp án đúng là: ${correctAnswer}` : `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'answer-feedback incorrect';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateSuitability('suitability-questions', suitabilityData);
+            populateFillIn('fill-in-questions', fillInData);
+            populateExtendSentence('extend-sentence-questions', extendSentenceData);
+            populateBuildSentence('build-sentence-questions', buildSentenceData);
+            populateEssays('essay-prompts', essayData);
+
+            langButtons = {
+                vi: document.getElementById('lang-btn-vi'),
+                en: document.getElementById('lang-btn-en')
+            };
+
+            function setLanguage(lang) {
+                document.querySelectorAll('.lang-vi, .lang-en').forEach(el => el.style.display = 'none');
+                document.querySelectorAll(`.lang-${lang}`).forEach(el => el.style.display = 'inline');
+                for (const key in langButtons) {
+                    langButtons[key].classList.remove('active');
+                }
+                langButtons[lang].classList.add('active');
+            }
+
+            langButtons.vi.addEventListener('click', () => setLanguage('vi'));
+            langButtons.en.addEventListener('click', () => setLanguage('en'));
+            setLanguage('en'); // Default language
+
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+
+            const popover = document.getElementById('vocab-popover');
+            const popoverTerm = document.getElementById('popover-term');
+            const popoverDefinition = document.getElementById('popover-definition');
+            const vocabTerms = document.querySelectorAll('.vocab-term-interactive');
+            vocabTerms.forEach(term => {
+                term.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    popoverTerm.textContent = term.textContent;
+                    popoverDefinition.textContent = term.dataset.definition;
+                    const rect = term.getBoundingClientRect();
+                    popover.style.left = `${rect.left + window.scrollX}px`;
+                    popover.style.top = `${rect.bottom + window.scrollY + 10}px`;
+                    popover.classList.remove('hidden');
+                    setTimeout(() => {
+                        popover.style.opacity = '1';
+                        popover.style.transform = 'translateY(0)';
+                    }, 10);
+                });
+            });
+
+            document.addEventListener('click', () => {
+                if (!popover.classList.contains('hidden')) {
+                    popover.style.opacity = '0';
+                    popover.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        popover.classList.add('hidden');
+                    }, 200);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
