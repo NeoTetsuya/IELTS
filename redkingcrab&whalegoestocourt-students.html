@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .questions-section {
+            width: 100%;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .splitter {
+            background-color: #d1d5db;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .section-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+        .section-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .section-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            border-color: #1d4ed8;
+        }
+        .play-audio-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2563eb;
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .play-audio-btn:hover {
+            background-color: #1d4ed8;
+        }
+        .play-audio-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1f2937;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 1px 2px;
+        }
+        mark:hover {
+            background-color: #fde047 !important;
+            transform: scale(1.02);
+        }
+        input[type="text"] {
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        .audio-seeker {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb;
+            outline: none;
+            border-radius: 0.5rem;
+        }
+        .audio-seeker::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .question-highlight {
+            background-color: #fef08a;
+            color: #92400e;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 2px solid #f59e0b;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .question-highlight:hover {
+            background-color: #fde047;
+            border-color: #d97706;
+            transform: scale(1.05);
+        }
+        .reading-passage {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 2rem;
+            user-select: text;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+            text-indent: 1.5rem;
+        }
+        .reading-passage h3, .reading-passage h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .vocab-word {
+            cursor: help;
+            border-bottom: 1px dotted #3b82f6;
+            color: #1e40af;
+            transition: all 0.2s ease;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-color: #1e40af;
+        }
+        .reading-passage.selecting {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .vocab-tooltip {
+            position: absolute;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 350px;
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            user-select: none;
+        }
+        .vocab-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .vocab-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #1e40af;
+        }
+        .vocab-word-text {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #fbbf24;
+        }
+        .vocab-pronunciation {
+            font-style: italic;
+            color: #e5e7eb;
+            margin-bottom: 4px;
+        }
+        .vocab-ipa {
+            font-family: 'Times New Roman', serif;
+            color: #d1d5db;
+            margin-bottom: 8px;
+        }
+        .vocab-definition {
+            margin-bottom: 8px;
+        }
+        .vocab-synonyms {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        .vocab-synonyms-title {
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 4px;
+        }
+        .vocab-audio-btn {
+            background: #fbbf24;
+            color: #1e40af;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        .vocab-audio-btn:hover {
+            background: #f59e0b;
+            transform: scale(1.1);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .vocab-audio-btn.playing {
+            background: #10b981;
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600 hidden md:block">IELTS Academic Practice Test</h1>
+        <div class="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
+            <!-- Student Name -->
+            <div class="flex items-center space-x-2 pr-4 md:border-r">
+                <span class="text-sm text-gray-500 font-medium hidden sm:inline">Name:</span>
+                <input type="text" id="student-name" class="border border-gray-300 rounded px-2 py-1 text-sm w-40 md:w-48 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Your Name">
+            </div>
+            <div class="text-sm md:text-lg font-semibold text-gray-600 truncate max-w-[150px] md:max-w-none">The Red King Crab & The Whale</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane -->
+        <div id="left-pane" class="pane bg-white"></div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter"></div>
+
+        <!-- Right Pane -->
+        <div id="right-pane" class="pane bg-gray-50">
+            <div id="questions-section" class="questions-section"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-inner p-3">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-4">
+                <div>
+                    <button class="tab-btn active" data-tab="listening">Listening</button>
+                    <button class="tab-btn" data-tab="reading">Reading</button>
+                    <button class="tab-btn" data-tab="vocabulary">Vocabulary Quiz</button>
+                </div>
+                <div id="section-tabs" class="flex space-x-2"></div>
+            </div>
+            <div>
+                <button id="submit-form-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md transition-colors shadow-md inline-flex items-center justify-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13 2 9L22 2z"></path></svg>
+                    <span>Submit to Google Form</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight</div>
+
+<!-- Vocabulary Tooltip -->
+<div id="vocab-tooltip" class="vocab-tooltip">
+    <div class="vocab-word-text">
+        <span class="vocab-word-display"></span>
+        <button class="vocab-audio-btn" title="Click to hear pronunciation">🔊</button>
+    </div>
+    <div class="vocab-pronunciation"></div>
+    <div class="vocab-ipa"></div>
+    <div class="vocab-definition"></div>
+    <div class="vocab-synonyms">
+        <div class="vocab-synonyms-title">Synonyms:</div>
+        <div class="vocab-synonyms-list"></div>
+    </div>
+</div>
+
+<script>
+    // --- DATA ---
+    const testData = {
+        listening: {
+            duration: 600, 
+            sections: [
+                {
+                    title: "Part 4",
+                    instructions: `
+                        <h3 class="text-lg font-bold mb-4">Listening Part 4</h3>
+                        <p class="mb-4">You will hear a lecture about the Red King Crab.</p>
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6 shadow-sm">
+                            <p class="font-semibold mb-3 text-blue-800 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" /></svg>
+                                Audio Track
+                            </p>
+                            <iframe width="100%" height="20" scrolling="no" frameborder="no" allow="autoplay" 
+                                src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/2288807726&color=%233b82f6&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false" class="rounded-md">
+                            </iframe>
+                        </div>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2 mt-6">Questions 31-40</h4>
+                        <p class="mb-4">Complete the notes below. Write <strong>ONE WORD ONLY</strong> for each answer.</p>
+                        <div class="space-y-4 p-5 border rounded-lg bg-white shadow-sm">
+                            <h5 class="font-bold text-center text-xl text-blue-800 mb-4">The Red King crab</h5>
+                            
+                            <h6 class="font-semibold text-lg text-gray-800 border-b pb-1 mt-4 mb-2">Introduction</h6>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>The Red King Crab is migrating into European waters from the far <strong>31</strong> <input type="text" id="q31" data-q="31" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent"></li>
+                                <li>Its rapid spread threatens local marine species, such as <strong>32</strong> <input type="text" id="q32" data-q="32" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent">, which it preys on.</li>
+                            </ul>
+
+                            <h6 class="font-semibold text-lg text-gray-800 border-b pb-1 mt-6 mb-2">Physical characteristics</h6>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>The Red King Crab has a deep red <strong>33</strong> <input type="text" id="q33" data-q="33" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent"> that develops after several molts.</li>
+                                <li>Juvenile crabs often remain in <strong>34</strong> <input type="text" id="q34" data-q="34" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent"> where predators are fewer.</li>
+                            </ul>
+
+                            <h6 class="font-semibold text-lg text-gray-800 border-b pb-1 mt-6 mb-2">Migration behaviour</h6>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>When travelling in large groups, the crabs damage long stretches of <strong>35</strong> <input type="text" id="q35" data-q="35" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent"></li>
+                                <li>During <strong>36</strong> <input type="text" id="q36" data-q="36" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent">, they tend to move into deeper water.</li>
+                            </ul>
+
+                            <h6 class="font-semibold text-lg text-gray-800 border-b pb-1 mt-6 mb-2">Impact on people</h6>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>Fishermen complain that their <strong>37</strong> <input type="text" id="q37" data-q="37" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent"> are frequently damaged.</li>
+                                <li>Some communities are concerned about the effect on their local <strong>38</strong> <input type="text" id="q38" data-q="38" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent"></li>
+                            </ul>
+
+                            <h6 class="font-semibold text-lg text-gray-800 border-b pb-1 mt-6 mb-2">Management and control</h6>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>In the 1960s, Soviet <strong>39</strong> <input type="text" id="q39" data-q="39" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent"> intentionally introduced the Red King Crab to boost fishery production.</li>
+                                <li>Today, environmental <strong>40</strong> <input type="text" id="q40" data-q="40" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent"> warn that its ecological impact may be greater than expected.</li>
+                            </ul>
+                        </div>
+                    `
+                }
+            ]
+        },
+        reading: {
+            duration: 1200, 
+            sections: [
+                {
+                    title: "Passage 1",
+                    passage: `
+                        <h3 class="text-2xl font-bold mb-2 text-center text-gray-800">The Whale Goes to Court</h3>
+                        <h4 class="text-lg font-semibold mb-6 text-center text-gray-600 italic">A remarkable legal drama in the U.S.A</h4>
+                        
+                        <p class="mb-4">In 1818, a whale became the subject of a controversial court case in New York City. The case involved an old law requiring those who sold fish oil to pay a fee in order to have their barrels inspected by city officials and certified. However, an oil merchant named Samuel Judd refused to pay the inspection fee on three barrels of oil, claiming that no inspection was necessary because it was whale oil, and whales were not fish. The state disagreed, and so a date was set for a court to decide not a point of law, but the answer to a more fundamental question: Is a whale a fish?</p>
+                        
+                        <p class="mb-4">As simple as that question may appear today, the answer was far from obvious in the early nineteenth century. Indeed, the public debate in New York sparked off by the trial was sensational. At stake was nothing less than what most regarded as the order of nature. According to the commonly accepted scheme of things, if an animal was not a beast or a bird, it was a fish, regardless of whether it breathed air or suckled its young. For as long as anyone could remember, all non-human creatures had been organized according to the categories of birds, beasts, or fish. For the average person, the answer seemed perfectly obvious: whales swam in the sea and therefore they were fish.</p>
+                        
+                        <p class="mb-4">Against this traditional framework stood the new Linnaean system of classification, which sought to introduce more scientific values into the classification of living things. Barely half a century old in 1818, the Linnaean system controversially classified whales as mammals because they shared two mammalian characteristics: they were warm-blooded and breathed air.</p>
+                        
+                        <p class="mb-4">So the trial began in December 1818. Judd's defense lawyers chose as their star witness one of New York's most prominent figures, the congressman Samuel Mitchill. Referred to as a "living encyclopedia" and a "walking library", Mitchill was a renowned natural history lecturer at the College of Physicians and Surgeons who liked to dare his students to test his knowledge of the natural world. "Show me the fin, and I will name the fish," he boasted. Scientifically, it was an open-and-shut case, and Judd's defense lawyers believed they only had to do one simple thing to win the trial: insist that it be decided by biology alone. Mitchill seemed fully qualified for this role.</p>
+                        
+                        <p class="mb-4">But this is where the case becomes interesting, and is the reason why the trial of the whale is not some dusty nineteenth-century obscurity. For rather than debate Mitchill on his area of expertise, lawyers for the New York City fish-oil inspectors chose a different tack. Lead counsel William Sampson turned the trial into a contest between scientific learning and common sense, by asking plain-spoken whalers to make their case before the jury.</p>
+                        
+                        <p class="mb-4">The crux of Sampson's case was the trial's implication with regard to humans: should Judd be found not guilty? Sampson told jury members that if they accepted Mitchill's testimony on whales, they were obliged to accept a lower place for their own kind in the natural order. As a result, Mitchill's day in court did not go smoothly, not least because he was forced to acknowledge serious disputes among his peers regarding exactly how to classify biological organisms. Sampson then took aim at Mitchill himself and what he represented: privileged aristocrats from the scientific community who had lost touch with reality. The smooth-talking Sampson then claimed Mitchill's beliefs had their origin in Europe — something he rightly judged would infuriate the citizens of always-independent New York. This revolutionary new thinking, Sampson claimed, was something that honest working New Yorkers could do without. No longer was this a case about barrels of oil; but the proper place of scientific knowledge in the U.S.A. Ultimately, what won the case for Samuel Judd were not Mitchill's scientific arguments, but testimony from a different sphere altogether. In New York's markets, the merchants implicitly understood that whale oil and fish oil were not the same: whale oil could be used as a fuel for lamps because it could be burned without giving off smoke; fish oil, on the other hand, was nasty, impure stuff used primarily in tanning leather. In the end, it was this testimony that led to Judd's victory.</p>
+                        
+                        <p class="mb-4">The trial of the whale still has relevance today, when the court of public opinion remains easily swayed by skeptics. The 1818 trial was really about this question: who gets to decide on the place of the natural world in the human world — scientific experts or public opinion? Whether the issue today is the effects of human activity on the climate of this planet, or one of many other contemporary topics, the legacy of Judd's case continues to be of relevance.</p>
+                    `,
+                    questions: `
+                        <h4 class="font-bold mb-2">Questions 1-7</h4>
+                        <p class="mb-4">Do the following statements agree with the information given in Reading Passage 1?</p>
+                        <p class="mb-4 text-sm text-gray-700 bg-gray-100 p-3 rounded">In boxes 1—7 select:<br>
+                        <strong>TRUE</strong> if the statement agrees with the information<br>
+                        <strong>FALSE</strong> if the statement contradicts the information<br>
+                        <strong>NOT GIVEN</strong> if there is no information on this</p>
+                        
+                        <div class="space-y-4 p-4 border rounded-lg bg-white mb-8 shadow-sm">
+                            <div class="flex flex-col border-b pb-3">
+                                <p class="mb-2"><strong>1</strong> An inspection fee on fish oil was introduced in New York in 1818.</p>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q1" value="TRUE" class="text-blue-600"><span class="ml-2 text-sm font-medium">TRUE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q1" value="FALSE" class="text-blue-600"><span class="ml-2 text-sm font-medium">FALSE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q1" value="NOT GIVEN" class="text-blue-600"><span class="ml-2 text-sm font-medium">NOT GIVEN</span></label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col border-b pb-3">
+                                <p class="mb-2"><strong>2</strong> Samuel Judd argued that the inspection fee should exclude whale oil.</p>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q2" value="TRUE" class="text-blue-600"><span class="ml-2 text-sm font-medium">TRUE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q2" value="FALSE" class="text-blue-600"><span class="ml-2 text-sm font-medium">FALSE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q2" value="NOT GIVEN" class="text-blue-600"><span class="ml-2 text-sm font-medium">NOT GIVEN</span></label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col border-b pb-3">
+                                <p class="mb-2"><strong>3</strong> Judd had been in trouble with city officials before the inspection fee disagreement.</p>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q3" value="TRUE" class="text-blue-600"><span class="ml-2 text-sm font-medium">TRUE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q3" value="FALSE" class="text-blue-600"><span class="ml-2 text-sm font-medium">FALSE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q3" value="NOT GIVEN" class="text-blue-600"><span class="ml-2 text-sm font-medium">NOT GIVEN</span></label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col border-b pb-3">
+                                <p class="mb-2"><strong>4</strong> Many New Yorkers were interested in the court case at the time.</p>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q4" value="TRUE" class="text-blue-600"><span class="ml-2 text-sm font-medium">TRUE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q4" value="FALSE" class="text-blue-600"><span class="ml-2 text-sm font-medium">FALSE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q4" value="NOT GIVEN" class="text-blue-600"><span class="ml-2 text-sm font-medium">NOT GIVEN</span></label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col border-b pb-3">
+                                <p class="mb-2"><strong>5</strong> Traditionally, non-human creatures had been classified in one of three groups.</p>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q5" value="TRUE" class="text-blue-600"><span class="ml-2 text-sm font-medium">TRUE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q5" value="FALSE" class="text-blue-600"><span class="ml-2 text-sm font-medium">FALSE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q5" value="NOT GIVEN" class="text-blue-600"><span class="ml-2 text-sm font-medium">NOT GIVEN</span></label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col border-b pb-3">
+                                <p class="mb-2"><strong>6</strong> Generally speaking, ordinary people thought fish were the lowest form of life.</p>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q6" value="TRUE" class="text-blue-600"><span class="ml-2 text-sm font-medium">TRUE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q6" value="FALSE" class="text-blue-600"><span class="ml-2 text-sm font-medium">FALSE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q6" value="NOT GIVEN" class="text-blue-600"><span class="ml-2 text-sm font-medium">NOT GIVEN</span></label>
+                                </div>
+                            </div>
+                            <div class="flex flex-col pb-1">
+                                <p class="mb-2"><strong>7</strong> Whales were excluded from the Linnaean system in 1818.</p>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q7" value="TRUE" class="text-blue-600"><span class="ml-2 text-sm font-medium">TRUE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q7" value="FALSE" class="text-blue-600"><span class="ml-2 text-sm font-medium">FALSE</span></label>
+                                    <label class="inline-flex items-center cursor-pointer"><input type="radio" name="q7" value="NOT GIVEN" class="text-blue-600"><span class="ml-2 text-sm font-medium">NOT GIVEN</span></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold mb-2">Questions 8-13</h4>
+                        <p class="mb-4">Complete the notes below.<br>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        
+                        <div class="space-y-4 p-5 border rounded-lg bg-white shadow-sm">
+                            <h5 class="font-bold text-center text-xl text-blue-800 mb-4">The Trial of December 1818</h5>
+                            
+                            <h6 class="font-semibold text-lg text-gray-800 border-b pb-1 mt-4 mb-2">The Personalities</h6>
+                            <ul class="list-disc pl-6 space-y-3 text-gray-700">
+                                <li>Samuel Mitchill worked as a congressman and a <strong>8</strong> <input type="text" id="q8" data-q="8" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent text-center w-32"></li>
+                                <li>The defense wanted Mitchill to present the biology of the case.</li>
+                                <li>William Sampson called <strong>9</strong> <input type="text" id="q9" data-q="9" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent text-center w-32"> as a witness to appeal to the common sense of the jury.</li>
+                            </ul>
+
+                            <h6 class="font-semibold text-lg text-gray-800 border-b pb-1 mt-6 mb-2">The Arguments</h6>
+                            <ul class="list-disc pl-6 space-y-3 text-gray-700">
+                                <li>Sampson's case was based on the consequences for humans if Judd won.</li>
+                                <li>Mitchill admitted that scientists had disputes about classification.</li>
+                                <li>New Yorkers disliked Mitchill because his ideas came from <strong>10</strong> <input type="text" id="q10" data-q="10" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent text-center w-32"></li>
+                            </ul>
+
+                            <h6 class="font-semibold text-lg text-gray-800 border-b pb-1 mt-6 mb-2">The Conclusions</h6>
+                            <ul class="list-disc pl-6 space-y-3 text-gray-700">
+                                <li>In the end, it was statements from local <strong>11</strong> <input type="text" id="q11" data-q="11" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent text-center w-32"> not Mitchill's testimony, which helped Judd win.</li>
+                                <li>Whale oil made a good <strong>12</strong> <input type="text" id="q12" data-q="12" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent text-center w-32"> because it was clean.</li>
+                                <li>Judd's case is relevant today, e.g. in the debate about Earth's <strong>13</strong> <input type="text" id="q13" data-q="13" class="border-b-2 border-t-0 border-l-0 border-r-0 border-gray-400 focus:border-blue-500 rounded-none bg-transparent text-center w-32"></li>
+                            </ul>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    const vocabularyDatabase = {
+        "controversial": {
+            pronunciation: "kon-trə-VUR-shəl",
+            ipa: "/ˌkɒntrəˈvɜːʃəl/",
+            definition: "Giving rise or likely to give rise to public disagreement.",
+            synonyms: ["disputed", "contentious", "debatable"]
+        },
+        "merchant": {
+            pronunciation: "MUR-chənt",
+            ipa: "/ˈmɜːtʃənt/",
+            definition: "A person or company involved in wholesale trade, especially one dealing with foreign countries.",
+            synonyms: ["trader", "dealer", "vendor"]
+        },
+        "fundamental": {
+            pronunciation: "fun-də-MEN-təl",
+            ipa: "/ˌfʌndəˈmentəl/",
+            definition: "Forming a necessary base or core; of central importance.",
+            synonyms: ["basic", "foundational", "essential"]
+        },
+        "sensational": {
+            pronunciation: "sen-SAY-shə-nəl",
+            ipa: "/sɛnˈseɪʃənəl/",
+            definition: "Causing great public interest and excitement.",
+            synonyms: ["thrilling", "startling", "shocking"]
+        },
+        "mammalian": {
+            pronunciation: "mə-MAY-lee-ən",
+            ipa: "/məˈmeɪliən/",
+            definition: "Relating to mammals.",
+            synonyms: ["mammal"]
+        },
+        "prominent": {
+            pronunciation: "PROM-i-nənt",
+            ipa: "/ˈprɒmɪnənt/",
+            definition: "Important; famous.",
+            synonyms: ["well-known", "leading", "notable"]
+        },
+        "obscurity": {
+            pronunciation: "əb-SKYOOR-i-tee",
+            ipa: "/əbˈskjʊərɪti/",
+            definition: "The state of being unknown, inconspicuous, or unimportant.",
+            synonyms: ["anonymity", "insignificance", "darkness"]
+        },
+        "implication": {
+            pronunciation: "im-pli-KAY-shən",
+            ipa: "/ˌɪmplɪˈkeɪʃən/",
+            definition: "The conclusion that can be drawn from something, although it is not explicitly stated.",
+            synonyms: ["suggestion", "inference", "insinuation"]
+        },
+        "aristocrats": {
+            pronunciation: "ə-RIS-tə-krat",
+            ipa: "/əˈrɪstəkræt/",
+            definition: "Members of the aristocracy (the highest class in certain societies).",
+            synonyms: ["nobles", "lords", "patricians"]
+        },
+        "infuriate": {
+            pronunciation: "in-FYOOR-ee-ayt",
+            ipa: "/ɪnˈfjʊərieɪt/",
+            definition: "Make (someone) extremely angry and impatient.",
+            synonyms: ["enrage", "incense", "anger"]
+        },
+        "legacy": {
+            pronunciation: "LEG-ə-see",
+            ipa: "/ˈlɛgəsi/",
+            definition: "Something left or handed down by a predecessor.",
+            synonyms: ["heritage", "inheritance", "bequest"]
+        }
+    };
+
+    const vocabularyQuiz = {
+        title: "Vocabulary Quiz",
+        description: "Test your understanding of difficult words from 'The Whale Goes to Court'",
+        questions: [
+            {
+                id: "vq1",
+                type: "multiple_choice",
+                question: "What does 'controversial' mean?",
+                options: [
+                    "Likely to give rise to public disagreement",
+                    "Completely clear and universally accepted",
+                    "Relating to legal practices",
+                    "Very old and traditional"
+                ],
+                correct: 0,
+                explanation: "Controversial describes something that provokes debate or public disagreement."
+            },
+            {
+                id: "vq2",
+                type: "multiple_choice",
+                question: "Which word means 'a person involved in wholesale trade'?",
+                options: [
+                    "Aristocrat",
+                    "Congressman",
+                    "Merchant",
+                    "Skeptic"
+                ],
+                correct: 2,
+                explanation: "A merchant is someone who buys and sells commodities, like Samuel Judd the oil merchant."
+            },
+            {
+                id: "vq3",
+                type: "true_false",
+                question: "The word 'obscurity' means the state of being very famous and well-known.",
+                correct: false,
+                explanation: "False. Obscurity means the state of being unknown, inconspicuous, or unimportant."
+            },
+            {
+                id: "vq4",
+                type: "multiple_choice",
+                question: "What is the meaning of 'infuriate'?",
+                options: [
+                    "To confuse deeply",
+                    "To make someone extremely angry",
+                    "To persuade efficiently",
+                    "To classify incorrectly"
+                ],
+                correct: 1,
+                explanation: "To infuriate someone is to enrage or make them very angry."
+            },
+            {
+                id: "vq5",
+                type: "gap_filling",
+                question: "Complete the sentence: The new scientific findings had a major __________ for how society viewed the natural world.",
+                correct: "implication",
+                suggestions: ["implication", "aristocrat", "merchant"],
+                explanation: "An implication is a consequence or conclusion that can be drawn from something."
+            }
+        ]
+    };
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            userAnswers: {},
+            currentTab: 'listening',
+            currentSection: 0,
+
+            contentPanes: document.getElementById('content-panes'),
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabTooltip: document.getElementById('vocab-tooltip'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+                this.processVocabulary();
+                this.initSpeechSynthesis();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                
+                // Form interactions
+                document.body.addEventListener('input', (e) => this.saveAnswer(e));
+                document.body.addEventListener('change', (e) => this.saveAnswer(e));
+                
+                this.questionsSection.addEventListener('click', (e) => this.handleClicks(e));
+                this.leftPane.addEventListener('click', (e) => this.handleClicks(e));
+                this.rightPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('question-highlight')) {
+                        this.clearSpecificHighlight(e.target);
+                    }
+                });
+
+                // Submit Form listener (Delegated to catch the button in the footer)
+                document.body.addEventListener('click', (e) => {
+                    const submitBtn = e.target.closest('#submit-form-btn');
+                    if (submitBtn) {
+                        this.submitToGoogleForm();
+                    }
+                });
+
+                let tooltipTimeout;
+                let showTimeout;
+                let isTooltipHovered = false;
+                let isSelecting = false;
+
+                document.addEventListener('mouseover', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        clearTimeout(tooltipTimeout);
+                        clearTimeout(showTimeout);
+                        showTimeout = setTimeout(() => {
+                            if (!isSelecting) {
+                                const word = e.target.dataset.word;
+                                this.showVocabularyTooltip(word, e.target);
+                            }
+                        }, 500);
+                    }
+                });
+
+                document.addEventListener('mouseout', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        clearTimeout(showTimeout);
+                        tooltipTimeout = setTimeout(() => {
+                            if (!isTooltipHovered) {
+                                this.hideVocabularyTooltip();
+                            }
+                        }, 300);
+                    }
+                });
+
+                document.addEventListener('mousedown', (e) => {
+                    if (e.target.classList.contains('vocab-word') || e.target.closest('.reading-passage')) {
+                        isSelecting = true;
+                        this.hideVocabularyTooltip();
+                        const passage = e.target.closest('.reading-passage');
+                        if (passage) passage.classList.add('selecting');
+                    }
+                });
+
+                document.addEventListener('mouseup', (e) => {
+                    setTimeout(() => {
+                        isSelecting = false;
+                        const passage = e.target.closest('.reading-passage');
+                        if (passage) passage.classList.remove('selecting');
+                    }, 100);
+                });
+
+                this.vocabTooltip.addEventListener('mouseenter', () => {
+                    clearTimeout(tooltipTimeout);
+                    isTooltipHovered = true;
+                });
+
+                this.vocabTooltip.addEventListener('mouseleave', () => {
+                    isTooltipHovered = false;
+                    this.hideVocabularyTooltip();
+                });
+            },
+
+            handleClicks(e) {
+                if (e.target.classList.contains('question-highlight')) {
+                    this.clearSpecificHighlight(e.target);
+                } else if (e.target.tagName === 'MARK') {
+                    this.clearMarkHighlight(e.target);
+                }
+            },
+
+            saveAnswer(e) {
+                if (e.target.id || e.target.name) {
+                    const id = e.target.id || e.target.name;
+                    if (e.target.type === 'checkbox') {
+                        const checkboxes = document.querySelectorAll(`input[name="${id}"]:checked`);
+                        const values = Array.from(checkboxes).map(cb => cb.value);
+                        this.userAnswers[id] = values.join('/');
+                    } else if (e.target.type === 'radio') {
+                        if (e.target.checked) this.userAnswers[id] = e.target.value;
+                    } else {
+                        this.userAnswers[id] = e.target.value;
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const textInput = document.getElementById(qId);
+                    const radioInputs = document.querySelectorAll(`input[name="${qId}"]`);
+
+                    if (textInput) {
+                        textInput.value = value;
+                    } else if (radioInputs.length > 0) {
+                        if (value.includes('/')) {
+                            const values = value.split('/');
+                            radioInputs.forEach(input => {
+                                input.checked = values.includes(input.value);
+                            });
+                        } else {
+                            radioInputs.forEach(radio => {
+                                radio.checked = radio.value === value;
+                            });
+                        }
+                    }
+                }
+            },
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                this.currentSection = 0;
+                
+                if (tabName === 'vocabulary') {
+                    this.questionsSection.style.display = 'none';
+                } else {
+                    this.questionsSection.style.display = 'block';
+                }
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                this.loadContent();
+            },
+            
+            switchSection(sectionIndex) {
+                 this.currentSection = sectionIndex;
+                 this.loadContent();
+            },
+
+            clearSpecificHighlight(element) {
+                if (element.classList.contains('question-highlight')) {
+                    element.classList.remove('question-highlight');
+                    element.style.cssText = '';
+                }
+            },
+
+            clearMarkHighlight(element) {
+                const parent = element.parentNode;
+                const text = element.textContent;
+                parent.replaceChild(document.createTextNode(text), element);
+                parent.normalize();
+            },
+
+            processVocabulary() {
+                const readingPassages = document.querySelectorAll('.reading-passage');
+                readingPassages.forEach(passage => {
+                    this.addVocabularyTooltips(passage);
+                });
+            },
+
+            addVocabularyTooltips(container) {
+                const walker = document.createTreeWalker(
+                    container,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+
+                const textNodes = [];
+                let node;
+                while (node = walker.nextNode()) textNodes.push(node);
+
+                textNodes.forEach(textNode => {
+                    const text = textNode.textContent;
+                    const words = text.split(/(\s+)/);
+                    let changed = false;
+                    const newContent = words.map(word => {
+                        const cleanWord = word.toLowerCase().replace(/[^\w]/g, '');
+                        if (vocabularyDatabase[cleanWord]) {
+                            changed = true;
+                            return `<span class="vocab-word" data-word="${cleanWord}">${word}</span>`;
+                        }
+                        return word;
+                    }).join('');
+
+                    if (changed) {
+                        const wrapper = document.createElement('span');
+                        wrapper.innerHTML = newContent;
+                        textNode.parentNode.replaceChild(wrapper, textNode);
+                    }
+                });
+            },
+
+            showVocabularyTooltip(word, element) {
+                const vocabData = vocabularyDatabase[word];
+                if (!vocabData) return;
+
+                const tooltip = this.vocabTooltip;
+                tooltip.querySelector('.vocab-word-display').textContent = word;
+                tooltip.querySelector('.vocab-pronunciation').textContent = vocabData.pronunciation;
+                tooltip.querySelector('.vocab-ipa').textContent = vocabData.ipa;
+                tooltip.querySelector('.vocab-definition').textContent = vocabData.definition;
+                tooltip.querySelector('.vocab-synonyms-list').textContent = vocabData.synonyms.join(', ');
+
+                const audioBtn = tooltip.querySelector('.vocab-audio-btn');
+                audioBtn.onclick = () => this.playWordPronunciation(word);
+                audioBtn.classList.remove('playing');
+
+                const rect = element.getBoundingClientRect();
+                const tooltipRect = tooltip.getBoundingClientRect();
+                
+                let left, top;
+                if (window.innerWidth - rect.right >= tooltipRect.width + 20) {
+                    left = rect.right + 15;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    tooltip.style.transform = 'translateY(0)';
+                } else if (rect.left >= tooltipRect.width + 20) {
+                    left = rect.left - tooltipRect.width - 15;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    tooltip.style.transform = 'translateY(0)';
+                } else if (rect.top >= tooltipRect.height + 20) {
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.top - tooltipRect.height - 15;
+                    tooltip.style.transform = 'translateY(-10px)';
+                } else {
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.bottom + 15;
+                    tooltip.style.transform = 'translateY(10px)';
+                }
+
+                left = Math.max(10, Math.min(left, window.innerWidth - tooltipRect.width - 10));
+                top = Math.max(10, Math.min(top, window.innerHeight - tooltipRect.height - 10));
+
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+                tooltip.classList.add('show');
+            },
+
+            hideVocabularyTooltip() {
+                this.vocabTooltip.classList.remove('show');
+            },
+
+            initSpeechSynthesis() {
+                if ('speechSynthesis' in window) {
+                    speechSynthesis.addEventListener('voiceschanged', () => {});
+                }
+            },
+
+            playWordPronunciation(word) {
+                if (!('speechSynthesis' in window)) return;
+
+                const audioBtn = this.vocabTooltip.querySelector('.vocab-audio-btn');
+                speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.rate = 0.8;
+                utterance.lang = 'en-US';
+
+                utterance.onstart = () => {
+                    audioBtn.classList.add('playing');
+                    audioBtn.textContent = '⏸️';
+                };
+                utterance.onend = utterance.onerror = () => {
+                    audioBtn.classList.remove('playing');
+                    audioBtn.textContent = '🔊';
+                };
+
+                speechSynthesis.speak(utterance);
+            },
+
+            loadContent() {
+                if (this.currentTab === 'vocabulary') {
+                    this.loadVocabularyQuiz();
+                    return;
+                }
+                
+                const data = testData[this.currentTab];
+                const sectionData = data.sections[this.currentSection];
+
+                this.contentPanes.style.gridTemplateColumns = '1fr 5px 1fr';
+                this.leftPane.style.display = 'block';
+                this.splitter.style.display = 'block';
+
+                if (this.currentTab === 'listening') {
+                    this.leftPane.innerHTML = `<div class="space-y-6">${sectionData.instructions}${sectionData.questions}</div>`;
+                    this.questionsSection.innerHTML = ''; 
+                } else {
+                    this.leftPane.innerHTML = `<div class="reading-passage p-4">${sectionData.passage}</div>`;
+                    this.questionsSection.innerHTML = `<div class="p-4">${sectionData.questions}</div>`;
+                }
+
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="section-btn ${index === this.currentSection ? 'active' : ''}" data-section-index="${index}">${sec.title}</button>`
+                ).join('');
+                
+                this.sectionTabsContainer.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchSection(parseInt(e.target.dataset.sectionIndex)));
+                });
+
+                this.restoreAnswers();
+                
+                if (this.currentTab === 'reading') setTimeout(() => this.processVocabulary(), 100);
+            },
+
+            loadVocabularyQuiz() {
+                this.contentPanes.style.gridTemplateColumns = '1fr';
+                this.leftPane.style.display = 'block';
+                this.splitter.style.display = 'none';
+                this.questionsSection.style.display = 'none';
+                this.sectionTabsContainer.innerHTML = '';
+                
+                this.currentQuizQuestion = 0;
+                this.quizScore = 0;
+                
+                let html = `
+                    <div class="max-w-4xl mx-auto p-6">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-blue-600 mb-4">${vocabularyQuiz.title}</h2>
+                            <p class="text-lg text-gray-600 mb-6">${vocabularyQuiz.description}</p>
+                        </div>
+                        <div id="question-container" class="min-h-96"></div>
+                        <div id="vocab-results" class="mt-8 hidden bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Quiz Results</h3>
+                            <div id="vocab-score" class="text-2xl font-bold text-blue-600 mb-4"></div>
+                            <div id="vocab-feedback" class="text-gray-700 mb-4"></div>
+                            <button id="restart-quiz" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">Take Quiz Again</button>
+                        </div>
+                    </div>
+                `;
+                
+                this.leftPane.innerHTML = html;
+                document.getElementById('restart-quiz').addEventListener('click', () => this.loadVocabularyQuiz());
+                this.showCurrentQuestion();
+            },
+
+            showCurrentQuestion() {
+                const question = vocabularyQuiz.questions[this.currentQuizQuestion];
+                let html = `
+                    <div class="bg-white border border-gray-200 rounded-lg p-8 shadow-lg">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-6">${this.currentQuizQuestion + 1}. ${question.question}</h4>
+                `;
+                
+                if (question.type === 'multiple_choice' || question.type === 'gap_filling') {
+                    const options = question.options || question.suggestions;
+                    html += '<div class="space-y-3">';
+                    options.forEach((opt, idx) => {
+                        const val = question.type === 'gap_filling' ? opt : idx;
+                        html += `
+                            <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="radio" name="${question.id}" value="${val}">
+                                <span class="text-gray-700 text-lg">${opt}</span>
+                            </label>
+                        `;
+                    });
+                    html += '</div>';
+                } else if (question.type === 'true_false') {
+                    html += `
+                        <div class="space-y-3">
+                            <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="radio" name="${question.id}" value="true"> <span class="text-gray-700 text-lg">True</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="radio" name="${question.id}" value="false"> <span class="text-gray-700 text-lg">False</span>
+                            </label>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                        <div id="explanation-${question.id}" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg hidden">
+                            <h5 class="font-semibold text-gray-800 mb-2">Explanation:</h5>
+                            <p class="text-gray-700">${question.explanation}</p>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('question-container').innerHTML = html;
+                
+                document.querySelectorAll(`input[name="${question.id}"]`).forEach(input => {
+                    input.addEventListener('change', () => {
+                        let isCorrect = false;
+                        if(question.type === 'multiple_choice') isCorrect = parseInt(input.value) === question.correct;
+                        else if(question.type === 'true_false') isCorrect = (input.value === 'true') === question.correct;
+                        else isCorrect = input.value === question.correct;
+
+                        if (isCorrect) this.quizScore++;
+                        
+                        document.getElementById(`explanation-${question.id}`).classList.remove('hidden');
+                        document.querySelectorAll(`input[name="${question.id}"]`).forEach(i => i.disabled = true);
+                        
+                        const label = input.closest('label');
+                        if (isCorrect) {
+                            label.classList.add('border-green-500', 'bg-green-50');
+                        } else {
+                            label.classList.add('border-red-500', 'bg-red-50');
+                        }
+
+                        setTimeout(() => {
+                            this.currentQuizQuestion++;
+                            if (this.currentQuizQuestion >= vocabularyQuiz.questions.length) {
+                                document.getElementById('question-container').innerHTML = '';
+                                document.getElementById('vocab-results').classList.remove('hidden');
+                                document.getElementById('vocab-score').textContent = `Score: ${this.quizScore}/${vocabularyQuiz.questions.length}`;
+                            } else {
+                                this.showCurrentQuestion();
+                            }
+                        }, 2000);
+                    });
+                });
+            },
+
+            submitToGoogleForm() {
+                const nameInput = document.getElementById('student-name');
+                const name = nameInput ? nameInput.value : '';
+
+                const params = new URLSearchParams();
+                params.append('usp', 'pp_url');
+                
+                // Append the student's name
+                if (name) params.append('entry.46708143', name);
+
+                // Map form input IDs to Google Forms entry parameters
+                const textEntries = {
+                    'q31': 'entry.1540937544',
+                    'q32': 'entry.728640017',
+                    'q33': 'entry.2050944953',
+                    'q34': 'entry.435654003',
+                    'q35': 'entry.663799233',
+                    'q36': 'entry.1931778275',
+                    'q37': 'entry.1866969193',
+                    'q38': 'entry.594013301',
+                    'q39': 'entry.1841756840',
+                    'q40': 'entry.1871028695',
+                    'q1': 'entry.1868110156',
+                    'q2': 'entry.1480125415',
+                    'q3': 'entry.1012201402',
+                    'q4': 'entry.817674773',
+                    'q5': 'entry.1638647808',
+                    'q6': 'entry.1018855086',
+                    'q7': 'entry.2033597587',
+                    'q8': 'entry.1651172622',
+                    'q9': 'entry.1577359016',
+                    'q10': 'entry.1745467822',
+                    'q11': 'entry.1338565567',
+                    'q12': 'entry.356873444',
+                    'q13': 'entry.1898221980'
+                };
+
+                for (const [qId, entryId] of Object.entries(textEntries)) {
+                    if (this.userAnswers[qId]) {
+                        // Uppercase the answer specifically as required by the form
+                        params.append(entryId, this.userAnswers[qId].toUpperCase().trim());
+                    }
+                }
+
+                // The target Google Form link
+                const formId = '1FAIpQLSfwVb1Z7gcdHsZz_xP5n2iUL5uPKwQjHvMFlJOqiC2FM2b5tw';
+                const url = `https://docs.google.com/forms/d/e/${formId}/viewform?${params.toString()}`;
+                
+                window.open(url, '_blank');
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                });
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    const containerRect = this.contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 100 && newLeftWidth < containerRect.width - 100) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        this.contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+                document.addEventListener('mouseup', () => isDragging = false);
+            },
+            
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+                        this.highlightTooltip.style.left = `${e.pageX}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 30}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            try {
+                                const mark = document.createElement('mark');
+                                range.surroundContents(mark);
+                            } catch (ex) {}
+                            selection.removeAllRanges();
+                            this.highlightTooltip.style.display = 'none';
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
