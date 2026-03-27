@@ -51,9 +51,6 @@
         /* Car illustrations */
         .car-card { border-radius: 0.5rem; padding: 1.5rem; color: white; position: relative; overflow: hidden; }
         .car-specs { background: #ef4444; color: white; padding: 1rem; font-weight: bold; font-size: 0.9rem; margin-bottom: 1rem; }
-        
-        .nav-link { cursor: pointer; transition: color 0.2s; }
-        .nav-link:hover { color: #3b82f6; }
     </style>
 </head>
 <body class="bg-gray-100 pb-20">
@@ -61,13 +58,13 @@
     <!-- Navigation -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-4 overflow-x-auto whitespace-nowrap">
-                    <span class="font-bold text-xl mr-4 text-blue-600">English Practice</span>
-                    <a href="#reading-1" class="nav-link text-gray-600 hover:text-blue-600 px-2 py-2">Reading (Signs)</a>
-                    <a href="#reading-2" class="nav-link text-gray-600 hover:text-blue-600 px-2 py-2">Reading (Cities)</a>
-                    <a href="#vocab" class="nav-link text-gray-600 hover:text-blue-600 px-2 py-2">Vocabulary</a>
-                    <a href="#grammar" class="nav-link text-gray-600 hover:text-blue-600 px-2 py-2">Grammar</a>
+            <div class="flex justify-between">
+                <div class="flex items-center space-x-2 overflow-x-auto whitespace-nowrap border-b w-full">
+                    <span class="font-bold text-xl mr-6 text-blue-600 py-4">English Practice</span>
+                    <button onclick="openTab(event, 'reading-1')" class="tab-btn px-4 py-4 text-blue-600 border-b-2 border-blue-600 font-medium transition-colors duration-200">Reading (Signs)</button>
+                    <button onclick="openTab(event, 'reading-2')" class="tab-btn px-4 py-4 text-gray-600 border-b-2 border-transparent hover:text-blue-600 font-medium transition-colors duration-200">Reading (Cities)</button>
+                    <button onclick="openTab(event, 'vocab')" class="tab-btn px-4 py-4 text-gray-600 border-b-2 border-transparent hover:text-blue-600 font-medium transition-colors duration-200">Vocabulary</button>
+                    <button onclick="openTab(event, 'grammar')" class="tab-btn px-4 py-4 text-gray-600 border-b-2 border-transparent hover:text-blue-600 font-medium transition-colors duration-200">Grammar</button>
                 </div>
             </div>
         </div>
@@ -76,7 +73,7 @@
     <div class="max-w-6xl mx-auto px-4 mt-8 space-y-12">
 
         <!-- SECTION 1: READING (Signs) -->
-        <section id="reading-1" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+        <section id="reading-1" class="tab-content bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">READING: Multiple Choice</h2>
             </div>
@@ -219,7 +216,7 @@
         </section>
 
         <!-- SECTION 2: READING (Cities) -->
-        <section id="reading-2" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+        <section id="reading-2" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">READING: Matching Cities</h2>
             </div>
@@ -304,7 +301,7 @@
         </section>
 
         <!-- SECTION 3: VOCABULARY -->
-        <section id="vocab" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+        <section id="vocab" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">VOCABULARY: Places & Transport</h2>
             </div>
@@ -422,7 +419,7 @@
         </section>
 
         <!-- SECTION 4: GRAMMAR -->
-        <section id="grammar" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+        <section id="grammar" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">GRAMMAR: Comparatives and Superlatives</h2>
             </div>
@@ -646,6 +643,26 @@
 
     <!-- JavaScript for Interactivity -->
     <script>
+        function openTab(evt, tabId) {
+            // Hide all sections
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.add('hidden'));
+
+            // Remove active styles from buttons
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                btn.classList.remove('text-blue-600', 'border-blue-600');
+                btn.classList.add('text-gray-600', 'border-transparent');
+            });
+
+            // Show targeted section
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Add active style to the clicked button
+            evt.currentTarget.classList.add('text-blue-600', 'border-blue-600');
+            evt.currentTarget.classList.remove('text-gray-600', 'border-transparent');
+        }
+
         function normalizeAnswer(ans) {
             return ans.toString().toLowerCase().trim().replace(/\s+/g, ' ');
         }
