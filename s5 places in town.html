@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentence Matching Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --success-bg: #f0fdf4;
+            --success-border: #22c55e;
+            --error-bg: #fef2f2;
+            --error-border: #ef4444;
+            --drop-hover: #e0e7ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.4;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+        }
+
+        p.instructions {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .game-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Desktop & Tablet Layout */
+        @media (min-width: 900px) {
+            .game-layout {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            .sentences-section {
+                flex: 2;
+            }
+            .word-bank-section {
+                flex: 1;
+                position: sticky;
+                top: 1rem;
+            }
+        }
+
+        /* Sentences Section */
+        .sentences-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sentence-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            background: var(--card-bg);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 600px) {
+            .sentence-row {
+                flex-direction: row;
+                align-items: stretch;
+            }
+        }
+
+        .first-half {
+            flex: 1;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            padding: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        /* Drop Zones */
+        .drop-zone {
+            flex: 1;
+            min-height: 40px;
+            border: 2px dashed var(--border-color);
+            border-radius: 0.5rem;
+            background-color: var(--bg-color);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem;
+        }
+
+        .drop-zone.drag-over {
+            background-color: var(--drop-hover);
+            border-color: var(--primary);
+        }
+
+        /* Word Bank */
+        .word-bank-section {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        .word-bank-section h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.25rem;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            min-height: 150px; /* Ensure space when empty */
+        }
+
+        /* Draggable Items */
+        .draggable-item {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.4rem;
+            cursor: grab;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: transform 0.1s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            user-select: none;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+
+        .draggable-item:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .draggable-item:active {
+            cursor: grabbing;
+        }
+
+        .draggable-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+
+        /* Validation States */
+        .drop-zone.correct {
+            border-color: var(--success-border);
+            border-style: solid;
+            background-color: var(--success-bg);
+        }
+        
+        .drop-zone.correct .draggable-item {
+            border-color: var(--success-border);
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .drop-zone.incorrect {
+            border-color: var(--error-border);
+            border-style: solid;
+            background-color: var(--error-bg);
+        }
+
+        .drop-zone.incorrect .draggable-item {
+            border-color: var(--error-border);
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Complete the Sentences</h1>
+        <p class="instructions">Drag the correct second half of the sentence from the Word Bank and drop it into the empty slot.</p>
+    </header>
+
+    <div class="game-layout">
+        <!-- Left/Top Section: First Halves & Drop Zones -->
+        <div class="sentences-section" id="sentences-container">
+            <!-- Rendered dynamically via JS -->
+        </div>
+
+        <!-- Right/Bottom Section: Word Bank -->
+        <div class="word-bank-section">
+            <h2>Word Bank</h2>
+            <!-- The word bank is also a drop zone so items can be returned -->
+            <div class="word-bank" id="word-bank" data-is-bank="true">
+                <!-- Rendered dynamically via JS -->
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="check-btn">Check Answers</button>
+    </div>
+</div>
+
+<script>
+    // Game Data
+    const gameData = [
+        { "id": 1, "first": "You should visit the history museum", "second": "because it has fascinating exhibits about the past." },
+        { "id": 2, "first": "Ben Thanh Market is a great place to buy souvenirs,", "second": "but you need to bargain to get a good price." },
+        { "id": 3, "first": "We can walk around the pedestrian street,", "second": "and then we can grab a drink at a local coffee shop." },
+        { "id": 4, "first": "If you love trying delicious local food,", "second": "you absolutely must eat a hot bowl of Phở in the morning." },
+        { "id": 5, "first": "The traffic can look very crazy to visitors;", "second": "however, it is actually quite safe to cross the street." },
+        { "id": 6, "first": "It is usually very hot and sunny in the early afternoon,", "second": "so we should visit the indoor art galleries first." },
+        { "id": 7, "first": "We will explore the underground tunnels in the morning,", "second": "and after that we will take a relaxing boat ride on the river." },
+        { "id": 8, "first": "If you want to see the whole city from high above,", "second": "then we should buy tickets for the observation deck." }
+    ];
+
+    // DOM Elements
+    const sentencesContainer = document.getElementById('sentences-container');
+    const wordBank = document.getElementById('word-bank');
+    const checkBtn = document.getElementById('check-btn');
+
+    // State variable to hold the currently dragged element
+    let draggedElement = null;
+
+    // Utility: Shuffle Array
+    function shuffleArray(array) {
+        const newArr = [...array];
+        for (let i = newArr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        }
+        return newArr;
+    }
+
+    // Initialize Game
+    function initGame() {
+        // Clear containers
+        sentencesContainer.innerHTML = '';
+        wordBank.innerHTML = '';
+
+        // Render Sentences and Drop Zones
+        gameData.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'sentence-row';
+
+            const firstHalf = document.createElement('div');
+            firstHalf.className = 'first-half';
+            firstHalf.textContent = item.first;
+
+            const dropZone = document.createElement('div');
+            dropZone.className = 'drop-zone slot-zone';
+            dropZone.dataset.expectedId = item.id;
+
+            row.appendChild(firstHalf);
+            row.appendChild(dropZone);
+            sentencesContainer.appendChild(row);
+        });
+
+        // Render Draggable Items (Shuffled)
+        const shuffledData = shuffleArray(gameData);
+        shuffledData.forEach(item => {
+            const draggableItem = document.createElement('div');
+            draggableItem.className = 'draggable-item';
+            draggableItem.draggable = true;
+            draggableItem.textContent = item.second;
+            draggableItem.dataset.id = item.id;
+
+            // Drag Events
+            draggableItem.addEventListener('dragstart', handleDragStart);
+            draggableItem.addEventListener('dragend', handleDragEnd);
+
+            wordBank.appendChild(draggableItem);
+        });
+
+        // Setup Drop Zones
+        const allDropZones = document.querySelectorAll('.drop-zone, .word-bank');
+        allDropZones.forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('dragleave', handleDragLeave);
+            zone.addEventListener('drop', handleDrop);
+        });
+    }
+
+    // Drag and Drop Handlers
+    function handleDragStart(e) {
+        draggedElement = this;
+        // Use setTimeout to hide the original element slightly while dragging
+        setTimeout(() => this.classList.add('dragging'), 0);
+        e.dataTransfer.effectAllowed = 'move';
+        
+        // Remove validation classes if moved after checking
+        const parentZone = this.parentElement;
+        parentZone.classList.remove('correct', 'incorrect');
+    }
+
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+        draggedElement = null;
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault(); // Necessary to allow dropping
+        e.dataTransfer.dropEffect = 'move';
+        
+        // Only allow dropping if the zone is the word bank OR an empty slot
+        const isBank = this.dataset.isBank === 'true';
+        const isEmptySlot = this.classList.contains('slot-zone') && this.children.length === 0;
+
+        // If it's a valid drop target, show visual cue
+        if (isBank || isEmptySlot) {
+            this.classList.add('drag-over');
+        }
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+
+        if (!draggedElement) return;
+
+        const isBank = this.dataset.isBank === 'true';
+        const isSlotZone = this.classList.contains('slot-zone');
+        
+        // Logic: 
+        // 1. If dropping into Word Bank -> Append
+        // 2. If dropping into an Empty Slot -> Append
+        // 3. If dropping into an Occupied Slot -> Ignore (do nothing)
+        
+        if (isBank) {
+            this.appendChild(draggedElement);
+        } else if (isSlotZone && this.children.length === 0) {
+            this.appendChild(draggedElement);
+        }
+    }
+
+    // Check Answers Logic
+    checkBtn.addEventListener('click', () => {
+        const slotZones = document.querySelectorAll('.slot-zone');
+        let allCorrect = true;
+        let anyEmpty = false;
+
+        slotZones.forEach(zone => {
+            // Reset state
+            zone.classList.remove('correct', 'incorrect');
+            
+            const expectedId = zone.dataset.expectedId;
+            const child = zone.firstElementChild;
+
+            if (!child) {
+                anyEmpty = true;
+                allCorrect = false;
+                return; // Skip empty zones
+            }
+
+            const droppedId = child.dataset.id;
+
+            if (expectedId === droppedId) {
+                // Correct match
+                zone.classList.add('correct');
+                // Lock the correctly matched item
+                child.draggable = false; 
+            } else {
+                // Incorrect match
+                zone.classList.add('incorrect');
+                allCorrect = false;
+                // Leave draggable = true so they can try again
+            }
+        });
+
+        // Provide overall feedback
+        if (allCorrect) {
+            checkBtn.textContent = "Perfect! Great Job!";
+            checkBtn.style.backgroundColor = "var(--success-border)";
+            checkBtn.disabled = true;
+        } else if (anyEmpty) {
+            checkBtn.textContent = "Keep going! Fill all slots.";
+            setTimeout(() => checkBtn.textContent = "Check Answers", 2000);
+        } else {
+            checkBtn.textContent = "Try again! (Fix red ones)";
+            setTimeout(() => checkBtn.textContent = "Check Answers", 2000);
+        }
+    });
+
+    // Start Game
+    initGame();
+</script>
+
+</body>
+</html>
