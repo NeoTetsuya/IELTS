@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Places in Town - English Exercises</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Inter:wght@400;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; }
+        .handwriting { font-family: 'Caveat', cursive; font-size: 1.25rem;}
+        
+        /* Custom Sign Styles */
+        .sign-1 { border: 8px solid black; padding: 1.5rem; text-align: center; background: white; position: relative; max-width: 300px; margin: auto; }
+        .sign-1::after, .sign-1::before { content: ''; position: absolute; bottom: -20px; width: 20px; height: 20px; background: #e5e7eb; }
+        .sign-1::before { left: 40px; } .sign-1::after { right: 40px; }
+        
+        .sign-2 { background: #e5e7eb; border-radius: 1rem; padding: 1.5rem; position: relative; max-width: 300px; margin: auto; }
+        .sign-2::before { content: ''; position: absolute; bottom: 20px; left: -15px; border-width: 15px 15px 15px 0; border-color: transparent #e5e7eb transparent transparent; }
+        
+        .sign-3 { background: repeating-linear-gradient(45deg, #cbd5e1, #cbd5e1 10px, #e2e8f0 10px, #e2e8f0 20px); padding: 1rem; max-width: 300px; margin: auto; }
+        .sign-3-inner { background: white; padding: 1.5rem; text-align: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+        
+        .sign-4 { background: white; border: 1px solid #cbd5e1; border-radius: 0.5rem; overflow: hidden; max-width: 300px; margin: auto; }
+        .sign-4-header { background: #e2e8f0; padding: 0.5rem; font-size: 0.8rem; border-bottom: 1px solid #cbd5e1; }
+        
+        .sign-5 { background: white; padding: 1.5rem; border: 1px solid #cbd5e1; box-shadow: 3px 3px 6px rgba(0,0,0,0.05); position: relative; max-width: 300px; margin: auto; }
+        .stamp { position: absolute; top: 1rem; right: 1rem; width: 40px; height: 50px; border: 1px solid #9ca3af; }
+        .lines { border-bottom: 1px solid #9ca3af; width: 40%; margin-left: auto; margin-top: 1rem; height: 1.5rem; }
+        
+        .sign-6 { border: 2px solid #64748b; background: white; max-width: 300px; margin: auto; }
+        .sign-6-header { background: #64748b; color: white; font-weight: bold; font-style: italic; padding: 0.5rem 1rem; }
+        
+        .sign-7 { background: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 10px 10px; padding: 1.5rem; max-width: 300px; margin: auto; }
+        .sign-7-bubble { background: white; border-radius: 1rem; padding: 1rem; position: relative; }
+
+        /* Input Styles */
+        input[type="text"], select {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.25rem 0.5rem;
+            transition: all 0.2s;
+            outline: none;
+        }
+        input[type="text"]:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        .correct { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
+        
+        /* Car illustrations */
+        .car-card { border-radius: 0.5rem; padding: 1.5rem; color: white; position: relative; overflow: hidden; }
+        .car-specs { background: #ef4444; color: white; padding: 1rem; font-weight: bold; font-size: 0.9rem; margin-bottom: 1rem; }
+        
+        .nav-link { cursor: pointer; transition: color 0.2s; }
+        .nav-link:hover { color: #3b82f6; }
+    </style>
+</head>
+<body class="bg-gray-100 pb-20">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-4 overflow-x-auto whitespace-nowrap">
+                    <span class="font-bold text-xl mr-4 text-blue-600">English Practice</span>
+                    <a href="#reading-1" class="nav-link text-gray-600 hover:text-blue-600 px-2 py-2">Reading (Signs)</a>
+                    <a href="#reading-2" class="nav-link text-gray-600 hover:text-blue-600 px-2 py-2">Reading (Cities)</a>
+                    <a href="#vocab" class="nav-link text-gray-600 hover:text-blue-600 px-2 py-2">Vocabulary</a>
+                    <a href="#grammar" class="nav-link text-gray-600 hover:text-blue-600 px-2 py-2">Grammar</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 mt-8 space-y-12">
+
+        <!-- SECTION 1: READING (Signs) -->
+        <section id="reading-1" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">READING: Multiple Choice</h2>
+            </div>
+            <p class="mb-8 text-gray-600">Read the signs and messages. Choose the correct answer, A, B or C.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 exercise-container">
+                
+                <!-- Question 1 -->
+                <div class="space-y-4">
+                    <div class="sign-1">
+                        <div class="bg-black text-white w-8 h-8 absolute -top-4 -left-4 flex items-center justify-center font-bold">1</div>
+                        <h3 class="font-bold text-lg leading-tight mb-2">PARKING FOR<br>SUPERMARKET<br>CUSTOMERS ONLY</h3>
+                        <p class="text-sm">Free for two hours &ndash;<br>after that £2 an hour.</p>
+                    </div>
+                    <div class="question-block" data-answer="C">
+                        <p class="font-semibold mb-2">1. What does the supermarket notice say?</p>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q1" value="A" class="mr-2">A. You can pay £2 to leave your car in the supermarket car park all day.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q1" value="B" class="mr-2">B. Supermarket customers can only park here for 2 hours at a time.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q1" value="C" class="mr-2">C. You don't need to pay if you finish shopping within 2 hours.</label>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="space-y-4">
+                    <div class="sign-2">
+                        <div class="bg-black text-white w-8 h-8 absolute -top-4 -left-4 flex items-center justify-center font-bold z-10">2</div>
+                        <p class="mb-2">Hi Tom,</p>
+                        <p class="mb-2">Jim and I are playing football in the park today. Do you want to join us? We'll get on the bus at the town centre at 12:30pm.</p>
+                        <p>Let me know,<br>Harry</p>
+                    </div>
+                    <div class="question-block" data-answer="B">
+                        <p class="font-semibold mb-2">2. Why did Harry write this message?</p>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q2" value="A" class="mr-2">A. To give Tom and Jim instructions on how to get to the park.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q2" value="B" class="mr-2">B. To invite Tom to play football with him and Jim.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q2" value="C" class="mr-2">C. To find out what time Tom would like to play football.</label>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="space-y-4">
+                    <div class="sign-3">
+                        <div class="bg-black text-white w-8 h-8 absolute -top-4 -left-4 flex items-center justify-center font-bold z-10">3</div>
+                        <div class="sign-3-inner font-semibold text-center">
+                            Trains travelling north out of this station are delayed because of heavy snow.
+                        </div>
+                    </div>
+                    <div class="question-block" data-answer="B">
+                        <p class="font-semibold mb-2">3. What is the notice telling passengers?</p>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q3" value="A" class="mr-2">A. They should wait for news about the weather before travelling.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q3" value="B" class="mr-2">B. Some passengers will be late today because of the weather.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q3" value="C" class="mr-2">C. The station is closed until the weather improves.</label>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="space-y-4">
+                    <div class="sign-4 relative">
+                        <div class="bg-black text-white w-8 h-8 absolute -top-2 -left-2 flex items-center justify-center font-bold z-10">4</div>
+                        <div class="sign-4-header pl-8">
+                            <div><strong>To:</strong> Su</div>
+                            <div><strong>From:</strong> Lee</div>
+                            <div><strong>Subject:</strong> Holiday Plans</div>
+                        </div>
+                        <div class="p-4 text-sm">
+                            I just checked and there are seats available on the flight we want. Let's book them soon before the price gets too expensive!
+                        </div>
+                    </div>
+                    <div class="question-block" data-answer="A">
+                        <p class="font-semibold mb-2">4. What does Lee suggest?</p>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q4" value="A" class="mr-2">A. To book the flights as soon as possible.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q4" value="B" class="mr-2">B. To choose a less expensive flight.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q4" value="C" class="mr-2">C. To change the date of his and Su's flight.</label>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="space-y-4">
+                    <div class="sign-5">
+                        <div class="bg-black text-white w-8 h-8 absolute -top-4 -left-4 flex items-center justify-center font-bold z-10">5</div>
+                        <div class="stamp"></div>
+                        <div class="handwriting pr-12">
+                            Hi Deon,<br>
+                            I went sightseeing around the city today on an open top bus. We visited the museum and the castle along the way. We're going on a boat trip tomorrow and we'll be back home on Friday.<br>
+                            George
+                        </div>
+                        <div class="lines"></div>
+                        <div class="lines" style="width: 30%;"></div>
+                        <div class="lines" style="width: 40%;"></div>
+                    </div>
+                    <div class="question-block" data-answer="A">
+                        <p class="font-semibold mb-2">5. What does George say?</p>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q5" value="A" class="mr-2">A. His sightseeing trip included a visit to a museum and castle.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q5" value="B" class="mr-2">B. He visited the castle and museum after going on the boat trip.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q5" value="C" class="mr-2">C. He hopes to do a boat trip and an open bus tour before returning home.</label>
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="space-y-4">
+                    <div class="sign-6 relative">
+                        <div class="bg-black text-white w-8 h-8 absolute -top-4 -left-4 flex items-center justify-center font-bold z-10">6</div>
+                        <div class="sign-6-header pl-8 uppercase">Milltown Station</div>
+                        <div class="p-4 text-sm relative">
+                            Bicycles should be left in the bicycle stands only. For advice, please speak to a member of staff, who can give more details.
+                            <i class="fas fa-bicycle absolute bottom-2 right-4 text-3xl text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="question-block" data-answer="C">
+                        <p class="font-semibold mb-2">6. What are train passengers told at the station?</p>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q6" value="A" class="mr-2">A. They must not leave bikes at the station.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q6" value="B" class="mr-2">B. Cycle parking is only for members of station staff.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q6" value="C" class="mr-2">C. If they need to know more, they can ask someone who works there.</label>
+                    </div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="space-y-4 md:col-span-2 lg:col-span-3 lg:w-1/3">
+                    <div class="sign-7 relative">
+                        <div class="bg-black text-white w-8 h-8 absolute -top-4 -left-4 flex items-center justify-center font-bold z-10">7</div>
+                        <div class="sign-7-bubble text-sm shadow-sm">
+                            Alice, how are you going to the theatre tonight? It's close enough for me to walk but Tim's going by car and he's offered to drive me. Let him know if you want him to drive you, too. Sonia
+                        </div>
+                        <div class="mt-3 bg-white rounded-full px-4 py-2 text-gray-400 text-xs shadow-sm flex justify-between">
+                            <span>Type message...</span> <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="question-block" data-answer="C">
+                        <p class="font-semibold mb-2">7. What should Alice do?</p>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q7" value="A" class="mr-2">A. Contact Tim if she would like a lift to the theatre.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q7" value="B" class="mr-2">B. Tell Sonia what her travel plans are for this evening.</label>
+                        <label class="block p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q7" value="C" class="mr-2">C. Let Tim or Sonia know if she's going to the theatre.</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex items-center gap-4 border-t pt-4">
+                <button onclick="checkRadioAnswers(this)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">Check Answers</button>
+                <span class="score-display font-bold text-lg text-gray-700 hidden">Score: <span class="score-val">0</span> / 7</span>
+            </div>
+        </section>
+
+        <!-- SECTION 2: READING (Cities) -->
+        <section id="reading-2" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">READING: Matching Cities</h2>
+            </div>
+            <p class="mb-6 text-gray-600">Read the text about different cities. Match the information with the correct paragraph.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <h3 class="font-bold text-lg text-blue-800 mb-2">A - Joel from London</h3>
+                    <p class="text-sm">There are so many different activities to do in London that you will never get bored. My favorite thing about London is probably the choice of food. You can find everything from Italian to Iranian food! A lot of people think that it is expensive to eat in London, but it depends where you go to eat. There are plenty of good markets that sell excellent and cheap food. The worst thing about living in London is definitely all the cars. I never drive there because it is too dangerous.</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                    <h3 class="font-bold text-lg text-green-800 mb-2">B - Alice from Birmingham</h3>
+                    <p class="text-sm">Many people say that Birmingham is not a beautiful city, but I don’t think this is true at all. There are some lovely parks and green areas, especially around the university. Birmingham is also a great city for eating and shopping and it is much cheaper to live there than in London, where I lived for two years. The thing I dislike about living in Birmingham is the pollution, the dirty air. It is worse now than it was in the past because of all the cars.</p>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                    <h3 class="font-bold text-lg text-yellow-800 mb-2">C - David from Cardiff</h3>
+                    <p class="text-sm">Cardiff is quite a small city, but there are a lot of interesting museums and art galleries to visit. It is also a really good place for watching sports games like football and rugby. Because Cardiff is not a very big city, a lot of visitors find that people are very friendly and will always help you to find your way around. The worst thing about living in Cardiff is the weather. It rains a lot in the winter.</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                    <h3 class="font-bold text-lg text-purple-800 mb-2">D - Fiona from Edinburgh</h3>
+                    <p class="text-sm">Edinburgh is a nice city with beautiful old buildings. It is very good for food and entertainment. Because it is a small city, you can walk to places easily and you do not normally need to use public transport. The worst thing about living in Edinburgh is that it can be very busy in the summer when there are a lot of tourists. I prefer it in winter, when it is cold and snowy.</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-lg exercise-container">
+                <div class="space-y-4 max-w-2xl">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <span>1. You can watch a lot of sports games in this city.</span>
+                        <select class="select-input w-20" data-answers='["C"]'>
+                            <option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <span>2. This city is not good for driving.</span>
+                        <select class="select-input w-20" data-answers='["A"]'>
+                            <option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <span>3. This city is not expensive to live in.</span>
+                        <select class="select-input w-20" data-answers='["B"]'>
+                            <option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <span>4. The people in this city are helpful if you get lost.</span>
+                        <select class="select-input w-20" data-answers='["C"]'>
+                            <option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <span>5. There are a lot of people visiting this city in the summer.</span>
+                        <select class="select-input w-20" data-answers='["D"]'>
+                            <option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <span>6. The food in this city is not as expensive as people think.</span>
+                        <select class="select-input w-20" data-answers='["A"]'>
+                            <option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <span>7. It is easy to travel on foot in this city.</span>
+                        <select class="select-input w-20" data-answers='["D"]'>
+                            <option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <span>8. A lot of people think that this is not an attractive city.</span>
+                        <select class="select-input w-20" data-answers='["B"]'>
+                            <option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex items-center gap-4 border-t pt-4">
+                <button onclick="checkInputAnswers(this)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">Check Answers</button>
+                <span class="score-display font-bold text-lg text-gray-700 hidden">Score: <span class="score-val">0</span> / 8</span>
+            </div>
+        </section>
+
+        <!-- SECTION 3: VOCABULARY -->
+        <section id="vocab" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">VOCABULARY: Places & Transport</h2>
+            </div>
+
+            <!-- Task 1 -->
+            <div class="mb-10 exercise-container">
+                <h3 class="font-bold text-lg mb-3">1. Complete the table. Match the words to the categories.</h3>
+                <div class="bg-gray-100 p-4 rounded mb-4 text-center text-sm md:text-base border border-gray-200 shadow-inner">
+                    square &nbsp;&bull;&nbsp; motorway &nbsp;&bull;&nbsp; motorbike &nbsp;&bull;&nbsp; ticket &nbsp;&bull;&nbsp; platform &nbsp;&bull;&nbsp; post office &nbsp;&bull;&nbsp; shopping centre &nbsp;&bull;&nbsp; car park &nbsp;&bull;&nbsp; library &nbsp;&bull;&nbsp; sports centre &nbsp;&bull;&nbsp; restaurant &nbsp;&bull;&nbsp; coach &nbsp;&bull;&nbsp; cafe &nbsp;&bull;&nbsp; police station &nbsp;&bull;&nbsp; department store &nbsp;&bull;&nbsp; the underground
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                    <div class="flex justify-between items-center border-b pb-1"><span>square</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>motorway</span> <select class="text-input w-40 text-sm" data-answers='["transport"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>motorbike</span> <select class="text-input w-40 text-sm" data-answers='["transport"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>ticket</span> <select class="text-input w-40 text-sm" data-answers='["transport"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>platform</span> <select class="text-input w-40 text-sm" data-answers='["transport"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>post office</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>shopping centre</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>car park</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>library</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>sports centre</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>restaurant</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>coach</span> <select class="text-input w-40 text-sm" data-answers='["transport"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>cafe</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>police station</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>department store</span> <select class="text-input w-40 text-sm" data-answers='["place"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                    <div class="flex justify-between items-center border-b pb-1"><span>the underground</span> <select class="text-input w-40 text-sm" data-answers='["transport"]'><option value="">--</option><option value="place">Place in a city</option><option value="transport">Travel & Transport</option></select></div>
+                </div>
+            </div>
+
+            <!-- Task 2 -->
+            <div class="mb-10 exercise-container">
+                <h3 class="font-bold text-lg mb-3">2. Match the activities with the places.</h3>
+                <p class="text-gray-600 mb-4 italic">You might go here to...</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <div class="flex items-center"><span class="w-8">1.</span> <span class="flex-1">send a parcel</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["f"]'></div>
+                        <div class="flex items-center"><span class="w-8">2.</span> <span class="flex-1">stay for a few days</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["g"]'></div>
+                        <div class="flex items-center"><span class="w-8">3.</span> <span class="flex-1">speak to a policeman</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["b"]'></div>
+                        <div class="flex items-center"><span class="w-8">4.</span> <span class="flex-1">exercise</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["e"]'></div>
+                        <div class="flex items-center"><span class="w-8">5.</span> <span class="flex-1">have a meal</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["j"]'></div>
+                        <div class="flex items-center"><span class="w-8">6.</span> <span class="flex-1">do some food shopping</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["a"]'></div>
+                        <div class="flex items-center"><span class="w-8">7.</span> <span class="flex-1">catch a bus or a train</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["d"]'></div>
+                        <div class="flex items-center"><span class="w-8">8.</span> <span class="flex-1">relax on the grass</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["h"]'></div>
+                        <div class="flex items-center"><span class="w-8">9.</span> <span class="flex-1">borrow a book</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["c"]'></div>
+                        <div class="flex items-center"><span class="w-8">10.</span> <span class="flex-1">look at things from the past</span> <input type="text" class="text-input w-16 text-center uppercase" placeholder="A-J" data-answers='["i"]'></div>
+                    </div>
+                    <div class="bg-gray-50 border rounded-lg p-5">
+                        <ul class="space-y-2">
+                            <li><strong>A</strong> supermarket</li>
+                            <li><strong>B</strong> police station</li>
+                            <li><strong>C</strong> library</li>
+                            <li><strong>D</strong> station</li>
+                            <li><strong>E</strong> sports center</li>
+                            <li><strong>F</strong> post office</li>
+                            <li><strong>G</strong> hotel</li>
+                            <li><strong>H</strong> park</li>
+                            <li><strong>I</strong> museum</li>
+                            <li><strong>J</strong> restaurant</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task 3 -->
+            <div class="exercise-container">
+                <h3 class="font-bold text-lg mb-3">3. Match the places in the box to the sets of words.</h3>
+                <div class="bg-gray-100 p-4 rounded mb-6 text-center text-sm md:text-base border border-gray-200 shadow-inner flex flex-wrap justify-center gap-4">
+                    <span class="bg-white px-3 py-1 rounded shadow-sm border">department store</span>
+                    <span class="bg-white px-3 py-1 rounded shadow-sm border">castle</span>
+                    <span class="bg-white px-3 py-1 rounded shadow-sm border">airport</span>
+                    <span class="bg-white px-3 py-1 rounded shadow-sm border">motorway</span>
+                    <span class="bg-white px-3 py-1 rounded shadow-sm border">train</span>
+                    <span class="bg-white px-3 py-1 rounded shadow-sm border">street</span>
+                    <span class="bg-white px-3 py-1 rounded shadow-sm border">cafe</span>
+                </div>
+                
+                <div class="space-y-3 max-w-2xl mx-auto">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-2">
+                        <span class="text-gray-700 w-full md:w-3/4">1. seat, ticket, platform, travel</span>
+                        <input type="text" class="text-input w-full md:w-48 mt-2 md:mt-0" data-answers='["train"]'>
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-2">
+                        <span class="text-gray-700 w-full md:w-3/4">2. lift, floor, clothes, toys</span>
+                        <input type="text" class="text-input w-full md:w-48 mt-2 md:mt-0" data-answers='["department store"]'>
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-2">
+                        <span class="text-gray-700 w-full md:w-3/4">3. cars, road, sign, fast</span>
+                        <input type="text" class="text-input w-full md:w-48 mt-2 md:mt-0" data-answers='["motorway"]'>
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-2">
+                        <span class="text-gray-700 w-full md:w-3/4">4. coffee, snack, talk, table</span>
+                        <input type="text" class="text-input w-full md:w-48 mt-2 md:mt-0" data-answers='["cafe"]'>
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-2">
+                        <span class="text-gray-700 w-full md:w-3/4">5. houses, cars, bikes, neighbors</span>
+                        <input type="text" class="text-input w-full md:w-48 mt-2 md:mt-0" data-answers='["street"]'>
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-2">
+                        <span class="text-gray-700 w-full md:w-3/4">6. history, visitors, building, museum</span>
+                        <input type="text" class="text-input w-full md:w-48 mt-2 md:mt-0" data-answers='["castle"]'>
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-2">
+                        <span class="text-gray-700 w-full md:w-3/4">7. flight, plane, passenger, pilot</span>
+                        <input type="text" class="text-input w-full md:w-48 mt-2 md:mt-0" data-answers='["airport"]'>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex items-center gap-4 border-t pt-4">
+                <button onclick="checkSectionAnswers(this)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">Check Answers</button>
+                <span class="score-display font-bold text-lg text-gray-700 hidden">Score: <span class="score-val">0</span> / 33</span>
+            </div>
+        </section>
+
+        <!-- SECTION 4: GRAMMAR -->
+        <section id="grammar" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">GRAMMAR: Comparatives and Superlatives</h2>
+            </div>
+
+            <!-- Task 1 -->
+            <div class="mb-10 exercise-container">
+                <h3 class="font-bold text-lg mb-3">1. Write the comparative and superlative forms.</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 border-b">Adjective</th>
+                                <th class="p-3 border-b">Comparative</th>
+                                <th class="p-3 border-b">Superlative</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-3 border-b font-medium">1. tall</td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["taller"]'></td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["tallest", "the tallest"]'></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border-b font-medium">2. famous</td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["more famous"]'></td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["most famous", "the most famous"]'></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border-b font-medium">3. hot</td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["hotter"]'></td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["hottest", "the hottest"]'></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border-b font-medium">4. busy</td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["busier"]'></td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["busiest", "the busiest"]'></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border-b font-medium">5. interesting</td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["more interesting"]'></td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["most interesting", "the most interesting"]'></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border-b font-medium">6. friendly</td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["friendlier", "more friendly"]'></td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["friendliest", "the friendliest", "most friendly", "the most friendly"]'></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border-b font-medium">7. old</td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["older"]'></td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["oldest", "the oldest"]'></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 border-b font-medium">8. thin</td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["thinner"]'></td>
+                                <td class="p-2 border-b"><input type="text" class="text-input w-full" data-answers='["thinnest", "the thinnest"]'></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Task 2 -->
+            <div class="mb-10 exercise-container">
+                <h3 class="font-bold text-lg mb-3">2. Read the sentences about Manchester and choose the correct form.</h3>
+                <div class="space-y-4 bg-gray-50 p-6 rounded-lg border">
+                    <p>1. Manchester is in the north of England and is the UK's fifth 
+                        <select class="text-input inline-block w-32" data-answers='["largest"]'><option value="">--</option><option value="largest">largest</option><option value="larger">larger</option></select> city.</p>
+                    <p>2. Manchester has 
+                        <select class="text-input inline-block w-32" data-answers='["more"]'><option value="">--</option><option value="most">most</option><option value="more">more</option></select> students than any other city in the world.</p>
+                    <p>3. Manchester's Chetham's Library is the 
+                        <select class="text-input inline-block w-32" data-answers='["oldest"]'><option value="">--</option><option value="old">old</option><option value="oldest">oldest</option></select> public library in the English-speaking world.</p>
+                    <p>4. 
+                        <select class="text-input inline-block w-32" data-answers='["More"]'><option value="">--</option><option value="Many">Many</option><option value="More">More</option></select> languages are spoken in Manchester than any other city in Western Europe.</p>
+                    <p>5. The world's 
+                        <select class="text-input inline-block w-32" data-answers='["first"]'><option value="">--</option><option value="first">first</option><option value="last">last</option></select> passenger train station was built in Manchester in 1830.</p>
+                    <p>6. Recently, Manchester was voted the 
+                        <select class="text-input inline-block w-32" data-answers='["best"]'><option value="">--</option><option value="better">better</option><option value="best">best</option></select> UK city to live in.</p>
+                    <p>7. Manchester airport is 
+                        <select class="text-input inline-block w-32" data-answers='["larger"]'><option value="">--</option><option value="larger">larger</option><option value="largest">largest</option></select> than Birmingham airport.</p>
+                    <p>8. Manchester United is the 
+                        <select class="text-input inline-block w-32" data-answers='["most"]'><option value="">--</option><option value="more">more</option><option value="most">most</option></select> successful football club in England with 20 league titles.</p>
+                    <p>9. Manchester Piccadilly is one of the 
+                        <select class="text-input inline-block w-32" data-answers='["busiest"]'><option value="">--</option><option value="busy">busy</option><option value="busiest">busiest</option></select> train stations in England.</p>
+                    <p>10. 
+                        <select class="text-input inline-block w-32" data-answers='["More"]'><option value="">--</option><option value="More">More</option><option value="Most">Most</option></select> than 20 Nobel prize winners have come from Manchester.</p>
+                </div>
+            </div>
+
+            <!-- Task 3 -->
+            <div class="mb-10 exercise-container">
+                <h3 class="font-bold text-lg mb-3">3. Complete the table by choosing the correct rule.</h3>
+                <div class="bg-blue-50 p-4 rounded mb-6 text-center text-sm md:text-base border border-blue-200">
+                    low &nbsp;&bull;&nbsp; crowded &nbsp;&bull;&nbsp; expensive &nbsp;&bull;&nbsp; careful &nbsp;&bull;&nbsp; new &nbsp;&bull;&nbsp; difficult &nbsp;&bull;&nbsp; comfortable &nbsp;&bull;&nbsp; strong &nbsp;&bull;&nbsp; cheap &nbsp;&bull;&nbsp; fast &nbsp;&bull;&nbsp; important &nbsp;&bull;&nbsp; high &nbsp;&bull;&nbsp; interesting &nbsp;&bull;&nbsp; clean &nbsp;&bull;&nbsp; modern &nbsp;&bull;&nbsp; old
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Helper to construct inputs quickly -->
+                    <script>
+                        const adjectives = ["low", "crowded", "expensive", "careful", "new", "difficult", "comfortable", "strong", "cheap", "fast", "important", "high", "interesting", "clean", "modern", "old"];
+                        const answers = {
+                            "low": "er", "new": "er", "cheap": "er", "fast": "er", "high": "er", "clean": "er", "old": "er", "strong": "er",
+                            "crowded": "more", "expensive": "more", "careful": "more", "difficult": "more", "comfortable": "more", "important": "more", "interesting": "more", "modern": "more"
+                        };
+                        adjectives.forEach(adj => {
+                            document.write(`
+                                <div class="flex flex-col border p-2 rounded bg-white shadow-sm">
+                                    <span class="font-semibold text-center mb-2">${adj}</span>
+                                    <select class="text-input text-sm" data-answers='["${answers[adj]}"]'>
+                                        <option value="">Choose...</option>
+                                        <option value="er">+er/est</option>
+                                        <option value="more">more/most</option>
+                                    </select>
+                                </div>
+                            `);
+                        });
+                    </script>
+                </div>
+            </div>
+
+            <!-- Task 4 & 5 Combined Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
+                <div class="exercise-container">
+                    <h3 class="font-bold text-lg mb-3">4. Complete with comparative forms.</h3>
+                    <p class="text-sm text-gray-500 mb-4">(Use words in brackets)</p>
+                    <div class="space-y-3">
+                        <p>1. I think trains are <input type="text" class="text-input w-24" data-answers='["safer"]'> (safe) and <input type="text" class="text-input w-24" data-answers='["faster"]'> (fast) than cars.</p>
+                        <p>2. The traffic is usually <input type="text" class="text-input w-24" data-answers='["worse"]'> (bad) in the city than in the countryside.</p>
+                        <p>3. In London, the bus is <input type="text" class="text-input w-24" data-answers='["cheaper"]'> (cheap) than the train.</p>
+                        <p>4. The main square is <input type="text" class="text-input w-24" data-answers='["older"]'> (old) than any other parts of the town.</p>
+                        <p>5. My old house was <input type="text" class="text-input w-24" data-answers='["bigger"]'> (big) than the one I live in now.</p>
+                        <p>6. I live far from college so I have to get up <input type="text" class="text-input w-24" data-answers='["earlier"]'> (early) than my friends.</p>
+                        <p>7. Our garden always looks <input type="text" class="text-input w-24" data-answers='["prettier"]'> (pretty) in summer than in winter.</p>
+                        <p>8. My friend has lost weight and is much <input type="text" class="text-input w-24" data-answers='["thinner"]'> (thin) than last year.</p>
+                        <p>9. It is <input type="text" class="text-input w-24" data-answers='["better"]'> (good) for your health to cycle to work than get the bus.</p>
+                        <p>10. Jon lives <input type="text" class="text-input w-24" data-answers='["further", "farther"]'> (far) away from me than Pete.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-container">
+                    <h3 class="font-bold text-lg mb-3">5. Complete with comparative forms.</h3>
+                    <p class="text-sm text-gray-500 mb-4">(Based on the underlined word)</p>
+                    <div class="space-y-3">
+                        <p>1. My bike was <u>expensive</u> but my brother's was <strong class="text-blue-600">more expensive</strong>.</p>
+                        <p>2. Art galleries are <u>interesting</u> but museums are <input type="text" class="text-input w-32" data-answers='["more interesting"]'>.</p>
+                        <p>3. Madrid is <u>hot</u> but Kuwait is <input type="text" class="text-input w-24" data-answers='["hotter"]'>.</p>
+                        <p>4. This garden is <u>pretty</u> but the one we saw yesterday was <input type="text" class="text-input w-24" data-answers='["prettier"]'>.</p>
+                        <p>5. This restaurant is <u>good</u> but the Italian one is <input type="text" class="text-input w-24" data-answers='["better"]'>.</p>
+                        <p>6. I was <u>excited</u> about the trip but my friend was <input type="text" class="text-input w-32" data-answers='["more excited"]'>.</p>
+                        <p>7. Cars are <u>noisy</u> but motorbikes are <input type="text" class="text-input w-24" data-answers='["noisier"]'>.</p>
+                        <p>8. I'm <u>bad</u> at math but my friend is <input type="text" class="text-input w-24" data-answers='["worse"]'>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task 6: Cars -->
+            <div class="mb-10 exercise-container">
+                <h3 class="font-bold text-lg mb-4">6. Look at the pictures. Complete using superlative adjectives.</h3>
+                
+                <div class="flex flex-col md:flex-row gap-6 mb-8 justify-center">
+                    <!-- Car A -->
+                    <div class="car-card bg-emerald-700 w-full md:w-1/3 shadow-lg">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black font-bold px-3 py-1 border-2 border-black">1 - Car A</div>
+                        <div class="mt-8 text-center"><i class="fas fa-car-side text-6xl text-emerald-300"></i></div>
+                        <div class="car-specs mt-6 bg-red-600 shadow border border-red-800">
+                            2010<br>80,000 km on the clock<br>1 litre engine<br>3 doors<br><span class="text-2xl">£2000</span>
+                        </div>
+                    </div>
+                    <!-- Car B -->
+                    <div class="car-card bg-blue-500 w-full md:w-1/3 shadow-lg">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black font-bold px-3 py-1 border-2 border-black">2 - Car B</div>
+                        <div class="mt-8 text-center"><i class="fas fa-car-side text-6xl text-blue-200"></i></div>
+                        <div class="car-specs mt-6 bg-red-600 shadow border border-red-800">
+                            2009<br>20,000 km on the clock<br>1.5 litre engine<br>5 doors<br><span class="text-2xl">£6500</span>
+                        </div>
+                    </div>
+                    <!-- Car C -->
+                    <div class="car-card bg-gray-800 w-full md:w-1/3 shadow-lg">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black font-bold px-3 py-1 border-2 border-black">3 - Car C</div>
+                        <div class="mt-8 text-center"><i class="fas fa-car-side text-6xl text-gray-400"></i></div>
+                        <div class="car-specs mt-6 bg-red-600 shadow border border-red-800">
+                            2015<br>10,000 km on the clock<br>2 litre engine<br>4 doors<br><span class="text-2xl">£15,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 bg-gray-50 p-6 rounded-lg border">
+                    <p>1. Car A is <input type="text" class="text-input w-32" data-answers='["the cheapest", "cheapest"]'> (cheap).</p>
+                    <p>2. Car B has <input type="text" class="text-input w-32" data-answers='["the most", "most"]'> (many) doors.</p>
+                    <p>3. Car C has <input type="text" class="text-input w-32" data-answers='["the largest", "largest"]'> (large) engine.</p>
+                    <p>4. Car A has <input type="text" class="text-input w-32" data-answers='["the most", "most"]'> (many) kilometers on the clock.</p>
+                    <p>5. Car C is <input type="text" class="text-input w-40" data-answers='["the most expensive", "most expensive"]'> (expensive).</p>
+                    <p>6. Car A has <input type="text" class="text-input w-32" data-answers='["the smallest", "smallest"]'> (small) engine.</p>
+                    <p>7. Car B is <input type="text" class="text-input w-32" data-answers='["the oldest", "oldest"]'> (old).</p>
+                </div>
+            </div>
+
+            <!-- Task 7: Email -->
+            <div class="exercise-container">
+                <h3 class="font-bold text-lg mb-4">7. Complete the email using the correct form of adjectives.</h3>
+                <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-lg font-mono text-sm leading-relaxed max-w-3xl">
+                    <p class="mb-4">Hi Sue,</p>
+                    <p class="mb-4">I'm on holiday in Munich and I'm having a great time. We are staying in a little hotel near the city center. It isn't the <strong class="text-blue-600">best</strong> (good) hotel in town but it is nice enough and it was <input type="text" class="text-input w-32" data-answers='["cheaper"]'> (cheap) than most of the others I looked at. It's very close to the Englischer Garten, a beautiful park that is <input type="text" class="text-input w-32" data-answers='["bigger"]'> (big) than Central Park in New York!</p>
+                    <p class="mb-4">Yesterday, we went to the Deutsches Museum, a big science museum – one of <input type="text" class="text-input w-32" data-answers='["the largest", "largest"]'> (large) in Europe. I liked all of it, but <input type="text" class="text-input w-48" data-answers='["the most interesting", "most interesting"]'> (interesting) part for me was the space exhibition.</p>
+                    <p class="mb-4">Tomorrow, we are going to the Residenzmuseum. The guidebook says it is one of <input type="text" class="text-input w-32" data-answers='["the nicest", "nicest"]'> (nice) palaces in the whole of Germany. I can't wait.</p>
+                    <p>Write and tell me about your holiday.</p>
+                    <p class="mt-4">Toni</p>
+                </div>
+            </div>
+
+            <div class="mt-8 flex items-center gap-4 border-t pt-4">
+                <button onclick="checkSectionAnswers(this)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">Check All Grammar Answers</button>
+                <span class="score-display font-bold text-lg text-gray-700 hidden">Score: <span class="score-val">0</span> / 58</span>
+            </div>
+        </section>
+        
+        <div class="text-center pb-12 pt-4">
+            <button onclick="checkAll()" class="bg-green-600 hover:bg-green-700 text-white text-xl font-bold py-4 px-12 rounded-full shadow-lg transition transform hover:scale-105">Check Whole Document</button>
+        </div>
+
+    </div>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        function normalizeAnswer(ans) {
+            return ans.toString().toLowerCase().trim().replace(/\s+/g, ' ');
+        }
+
+        function evaluateInputs(container) {
+            let correctCount = 0;
+            let totalCount = 0;
+
+            // Check standard inputs and selects with data-answers
+            const inputs = container.querySelectorAll('.text-input, .select-input');
+            inputs.forEach(input => {
+                totalCount++;
+                const validAnswers = JSON.parse(input.getAttribute('data-answers') || '[]');
+                const userAnswer = normalizeAnswer(input.value);
+                
+                input.classList.remove('correct', 'incorrect');
+                
+                if (userAnswer === "") {
+                    // Unanswered
+                } else if (validAnswers.some(ans => normalizeAnswer(ans) === userAnswer)) {
+                    input.classList.add('correct');
+                    correctCount++;
+                } else {
+                    input.classList.add('incorrect');
+                }
+            });
+
+            return { correct: correctCount, total: totalCount };
+        }
+
+        // Logic for Radio Buttons (Section 1)
+        function checkRadioAnswers(btn) {
+            const section = btn.closest('section');
+            const questions = section.querySelectorAll('.question-block');
+            let correctCount = 0;
+            
+            questions.forEach(q => {
+                const correctAnswer = q.getAttribute('data-answer');
+                const radios = q.querySelectorAll('input[type="radio"]');
+                let answered = false;
+                
+                // Reset styling
+                q.querySelectorAll('label').forEach(l => {
+                    l.classList.remove('bg-green-100', 'bg-red-100', 'text-green-800', 'text-red-800');
+                    l.classList.add('hover:bg-gray-50');
+                });
+
+                radios.forEach(radio => {
+                    if (radio.checked) {
+                        answered = true;
+                        const label = radio.closest('label');
+                        label.classList.remove('hover:bg-gray-50');
+                        if (radio.value === correctAnswer) {
+                            label.classList.add('bg-green-100', 'text-green-800');
+                            correctCount++;
+                        } else {
+                            label.classList.add('bg-red-100', 'text-red-800');
+                            // Highlight correct answer too
+                            const correctRadio = q.querySelector(`input[value="${correctAnswer}"]`);
+                            if(correctRadio) {
+                                correctRadio.closest('label').classList.add('bg-green-100', 'text-green-800');
+                                correctRadio.closest('label').classList.remove('hover:bg-gray-50');
+                            }
+                        }
+                    }
+                });
+            });
+
+            const scoreDisplay = section.querySelector('.score-display');
+            scoreDisplay.querySelector('.score-val').textContent = correctCount;
+            scoreDisplay.classList.remove('hidden');
+        }
+
+        // General logic for text inputs and dropdowns in a section
+        function checkInputAnswers(btn) {
+            const section = btn.closest('section');
+            const result = evaluateInputs(section);
+            
+            const scoreDisplay = section.querySelector('.score-display');
+            scoreDisplay.querySelector('.score-val').textContent = result.correct;
+            scoreDisplay.classList.remove('hidden');
+        }
+
+        function checkSectionAnswers(btn) {
+             checkInputAnswers(btn);
+        }
+
+        // Check everything
+        function checkAll() {
+            document.querySelectorAll('button').forEach(btn => {
+                if(btn.textContent.includes('Check Answers') || btn.textContent.includes('Grammar Answers')) {
+                    btn.click();
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
