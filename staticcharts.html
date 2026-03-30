@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Writing Task 1: Static Charts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        /* Tab Styles */
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { 
+            border-bottom: 3px solid #3b82f6; 
+            color: #1d4ed8; 
+            font-weight: 600;
+            background-color: #eff6ff;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animations */
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+            40%, 60% { transform: translate3d(3px, 0, 0); }
+        }
+
+        /* Word Item & Dropzone Styles */
+        .word-item {
+            user-select: none;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        }
+        
+        .dropzone {
+            min-width: 130px;
+            min-height: 40px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f1f5f9;
+            transition: all 0.2s;
+            vertical-align: middle;
+            padding: 4px;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+        
+        .dropzone:hover:not(.locked) {
+            border-color: #94a3b8;
+            background-color: #e2e8f0;
+        }
+
+        .dropzone.pulse-active {
+            border-color: #818cf8;
+            background-color: #eef2ff;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .word-bank {
+            min-height: 80px;
+            border: 2px dashed #94a3b8;
+            margin: 0;
+            cursor: default;
+        }
+        .word-bank:hover {
+            border-color: #94a3b8;
+            background-color: #f1f5f9;
+        }
+        
+        /* Validation Styles */
+        .dropzone.correct { border-color: #10b981 !important; background-color: #d1fae5 !important; cursor: default; }
+        .dropzone.incorrect { border-color: #ef4444 !important; background-color: #fee2e2 !important; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <header class="text-center bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h1 class="text-3xl font-bold text-blue-600 mb-2">IELTS Writing Task 1: Static Charts</h1>
+            <p class="text-gray-600">Band 5.0+ Interactive Practice (Click to Select & Place)</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100 hide-scrollbar">
+            <button onclick="openTab('tab-grammar')" id="btn-tab-grammar" class="tab-btn active flex-1 py-4 px-6 text-gray-600 hover:bg-gray-50 whitespace-nowrap focus:outline-none transition-colors">
+                1. Subject Grammar
+            </button>
+            <button onclick="openTab('tab-vocab')" id="btn-tab-vocab" class="tab-btn flex-1 py-4 px-6 text-gray-600 hover:bg-gray-50 whitespace-nowrap focus:outline-none transition-colors">
+                2. Paraphrasing %
+            </button>
+            <button onclick="openTab('tab-analysis')" id="btn-tab-analysis" class="tab-btn flex-1 py-4 px-6 text-gray-600 hover:bg-gray-50 whitespace-nowrap focus:outline-none transition-colors">
+                3. Chart Analysis
+            </button>
+            <button onclick="openTab('tab-comparisons')" id="btn-tab-comparisons" class="tab-btn flex-1 py-4 px-6 text-gray-600 hover:bg-gray-50 whitespace-nowrap focus:outline-none transition-colors">
+                4. Comparisons
+            </button>
+            <button onclick="openTab('tab-sentence')" id="btn-tab-sentence" class="tab-btn flex-1 py-4 px-6 text-gray-600 hover:bg-gray-50 whitespace-nowrap focus:outline-none transition-colors">
+                5. Sentence Builder
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 min-h-[600px]">
+            
+            <!-- TAB 1: Grammar (10 Questions) -->
+            <section id="tab-grammar" class="tab-content active">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Subjects & Vocabulary (10 Questions)</h2>
+                <p class="mb-6 text-gray-600">Click a phrase in the word bank to select it, then click an empty blank below to place it based on whether the noun is countable, uncountable, or a percentage/figure.</p>
+                
+                <div class="bg-blue-50 p-4 rounded-xl mb-6 sticky top-0 z-10 shadow-sm border border-blue-100">
+                    <h3 class="font-semibold text-blue-800 mb-3">Word Bank</h3>
+                    <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 bg-white rounded-lg">
+                        <!-- Generate multiple copies for 10 questions -->
+                        <div id="g1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The number of</div>
+                        <div id="g2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The number of</div>
+                        <div id="g3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The number of</div>
+                        <div id="g4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The number of</div>
+                        
+                        <div id="g5" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The amount of</div>
+                        <div id="g6" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The amount of</div>
+                        <div id="g7" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The amount of</div>
+                        
+                        <div id="g8" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The proportion of</div>
+                        <div id="g9" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The proportion of</div>
+                        
+                        <div id="g10" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The figure for</div>
+                        <div id="g11" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-blue-200 shadow-sm px-4 py-2 rounded-lg text-blue-700 font-medium text-sm">The figure for</div>
+                    </div>
+                </div>
+
+                <div class="space-y-6 text-lg">
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        1. <div class="dropzone" data-answer="The number of" onclick="clickBlank(this)"></div> <span>students increases by about 1000 students every year.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        2. <div class="dropzone" data-answer="The amount of" onclick="clickBlank(this)"></div> <span>electricity produced from nuclear power increased gradually.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        3. <div class="dropzone" data-answer="The proportion of" onclick="clickBlank(this)"></div> <span>boys joining Math classes is 10% higher than that of girls.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        4. <div class="dropzone" data-answer="The figure for" onclick="clickBlank(this)"></div> <span>visitors to Vietnam was 20 million in 2015.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        5. <div class="dropzone" data-answer="The amount of" onclick="clickBlank(this)"></div> <span>money spent on consumer goods was highest in the UK.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        6. <div class="dropzone" data-answer="The number of" onclick="clickBlank(this)"></div> <span>cars sold in France reached 400,000.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        7. <div class="dropzone" data-answer="The proportion of" onclick="clickBlank(this)"></div> <span>people who used trains to travel to work was 38%.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        8. <div class="dropzone" data-answer="The amount of" onclick="clickBlank(this)"></div> <span>water consumed by the agricultural sector was significant.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        9. <div class="dropzone" data-answer="The figure for" onclick="clickBlank(this)"></div> <span>unemployment in the country was over 15 thousand people.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 leading-loose">
+                        10. <div class="dropzone" data-answer="The number of" onclick="clickBlank(this)"></div> <span>books published each year has doubled.</span>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button onclick="checkAnswers('tab-grammar')" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm">Check Answers</button>
+                </div>
+            </section>
+
+            <!-- TAB 2: Paraphrasing Percentages (10 Questions) -->
+            <section id="tab-vocab" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Paraphrasing Percentages (10 Pairs)</h2>
+                <p class="mb-6 text-gray-600">Click the percentage values to match their correct fraction or written phrase equivalents.</p>
+                
+                <div class="bg-indigo-50 p-4 rounded-xl mb-8 sticky top-0 z-10 shadow-sm border border-indigo-100">
+                    <h3 class="font-semibold text-indigo-800 mb-3">Percentages</h3>
+                    <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 bg-white rounded-lg">
+                        <div id="v1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">10%</div>
+                        <div id="v2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">20%</div>
+                        <div id="v3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">25%</div>
+                        <div id="v4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">33%</div>
+                        <div id="v5" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">40%</div>
+                        <div id="v6" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">50%</div>
+                        <div id="v7" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">60%</div>
+                        <div id="v8" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">66%</div>
+                        <div id="v9" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">70%</div>
+                        <div id="v10" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-indigo-200 shadow-sm px-4 py-2 rounded-lg text-indigo-700 font-medium">75%</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">one fifth / a fifth</span>
+                        <div class="dropzone" data-answer="20%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">a quarter</span>
+                        <div class="dropzone" data-answer="25%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">one third</span>
+                        <div class="dropzone" data-answer="33%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">two-fifths</span>
+                        <div class="dropzone" data-answer="40%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">half</span>
+                        <div class="dropzone" data-answer="50%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">three-fifths</span>
+                        <div class="dropzone" data-answer="60%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">two-thirds</span>
+                        <div class="dropzone" data-answer="66%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">seven in ten</span>
+                        <div class="dropzone" data-answer="70%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">three-quarters</span>
+                        <div class="dropzone" data-answer="75%" onclick="clickBlank(this)"></div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <span class="font-semibold text-gray-700">one in ten</span>
+                        <div class="dropzone" data-answer="10%" onclick="clickBlank(this)"></div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button onclick="checkAnswers('tab-vocab')" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm">Check Answers</button>
+                </div>
+            </section>
+
+            <!-- TAB 3: Chart Analysis (10 Blanks) -->
+            <section id="tab-analysis" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Describing Static Data (Bar & Pie Charts)</h2>
+                <p class="mb-6 text-gray-600">Review the two charts below. Click to place the 10 missing words to complete the sentences describing the data.</p>
+                
+                <div class="bg-emerald-50 p-4 rounded-xl mb-6 sticky top-0 z-10 shadow-sm border border-emerald-100">
+                    <h3 class="font-semibold text-emerald-800 mb-3">Word Bank</h3>
+                    <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 bg-white rounded-lg">
+                        <!-- Chart 1 words -->
+                        <div id="a1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">Finance</div>
+                        <div id="a2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">highest</div>
+                        <div id="a3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">lowest</div>
+                        <div id="a4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">contrast</div>
+                        <div id="a5" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">At</div>
+                        <!-- Chart 2 words -->
+                        <div id="a6" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">proportion</div>
+                        <div id="a7" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">accounting</div>
+                        <div id="a8" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">higher</div>
+                        <div id="a9" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">fifth</div>
+                        <div id="a10" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-emerald-200 shadow-sm px-4 py-2 rounded-lg text-emerald-700 font-medium">smallest</div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Chart 1 Area -->
+                    <div>
+                        <div class="w-full bg-white p-4 rounded-xl border border-gray-200 mb-4 shadow-sm">
+                            <canvas id="universityChart"></canvas>
+                        </div>
+                        <div class="space-y-4 text-base bg-gray-50 p-5 rounded-xl border border-gray-200 leading-loose">
+                            <p>
+                                Overall, it is clear that <span class="dropzone mx-1" data-answer="Finance" onclick="clickBlank(this)"></span> was the most popular area of qualification among both sexes in 2010. 
+                            </p>
+                            <p>
+                                The number of male students enrolled in Mathematics was the <span class="dropzone mx-1" data-answer="highest" onclick="clickBlank(this)"></span>, at 200. 
+                            </p>
+                            <p>
+                                <span class="dropzone mx-1" data-answer="At" onclick="clickBlank(this)"></span> 150 students, the number of male students studying Economics was double that of females.
+                            </p>
+                            <p>
+                                Meanwhile, the number of male students studying Engineering was 60, in <span class="dropzone mx-1" data-answer="contrast" onclick="clickBlank(this)"></span> to 50 female students, which were the <span class="dropzone mx-1" data-answer="lowest" onclick="clickBlank(this)"></span> figures.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2 Area (Pie) -->
+                    <div>
+                        <div class="w-full bg-white p-4 rounded-xl border border-gray-200 mb-4 shadow-sm flex justify-center h-[300px]">
+                            <canvas id="transportPieChart"></canvas>
+                        </div>
+                        <div class="space-y-4 text-base bg-gray-50 p-5 rounded-xl border border-gray-200 leading-loose">
+                            <p>
+                                The pie chart shows the <span class="dropzone mx-1" data-answer="proportion" onclick="clickBlank(this)"></span> of people using various modes of transport to commute.
+                            </p>
+                            <p>
+                                Cars were the most popular method, <span class="dropzone mx-1" data-answer="accounting" onclick="clickBlank(this)"></span> for 40% of the total.
+                            </p>
+                            <p>
+                                This was marginally <span class="dropzone mx-1" data-answer="higher" onclick="clickBlank(this)"></span> than the figure for trains, at 38%.
+                            </p>
+                            <p>
+                                Meanwhile, buses were used by nearly a <span class="dropzone mx-1" data-answer="fifth" onclick="clickBlank(this)"></span> (18%) of commuters.
+                            </p>
+                            <p>
+                                Bicycles represented the <span class="dropzone mx-1" data-answer="smallest" onclick="clickBlank(this)"></span> percentage, at just 4%.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button onclick="checkAnswers('tab-analysis')" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm">Check Answers</button>
+                </div>
+            </section>
+
+            <!-- TAB 4: Comparisons (10 Blanks) -->
+            <section id="tab-comparisons" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Making Comparisons (10 Blanks)</h2>
+                <p class="mb-6 text-gray-600">Click the missing words to complete the 10 comparison structures.</p>
+                
+                <div class="bg-purple-50 p-4 rounded-xl mb-6 sticky top-0 z-10 shadow-sm border border-purple-100">
+                    <h3 class="font-semibold text-purple-800 mb-3">Word Bank</h3>
+                    <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 bg-white rounded-lg">
+                        <div id="c1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">higher</div>
+                        <div id="c2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">that</div>
+                        <div id="c3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">accounted</div>
+                        <div id="c4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">at</div>
+                        <div id="c5" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">identical</div>
+                        <div id="c6" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">highest</div>
+                        <div id="c7" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">followed</div>
+                        <div id="c8" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">contrast</div>
+                        <div id="c9" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">money</div>
+                        <div id="c10" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-white border border-purple-200 shadow-sm px-4 py-2 rounded-lg text-purple-700 font-medium">other</div>
+                    </div>
+                </div>
+
+                <div class="space-y-6 text-lg bg-gray-50 p-6 rounded-xl border border-gray-200 leading-loose">
+                    <div class="flex items-center flex-wrap gap-2">
+                        <span>1. The percentage of people using cars was 35%, which was markedly</span>
+                        <div class="dropzone" data-answer="higher" onclick="clickBlank(this)"></div> 
+                        <span>than</span>
+                        <div class="dropzone" data-answer="that" onclick="clickBlank(this)"></div> 
+                        <span>of buses,</span>
+                        <div class="dropzone" data-answer="at" onclick="clickBlank(this)"></div> 
+                        <span>18%.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2">
+                        <span>2. Both transportation and going out for entertainment</span>
+                        <div class="dropzone" data-answer="accounted" onclick="clickBlank(this)"></div> 
+                        <span>for 15%.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2">
+                        <span>3. Transportation and going out had an</span>
+                        <div class="dropzone" data-answer="identical" onclick="clickBlank(this)"></div> 
+                        <span>percentage, at 15%.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2">
+                        <span>4. The number of male students studying philosophy was 50, in</span>
+                        <div class="dropzone" data-answer="contrast" onclick="clickBlank(this)"></div> 
+                        <span>to 150 female students.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2">
+                        <span>5. The percentage of people using automobiles was the</span>
+                        <div class="dropzone" data-answer="highest" onclick="clickBlank(this)"></div> 
+                        <span>,</span>
+                        <div class="dropzone" data-answer="followed" onclick="clickBlank(this)"></div> 
+                        <span>by buses at 18%.</span>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2">
+                        <span>6. Less</span>
+                        <div class="dropzone" data-answer="money" onclick="clickBlank(this)"></div> 
+                        <span>was spent on infrastructure expenses than</span>
+                        <div class="dropzone" data-answer="other" onclick="clickBlank(this)"></div> 
+                        <span>sectors.</span>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button onclick="checkAnswers('tab-comparisons')" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm">Check Answers</button>
+                </div>
+            </section>
+
+            <!-- TAB 5: Sentence Builder (6 Sentences) -->
+            <section id="tab-sentence" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Sentence Builder (6 Sentences)</h2>
+                <p class="mb-6 text-gray-600">Click the phrase blocks to insert them into the empty slots in the correct order to form complete, accurate IELTS Task 1 sentences.</p>
+                
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <!-- Sentence 1 -->
+                    <div class="p-6 bg-orange-50 rounded-xl border border-orange-100 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-orange-800 mb-3">Sentence 1: Highest + followed by</h3>
+                            <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 mb-4 bg-white">
+                                <div id="s1-1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-orange-100 border border-orange-300 shadow-sm px-3 py-2 rounded-lg text-orange-800 font-medium text-sm">followed by books.</div>
+                                <div id="s1-2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-orange-100 border border-orange-300 shadow-sm px-3 py-2 rounded-lg text-orange-800 font-medium text-sm">at 45%,</div>
+                                <div id="s1-3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-orange-100 border border-orange-300 shadow-sm px-3 py-2 rounded-lg text-orange-800 font-medium text-sm">The proportion of money spent on cars</div>
+                                <div id="s1-4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-orange-100 border border-orange-300 shadow-sm px-3 py-2 rounded-lg text-orange-800 font-medium text-sm">was the highest,</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <span class="font-bold text-gray-500 text-sm">Order:</span>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="The proportion of money spent on cars" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="was the highest," onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="at 45%," onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="followed by books." onclick="clickBlank(this)"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sentence 2 -->
+                    <div class="p-6 bg-teal-50 rounded-xl border border-teal-100 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-teal-800 mb-3">Sentence 2: Stood at + double</h3>
+                            <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 mb-4 bg-white">
+                                <div id="s2-1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-teal-100 border border-teal-300 shadow-sm px-3 py-2 rounded-lg text-teal-800 font-medium text-sm">double that of the UK.</div>
+                                <div id="s2-2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-teal-100 border border-teal-300 shadow-sm px-3 py-2 rounded-lg text-teal-800 font-medium text-sm">The amount of electricity produced</div>
+                                <div id="s2-3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-teal-100 border border-teal-300 shadow-sm px-3 py-2 rounded-lg text-teal-800 font-medium text-sm">stood at 2 million KWh,</div>
+                                <div id="s2-4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-teal-100 border border-teal-300 shadow-sm px-3 py-2 rounded-lg text-teal-800 font-medium text-sm">in France</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <span class="font-bold text-gray-500 text-sm">Order:</span>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="The amount of electricity produced" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="in France" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="stood at 2 million KWh," onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="double that of the UK." onclick="clickBlank(this)"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sentence 3 -->
+                    <div class="p-6 bg-rose-50 rounded-xl border border-rose-100 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-rose-800 mb-3">Sentence 3: Accounted for a fraction</h3>
+                            <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 mb-4 bg-white">
+                                <div id="s3-1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-rose-100 border border-rose-300 shadow-sm px-3 py-2 rounded-lg text-rose-800 font-medium text-sm">exactly a quarter</div>
+                                <div id="s3-2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-rose-100 border border-rose-300 shadow-sm px-3 py-2 rounded-lg text-rose-800 font-medium text-sm">of the total budget.</div>
+                                <div id="s3-3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-rose-100 border border-rose-300 shadow-sm px-3 py-2 rounded-lg text-rose-800 font-medium text-sm">accounted for</div>
+                                <div id="s3-4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-rose-100 border border-rose-300 shadow-sm px-3 py-2 rounded-lg text-rose-800 font-medium text-sm">Expenditure on cameras</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <span class="font-bold text-gray-500 text-sm">Order:</span>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="Expenditure on cameras" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="accounted for" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="exactly a quarter" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="of the total budget." onclick="clickBlank(this)"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sentence 4 -->
+                    <div class="p-6 bg-cyan-50 rounded-xl border border-cyan-100 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-cyan-800 mb-3">Sentence 4: In contrast to</h3>
+                            <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 mb-4 bg-white">
+                                <div id="s4-1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-cyan-100 border border-cyan-300 shadow-sm px-3 py-2 rounded-lg text-cyan-800 font-medium text-sm">in stark contrast to</div>
+                                <div id="s4-2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-cyan-100 border border-cyan-300 shadow-sm px-3 py-2 rounded-lg text-cyan-800 font-medium text-sm">studying Mathematics,</div>
+                                <div id="s4-3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-cyan-100 border border-cyan-300 shadow-sm px-3 py-2 rounded-lg text-cyan-800 font-medium text-sm">There were 200 male students</div>
+                                <div id="s4-4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-cyan-100 border border-cyan-300 shadow-sm px-3 py-2 rounded-lg text-cyan-800 font-medium text-sm">only 60 females.</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <span class="font-bold text-gray-500 text-sm">Order:</span>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="There were 200 male students" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="studying Mathematics," onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="in stark contrast to" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="only 60 females." onclick="clickBlank(this)"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sentence 5 -->
+                    <div class="p-6 bg-amber-50 rounded-xl border border-amber-100 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-amber-800 mb-3">Sentence 5: Identical figures</h3>
+                            <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 mb-4 bg-white">
+                                <div id="s5-1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-amber-100 border border-amber-300 shadow-sm px-3 py-2 rounded-lg text-amber-800 font-medium text-sm">was identical to</div>
+                                <div id="s5-2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-amber-100 border border-amber-300 shadow-sm px-3 py-2 rounded-lg text-amber-800 font-medium text-sm">that of the UK.</div>
+                                <div id="s5-3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-amber-100 border border-amber-300 shadow-sm px-3 py-2 rounded-lg text-amber-800 font-medium text-sm">computer sales in France</div>
+                                <div id="s5-4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-amber-100 border border-amber-300 shadow-sm px-3 py-2 rounded-lg text-amber-800 font-medium text-sm">The figure for</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <span class="font-bold text-gray-500 text-sm">Order:</span>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="The figure for" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="computer sales in France" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="was identical to" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="that of the UK." onclick="clickBlank(this)"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sentence 6 -->
+                    <div class="p-6 bg-indigo-50 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-indigo-800 mb-3">Sentence 6: Less/than</h3>
+                            <div class="dropzone word-bank w-full flex flex-wrap gap-3 p-4 mb-4 bg-white">
+                                <div id="s6-1" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-indigo-100 border border-indigo-300 shadow-sm px-3 py-2 rounded-lg text-indigo-800 font-medium text-sm">was allocated to</div>
+                                <div id="s6-2" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-indigo-100 border border-indigo-300 shadow-sm px-3 py-2 rounded-lg text-indigo-800 font-medium text-sm">than to other consumer goods.</div>
+                                <div id="s6-3" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-indigo-100 border border-indigo-300 shadow-sm px-3 py-2 rounded-lg text-indigo-800 font-medium text-sm">perfumes</div>
+                                <div id="s6-4" onclick="selectWord(this, event)" class="word-item cursor-pointer bg-indigo-100 border border-indigo-300 shadow-sm px-3 py-2 rounded-lg text-indigo-800 font-medium text-sm">Significantly less money</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <span class="font-bold text-gray-500 text-sm">Order:</span>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="Significantly less money" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="was allocated to" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="perfumes" onclick="clickBlank(this)"></div>
+                            <div class="dropzone w-full !justify-start !px-2" data-answer="than to other consumer goods." onclick="clickBlank(this)"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button onclick="checkAnswers('tab-sentence')" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm">Check Answers</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Script for interactivity, tabs, and chart -->
+    <script>
+        // --- State ---
+        let selectedWordNode = null;
+
+        // --- Tab Logic ---
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active');
+            
+            // Clear selections when switching tabs
+            if (selectedWordNode) {
+                selectedWordNode.classList.remove('ring-4', 'ring-indigo-400', 'scale-105', 'z-10', 'bg-indigo-50');
+                selectedWordNode = null;
+            }
+            updatePulseState();
+        }
+
+        // --- Click Interactions ---
+        function selectWord(node, event) {
+            if (event) event.stopPropagation();
+
+            // If the item is already inside a blank, return it instead of selecting
+            if (node.parentElement.classList.contains('dropzone') && !node.parentElement.classList.contains('word-bank')) {
+                returnWord(node);
+                return;
+            }
+
+            // Deselect if already selected
+            if (selectedWordNode === node) {
+                node.classList.remove('ring-4', 'ring-indigo-400', 'scale-105', 'z-10', 'bg-indigo-50');
+                selectedWordNode = null;
+                updatePulseState();
+                return;
+            }
+
+            // Remove active style from previously selected word
+            if (selectedWordNode) {
+                selectedWordNode.classList.remove('ring-4', 'ring-indigo-400', 'scale-105', 'z-10', 'bg-indigo-50');
+            }
+
+            // Select new word
+            selectedWordNode = node;
+            node.classList.add('ring-4', 'ring-indigo-400', 'scale-105', 'z-10', 'bg-indigo-50');
+            updatePulseState();
+        }
+
+        function clickBlank(blankNode) {
+            // Ignore if word bank is clicked directly
+            if (blankNode.classList.contains('word-bank')) return;
+
+            // If blank is already filled, clicking it returns the item
+            if (blankNode.children.length > 0) {
+                returnWord(blankNode.children[0]);
+                return;
+            }
+
+            // If empty and no word is selected -> Shake reminder
+            if (!selectedWordNode) {
+                blankNode.classList.add('shake', 'border-red-300', 'bg-red-50');
+                setTimeout(() => {
+                    blankNode.classList.remove('shake', 'border-red-300', 'bg-red-50');
+                }, 400);
+                return;
+            }
+
+            // Place word
+            blankNode.appendChild(selectedWordNode);
+            
+            // Cleanup styling
+            selectedWordNode.classList.remove('ring-4', 'ring-indigo-400', 'scale-105', 'z-10', 'bg-indigo-50');
+            blankNode.classList.remove('correct', 'incorrect');
+            
+            selectedWordNode = null;
+            updatePulseState();
+        }
+
+        function returnWord(node) {
+            let dropzone = node.parentElement;
+            
+            // Don't return if marked correct (locked)
+            if (dropzone.classList.contains('locked')) return;
+
+            // Find correct bank
+            let targetBank;
+            let sentenceContainer = dropzone.closest('.p-6');
+            if (sentenceContainer && sentenceContainer.querySelector('.word-bank')) {
+                targetBank = sentenceContainer.querySelector('.word-bank');
+            } else {
+                targetBank = dropzone.closest('.tab-content').querySelector('.word-bank');
+            }
+
+            if (targetBank) {
+                targetBank.appendChild(node);
+                dropzone.classList.remove('correct', 'incorrect');
+            }
+        }
+
+        // Add pulsing animation to empty slots when a word is selected
+        function updatePulseState() {
+            document.querySelectorAll('.dropzone:not(.word-bank)').forEach(dz => {
+                if (dz.children.length === 0) {
+                    if (selectedWordNode) {
+                        dz.classList.add('pulse-active');
+                    } else {
+                        dz.classList.remove('pulse-active');
+                    }
+                } else {
+                    dz.classList.remove('pulse-active');
+                }
+            });
+        }
+
+        // --- Check Answers Logic ---
+        function checkAnswers(tabId) {
+            const section = document.getElementById(tabId);
+            const dropzones = section.querySelectorAll('.dropzone[data-answer]');
+            
+            let allCorrect = true;
+            let answeredCount = 0;
+
+            dropzones.forEach(dz => {
+                const correctAnswer = dz.getAttribute('data-answer').trim();
+                
+                dz.classList.remove('correct', 'incorrect', 'locked');
+                
+                if (dz.children.length > 0) {
+                    answeredCount++;
+                    const userAnswer = dz.children[0].textContent.trim();
+                    
+                    if (userAnswer === correctAnswer) {
+                        dz.classList.add('correct', 'locked');
+                    } else {
+                        dz.classList.add('incorrect', 'shake');
+                        setTimeout(() => dz.classList.remove('shake'), 400);
+                        allCorrect = false;
+                    }
+                } else {
+                    allCorrect = false; // missing an answer
+                }
+            });
+
+            if (answeredCount === 0) {
+                alert("Please select and place the answers before checking!");
+            } else if (allCorrect) {
+                setTimeout(() => alert("Excellent! All answers in this section are correct."), 100);
+            }
+        }
+
+        // --- Chart.js Initialization ---
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Chart 1: US University (Bar)
+            const ctx1 = document.getElementById('universityChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Mathematics', 'Engineering', 'Economics', 'Finance', 'Accounting', 'Marketing'],
+                    datasets: [
+                        {
+                            label: 'Male',
+                            data: [200, 60, 150, 230, 170, 80],
+                            backgroundColor: '#818cf8', 
+                            borderColor: '#6366f1',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Female',
+                            data: [60, 50, 75, 230, 200, 120],
+                            backgroundColor: '#6ee7b7', 
+                            borderColor: '#10b981',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Students studying main subjects (2010)',
+                            font: { size: 14 }
+                        },
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 250,
+                            title: { display: true, text: 'Number of Students' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Commuting Methods (Pie)
+            const ctx2 = document.getElementById('transportPieChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['Cars (40%)', 'Trains (38%)', 'Buses (18%)', 'Bicycles (4%)'],
+                    datasets: [{
+                        data: [40, 38, 18, 4],
+                        backgroundColor: [
+                            '#3b82f6', // Cars - blue
+                            '#f59e0b', // Trains - amber
+                            '#10b981', // Buses - emerald
+                            '#8b5cf6'  // Bicycles - purple
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Proportion of Transport Methods Used for Commuting',
+                            font: { size: 14 }
+                        },
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
