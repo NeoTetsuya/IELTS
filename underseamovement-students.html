@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Simulator - Undersea Movement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --app-font-size: 17px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+            background-color: #f3f4f6;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 2rem 3rem;
+            font-size: var(--app-font-size);
+            scroll-behavior: smooth;
+        }
+        #left-pane {
+            background-color: #fdfdfd;
+        }
+        #right-pane {
+            background-color: #f8fafc;
+        }
+        .splitter {
+            background-color: #cbd5e1;
+            cursor: col-resize;
+            z-index: 10;
+            transition: background-color 0.2s;
+        }
+        .splitter:hover, .splitter:active {
+            background-color: #94a3b8;
+        }
+        
+        /* Typography Improvements */
+        .reading-passage {
+            font-family: 'Merriweather', serif;
+            line-height: 1.9;
+            color: #334155;
+            text-align: justify;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+            text-indent: 1.5rem; /* Indents ALL paragraphs */
+        }
+        .reading-passage h3 {
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: 1.5em;
+            text-align: center;
+            text-indent: 0;
+        }
+        .paragraph-label {
+            float: left;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-right: 0.5rem;
+            color: #1e40af;
+            text-indent: 0;
+        }
+
+        /* Question Styles */
+        .q-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 0.75rem;
+        }
+        .text-input {
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.2s;
+            text-align: center;
+            background-color: #f8fafc;
+        }
+        .text-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        
+        select.text-input {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            background-size: 12px;
+            padding-right: 20px;
+        }
+
+        /* Vocabulary Styles */
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+            padding: 0 2px;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+            border-radius: 2px;
+        }
+
+        /* UI Elements */
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1e293b;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .content-panes {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 5px 1fr;
+            }
+            .splitter {
+                cursor: row-resize;
+            }
+            .pane {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center z-20 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg hidden sm:block">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+            <h1 class="text-lg sm:text-xl font-bold text-gray-800">IELTS Simulator <span class="text-blue-600 font-medium hidden md:inline">| Undersea Movement</span></h1>
+        </div>
+        <div class="flex items-center space-x-3 sm:space-x-5">
+            <!-- Student Name -->
+            <div class="flex items-center space-x-2 border-r border-gray-200 pr-3 sm:pr-4">
+                <span class="text-sm text-gray-500 font-medium hidden sm:inline">Name:</span>
+                <input type="text" id="student-name" class="border border-gray-300 rounded px-2 py-1 text-sm w-24 sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Your Name">
+            </div>
+            
+            <!-- Font controls -->
+            <div class="flex items-center space-x-1 sm:space-x-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
+                <button id="decrease-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Decrease Font Size">A-</button>
+                <button id="increase-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Increase Font Size">A+</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages -->
+        <div id="left-pane" class="pane">
+            <div class="reading-passage">
+                <h3>Undersea Movement</h3>
+                
+                <p><span class="paragraph-label">A</span> The underwater world holds many challenges. The most basic of these is movement. The density of water makes it difficult for animals to move. Forward movement is a complex <span class="vocab-word" data-word="interaction">interaction</span> of underwater forces. Additionally, water itself has movement. Strong currents carry incredible power that can easily sweep creatures away. The challenges to aquatic movement result in a variety of swimming methods, used by a wide range of animals. The result is a dazzling underwater ballet.</p>
+                
+                <p><span class="paragraph-label">B</span> Fish rely on their skeleton, fins, and muscles to move. The primary function of the skeleton is to aid movement of other parts. Their skull acts as a <span class="vocab-word" data-word="fulcrum">fulcrum</span> and their vertebrae act as levers. The vertebral column consists of a series of vertebrae held together by ligaments, but not so tightly as to prevent slight sideways movement between each pair of vertebrae. The whole spine is, therefore, flexible. The skull is the only truly fixed part of a fish. It does not move in and off itself but acts as a point of stability for other bones. These other bones act as levers that cause movement of the fish’s body.</p>
+                
+                <p><span class="paragraph-label">C</span> While the bones provide the movement, the muscles supply the power. A typical fish has hundreds of muscles running in all directions around its body. This is why a fish can turn and twist and change directions quickly. The muscles on each side of the spine contract in a series from head to tail and down each side alternately, causing a wave-like movement to pass down the body. Such a movement may be very pronounced in fish such as eels, but hardly <span class="vocab-word" data-word="perceptible">perceptible</span> in others, e.g. mackerel. The frequency of the waves varies from about 50/min in the dogfish to 170/min in the mackerel. The sideways and backward thrust of the head and body against the water results in the resistance of the water pushing the fish sideways and forwards in a direction opposed to the thrust. When the corresponding set of muscles on the other side contracts, the fish experiences a similar force from the water on that side. The two sideways forces are equal and opposite unless the fish is making a turn, so they cancel out, leaving the sum of the two forward forces.</p>
+                
+                <p><span class="paragraph-label">D</span> The muscles involved in swimming are of two main types. The bulk of a fish’s body is composed of the so-called white muscle, while the much smaller areas at the roots of the fins and in a strip along the centre of each flank comprise red muscle. The red muscle receives a good supply of blood and contains ampler quantities of fat and glycogen, the storage form of glucose, which is used for most day-to-day swimming movements. In contrast, the white muscle has a poor blood supply and few energy stores, and it is used largely for short-term, fast swimming. It might seem odd that the body of an animal which adapts adapted so efficiently to its environment should be composed almost entirely of a type of muscle it rarely uses. However, this huge auxiliary power pack carried by a fish is of crucial significance if the life of the fish is threatened - by a predator, for instance - because it enables the fish to swim rapidly away from danger.</p>
+                
+                <p><span class="paragraph-label">E</span> The fins are the most distinctive features of a fish, composed of bony spines <span class="vocab-word" data-word="protruding">protruding</span> from the body with skin covering them and joining them together, either in a webbed fashion, as seen in most bony fish, or more similar to a flipper, as seen in sharks. These usually serve as a means for the fish to swim. But it must be emphasized that the swimming movements are produced by the whole of the muscular body, and in only a few fish do the fins contribute any propulsive force! Their main function is to control the stability and direction of the fish: as water passes over its body, a fish uses its fins to thrust in the direction it wishes to go.</p>
+
+                <p><span class="paragraph-label">F</span> Fins located in different places on a fish serve different purposes, such as moving forward, turning, and keeping an upright position. The tail fin, in its final lash may contribute as much as 40 per cent of the forward thrust. The median fins, that is, the dorsal, anal and ventral fins, control the rolling and <span class="vocab-word" data-word="yawing">yawing</span> movements of the fish by increasing the vertical surface area presented to the water. The paired fins, pectoral and pelvic act as hydroplanes and control the pitch of the fish, causing it to swim downwards or upwards according to the angle to the water at which they are held by their muscles. The pectoral fins lie in front of the centre of gravity and, being readily mobile, are chiefly responsible for sending the fish up or down. The paired fins are also the means by which the fish slows down and stops.</p>
+                
+                <p><span class="paragraph-label">G</span> The swimming speed of fish is not so fast as one would expect from watching their rapid movements in aquaria or ponds. Tuna seems to be the fastest at 44 mph, trout are recorded as doing 23 mph, pike 20 mph for short bursts and roach about 10 mph, while the majority of small fish probably do not exceed 2 or 3 mph. Many people have attempted to make accurate measurements of the speed at which various fish swim, either by timing them over known distances in their natural environment or by determining their performance in man-made swimming channels. From these studies, we can broadly categorise fish into four groups: “sneakers”, such as eels that are only capable of slow speeds but possess some staying power; “stayers”, that can swim quite fast over long periods; “sprinters” that can generate fast bursts of speed (e.g. pike); and “crawlers” that are <span class="vocab-word" data-word="sluggish">sluggish</span> swimmers, although they can accelerate slightly (bream, for example).</p>
+                
+                <p><span class="paragraph-label">H</span> One type of sailfish is considered to be the fastest species of fish over short distances, achieving 68 mph over a three-second period, and anglers have recorded speeds in excess of 40 mph over longer periods for several species of tuna. One is likely to consider a fish’s swimming capabilities in relation to its size. However, it is generally true that a small fish is a more able swimmer than a much larger one. On the other hand in terms of speed in miles per hour, a big fish will, all other things being equal, be able to swim faster than a smaller fish.</p>
+            </div>
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter relative flex items-center justify-center">
+            <div class="w-1 h-8 bg-gray-400 rounded-full opacity-50"></div>
+        </div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane">
+            <div id="questions-section" class="max-w-3xl mx-auto space-y-8">
+                
+                <!-- Matching Information -->
+                <div class="p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 1-6</span>
+                        <h4 class="font-bold text-gray-800">Matching Information</h4>
+                    </div>
+                    <p class="mb-5 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        The Passage has 8 paragraphs <strong>A-H</strong>. Which paragraph contains the following information?<br>
+                        Select the appropriate letter, <strong>A-H</strong>, for each question below.
+                    </p>
+                    <div class="space-y-3" id="ex-matching">
+                        <div class="q-item flex items-center justify-between" id="container-q1">
+                            <span class="text-gray-800 pr-4"><strong class="text-blue-600 mr-2">1</strong> categorizations of fish by swimming speed</span>
+                            <select name="q1" class="text-input w-16 text-center cursor-pointer bg-white">
+                                <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                            </select>
+                        </div>
+                        <div class="q-item flex items-center justify-between" id="container-q2">
+                            <span class="text-gray-800 pr-4"><strong class="text-blue-600 mr-2">2</strong> an example of fish capable of maintaining fast swimming for a long time</span>
+                            <select name="q2" class="text-input w-16 text-center cursor-pointer bg-white">
+                                <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                            </select>
+                        </div>
+                        <div class="q-item flex items-center justify-between" id="container-q3">
+                            <span class="text-gray-800 pr-4"><strong class="text-blue-600 mr-2">3</strong> how fish control stability</span>
+                            <select name="q3" class="text-input w-16 text-center cursor-pointer bg-white">
+                                <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                            </select>
+                        </div>
+                        <div class="q-item flex items-center justify-between" id="container-q4">
+                            <span class="text-gray-800 pr-4"><strong class="text-blue-600 mr-2">4</strong> frequency of the muscle movement of fish</span>
+                            <select name="q4" class="text-input w-16 text-center cursor-pointer bg-white">
+                                <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                            </select>
+                        </div>
+                        <div class="q-item flex items-center justify-between" id="container-q5">
+                            <span class="text-gray-800 pr-4"><strong class="text-blue-600 mr-2">5</strong> a mechanical model of fish skeleton</span>
+                            <select name="q5" class="text-input w-16 text-center cursor-pointer bg-white">
+                                <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                            </select>
+                        </div>
+                        <div class="q-item flex items-center justify-between" id="container-q6">
+                            <span class="text-gray-800 pr-4"><strong class="text-blue-600 mr-2">6</strong> energy storage devices in a fish</span>
+                            <select name="q6" class="text-input w-16 text-center cursor-pointer bg-white">
+                                <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagram Labeling directly on visual -->
+                <div class="p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 7-10</span>
+                        <h4 class="font-bold text-gray-800">Diagram Labeling</h4>
+                    </div>
+                    <p class="mb-5 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        The diagram below gives information about fish fins and their purposes.<br>
+                        Complete the diagram with <strong>NO MORE THAN THREE WORDS</strong> from the passage for each blank.
+                    </p>
+                    
+                    <!-- Horizontally scrollable container to protect diagram layout on mobile -->
+                    <div class="w-full overflow-x-auto pb-4">
+                        <!-- Relative diagram container (fixed min-width ensures it never squishes too much) -->
+                        <div class="min-w-[800px] h-[480px] relative bg-blue-50/40 rounded-xl border border-blue-100 mt-2 shadow-inner">
+                            
+                            <!-- Diagram Background SVG (Realistic fish representation) -->
+                            <svg viewBox="0 0 200 100" class="absolute inset-0 w-full h-full opacity-60 pointer-events-none" fill="none" stroke="#64748b" stroke-width="1">
+                                <!-- Body -->
+                                <path d="M 30 50 C 50 20, 140 20, 170 50 C 140 80, 50 80, 30 50 Z" fill="#e2e8f0"/> 
+                                <!-- Tail -->
+                                <path d="M 165 50 L 190 25 L 180 50 L 190 75 Z" fill="#cbd5e1" stroke="#64748b"/> 
+                                <!-- Dorsal -->
+                                <path d="M 90 26 L 110 5 L 120 27" fill="#cbd5e1" stroke="#64748b"/> 
+                                <!-- Anal -->
+                                <path d="M 120 73 L 135 90 L 140 68" fill="#cbd5e1" stroke="#64748b"/> 
+                                <!-- Pelvic/Pectoral -->
+                                <path d="M 70 65 L 85 85 L 90 68" fill="#cbd5e1" stroke="#64748b"/> 
+                                <!-- Eye -->
+                                <circle cx="50" cy="45" r="3" fill="#475569" /> 
+                                <!-- Gill -->
+                                <path d="M 65 38 Q 70 50 65 62" /> 
+                                
+                                <!-- Pointer Lines connecting labels to the fish -->
+                                <path d="M 25 18 L 60 45" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="1 1"/> <!-- Operculum -->
+                                <path d="M 80 12 L 105 18" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="1 1"/> <!-- Dorsal -->
+                                <path d="M 160 20 L 180 50" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="1 1"/> <!-- Tail -->
+                                <path d="M 35 80 L 75 75" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="1 1"/> <!-- Q9 (Pectoral/Pelvic) -->
+                                <path d="M 90 85 L 80 80" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="1 1"/> <!-- Q10 (Paired) -->
+                                <path d="M 160 85 L 135 80" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="1 1"/> <!-- Anal fin -->
+                            </svg>
+
+                            <!-- Overlay Text Boxes and Inputs -->
+
+                            <!-- Label: Operculum (Top Left) -->
+                            <div class="absolute top-[8%] left-[5%] text-sm text-gray-800 bg-white/80 px-3 py-2 rounded backdrop-blur-sm shadow-sm border border-white/50 leading-tight whitespace-nowrap z-10">
+                                <p class="font-medium text-gray-800">operculum</p>
+                                <p class="text-gray-600">(gill cover)</p>
+                            </div>
+
+                            <!-- Label: Q8 Dorsal (Top Middle - Adjusted left and width to prevent overlap) -->
+                            <div class="absolute top-[3%] left-[28%] text-sm text-gray-800 bg-white/90 p-2.5 rounded-lg backdrop-blur-md shadow-md border border-gray-200 z-10" id="container-q8">
+                                <p class="font-semibold mb-1 text-gray-700 whitespace-nowrap">dorsal fin,</p>
+                                <div class="flex items-center gap-2 whitespace-nowrap">
+                                    <strong class="text-blue-700 bg-blue-100 w-6 h-6 flex items-center justify-center rounded-full shrink-0">8</strong> 
+                                    <input type="text" name="q8" class="text-input w-28 text-sm" placeholder="type here..."> 
+                                    <span class="text-gray-600 font-medium">movements</span>
+                                </div>
+                            </div>
+
+                            <!-- Label: Q7 Tail (Top Right - Adjusted to prevent overlap) -->
+                            <div class="absolute top-[6%] right-[2%] text-sm text-gray-800 bg-white/90 p-2.5 rounded-lg backdrop-blur-md shadow-md border border-gray-200 z-10" id="container-q7">
+                                <p class="font-semibold mb-1 text-gray-700 whitespace-nowrap">tail fin,</p>
+                                <div class="flex items-center gap-2 whitespace-nowrap">
+                                    <span class="text-gray-600 font-medium">providing part of</span> 
+                                    <strong class="text-blue-700 bg-blue-100 w-6 h-6 flex items-center justify-center rounded-full shrink-0">7</strong> 
+                                    <input type="text" name="q7" class="text-input w-28 text-sm" placeholder="type here...">
+                                </div>
+                            </div>
+
+                            <!-- Label: Q9 Pectoral/Pelvic (Bottom Left) -->
+                            <div class="absolute bottom-[8%] left-[2%] text-sm text-gray-800 bg-white/90 p-2.5 rounded-lg backdrop-blur-md shadow-md border border-gray-200 z-10" id="container-q9">
+                                <div class="flex items-center gap-2 mb-1 whitespace-nowrap">
+                                    <strong class="text-blue-700 bg-blue-100 w-6 h-6 flex items-center justify-center rounded-full shrink-0">9</strong> 
+                                    <input type="text" name="q9" class="text-input w-32 text-sm" placeholder="type here..."> 
+                                    <span class="font-semibold text-gray-700">fins</span>
+                                </div>
+                                <p class="text-gray-600 whitespace-nowrap">combined with paired fins;</p>
+                                <p class="font-bold text-gray-800 whitespace-nowrap">pushing up and down</p>
+                            </div>
+
+                            <!-- Label: Q10 Paired (Bottom Middle) -->
+                            <div class="absolute bottom-[4%] left-[38%] text-sm text-gray-800 bg-white/90 p-2.5 rounded-lg backdrop-blur-md shadow-md border border-gray-200 z-10" id="container-q10">
+                                <p class="font-semibold mb-1 text-gray-700 whitespace-nowrap">Paired fins, for</p>
+                                <div class="flex items-center gap-2 mb-1 whitespace-nowrap">
+                                    <strong class="text-blue-700 bg-blue-100 w-6 h-6 flex items-center justify-center rounded-full shrink-0">10</strong> 
+                                    <input type="text" name="q10" class="text-input w-32 text-sm" placeholder="type here..."> 
+                                </div>
+                                <p class="text-gray-600 font-medium whitespace-nowrap">movements additionally</p>
+                            </div>
+
+                            <!-- Label: Anal Fin (Bottom Right) -->
+                            <div class="absolute bottom-[10%] right-[10%] text-sm text-gray-800 bg-white/80 px-3 py-2 rounded backdrop-blur-sm shadow-sm border border-white/50 leading-tight whitespace-nowrap z-10">
+                                <p class="font-semibold text-gray-800">anal fin,</p>
+                                <p class="text-gray-600">balance</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Completion -->
+                <div class="p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 11-13</span>
+                        <h4 class="font-bold text-gray-800">Summary Completion</h4>
+                    </div>
+                    <p class="mb-5 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        Complete the summary below using <strong>NO MORE THAN THREE WORDS</strong> from the passage for each blank.
+                    </p>
+                    
+                    <div class="leading-loose text-gray-800 text-lg">
+                        Two types of muscles are involved in fish swimming. The majority of a fish’s body comprises the 
+                        <span id="container-q11" class="inline-block"><strong class="text-blue-600 mx-1">11</strong><input type="text" name="q11" class="text-input w-40 mx-1"></span>, 
+                        and the red muscle is found only at the roots of the fins and in a strip along the centre of each flank. For most of its routine movements, the fish uses a lot of its 
+                        <span id="container-q12" class="inline-block"><strong class="text-blue-600 mx-1">12</strong><input type="text" name="q12" class="text-input w-48 mx-1"></span> 
+                        saved in body, and white muscle is mostly used for short-term, fast swimming, such as escaping from 
+                        <span id="container-q13" class="inline-block"><strong class="text-blue-600 mx-1">13</strong><input type="text" name="q13" class="text-input w-32 mx-1"></span>.
+                    </div>
+                </div>
+
+                <!-- Submit Button Area -->
+                <div class="mt-8 pt-6 border-t border-gray-200 text-center pb-8">
+                    <button id="submit-form-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-md transition-colors text-lg shadow-md inline-flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13 2 9L22 2z"></path></svg>
+                        <span>Submit to Google Form</span>
+                    </button>
+                    <p class="text-sm text-gray-500 mt-2">This will open a pre-filled Google Form in a new tab.</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight Text</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50 transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative transform transition-all scale-95 opacity-0" id="vocab-modal-content">
+        <button id="close-vocab-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">&times;</button>
+        <div class="flex items-center mb-6 border-b pb-4">
+            <h3 id="vocab-word" class="text-3xl font-extrabold text-gray-900 capitalize tracking-tight"></h3>
+        </div>
+        <div class="flex items-center mb-5">
+            <button id="play-audio-btn" class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white mr-4 transition-all shadow-sm border border-blue-100" title="Listen to pronunciation">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-500 font-mono text-lg bg-gray-50 px-3 py-1 rounded-md border border-gray-100"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 text-lg leading-relaxed"></p>
+    </div>
+</div>
+
+<script>
+    // --- DATA ---
+    const vocabulary = {
+        'interaction': { meaning: 'Reciprocal action or influence.', phonetic: '/ˌɪntərˈækʃn/' },
+        'fulcrum': { meaning: 'The point against which a lever is placed to get a purchase, or on which it turns.', phonetic: '/ˈfʊlkrəm/' },
+        'perceptible': { meaning: 'Able to be seen or noticed (especially of a slight movement).', phonetic: '/pəˈsɛptɪb(ə)l/' },
+        'protruding': { meaning: 'Sticking out; projecting.', phonetic: '/prəˈtruːdɪŋ/' },
+        'yawing': { meaning: 'Twist or oscillate about a vertical axis.', phonetic: '/jɔːɪŋ/' },
+        'sluggish': { meaning: 'Slow-moving or inactive.', phonetic: '/ˈslʌɡɪʃ/' }
+    };
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            currentFontSize: 17,
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            splitter: document.getElementById('splitter'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabModal: document.getElementById('vocab-modal'),
+            vocabModalContent: document.getElementById('vocab-modal-content'),
+            closeVocabModalBtn: document.getElementById('close-vocab-modal'),
+            vocabWordEl: document.getElementById('vocab-word'),
+            vocabMeaningEl: document.getElementById('vocab-meaning'),
+            vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
+            playAudioBtn: document.getElementById('play-audio-btn'),
+
+            init() {
+                this.setupEventListeners();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                document.getElementById('increase-font-btn').addEventListener('click', () => this.changeFontSize(1));
+                document.getElementById('decrease-font-btn').addEventListener('click', () => this.changeFontSize(-1));
+
+                this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
+                this.vocabModal.addEventListener('click', (e) => {
+                   if (e.target === this.vocabModal) this.closeModal();
+                });
+                
+                // Vocab Words Event Delegation
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const wordKey = e.target.dataset.word;
+                        this.openVocabModal(wordKey);
+                    }
+                });
+
+                // Google Form Submission
+                document.body.addEventListener('click', (e) => {
+                    const submitBtn = e.target.closest('#submit-form-btn');
+                    if (submitBtn) {
+                        this.submitToGoogleForm();
+                    }
+                });
+                
+                // Real Audio Pronunciation Event
+                this.playAudioBtn.addEventListener('click', () => {
+                   const word = this.vocabWordEl.textContent;
+                   if (!word) return;
+                   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                   
+                   this.playAudioBtn.classList.remove('text-blue-600', 'bg-blue-50');
+                   this.playAudioBtn.classList.add('bg-green-500', 'text-white');
+                   
+                   if ('speechSynthesis' in window) {
+                       const utterance = new SpeechSynthesisUtterance(word);
+                       utterance.lang = 'en-GB'; 
+                       utterance.rate = 0.9; 
+                       utterance.onend = () => this.resetAudioBtn();
+                       utterance.onerror = () => this.resetAudioBtn();
+                       window.speechSynthesis.speak(utterance);
+                   } else {
+                       alert("Sorry, your browser doesn't support text-to-speech audio.");
+                       setTimeout(() => this.resetAudioBtn(), 500);
+                   }
+                });
+            },
+
+            resetAudioBtn() {
+                this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+            },
+            
+            changeFontSize(delta) {
+                this.currentFontSize += delta;
+                if (this.currentFontSize < 14) this.currentFontSize = 14;
+                if (this.currentFontSize > 26) this.currentFontSize = 26;
+                document.documentElement.style.setProperty('--app-font-size', `${this.currentFontSize}px`);
+            },
+
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        this.vocabModalContent.classList.remove('scale-95', 'opacity-0');
+                        this.vocabModalContent.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                }
+            },
+
+            closeModal() {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                this.vocabModalContent.classList.remove('scale-100', 'opacity-100');
+                this.vocabModalContent.classList.add('scale-95', 'opacity-0');
+                this.resetAudioBtn();
+                setTimeout(() => this.vocabModal.classList.add('hidden'), 200);
+            },
+            
+            submitToGoogleForm() {
+                const nameInput = document.getElementById('student-name');
+                const name = nameInput ? nameInput.value : '';
+
+                const params = new URLSearchParams();
+                params.append('usp', 'pp_url');
+                
+                // Assuming Name is the first entry from your specific ordered list, 
+                // and Questions 1-13 map exactly to the provided entries.
+                if (name) params.append('entry.2076873131', name);
+
+                const textEntries = {
+                    'q1': 'entry.11442468',
+                    'q2': 'entry.1024411767',
+                    'q3': 'entry.1194862249',
+                    'q4': 'entry.1154820157',
+                    'q5': 'entry.376611476',
+                    'q6': 'entry.297346512',
+                    'q7': 'entry.814877081',
+                    'q8': 'entry.1656514656',
+                    'q9': 'entry.461393969',
+                    'q10': 'entry.1954662318',
+                    'q11': 'entry.171050567',
+                    'q12': 'entry.1896822143',
+                    'q13': 'entry.1002908031'
+                };
+
+                for (const [qId, entryId] of Object.entries(textEntries)) {
+                    const el = document.querySelector(`[name="${qId}"]`);
+                    if (el && el.value) {
+                        params.append(entryId, el.value.toUpperCase().trim());
+                    }
+                }
+
+                // Your target Google Form link
+                const formId = '1FAIpQLSd5yiKCfI08nswIoAP51xdXb8uBOMxU6YewuC-c6nQi7nf2pA';
+                const url = `https://docs.google.com/forms/d/e/${formId}/viewform?${params.toString()}`;
+                
+                window.open(url, '_blank');
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                    document.body.style.cursor = 'col-resize';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    if (window.innerWidth <= 768) return; 
+                    
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 200) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        document.body.style.cursor = 'default';
+                    }
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        this.highlightTooltip.style.left = `${e.pageX - 30}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 40}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {} 
+                            finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
