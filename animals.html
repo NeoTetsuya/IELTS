@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Speaking - Interactive Study Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style type="text/tailwindcss">
+        /* Custom typography and smooth rendering */
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        /* Highlight Styles */
+        .highlights-active .highlight-vocab {
+            @apply font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded border-b-2 border-emerald-300 transition-colors duration-200 cursor-help relative inline-block;
+        }
+        .highlights-active .highlight-structure {
+            @apply italic text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border-b-2 border-indigo-200 transition-colors duration-200;
+        }
+        .highlights-active .highlight-filler {
+            @apply italic text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded transition-colors duration-200;
+        }
+
+        /* Tooltip implementation for Vocab */
+        .tooltip-text {
+            visibility: hidden;
+            width: max-content;
+            max-width: 250px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 50;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s, bottom 0.2s;
+            font-size: 0.85rem;
+            font-weight: 400;
+            font-style: normal;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+        .highlights-active .highlight-vocab:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            bottom: 110%;
+        }
+
+        /* Animations */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Form elements */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1em;
+        }
+        
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10b981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10b981;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen p-4 md:p-8 highlights-active" id="main-body">
+
+    <div class="max-w-5xl mx-auto space-y-8">
+        
+        <!-- Header Section -->
+        <header class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-lg p-8 md:p-12 text-center text-white relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                </svg>
+            </div>
+            
+            <div class="relative z-10">
+                <div class="flex justify-center mb-4">
+                    <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
+                        <i data-lucide="mic" class="w-8 h-8 text-emerald-400"></i>
+                    </div>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">IELTS Speaking Study Guide</h1>
+                <p class="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto font-light">
+                    Master your delivery on the topics of <strong>Endangered Animals</strong> & <strong>Parks</strong>.
+                </p>
+
+                <!-- Highlight Controls & Legend -->
+                <div class="mt-10 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-inner max-w-3xl mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                        
+                        <!-- Toggle Switch -->
+                        <div class="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full cursor-pointer hover:bg-white/20 transition-colors" onclick="toggleHighlights()">
+                            <span class="text-sm font-medium">Focus Mode (Hide Hints)</span>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="highlight-toggle" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 border-slate-300 right-5" />
+                                <label for="highlight-toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer transition-all duration-300"></label>
+                            </div>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="flex flex-wrap justify-center gap-3 text-sm">
+                            <div class="flex items-center space-x-2 bg-emerald-500/20 text-emerald-100 px-3 py-1.5 rounded-full border border-emerald-500/30">
+                                <i data-lucide="book-open" class="w-4 h-4"></i>
+                                <span class="font-semibold">Vocabulary</span>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-indigo-500/20 text-indigo-100 px-3 py-1.5 rounded-full border border-indigo-500/30">
+                                <i data-lucide="git-branch" class="w-4 h-4"></i>
+                                <span class="italic">Structures</span>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-amber-500/20 text-amber-100 px-3 py-1.5 rounded-full border border-amber-500/30">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                <span class="italic">Fillers</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 overflow-hidden sticky top-4 z-40">
+            <nav class="flex space-x-2 overflow-x-auto pb-1 hide-scrollbar" aria-label="Tabs">
+                <button onclick="showTab('tab-vocab')" id="btn-tab-vocab" class="tab-btn flex-1 flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-slate-100 text-slate-800 py-3 px-4 text-sm font-bold shadow-sm transition-all duration-200">
+                    <i data-lucide="book-a" class="w-4 h-4"></i> Words in Context
+                </button>
+                <button onclick="showTab('tab-exercises')" id="btn-tab-exercises" class="tab-btn flex-1 flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-slate-500 hover:bg-slate-50 py-3 px-4 text-sm font-medium transition-all duration-200">
+                    <i data-lucide="gamepad-2" class="w-4 h-4"></i> Interactive Exercises
+                </button>
+                <button onclick="showTab('tab-original')" id="btn-tab-original" class="tab-btn flex-1 flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-slate-500 hover:bg-slate-50 py-3 px-4 text-sm font-medium transition-all duration-200">
+                    <i data-lucide="award" class="w-4 h-4"></i> Band 7.0+ Samples
+                </button>
+                <button onclick="showTab('tab-band5')" id="btn-tab-band5" class="tab-btn flex-1 flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-slate-500 hover:bg-slate-50 py-3 px-4 text-sm font-medium transition-all duration-200">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i> Band 5.5 Samples
+                </button>
+            </nav>
+        </div>
+
+        <!-- TAB 1: Words in Context -->
+        <div id="tab-vocab" class="tab-content active space-y-6">
+            
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-blue-100 p-2 rounded-lg text-blue-600"><i data-lucide="message-square"></i></div>
+                <h2 class="text-2xl font-bold text-slate-800">Context Dialogue</h2>
+            </div>
+            
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmZmZmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjZjFmNWY5IiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')]">
+                
+                <!-- Chat UI -->
+                <div class="space-y-6 max-w-3xl mx-auto text-lg text-slate-700">
+                    
+                    <!-- Robert Msg 1 -->
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-slate-500">R</div>
+                        <div class="bg-slate-100 rounded-2xl rounded-tl-none p-4 md:p-5 shadow-sm">
+                            <p>Hey Julie. I got a lot of interesting information about endangered species for our presentation.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Julie Msg 1 -->
+                    <div class="flex gap-4 flex-row-reverse">
+                        <div class="w-10 h-10 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center font-bold text-white">J</div>
+                        <div class="bg-blue-50 border border-blue-100 rounded-2xl rounded-tr-none p-4 md:p-5 shadow-sm">
+                            <p>Me too! Do you know that rhino, one of the species <span class="highlight-vocab">in danger of becoming extinct<span class="tooltip-text">To be on the brink of extinction / no longer exist</span></span>, are mostly hunted for their horns <span class="highlight-structure">because many people believe that</span> the horns have magical healing properties and <span class="highlight-structure">could even cure</span> cancer?</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Robert Msg 2 -->
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-slate-500">R</div>
+                        <div class="bg-slate-100 rounded-2xl rounded-tl-none p-4 md:p-5 shadow-sm">
+                            <p>Wow, <span class="highlight-structure">how could they be so</span> gullible? <span class="highlight-structure">Anyway, I also found out that when it comes to</span> the number of threatened species, plants and <span class="highlight-vocab">floral species<span class="tooltip-text">Types of flowers and plants</span></span> outnumber animals. Isn't it astonishing?</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Julie Msg 2 -->
+                    <div class="flex gap-4 flex-row-reverse">
+                        <div class="w-10 h-10 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center font-bold text-white">J</div>
+                        <div class="bg-blue-50 border border-blue-100 rounded-2xl rounded-tr-none p-4 md:p-5 shadow-sm">
+                            <p>Yea, I only heard about animals that needs to be protected like panda <span class="highlight-vocab">in the press<span class="tooltip-text">In newspapers, magazines, TV shows that broadcast news</span></span>.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Robert Msg 3 -->
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-slate-500">R</div>
+                        <div class="bg-slate-100 rounded-2xl rounded-tl-none p-4 md:p-5 shadow-sm">
+                            <p>Right? Like animal <span class="highlight-vocab">poaching<span class="tooltip-text">Illegal hunting</span></span>, human activities <span class="highlight-structure">are pushing</span> many plants <span class="highlight-structure">to the</span> <span class="highlight-vocab">brink of extinction<span class="tooltip-text">Almost disappearing entirely</span></span>. <span class="highlight-structure">For example</span>, the Coral Tree, <span class="highlight-structure">which used to be</span> popular among homeowners in South America, <span class="highlight-structure">are now becoming less likely to be seen due to</span> <span class="highlight-vocab">overharvesting<span class="tooltip-text">Harvesting a resource to the point of diminishing returns</span></span>.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Julie Msg 3 -->
+                    <div class="flex gap-4 flex-row-reverse">
+                        <div class="w-10 h-10 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center font-bold text-white">J</div>
+                        <div class="bg-blue-50 border border-blue-100 rounded-2xl rounded-tr-none p-4 md:p-5 shadow-sm">
+                            <p>That's sad to hear. <span class="highlight-structure">Should we include</span> some solutions to preserving these species in our presentation?</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Robert Msg 4 -->
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-slate-500">R</div>
+                        <div class="bg-slate-100 rounded-2xl rounded-tl-none p-4 md:p-5 shadow-sm">
+                            <p>I already got a few in mind. <span class="highlight-structure">We can talk about</span> the construction of more <span class="highlight-vocab">nature reserves<span class="tooltip-text">Protected area / Wildlife sanctuary</span></span> or national parks, <span class="highlight-structure">which provide shelter for</span> endangered species.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Julie Msg 4 -->
+                    <div class="flex gap-4 flex-row-reverse">
+                        <div class="w-10 h-10 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center font-bold text-white">J</div>
+                        <div class="bg-blue-50 border border-blue-100 rounded-2xl rounded-tr-none p-4 md:p-5 shadow-sm">
+                            <p>Like Panda. I read that bamboo forests, their <span class="highlight-vocab">habitat<span class="tooltip-text">The natural home of a plant or animal</span></span> and main source of food are mostly destroyed.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Robert Msg 5 -->
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-slate-500">R</div>
+                        <div class="bg-slate-100 rounded-2xl rounded-tl-none p-4 md:p-5 shadow-sm">
+                            <p>Exactly. <span class="highlight-structure">We can also teach</span> children about the important roles of these animals in the <span class="highlight-vocab">ecosystem<span class="tooltip-text">A biological community of interacting organisms</span></span>. <span class="highlight-structure">It would help them to become</span> more aware and responsible.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compact Audio Player -->
+                <div class="mt-10 mb-2 rounded-xl border border-slate-200 bg-slate-50 p-3 shadow-sm flex flex-col md:flex-row md:items-center gap-3 max-w-3xl mx-auto">
+                    <div class="text-sm font-bold text-slate-700 flex items-center gap-2 whitespace-nowrap"><i data-lucide="headphones" class="w-4 h-4"></i> Dialogue Audio</div>
+                    <div class="flex-1 w-full bg-white rounded-md p-1 shadow-inner border border-slate-200 flex items-center">
+                        <iframe width="100%" height="20" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2295325547&color=%2300aabb&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"></iframe>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center text-sm text-slate-500 mt-2"><i data-lucide="info" class="w-4 h-4 inline pb-0.5"></i> Hover over the highlighted green words to see their definitions instantly.</p>
+        </div>
+
+        <!-- TAB 2: Exercises -->
+        <div id="tab-exercises" class="tab-content space-y-6">
+            
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600"><i data-lucide="check-square"></i></div>
+                <h2 class="text-2xl font-bold text-slate-800">Test Your Knowledge</h2>
+            </div>
+            
+            <!-- Exercise 1: True/False -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                    <h3 class="font-bold text-lg text-slate-800">1. Evaluate Context Suitability</h3>
+                    <p class="text-sm text-slate-500">Read the sentence and decide if the bolded word is used correctly (True/False).</p>
+                </div>
+                
+                <div class="p-6">
+                    <form id="quiz-tf" class="space-y-5 text-slate-700">
+                        <!-- Q1 -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-3 rounded-lg hover:bg-slate-50 transition border border-transparent" id="tf-row-1">
+                            <span class="flex-1">1. The recent incident about the Amazon forest fire has been widely covered <strong>in the press</strong>.</span>
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q1" value="Yes" class="hidden"> True
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q1" value="No" class="hidden"> False
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Q2 -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-3 rounded-lg hover:bg-slate-50 transition border border-transparent" id="tf-row-2">
+                            <span class="flex-1">2. Many animals rely on <strong>poaching</strong> to reproduce and find food or shelter.</span>
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q2" value="Yes" class="hidden"> True
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q2" value="No" class="hidden"> False
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Q3 -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-3 rounded-lg hover:bg-slate-50 transition border border-transparent" id="tf-row-3">
+                            <span class="flex-1">3. Because of <strong>overharvesting</strong>, wild palm trees whose leaves are used for food wrapping have significantly decreased in numbers.</span>
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q3" value="Yes" class="hidden"> True
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q3" value="No" class="hidden"> False
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Q4 -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-3 rounded-lg hover:bg-slate-50 transition border border-transparent" id="tf-row-4">
+                            <span class="flex-1">4. In an attempt to preserve rare animal species, the government has decided to send them to <strong>nature reserves</strong>.</span>
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q4" value="Yes" class="hidden"> True
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q4" value="No" class="hidden"> False
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Q5 -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-3 rounded-lg hover:bg-slate-50 transition border border-transparent" id="tf-row-5">
+                            <span class="flex-1">5. The Polar region is the <strong>habitat</strong> of the Polar bear.</span>
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q5" value="Yes" class="hidden"> True
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q5" value="No" class="hidden"> False
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Q6 -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-3 rounded-lg hover:bg-slate-50 transition border border-transparent" id="tf-row-6">
+                            <span class="flex-1">6. The <strong>ecosystem</strong> of many marine animals are ruined because the ocean is too polluted.</span>
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q6" value="Yes" class="hidden"> True
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-md px-4 py-2 hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-600 transition-colors">
+                                    <input type="radio" name="q6" value="No" class="hidden"> False
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex justify-end">
+                            <button type="button" onclick="checkTF()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition shadow-sm flex items-center gap-2">
+                                Check Answers <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Exercise 2: Fill in blanks -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                    <h3 class="font-bold text-lg text-slate-800">2. Fill in the blanks</h3>
+                    <p class="text-sm text-slate-500">Select the correct vocabulary word from the dropdowns.</p>
+                </div>
+                
+                <div class="p-6">
+                    <!-- Word Bank -->
+                    <div class="flex flex-wrap gap-2 mb-8 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                        <span class="bg-white text-emerald-800 border border-emerald-200 px-3 py-1 rounded shadow-sm text-sm font-medium">Ecosystem</span>
+                        <span class="bg-white text-emerald-800 border border-emerald-200 px-3 py-1 rounded shadow-sm text-sm font-medium">Overharvesting</span>
+                        <span class="bg-white text-emerald-800 border border-emerald-200 px-3 py-1 rounded shadow-sm text-sm font-medium">In the press</span>
+                        <span class="bg-white text-emerald-800 border border-emerald-200 px-3 py-1 rounded shadow-sm text-sm font-medium">Nature reserve</span>
+                        <span class="bg-white text-emerald-800 border border-emerald-200 px-3 py-1 rounded shadow-sm text-sm font-medium">Become extinct</span>
+                        <span class="bg-white text-emerald-800 border border-emerald-200 px-3 py-1 rounded shadow-sm text-sm font-medium">Floral species</span>
+                        <span class="bg-white text-emerald-800 border border-emerald-200 px-3 py-1 rounded shadow-sm text-sm font-medium">Poaching</span>
+                        <span class="bg-white text-emerald-800 border border-emerald-200 px-3 py-1 rounded shadow-sm text-sm font-medium">Habitat</span>
+                    </div>
+
+                    <form id="quiz-fib" class="space-y-6 text-slate-700 leading-relaxed text-lg">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            1. Marine biologists are asking the local authorities to turn Cam Ranh Bay into a 
+                            <select id="fib1" class="border-2 border-slate-300 rounded-md px-3 py-1 bg-white text-emerald-700 font-bold outline-none focus:border-emerald-500 transition-colors w-48 text-base">
+                                <option value="" disabled selected>Select word...</option>
+                                <option value="Nature reserve">Nature reserve</option>
+                                <option value="Poaching">Poaching</option>
+                                <option value="Habitat">Habitat</option>
+                                <option value="Ecosystem">Ecosystem</option>
+                                <option value="Overharvesting">Overharvesting</option>
+                                <option value="Become extinct">Become extinct</option>
+                                <option value="In the press">In the press</option>
+                                <option value="Floral species">Floral species</option>
+                            </select> 
+                            to protect dolphins.
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            2. Although considered a crime in most countries,
+                            <select id="fib2" class="border-2 border-slate-300 rounded-md px-3 py-1 bg-white text-emerald-700 font-bold outline-none focus:border-emerald-500 transition-colors w-48 text-base">
+                                <option value="" disabled selected>Select word...</option>
+                                <option value="Nature reserve">Nature reserve</option>
+                                <option value="Poaching">Poaching</option>
+                                <option value="Habitat">Habitat</option>
+                                <option value="Ecosystem">Ecosystem</option>
+                                <option value="Overharvesting">Overharvesting</option>
+                                <option value="Become extinct">Become extinct</option>
+                                <option value="In the press">In the press</option>
+                                <option value="Floral species">Floral species</option>
+                            </select> 
+                            is still popular because of the monetary values it brings.
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            3. The forests provide a 
+                            <select id="fib3" class="border-2 border-slate-300 rounded-md px-3 py-1 bg-white text-emerald-700 font-bold outline-none focus:border-emerald-500 transition-colors w-48 text-base">
+                                <option value="" disabled selected>Select word...</option>
+                                <option value="Nature reserve">Nature reserve</option>
+                                <option value="Poaching">Poaching</option>
+                                <option value="Habitat">Habitat</option>
+                                <option value="Ecosystem">Ecosystem</option>
+                                <option value="Overharvesting">Overharvesting</option>
+                                <option value="Become extinct">Become extinct</option>
+                                <option value="In the press">In the press</option>
+                                <option value="Floral species">Floral species</option>
+                            </select> 
+                            for hundreds of species of plants and animals.
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            4. The Amazon rainforest, with millions of different kinds of plants and animals, is a complex and delicate
+                            <select id="fib4" class="border-2 border-slate-300 rounded-md px-3 py-1 bg-white text-emerald-700 font-bold outline-none focus:border-emerald-500 transition-colors w-48 text-base">
+                                <option value="" disabled selected>Select word...</option>
+                                <option value="Nature reserve">Nature reserve</option>
+                                <option value="Poaching">Poaching</option>
+                                <option value="Habitat">Habitat</option>
+                                <option value="Ecosystem">Ecosystem</option>
+                                <option value="Overharvesting">Overharvesting</option>
+                                <option value="Become extinct">Become extinct</option>
+                                <option value="In the press">In the press</option>
+                                <option value="Floral species">Floral species</option>
+                            </select>.
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            5. The 
+                            <select id="fib5" class="border-2 border-slate-300 rounded-md px-3 py-1 bg-white text-emerald-700 font-bold outline-none focus:border-emerald-500 transition-colors w-48 text-base">
+                                <option value="" disabled selected>Select word...</option>
+                                <option value="Nature reserve">Nature reserve</option>
+                                <option value="Poaching">Poaching</option>
+                                <option value="Habitat">Habitat</option>
+                                <option value="Ecosystem">Ecosystem</option>
+                                <option value="Overharvesting">Overharvesting</option>
+                                <option value="Become extinct">Become extinct</option>
+                                <option value="In the press">In the press</option>
+                                <option value="Floral species">Floral species</option>
+                            </select> 
+                            of fisheries has led to increasing prices of tuna, salmon and halibut worldwide.
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            6. There are several theories regarding why dinosaurs 
+                            <select id="fib6" class="border-2 border-slate-300 rounded-md px-3 py-1 bg-white text-emerald-700 font-bold outline-none focus:border-emerald-500 transition-colors w-48 text-base">
+                                <option value="" disabled selected>Select word...</option>
+                                <option value="Nature reserve">Nature reserve</option>
+                                <option value="Poaching">Poaching</option>
+                                <option value="Habitat">Habitat</option>
+                                <option value="Ecosystem">Ecosystem</option>
+                                <option value="Overharvesting">Overharvesting</option>
+                                <option value="Become extinct">Become extinct</option>
+                                <option value="In the press">In the press</option>
+                                <option value="Floral species">Floral species</option>
+                            </select>.
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            7. Many names have been discussed 
+                            <select id="fib7" class="border-2 border-slate-300 rounded-md px-3 py-1 bg-white text-emerald-700 font-bold outline-none focus:border-emerald-500 transition-colors w-48 text-base">
+                                <option value="" disabled selected>Select word...</option>
+                                <option value="Nature reserve">Nature reserve</option>
+                                <option value="Poaching">Poaching</option>
+                                <option value="Habitat">Habitat</option>
+                                <option value="Ecosystem">Ecosystem</option>
+                                <option value="Overharvesting">Overharvesting</option>
+                                <option value="Become extinct">Become extinct</option>
+                                <option value="In the press">In the press</option>
+                                <option value="Floral species">Floral species</option>
+                            </select> 
+                            as potential candidates for the next U.S president.
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            8. There are about 400,000 
+                            <select id="fib8" class="border-2 border-slate-300 rounded-md px-3 py-1 bg-white text-emerald-700 font-bold outline-none focus:border-emerald-500 transition-colors w-48 text-base">
+                                <option value="" disabled selected>Select word...</option>
+                                <option value="Nature reserve">Nature reserve</option>
+                                <option value="Poaching">Poaching</option>
+                                <option value="Habitat">Habitat</option>
+                                <option value="Ecosystem">Ecosystem</option>
+                                <option value="Overharvesting">Overharvesting</option>
+                                <option value="Become extinct">Become extinct</option>
+                                <option value="In the press">In the press</option>
+                                <option value="Floral species">Floral species</option>
+                            </select> 
+                            on Earth today, according to the U.K Royal Botanic Garden.
+                        </div>
+
+                        <div class="mt-6 flex justify-end pt-4">
+                            <button type="button" onclick="checkFIB()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition shadow-sm flex items-center gap-2">
+                                Check Answers <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Original Answers (Band 7+) -->
+        <div id="tab-original" class="tab-content space-y-8">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="bg-orange-100 p-2 rounded-lg text-orange-600"><i data-lucide="award"></i></div>
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Advanced Model Answers</h2>
+                    <p class="text-slate-500 text-sm">Study how a Band 7.0+ speaker structures their response.</p>
+                </div>
+            </div>
+
+            <!-- Content... -->
+            <article class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                    <h3 class="font-bold text-lg text-slate-800">Part 3: Short Discussion</h3>
+                </div>
+                <div class="p-6 text-slate-700 leading-relaxed text-lg space-y-8">
+                    
+                    <div class="flex items-center justify-between p-3 bg-slate-100 rounded-lg border border-slate-200 mb-6">
+                        <button class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600"><i data-lucide="play" class="w-4 h-4 ml-0.5"></i></button>
+                        <div class="text-sm font-medium text-slate-500 flex-1 mx-3 flex items-center gap-2"><i data-lucide="headphones" class="w-4 h-4"></i> Part 3 Audio Track</div>
+                    </div>
+
+                    <div class="border-l-4 border-orange-400 pl-4">
+                        <p class="font-bold mb-2 text-slate-900">1. Why must we protect endangered animals?</p>
+                        <div class="answer-text hidden">
+                            <p><span class="highlight-structure">If we do not, we are pushing</span> these animals to the <span class="highlight-vocab">brink of extinction</span>. Many species <span class="highlight-vocab">in danger of becoming extinct</span> <span class="highlight-structure">serve an important role in</span> the <span class="highlight-vocab">ecosystem</span> or have other values. <span class="highlight-structure">For instance</span>, panda is a symbol of China and the Chinese government <span class="highlight-structure">is trying the best to protect</span> the last pandas at all cost.</p>
+                        </div>
+                        <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-orange-600 font-bold hover:text-orange-700 transition-colors">
+                            <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                            <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                        </button>
+                    </div>
+                    
+                    <div class="border-l-4 border-orange-400 pl-4">
+                        <p class="font-bold mb-2 text-slate-900">2. How can we protect endangered animals?</p>
+                        <div class="answer-text hidden">
+                            <p><span class="highlight-structure">We could build more</span> <span class="highlight-vocab">nature reserves</span> and national parks <span class="highlight-structure">to provide</span> <span class="highlight-vocab">habitats</span> for threatened animals and <span class="highlight-vocab">floral species</span>. <span class="highlight-structure">Also</span>, the government should <span class="highlight-structure">use legal power to increase</span> the punishment for illegal activities like <span class="highlight-vocab">poaching</span> or <span class="highlight-vocab">overharvesting</span> <span class="highlight-structure">to deter people from</span> harming these species.</p>
+                        </div>
+                        <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-orange-600 font-bold hover:text-orange-700 transition-colors">
+                            <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                            <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                        </button>
+                    </div>
+
+                    <div class="border-l-4 border-orange-400 pl-4">
+                        <p class="font-bold mb-2 text-slate-900">3. Should protection of endangered animals be the responsibility of only government?</p>
+                        <div class="answer-text hidden">
+                            <p>No. Individuals <span class="highlight-structure">can also contribute to the preservation of</span> such species. <span class="highlight-structure">For one thing</span>, celebrities, <span class="highlight-structure">whose opinions are influential</span>, could <span class="highlight-structure">raise their voice to raise people's awareness</span>. <span class="highlight-structure">For example</span>, Leonardo Di Caprio has repeatedly voiced his opinions regarding global issues <span class="highlight-vocab">in the press</span> and <span class="highlight-structure">attracted lots of public attention</span> and support.</p>
+                        </div>
+                        <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-orange-600 font-bold hover:text-orange-700 transition-colors">
+                            <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                            <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Original Part 2: Panda -->
+            <article class="bg-white rounded-2xl shadow-sm border border-emerald-200 overflow-hidden">
+                <div class="bg-emerald-50 px-6 py-4 border-b border-emerald-100">
+                    <h3 class="font-bold text-xl text-emerald-900">Part 2: Describe an endangered animal you are interested in</h3>
+                </div>
+                <div class="p-6 text-slate-700 leading-relaxed text-lg space-y-4">
+                    <div class="mb-6 flex items-center justify-between p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                        <button class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white hover:bg-emerald-700"><i data-lucide="play" class="w-4 h-4 ml-0.5"></i></button>
+                        <div class="text-sm font-medium text-emerald-800 flex-1 mx-3 flex items-center gap-2"><i data-lucide="headphones" class="w-4 h-4"></i> Part 2 Audio: Panda</div>
+                    </div>
+
+                    <div class="answer-text hidden space-y-4">
+                        <p><span class="highlight-structure">Let me tell you about</span> panda, an endangered animal <span class="highlight-structure">I'm interested in</span>.</p>
+                        <p><span class="highlight-structure">So the reason why</span> panda is listed as an endangered animal <span class="highlight-structure">is mostly due to the loss of</span> its <span class="highlight-vocab">habitat</span> and main source of food, bamboo forests... <span class="highlight-vocab">Poaching</span> is another threat pandas must face. <span class="highlight-structure">Since the Ming dynasty</span>, people believe that panda's skin has <span class="highlight-vocab">magical healing properties</span>, making them <span class="highlight-structure">extremely valuable in the</span> <span class="highlight-vocab">black market</span>. <span class="highlight-structure">Last but not least</span>, pandas are <span class="highlight-vocab">extremely picky when it comes to mating</span>, and therefore <span class="highlight-structure">struggle to reproduce</span>. The Chinese government has constructed multiple <span class="highlight-vocab">nature reserves</span> solely for pandas <span class="highlight-structure">in an attempt to protect</span> this endangered species.</p>
+                        <p>Panda <span class="highlight-structure">plays an important role</span> to the Chinese, <span class="highlight-structure">and that's why I grew a lot of interested in them</span>. Panda is considered one of the symbols of China, <span class="highlight-structure">as when many people think of this country</span>, panda is the first thing that <span class="highlight-vocab">springs to mind</span>. Also, panda is often compared to yin and yang... <span class="highlight-structure">As a fan of</span> astrology and Feng Shui, I really want to meet and see this <span class="highlight-vocab">sacred creature</span> for once <span class="highlight-vocab">with my own eyes</span> someday.</p>
+                    </div>
+                    <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-emerald-600 font-bold hover:text-emerald-700 transition-colors">
+                        <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                        <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                    </button>
+                </div>
+            </article>
+
+            <!-- Original Part 2: Park -->
+            <article class="bg-white rounded-2xl shadow-sm border border-blue-200 overflow-hidden">
+                <div class="bg-blue-50 px-6 py-4 border-b border-blue-100">
+                    <h3 class="font-bold text-xl text-blue-900">Part 2: Describe a park you like to visit</h3>
+                </div>
+                <div class="p-6 text-slate-700 leading-relaxed text-lg space-y-4">
+                    <div class="mb-6 flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <button class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white hover:bg-blue-700"><i data-lucide="play" class="w-4 h-4 ml-0.5"></i></button>
+                        <div class="text-sm font-medium text-blue-800 flex-1 mx-3 flex items-center gap-2"><i data-lucide="headphones" class="w-4 h-4"></i> Part 2 Audio: Park</div>
+                    </div>
+
+                    <div class="answer-text hidden space-y-4">
+                        <p><span class="highlight-structure">Today I'd like to tell you about</span> a botanic garden <span class="highlight-structure">that I frequently visit</span>. It's not too far from my house. Perhaps about 15-minute drive away <span class="highlight-vocab">if the roads are clear</span>.</p>
+                        <p><span class="highlight-structure">As for the last time I visited it, if I remember correctly,</span> it was last week. The park is surrounded by trees and a wide variety of flowers <span class="highlight-structure">that bloom in the summer months</span>. Roses, sunflowers, violets or daisies, <span class="highlight-vocab">you name it</span>. <span class="highlight-structure">I love to</span> <span class="highlight-vocab">take a stroll</span> across the garden <span class="highlight-structure">after a long day at work to enjoy the</span> <span class="highlight-vocab">picturesque beauty</span> of the flowers. It's pretty quiet too, <span class="highlight-structure">so whenever I come here I just feel</span> <span class="highlight-vocab">at ease</span> <span class="highlight-structure">and I guess you could call it my</span> <span class="highlight-vocab">happy place</span>.</p>
+                        <p><span class="highlight-structure">The reason why I'm interested in the park is because</span> it <span class="highlight-vocab">holds many of my childhood memories</span>. My parents took me here for the first time <span class="highlight-structure">when I was six, and I was immediately amazed at</span> so many <span class="highlight-vocab">floral species</span> of different colors and shapes. I realized <span class="highlight-structure">I have a</span> <span class="highlight-vocab">soft spot for</span> flowers and since then, <span class="highlight-structure">with or without my parents</span>, I still came here <span class="highlight-vocab">on a regular basis</span>. This garden <span class="highlight-structure">always has a</span> <span class="highlight-vocab">special place in my heart</span> and will always be the garden that I want to visit.</p>
+                    </div>
+                    <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-blue-600 font-bold hover:text-blue-700 transition-colors">
+                        <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                        <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                    </button>
+                </div>
+            </article>
+        </div>
+
+        <!-- TAB 4: Band 5.5 - 6.0 Samples -->
+        <div id="tab-band5" class="tab-content space-y-8">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="bg-purple-100 p-2 rounded-lg text-purple-600"><i data-lucide="trending-up"></i></div>
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Natural Band 5.5 - 6.0 Samples</h2>
+                    <p class="text-slate-500 text-sm">Includes natural fillers (<span class="italic text-amber-600 font-medium">like this</span>) to sound more conversational.</p>
+                </div>
+            </div>
+
+            <!-- Part 3 Section -->
+            <article class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                    <h3 class="font-bold text-lg text-slate-800">Part 3: Short Discussion</h3>
+                </div>
+                <div class="p-6 text-slate-700 leading-relaxed text-lg space-y-8">
+
+                    <div class="mb-6 rounded-xl border border-purple-200 bg-purple-50 p-3 shadow-sm flex flex-col md:flex-row md:items-center gap-3">
+                        <div class="text-sm font-bold text-purple-700 flex items-center gap-2 whitespace-nowrap"><i data-lucide="headphones" class="w-4 h-4"></i> Part 3 Audio</div>
+                        <div class="flex-1 w-full bg-white rounded-md p-1 shadow-inner border border-purple-100 flex items-center">
+                            <iframe width="100%" height="20" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2295010343&color=%239333ea&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-purple-400 pl-4">
+                        <p class="font-bold mb-2 text-slate-900">1. Why must we protect endangered animals?</p>
+                        <div class="answer-text hidden">
+                            <p><span class="highlight-filler">Well, um</span>, I think we must protect them <span class="highlight-structure">because... if we do not, we are pushing</span> these animals to the <span class="highlight-vocab">brink of extinction</span>. <span class="highlight-filler">You know</span>, many species <span class="highlight-structure">play a very important role in</span> our <span class="highlight-vocab">ecosystem</span>. <span class="highlight-filler">Like</span>, <span class="highlight-structure">if one animal disappears, it can</span> negatively affect other animals and, <span class="highlight-filler">uh</span>, <span class="highlight-vocab">floral species</span> too. <span class="highlight-structure">Furthermore</span>, some animals have great cultural value. <span class="highlight-structure">For instance</span>, the panda is a famous symbol of China, and... <span class="highlight-filler">well</span>, losing them would be a great loss to their heritage.</p>
+                        </div>
+                        <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-purple-600 font-bold hover:text-purple-700 transition-colors">
+                            <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                            <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                        </button>
+                    </div>
+
+                    <div class="border-l-4 border-purple-400 pl-4">
+                        <p class="font-bold mb-2 text-slate-900">2. How can we protect endangered animals?</p>
+                        <div class="answer-text hidden">
+                            <p><span class="highlight-filler">To be honest</span>, <span class="highlight-structure">there are a few practical things we can do. First,</span> <span class="highlight-filler">um</span>, governments should invest in the construction of more <span class="highlight-vocab">nature reserves</span> and national parks. This is <span class="highlight-structure">to provide</span> safe <span class="highlight-vocab">habitats</span> for threatened animals. <span class="highlight-structure">Second, there needs to be</span> stricter punishments for illegal activities, <span class="highlight-filler">like</span> <span class="highlight-vocab">poaching</span> and <span class="highlight-vocab">overharvesting</span>, <span class="highlight-structure">to stop people from</span> harming these species for money. <span class="highlight-structure">Finally</span>, <span class="highlight-filler">I mean</span>, teaching children in schools about the importance of animals can... help them become more aware and responsible in the future.</p>
+                        </div>
+                        <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-purple-600 font-bold hover:text-purple-700 transition-colors">
+                            <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                            <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                        </button>
+                    </div>
+
+                    <div class="border-l-4 border-purple-400 pl-4">
+                        <p class="font-bold mb-2 text-slate-900">3. Should the protection of endangered animals be the responsibility of only governments?</p>
+                        <div class="answer-text hidden">
+                            <p><span class="highlight-filler">Um, no</span>, <span class="highlight-structure">I strongly believe it is not just</span> the government's job. <span class="highlight-structure">While governments can</span> create laws and build <span class="highlight-vocab">wildlife sanctuaries</span>, <span class="highlight-structure">individuals must also</span> contribute. <span class="highlight-structure">For example</span>, famous celebrities can use their influence to speak out <span class="highlight-vocab">in the press</span> and... raise public awareness about these global issues. <span class="highlight-structure">Additionally</span>, <span class="highlight-filler">you know</span>, ordinary people can help <span class="highlight-structure">by refusing to buy</span> products made from endangered animals. That would, <span class="highlight-filler">uh</span>, help stop the illegal hunting trade.</p>
+                        </div>
+                        <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-purple-600 font-bold hover:text-purple-700 transition-colors">
+                            <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                            <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                        </button>
+                    </div>
+
+                </div>
+            </article>
+
+            <!-- Topic 1 -->
+            <article class="bg-white rounded-2xl shadow-sm border border-emerald-200 overflow-hidden">
+                <div class="bg-emerald-50 px-6 py-4 border-b border-emerald-100">
+                    <h3 class="font-bold text-xl text-emerald-900">Part 2: Describe an endangered animal you are interested in</h3>
+                </div>
+                <div class="p-6 text-slate-700 leading-relaxed text-lg space-y-4">
+                    
+                    <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-3 shadow-sm flex flex-col md:flex-row md:items-center gap-3">
+                        <div class="text-sm font-bold text-emerald-700 flex items-center gap-2 whitespace-nowrap"><i data-lucide="headphones" class="w-4 h-4"></i> Part 2: Panda</div>
+                        <div class="flex-1 w-full bg-white rounded-md p-1 shadow-inner border border-emerald-100 flex items-center">
+                            <iframe width="100%" height="20" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2295010349&color=%2310b981&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="answer-text hidden space-y-4">
+                        <p>"<span class="highlight-filler">Well</span>, <span class="highlight-structure">let me tell you about</span> the panda, <span class="highlight-structure">which is</span> an endangered animal <span class="highlight-structure">that I find very fascinating</span>. Pandas mostly live in China, and, <span class="highlight-filler">um</span>, <span class="highlight-structure">they are well-known for</span> their unique black and white fur.</p>
+                        <p>Sadly, they are <span class="highlight-vocab">in danger of becoming extinct</span> <span class="highlight-structure">for a few major reasons. The primary reason is</span>... the loss of their natural <span class="highlight-vocab">habitat</span>. Humans have chopped down many bamboo forests, <span class="highlight-structure">and since</span> pandas rely almost entirely on bamboo for food, <span class="highlight-filler">well</span>, they struggle to survive. <span class="highlight-structure">Furthermore</span>, <span class="highlight-vocab">poaching</span> used to be a massive threat <span class="highlight-structure">because</span>... <span class="highlight-filler">you know</span>, some people falsely believed their skin had magical healing properties. <span class="highlight-structure">Finally</span>, they are known to struggle to reproduce naturally.</p>
+                        <p><span class="highlight-structure">To protect this species</span>, the Chinese government has built multiple <span class="highlight-vocab">nature reserves</span> specifically for pandas to give them a safe environment.</p>
+                        <p><span class="highlight-structure">I am particularly interested in</span> pandas <span class="highlight-structure">because</span>, <span class="highlight-filler">actually</span>, they have such a calm and peaceful nature. In Chinese culture, they are often compared to yin and yang, symbolizing harmony and balance. <span class="highlight-structure">I really hope</span> their population continues to grow <span class="highlight-structure">so that</span>, <span class="highlight-filler">uh</span>, future generations can see these amazing creatures."</p>
+                    </div>
+                    <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-emerald-600 font-bold hover:text-emerald-700 transition-colors">
+                        <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                        <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                    </button>
+                </div>
+            </article>
+
+            <!-- Topic 2 -->
+            <article class="bg-white rounded-2xl shadow-sm border border-blue-200 overflow-hidden">
+                <div class="bg-blue-50 px-6 py-4 border-b border-blue-100">
+                    <h3 class="font-bold text-xl text-blue-900">Part 2: Describe a park you like to visit</h3>
+                </div>
+                <div class="p-6 text-slate-700 leading-relaxed text-lg space-y-4">
+                    
+                    <div class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-3 shadow-sm flex flex-col md:flex-row md:items-center gap-3">
+                        <div class="text-sm font-bold text-blue-700 flex items-center gap-2 whitespace-nowrap"><i data-lucide="headphones" class="w-4 h-4"></i> Part 2: Park</div>
+                        <div class="flex-1 w-full bg-white rounded-md p-1 shadow-inner border border-blue-100 flex items-center">
+                            <iframe width="100%" height="20" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2295010346&color=%233b82f6&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="answer-text hidden space-y-4">
+                        <p>"<span class="highlight-filler">Um</span>, <span class="highlight-structure">I would like to talk about</span> a beautiful botanic garden <span class="highlight-structure">that I frequently visit</span>. It is located relatively close to my house, perhaps just a 15-minute drive away <span class="highlight-structure">if the roads are clear</span>.</p>
+                        <p><span class="highlight-structure">I usually try to go</span> to this park at least once or twice a month, <span class="highlight-structure">and the last time I visited was</span>... just last week, <span class="highlight-filler">actually</span>. <span class="highlight-structure">When I am there, my favorite thing to do is simply</span> take a relaxing stroll across the garden. The park is incredibly peaceful and is surrounded by large trees and a wide variety of <span class="highlight-vocab">floral species</span>, <span class="highlight-filler">like</span>... roses, sunflowers, and daisies. <span class="highlight-structure">After a long, tiring day</span> at work, <span class="highlight-structure">it is the perfect place to</span> sit on a bench, enjoy the picturesque beauty of the flowers, and, <span class="highlight-filler">you know</span>, get some fresh air.</p>
+                        <p><span class="highlight-structure">The main reason I am so interested in this park is that</span> it holds a lot of my childhood memories. My parents took me there for the first time <span class="highlight-structure">when I was about six years old, and I was amazed by</span> all the different colors and shapes of the plants. <span class="highlight-structure">Whenever I come here, I feel</span> completely at ease, <span class="highlight-structure">so I guess you could call it</span> my... 'happy place'."</p>
+                    </div>
+                    <button onclick="toggleAnswer(this)" class="mt-3 text-sm text-blue-600 font-bold hover:text-blue-700 transition-colors">
+                        <span class="flex items-center gap-1 show-state"><i data-lucide="eye" class="w-4 h-4"></i> Show Answer</span>
+                        <span class="flex items-center gap-1 hide-state hidden"><i data-lucide="eye-off" class="w-4 h-4"></i> Hide Answer</span>
+                    </button>
+                </div>
+            </article>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-500 py-10 border-t border-slate-200 mt-12">
+            <p class="font-medium">IELTS Interactive Guide</p>
+            <p class="text-sm mt-1">Focus on fluency, vocabulary, and natural delivery.</p>
+        </footer>
+
+    </div>
+
+    <!-- Scripts for Interactivity -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Highlight Toggle
+        function toggleHighlights() {
+            const body = document.getElementById('main-body');
+            const checkbox = document.getElementById('highlight-toggle');
+            if (checkbox.checked) {
+                body.classList.remove('highlights-active');
+            } else {
+                body.classList.add('highlights-active');
+            }
+        }
+
+        // Answer Toggle
+        function toggleAnswer(btn) {
+            const answerDiv = btn.previousElementSibling;
+            const showState = btn.querySelector('.show-state');
+            const hideState = btn.querySelector('.hide-state');
+
+            if (answerDiv.classList.contains('hidden')) {
+                // Reveal the answer
+                answerDiv.classList.remove('hidden');
+                showState.classList.add('hidden');
+                hideState.classList.remove('hidden');
+            } else {
+                // Hide the answer
+                answerDiv.classList.add('hidden');
+                showState.classList.remove('hidden');
+                hideState.classList.add('hidden');
+            }
+        }
+
+        // Tab Navigation
+        function showTab(tabId) {
+            // Hide all content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Reset all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-slate-100', 'text-slate-800', 'shadow-sm');
+                btn.classList.add('text-slate-500', 'hover:bg-slate-50');
+            });
+
+            // Show target content
+            const targetContent = document.getElementById(tabId);
+            targetContent.classList.add('active');
+
+            // Highlight active button
+            const targetBtn = document.getElementById('btn-' + tabId);
+            targetBtn.classList.remove('text-slate-500', 'hover:bg-slate-50');
+            targetBtn.classList.add('bg-slate-100', 'text-slate-800', 'shadow-sm');
+        }
+
+        // --- Exercise 1 Validation (True/False) ---
+        const answersTF = { q1: "Yes", q2: "No", q3: "Yes", q4: "Yes", q5: "Yes", q6: "Yes" };
+        
+        function checkTF() {
+            for (let i = 1; i <= 6; i++) {
+                const row = document.getElementById('tf-row-' + i);
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                
+                // Reset styles
+                row.classList.remove('bg-green-50', 'border-green-200', 'bg-red-50', 'border-red-200');
+                
+                if (selected) {
+                    if (selected.value === answersTF['q'+i]) {
+                        row.classList.add('bg-green-50', 'border-green-200');
+                    } else {
+                        row.classList.add('bg-red-50', 'border-red-200');
+                    }
+                }
+            }
+        }
+
+        // --- Exercise 2 Validation (Fill in blanks) ---
+        const answersFIB = {
+            fib1: "Nature reserve", fib2: "Poaching", fib3: "Habitat", fib4: "Ecosystem",
+            fib5: "Overharvesting", fib6: "Become extinct", fib7: "In the press", fib8: "Floral species"
+        };
+
+        function checkFIB() {
+            for (let i = 1; i <= 8; i++) {
+                const selectEl = document.getElementById('fib' + i);
+                const value = selectEl.value;
+                
+                // Reset styles
+                selectEl.classList.remove('border-green-500', 'text-green-700', 'bg-green-50', 'border-red-500', 'text-red-700', 'bg-red-50', 'border-slate-300');
+                
+                if (value === answersFIB['fib'+i]) {
+                    selectEl.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
+                } else if (value !== "") {
+                    selectEl.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
+                } else {
+                    selectEl.classList.add('border-slate-300'); // If empty
+                }
+            }
+        }
+    </script>
+</body>
+</html>
