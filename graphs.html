@@ -6,6 +6,8 @@
     <title>IELTS Data Visualizations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add the Chart.js DataLabels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <style>
         .tab-active {
             border-bottom-width: 2px;
@@ -283,6 +285,8 @@
                             <canvas id="chart-bar-spending-other"></canvas>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-bar-spending" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
                 <hr class="border-slate-200">
@@ -306,6 +310,8 @@
                             <canvas id="chart-bar-marriage-2008"></canvas>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-bar-marriage" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
             </div>
@@ -325,23 +331,25 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold text-sm mb-4">Total School Spending 1981</h3>
-                            <div class="w-full max-w-[250px] aspect-square relative">
+                            <div class="w-full max-w-[350px] h-[250px] relative">
                                 <canvas id="chart1-1981"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold text-sm mb-4">Total School Spending 1991</h3>
-                            <div class="w-full max-w-[250px] aspect-square relative">
+                            <div class="w-full max-w-[350px] h-[250px] relative">
                                 <canvas id="chart1-1991"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold text-sm mb-4">Total School Spending 2001</h3>
-                            <div class="w-full max-w-[250px] aspect-square relative">
+                            <div class="w-full max-w-[350px] h-[250px] relative">
                                 <canvas id="chart1-2001"></canvas>
                             </div>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-pie-school" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
                 <hr class="border-slate-200">
@@ -358,17 +366,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">The percentage of world forest in 5 different regions</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart4-forest"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">The percentage of timber in each region</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart4-timber"></canvas>
                             </div>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-pie-forest" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
                 <hr class="border-slate-200">
@@ -385,17 +395,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">Immigration</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-immigration"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">Emigration</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-emigration"></canvas>
                             </div>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-pie-migration" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
                 <hr class="border-slate-200">
@@ -412,17 +424,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">2005</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-canada-2005"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">2010</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-canada-2010"></canvas>
                             </div>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-pie-sales" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
                 <hr class="border-slate-200">
@@ -439,17 +453,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">1998</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-qual-1998"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">2008</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-qual-2008"></canvas>
                             </div>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-pie-qual" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
                 <hr class="border-slate-200">
@@ -466,23 +482,25 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold text-sm mb-4">1980</h3>
-                            <div class="w-full max-w-[250px] aspect-square relative">
+                            <div class="w-full max-w-[350px] h-[250px] relative">
                                 <canvas id="chart-pie-grads-1980"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold text-sm mb-4">1990</h3>
-                            <div class="w-full max-w-[250px] aspect-square relative">
+                            <div class="w-full max-w-[350px] h-[250px] relative">
                                 <canvas id="chart-pie-grads-1990"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold text-sm mb-4">SWEDEN (2000)</h3>
-                            <div class="w-full max-w-[250px] aspect-square relative">
+                            <div class="w-full max-w-[350px] h-[250px] relative">
                                 <canvas id="chart-pie-grads-sweden"></canvas>
                             </div>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-pie-grads" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
                 <hr class="border-slate-200">
@@ -499,17 +517,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">2004</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-transport-2004"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center">2009</h3>
-                            <div class="w-full max-w-[350px] aspect-square relative">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-transport-2009"></canvas>
                             </div>
                         </div>
                     </div>
+                    <!-- Shared Legend -->
+                    <div id="legend-pie-transport" class="flex justify-center flex-wrap gap-x-6 gap-y-2 mt-6"></div>
                 </div>
 
             </div>
@@ -853,8 +873,8 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                        <div class="flex flex-col items-center">
-                            <div class="w-full max-w-[400px] aspect-square relative">
+                        <div class="flex flex-col items-center w-full">
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart9-aus-pie"></canvas>
                             </div>
                         </div>
@@ -914,13 +934,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center text-slate-600">ALL WATER</h3>
-                            <div class="w-full max-w-[300px] aspect-square relative">
+                            <div class="w-full max-w-[400px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-water-all"></canvas>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
                             <h3 class="font-semibold mb-4 text-center text-slate-600">FRESH WATER</h3>
-                            <div class="w-full max-w-[300px] aspect-square relative">
+                            <div class="w-full max-w-[400px] h-[250px] sm:h-[300px] relative">
                                 <canvas id="chart-pie-water-fresh"></canvas>
                             </div>
                         </div>
@@ -983,9 +1003,80 @@
         Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.9)';
         Chart.defaults.plugins.tooltip.padding = 10;
         Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        
+        // Add padding around charts to avoid clipping newly added data labels
+        Chart.defaults.layout = {
+            padding: { top: 24, right: 36, bottom: 8, left: 8 }
+        };
+
+        // Render HTML legend manually to share one legend across multiple charts
+        function renderLegend(containerId, labels, colors) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            let html = '';
+            labels.forEach((label, i) => {
+                html += `<div class="flex items-center text-sm text-slate-600 font-medium">
+                            <span class="inline-block w-4 h-4 rounded-sm mr-2" style="background-color: ${colors[i]}; border: 1px solid rgba(0,0,0,0.1)"></span>
+                            ${label}
+                         </div>`;
+            });
+            container.innerHTML = html;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
+
+            // Register the DataLabels plugin globally
+            Chart.register(ChartDataLabels);
+
+            // Configure DataLabels globally to show values on ALL charts
+            Chart.defaults.plugins.datalabels = {
+                backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                borderColor: 'rgba(203, 213, 225, 0.8)',
+                borderWidth: 1,
+                borderRadius: 4,
+                color: '#1e293b',
+                font: {
+                    weight: 'bold',
+                    size: 10
+                },
+                padding: { top: 3, bottom: 3, left: 5, right: 5 },
+                
+                // Position logic based on the chart/dataset type
+                anchor: function(context) {
+                    const type = context.dataset.type || context.chart.config.type;
+                    const isStacked = context.chart.config.options?.scales?.y?.stacked || context.chart.config.options?.scales?.x?.stacked;
+                    if (type === 'pie' || type === 'doughnut' || isStacked) return 'center';
+                    if (type === 'bar') return 'end';
+                    return 'center';
+                },
+                align: function(context) {
+                    const type = context.dataset.type || context.chart.config.type;
+                    const indexAxis = context.chart.config.options?.indexAxis;
+                    const isStacked = context.chart.config.options?.scales?.y?.stacked || context.chart.config.options?.scales?.x?.stacked;
+                    if (type === 'pie' || type === 'doughnut' || isStacked) return 'center';
+                    if (type === 'bar') return indexAxis === 'y' ? 'end' : 'top';
+                    return 'top'; // top for line charts
+                },
+                offset: 4,
+                
+                // Format large numbers with commas and add % to pies
+                formatter: function(value, context) {
+                    if (value === null) return '';
+                    if (context.dataset.type === 'pie' || context.chart.config.type === 'pie') {
+                        return value + '%';
+                    }
+                    if (typeof value === 'number') {
+                        return value.toLocaleString();
+                    }
+                    return value;
+                }
+            };
             
+            // --- Shared Labels for Grouped Charts ---
+            const sharedLabelsPopTrends = ['1950', '1980', '2000', '2040'];
+            const sharedLabelsSpending = ['France', 'Germany', 'England'];
+            const sharedLabelsMarriage = ['16 - 19', '20 - 24', '25 - 29', '30 - 34', '35 - 39', '40 - 44'];
+
             // --- Tab 1: UK School Spending (Pie Charts) ---
             const labels1 = ['Insurance', 'Teachers\' salaries', 'Furniture and equipment', 'Resources', 'Other workers\' salaries'];
             const colors1 = ['#3b82f6', '#ef4444', '#10b981', '#8b5cf6', '#06b6d4']; // Blue, Red, Green, Purple, Cyan
@@ -1000,7 +1091,7 @@
                         borderWidth: 1
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
             new Chart(document.getElementById('chart1-1991'), {
@@ -1013,7 +1104,7 @@
                         borderWidth: 1
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } // Hide legend on 2nd and 3rd for space
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
             });
 
             new Chart(document.getElementById('chart1-2001'), {
@@ -1028,6 +1119,7 @@
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
+            renderLegend('legend-pie-school', labels1, colors1);
 
             // --- Tab 2: Africa Phones (Line Chart) ---
             new Chart(document.getElementById('chart2-africa'), {
@@ -1120,7 +1212,7 @@
                     labels: labels4,
                     datasets: [{ data: [25, 16, 27, 14, 18], backgroundColor: colors4, borderWidth: 1 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
             new Chart(document.getElementById('chart4-timber'), {
@@ -1129,8 +1221,9 @@
                     labels: labels4,
                     datasets: [{ data: [30, 23, 9, 18, 20], backgroundColor: colors4, borderWidth: 1 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
+            renderLegend('legend-pie-forest', labels4, colors4);
 
             // --- Tab 5: Meat Consumption (Line Chart) ---
             new Chart(document.getElementById('chart5-meat'), {
@@ -1215,14 +1308,14 @@
                         borderWidth: 1
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 12 } } } }
             });
 
             // --- Pop Trends (Line) ---
             new Chart(document.getElementById('chart-line-pop-trends'), {
                 type: 'line',
                 data: {
-                    labels: ['1950', '1980', '2000', '2040'],
+                    labels: sharedLabelsPopTrends,
                     datasets: [
                         { label: 'total', data: [10, 20, 27, 43], borderColor: '#3b82f6', backgroundColor: '#3b82f6', tension: 0.1 },
                         { label: 'urban', data: [8, 15, 20, 33], borderColor: '#ef4444', backgroundColor: '#ef4444', tension: 0.1 },
@@ -1236,7 +1329,7 @@
             new Chart(document.getElementById('chart-line-age-structure'), {
                 type: 'line',
                 data: {
-                    labels: ['1950', '1980', '2000', '2040'],
+                    labels: sharedLabelsPopTrends,
                     datasets: [
                         { label: '0-15', data: [4, 5, 7, 6], borderColor: '#3b82f6', backgroundColor: '#3b82f6', tension: 0.1 },
                         { label: '16-65', data: [7, 13, 23, 28], borderColor: '#ef4444', backgroundColor: '#ef4444', tension: 0.1 },
@@ -1288,18 +1381,20 @@
                 type: 'pie', data: { labels: labelsMig, datasets: [{ data: [4, 13, 22, 29, 18, 14], backgroundColor: colorsMig }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
+            renderLegend('legend-pie-migration', labelsMig, colorsMig);
 
             // --- Online Sales Pie Charts ---
             const labelsSales = ['Electronics & Appliance', 'Food & Beverage', 'Home Furnishings', 'Video Games'];
             const colorsSales = ['#60a5fa', '#f97316', '#a3a3a3', '#facc15'];
             new Chart(document.getElementById('chart-pie-canada-2005'), {
                 type: 'pie', data: { labels: labelsSales, datasets: [{ data: [35, 22, 25, 18], backgroundColor: colorsSales }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
             new Chart(document.getElementById('chart-pie-canada-2010'), {
                 type: 'pie', data: { labels: labelsSales, datasets: [{ data: [30, 32, 15, 23], backgroundColor: colorsSales }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
+            renderLegend('legend-pie-sales', labelsSales, colorsSales);
 
             // --- Qualifications Pie Charts ---
             const labelsQual = ['PhD: Art', 'First Degree: Science', 'First Degree: Arts', 'Master\'s Degree: Science', 'Master\'s Degree: Arts', 'PhD: Science'];
@@ -1312,15 +1407,46 @@
                 type: 'pie', data: { labels: labelsQual, datasets: [{ data: [7, 11, 10, 29, 13, 30], backgroundColor: colorsQual }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
+            renderLegend('legend-pie-qual', labelsQual, colorsQual);
+
+            // --- Australian Graduates / Sweden (Pie Charts) ---
+            const labelsGrads = ['employed', 'further education', 'unemployment'];
+            const colorsGrads = ['#60a5fa', '#b91c1c', '#000000'];
+            new Chart(document.getElementById('chart-pie-grads-1980'), {
+                type: 'pie', data: { labels: labelsGrads, datasets: [{ data: [40, 50, 10], backgroundColor: colorsGrads }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            new Chart(document.getElementById('chart-pie-grads-1990'), {
+                type: 'pie', data: { labels: labelsGrads, datasets: [{ data: [50, 38, 12], backgroundColor: colorsGrads }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            new Chart(document.getElementById('chart-pie-grads-sweden'), {
+                type: 'pie', data: { labels: labelsGrads, datasets: [{ data: [55, 37, 8], backgroundColor: colorsGrads }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            renderLegend('legend-pie-grads', labelsGrads, colorsGrads);
+
+            // --- Transport Methods (Pie Charts) ---
+            const labelsTransport = ['Car', 'Bicycle', 'Bus', 'Train', 'Walking'];
+            const colorsTransport = ['#60a5fa', '#f97316', '#a3a3a3', '#facc15', '#3b82f6'];
+            new Chart(document.getElementById('chart-pie-transport-2004'), {
+                type: 'pie', data: { labels: labelsTransport, datasets: [{ data: [51, 9, 33, 3, 4], backgroundColor: colorsTransport }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            new Chart(document.getElementById('chart-pie-transport-2009'), {
+                type: 'pie', data: { labels: labelsTransport, datasets: [{ data: [28, 16, 46, 4, 6], backgroundColor: colorsTransport }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            renderLegend('legend-pie-transport', labelsTransport, colorsTransport);
 
             // --- Water Charts ---
             new Chart(document.getElementById('chart-pie-water-all'), {
                 type: 'pie', data: { labels: ['Fresh water', 'Salt water'], datasets: [{ data: [3, 97], backgroundColor: ['#e4e4e7', '#71717a'] }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 12 } } } }
             });
             new Chart(document.getElementById('chart-pie-water-fresh'), {
                 type: 'pie', data: { labels: ['Ground water', 'Surface water', 'Ice & Glaciers'], datasets: [{ data: [20, 1, 79], backgroundColor: ['#52525b', '#e4e4e7', '#a1a1aa'] }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 12 } } } }
             });
             new Chart(document.getElementById('chart-bar-water-use'), {
                 type: 'bar',
@@ -1388,79 +1514,53 @@
             new Chart(document.getElementById('chart-bar-spending-food'), {
                 type: 'bar',
                 data: {
-                    labels: ['France', 'Germany', 'England'],
+                    labels: sharedLabelsSpending,
                     datasets: [
                         { label: '1998', data: [15, 25, 10], backgroundColor: '#60a5fa' },
                         { label: '2008', data: [40, 30, 15], backgroundColor: '#b91c1c' }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 45 } }, plugins: { legend: { position: 'right' } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 45 } }, plugins: { legend: { display: false } } }
             });
 
             new Chart(document.getElementById('chart-bar-spending-other'), {
                 type: 'bar',
                 data: {
-                    labels: ['France', 'Germany', 'England'],
+                    labels: sharedLabelsSpending,
                     datasets: [
                         { label: '1998', data: [10, 18, 10], backgroundColor: '#60a5fa' },
                         { label: '2008', data: [40, 24, 36], backgroundColor: '#b91c1c' }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 45 } }, plugins: { legend: { position: 'right' } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 45 } }, plugins: { legend: { display: false } } }
             });
+            renderLegend('legend-bar-spending', ['1998', '2008'], ['#60a5fa', '#b91c1c']);
 
             // --- Ages When Married (Bar Charts) ---
             new Chart(document.getElementById('chart-bar-marriage-1996'), {
                 type: 'bar',
                 data: {
-                    labels: ['16 - 19', '20 - 24', '25 - 29', '30 - 34', '35 - 39', '40 - 44'],
+                    labels: sharedLabelsMarriage,
                     datasets: [
                         { label: 'Female', data: [1, 6, 11.5, 7, 4, 2.1], backgroundColor: '#60a5fa' },
                         { label: 'Male', data: [0, 2.2, 9, 9, 7, 5.5], backgroundColor: '#ef4444' }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 14 } }, plugins: { legend: { position: 'right' } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 14 } }, plugins: { legend: { display: false } } }
             });
 
             new Chart(document.getElementById('chart-bar-marriage-2008'), {
                 type: 'bar',
                 data: {
-                    labels: ['16 - 19', '20 - 24', '25 - 29', '30 - 34', '35 - 39', '40 - 44'],
+                    labels: sharedLabelsMarriage,
                     datasets: [
                         { label: 'Female', data: [0.5, 3.5, 12, 8.2, 3, 2.5], backgroundColor: '#60a5fa' },
                         { label: 'Male', data: [0, 2.3, 8.2, 11.2, 11.8, 4], backgroundColor: '#ef4444' }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 14 } }, plugins: { legend: { position: 'right' } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 14 } }, plugins: { legend: { display: false } } }
             });
-
-            // --- Australian Graduates / Sweden (Pie Charts) ---
-            const labelsGrads = ['employed', 'further education', 'unemployment'];
-            const colorsGrads = ['#60a5fa', '#b91c1c', '#000000'];
-            new Chart(document.getElementById('chart-pie-grads-1980'), {
-                type: 'pie', data: { labels: labelsGrads, datasets: [{ data: [40, 50, 10], backgroundColor: colorsGrads }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-            new Chart(document.getElementById('chart-pie-grads-1990'), {
-                type: 'pie', data: { labels: labelsGrads, datasets: [{ data: [50, 38, 12], backgroundColor: colorsGrads }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-            new Chart(document.getElementById('chart-pie-grads-sweden'), {
-                type: 'pie', data: { labels: labelsGrads, datasets: [{ data: [55, 37, 8], backgroundColor: colorsGrads }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'right' } } }
-            });
-
-            // --- Transport Methods (Pie Charts) ---
-            const labelsTransport = ['Car', 'Bicycle', 'Bus', 'Train', 'Walking'];
-            const colorsTransport = ['#60a5fa', '#f97316', '#a3a3a3', '#facc15', '#3b82f6'];
-            new Chart(document.getElementById('chart-pie-transport-2004'), {
-                type: 'pie', data: { labels: labelsTransport, datasets: [{ data: [51, 9, 33, 3, 4], backgroundColor: colorsTransport }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-            new Chart(document.getElementById('chart-pie-transport-2009'), {
-                type: 'pie', data: { labels: labelsTransport, datasets: [{ data: [28, 16, 46, 4, 6], backgroundColor: colorsTransport }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'right' } } }
-            });
+            renderLegend('legend-bar-marriage', ['Female', 'Male'], ['#60a5fa', '#ef4444']);
 
             // --- Ireland Emigration & Unemployment (Mixed Chart) ---
             new Chart(document.getElementById('chart-mixed-ireland'), {
