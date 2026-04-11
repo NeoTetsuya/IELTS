@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Data Visualizations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add the Chart.js DataLabels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <style>
+        .tab-active {
+            border-bottom-width: 2px;
+            border-color: #3b82f6;
+            color: #1d4ed8;
+            background-color: #eff6ff;
+        }
+        .tab-inactive {
+            color: #6b7280;
+            border-color: transparent;
+        }
+        .tab-inactive:hover {
+            color: #374151;
+            background-color: #f3f4f6;
+        }
+        /* Custom scrollbar for tabs */
+        .tabs-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .tabs-container::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans text-slate-800">
+
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Data Dashboard</h1>
+            <p class="mt-2 text-sm text-slate-600">Recreated charts and tables from provided IELTS task 1 reports, enhanced with colorful data palettes and visible data labels.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-t-xl shadow-sm border-b border-slate-200 flex overflow-x-auto tabs-container" role="tablist">
+            <button onclick="switchTab('tab-line')" id="btn-tab-line" class="tab-btn tab-active px-6 py-4 text-sm font-medium whitespace-nowrap focus:outline-none transition-colors duration-150">Line Graphs</button>
+            <button onclick="switchTab('tab-bar')" id="btn-tab-bar" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap focus:outline-none transition-colors duration-150">Bar Charts</button>
+            <button onclick="switchTab('tab-pie')" id="btn-tab-pie" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap focus:outline-none transition-colors duration-150">Pie Charts</button>
+            <button onclick="switchTab('tab-table')" id="btn-tab-table" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap focus:outline-none transition-colors duration-150">Tables</button>
+            <button onclick="switchTab('tab-mixed')" id="btn-tab-mixed" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap focus:outline-none transition-colors duration-150">Mixed Charts</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="bg-white p-6 md:p-10 shadow-sm rounded-b-xl border border-t-0 border-slate-200 min-h-[500px]">
+            
+            <!-- Tab: Line Graphs -->
+            <div id="tab-line" class="tab-content block space-y-16">
+                
+                <!-- Annual Immigration -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-blue-700 uppercase bg-blue-100 rounded-full">Line Graph 1</span>
+                        <h2 class="text-xl font-bold text-slate-800">Annual immigration 1990 to 2001</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium"> The graph provides information about the number of people who immigrated to three nations between 1990 and 2001.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[450px] relative">
+                        <canvas id="chart-line-immigration"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- European Gym Goers -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-blue-700 uppercase bg-blue-100 rounded-full">Line Graph 2</span>
+                        <h2 class="text-xl font-bold text-slate-800">European people of different age groups who went to a gym once a month or more, 1990-2010</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The chart below illustrates data on Europeans from various age groups who attended a gym once a month or more between 1990 and 2010.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[450px] relative">
+                        <canvas id="chart-line-gym"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- UK Birth Rate -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-blue-700 uppercase bg-blue-100 rounded-full">Line Graph 3</span>
+                        <h2 class="text-xl font-bold text-slate-800">UK birth rate of women in 6 different age groups, 1973 - 2008</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graph below gives information about the trends in birth rates among women in six age groups in the UK between 1973 and 2008.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[550px] relative">
+                        <canvas id="chart-line-uk-births"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Australian Workforce Industries -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-blue-700 uppercase bg-blue-100 rounded-full">Line Graph 4</span>
+                        <h2 class="text-xl font-bold text-slate-800">Percentage of Australian workforce in five industries between 1962 and 2012</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graph below illustrates the proportion of the Australian workforce employed in five industries over the period from 1962 to 2012.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[500px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-line-aus-workforce"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Unemployment UK, EU, Japan -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-blue-700 uppercase bg-blue-100 rounded-full">Line Graph 5</span>
+                        <h2 class="text-xl font-bold text-slate-800">The unemployment rates in the UK, the rest of Europe and Japan, 1993 - 2007</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graph below provides data on unemployment levels in the UK, the rest of Europe, and Japan over the period from 1993 to 2007.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[450px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-line-unemployment-3"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Australian Exports -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-blue-700 uppercase bg-blue-100 rounded-full">Line Graph 6</span>
+                        <h2 class="text-xl font-bold text-slate-800">Percentage of Australian exports to four countries from 1990 - 2012</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graph below shows the share of Australian exports to four nations over the period from 1990 to 2012.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[450px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-line-aus-exports"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- UK Fuels Production -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-blue-700 uppercase bg-blue-100 rounded-full">Line Graph 7</span>
+                        <h2 class="text-xl font-bold text-slate-800">Production levels of the main fuels in the UK between 1981 and 2000</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graph below shows the production levels of major fuel types in the UK from 1981 to 2000.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[450px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-line-uk-fuels"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab: Bar Charts -->
+            <div id="tab-bar" class="tab-content hidden space-y-16">
+                
+                <!-- Fruit & Veg Portions -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 1</span>
+                        <h2 class="text-xl font-bold text-slate-800">People eating five portions of fruit and vegetables per day</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The bar chart below shows the proportion of individuals in the UK consuming five portions of fruits and vegetables daily between 2001 and 2008.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[400px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-fruit"></canvas>
+                    </div>
+                </div>
+                
+                <hr class="border-slate-200">
+
+                <!-- UK Passenger Kilometers -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 2</span>
+                        <h2 class="text-xl font-bold text-slate-800">Passenger kilometers travelled, UK, 1990-2000</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The chart below provides information about the total distance travelled by passengers via five transport modes in the UK during the years 1990 to 2000.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[400px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-passenger"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Supermarket Goods & Food -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart Set 3</span>
+                        <h2 class="text-xl font-bold text-slate-800">Percentage of food and goods bought in supermarkets</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The charts below give information on the proportion of food and goods bought from supermarkets in European nations in 1998 and 2008.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                        <div class="w-full h-[400px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">Percentage of food bought in supermarkets</h3>
+                            <canvas id="chart-bar-supermarket-food"></canvas>
+                        </div>
+                        <div class="w-full h-[400px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">Percentage of goods bought in supermarkets</h3>
+                            <canvas id="chart-bar-supermarket-goods"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Water Levels -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 4</span>
+                        <h2 class="text-xl font-bold text-slate-800">Water levels in reservoirs (% of maximum)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graphs below compare the water levels of six cities in Australia during October 2009 and October 2010.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[400px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-water-levels"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- People Employed in Five Types of Work -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 5</span>
+                        <h2 class="text-xl font-bold text-slate-800">Number of people employed in five types of work</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The chart below shows the number of people employed in five types of work in one region of Australia in 2001 and 2008.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[400px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-employed"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- International Applicants -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 6</span>
+                        <h2 class="text-xl font-bold text-slate-800">International applicants to the universities of one European country (2004-2008)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The chart below illustrates the number of international students applying to universities in a European country.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[450px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-applicants"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Household Waste -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 7</span>
+                        <h2 class="text-xl font-bold text-slate-800">Percentage of household waste recycled (1992-2002)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The chart below illustrates the percentages of various types of household waste recycled in a city from 1992 to 2002.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[450px] relative max-w-4xl mx-auto">
+                        <canvas id="chart-bar-waste"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Unemployment Rate -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 8</span>
+                        <h2 class="text-xl font-bold text-slate-800">Unemployment rate in some European countries</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graph below illustrates the unemployment rates among people aged 15 to 24 in five European countries in 2005, compared to the overall unemployment percentages in those countries.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[400px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-unemployment"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Number of Films -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 9</span>
+                        <h2 class="text-xl font-bold text-slate-800">The number of films produced by five countries</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graph below illustrates the number of films produced by five different countries over three years.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[400px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-films"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Car Ownership -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 10</span>
+                        <h2 class="text-xl font-bold text-slate-800">Car ownership (1971-2001)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The chart below illustrates the percentage changes in car ownership among households in a European country from 1971 to 2001.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[400px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-cars"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Sectors 1980 / 2010 -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart Set 11</span>
+                        <h2 class="text-xl font-bold text-slate-800">Percentage of workers in three sectors (1980 vs 2010)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium"> The charts below illustrate the distribution of workers among three sectors in four countries in 1980 and 2010.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                        <div class="w-full h-[350px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">1980</h3>
+                            <canvas id="chart-bar-sectors-1980"></canvas>
+                        </div>
+                        <div class="w-full h-[350px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">2010</h3>
+                            <canvas id="chart-bar-sectors-2010"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Foreign Languages -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart Set 12</span>
+                        <h2 class="text-xl font-bold text-slate-800">Students studying foreign languages (1984 vs 2007)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">[Insert Task Question Here]</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                        <div class="w-full h-[350px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">Percentage of students who studied a foreign language</h3>
+                            <canvas id="chart-bar-lang-students"></canvas>
+                        </div>
+                        <div class="w-full h-[350px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">Top 3 languages studied by students</h3>
+                            <canvas id="chart-bar-lang-top3"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Drug Company Sales Stacked -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart 13</span>
+                        <h2 class="text-xl font-bold text-slate-800">The percentage of a drug company's sales, 2002 to 2006</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium"> The chart below illustrates the proportion of total sales made by a drug company in different regions from 2002 to 2006.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[450px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-bar-drug-sales"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Employment Aged 60-64 -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-100 rounded-full">Bar Chart Set 14</span>
+                        <h2 class="text-xl font-bold text-slate-800">% Men and Women aged 60-64 in employment</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The charts below illustrate the employment rates of men and women aged 60-64 in four countries in 1970 and 2000.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col space-y-12 max-w-5xl mx-auto">
+                        <div class="w-full h-[300px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">% men aged 60 - 64 in employment</h3>
+                            <canvas id="chart-bar-emp-men"></canvas>
+                        </div>
+                        <div class="w-full h-[300px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">% women aged 60 - 64 in employment</h3>
+                            <canvas id="chart-bar-emp-women"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab: Pie Charts -->
+            <div id="tab-pie" class="tab-content hidden space-y-16">
+                
+                <!-- Kinds of Books Sold -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-emerald-700 uppercase bg-emerald-100 rounded-full">Pie Chart Set 1</span>
+                        <h2 class="text-xl font-bold text-slate-800">Five kinds of books sold by a bookseller between 1972 and 2012.</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The pie charts below provide data on the percentage of sales for five types of books by a bookseller between 1972 and 2012.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Shared Legend for Books -->
+                    <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-8">
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#3b82f6"></span><span class="text-sm text-slate-700 font-medium">Adult fiction</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#10b981"></span><span class="text-sm text-slate-700 font-medium">Children's fiction</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#f59e0b"></span><span class="text-sm text-slate-700 font-medium">Biography</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#ef4444"></span><span class="text-sm text-slate-700 font-medium">Travel</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#8b5cf6"></span><span class="text-sm text-slate-700 font-medium">Others</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="flex flex-col items-center">
+                            <h3 class="font-semibold text-lg mb-4">1972</h3>
+                            <div class="w-full max-w-[350px] h-[200px] relative">
+                                <canvas id="chart-pie-books-1972"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <h3 class="font-semibold text-lg mb-4">1992</h3>
+                            <div class="w-full max-w-[350px] h-[200px] relative">
+                                <canvas id="chart-pie-books-1992"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <h3 class="font-semibold text-lg mb-4">2012</h3>
+                            <div class="w-full max-w-[350px] h-[200px] relative">
+                                <canvas id="chart-pie-books-2012"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Percentage of Students Taking Courses -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-emerald-700 uppercase bg-emerald-100 rounded-full">Pie Chart Set 2</span>
+                        <h2 class="text-xl font-bold text-slate-800">Percentage of students taking various courses (1985 vs This year)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The two bar charts below illustrate the percentage of students aged 14 to 16 studying a foreign language in an English-speaking country, as well as the top three foreign languages.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Shared Legend for Courses -->
+                    <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-8 mt-2 max-w-4xl mx-auto">
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#ef4444"></span><span class="text-sm text-slate-700 font-medium">Art</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#3b82f6"></span><span class="text-sm text-slate-700 font-medium">Modern languages</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#10b981"></span><span class="text-sm text-slate-700 font-medium">Local history</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#f59e0b"></span><span class="text-sm text-slate-700 font-medium">Music appreciation</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#8b5cf6"></span><span class="text-sm text-slate-700 font-medium">Cookery</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#06b6d4"></span><span class="text-sm text-slate-700 font-medium">Fitness and dance</span></div>
+                        <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#f43f5e"></span><span class="text-sm text-slate-700 font-medium">IT</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="flex flex-col items-center">
+                            <h3 class="font-semibold mb-4 text-center">Percentage of students taking various courses in 1985</h3>
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
+                                <canvas id="chart-pie-courses-1985"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <h3 class="font-semibold mb-4 text-center">Percentage of students taking various courses this year</h3>
+                            <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
+                                <canvas id="chart-pie-courses-now"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab: Tables -->
+            <div id="tab-table" class="tab-content hidden space-y-16">
+                
+                <!-- Potato Consumption/Production Tables -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-purple-700 uppercase bg-purple-100 rounded-full">Data Table 1</span>
+                        <h2 class="text-xl font-bold text-slate-800">Potato consumption & production, by region, 2006</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The tables below provide data on potato consumption and production across various world regions in 2006.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                        <div class="overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                            <table class="min-w-full divide-y divide-slate-300">
+                                <thead class="bg-indigo-50">
+                                    <tr>
+                                        <th colspan="2" class="px-6 py-4 text-center text-sm font-bold text-slate-800">Potato consumption, by region, 2006</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-left text-sm font-bold text-slate-800 border-r border-slate-300"></th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800">Kg per person</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-300">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">South and Central America</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">23.6</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Africa</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">14.1</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">North America</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">57.9</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Europe</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">96.1</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Asia/ Oceania</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">25.8</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                            <table class="min-w-full divide-y divide-slate-300">
+                                <thead class="bg-emerald-50">
+                                    <tr>
+                                        <th colspan="2" class="px-6 py-4 text-center text-sm font-bold text-slate-800">Potato production, by region, 2006</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-left text-sm font-bold text-slate-800 border-r border-slate-300"></th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800">Quantity (tonnes)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-300">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">South and Central America</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">15.6 million</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Africa</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">16.4 million</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">North America</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">24.7 million</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Europe</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">126.3 million</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Asia/ Oceania</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">131.2 million</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- People Living in Each Other's Countries -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-purple-700 uppercase bg-purple-100 rounded-full">Data Table 2</span>
+                        <h2 class="text-xl font-bold text-slate-800">Number of people living in each other's countries</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The table below provides information about the number of residents from five European countries living in each other’s nations in 2011.</p>
+                        </div>
+                    </div>
+                    <div class="max-w-5xl mx-auto overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-300">
+                            <thead class="bg-indigo-600">
+                                <tr>
+                                    <th scope="col" rowspan="2" class="px-6 py-4 text-center text-sm font-bold text-white border-r border-indigo-500 bg-indigo-700">Where<br>they live</th>
+                                    <th scope="col" colspan="5" class="px-6 py-2 text-center text-sm font-bold text-white border-r border-indigo-500 bg-indigo-700">Number of people living in each other's countries</th>
+                                    <th scope="col" rowspan="2" class="px-6 py-4 text-center text-sm font-bold text-white">Total</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col" class="px-4 py-2 text-center text-sm font-bold text-white border-r border-t border-indigo-500">British</th>
+                                    <th scope="col" class="px-4 py-2 text-center text-sm font-bold text-white border-r border-t border-indigo-500">Germans</th>
+                                    <th scope="col" class="px-4 py-2 text-center text-sm font-bold text-white border-r border-t border-indigo-500">Italian</th>
+                                    <th scope="col" class="px-4 py-2 text-center text-sm font-bold text-white border-r border-t border-indigo-500">Polish</th>
+                                    <th scope="col" class="px-4 py-2 text-center text-sm font-bold text-white border-r border-t border-indigo-500">Spanish</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-300">
+                                <tr>
+                                    <td class="px-6 py-3 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">British</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300"></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">297,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">119,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">550,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">71,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">1,037,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-3 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">Germans</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">104,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300"></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">556,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">426,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">112,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">1,198,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-3 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">Italy</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">29,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">42,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300"></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">106,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">19,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">196,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-3 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">Poland</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">760</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">4,400</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">670</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300"></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">170</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">6,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-3 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">Spain</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">391,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">196,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">188,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">86,000</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center text-slate-700 border-r border-slate-300"></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">861,000</td>
+                                </tr>
+                                <tr class="bg-indigo-100">
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-indigo-900 border-r border-indigo-200 text-center">Total</td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-center font-bold text-slate-900 border-r border-indigo-200">524,000</td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-center font-bold text-slate-900 border-r border-indigo-200">539,000</td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-center font-bold text-slate-900 border-r border-indigo-200">863,000</td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-center font-bold text-slate-900 border-r border-indigo-200">1,168,000</td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-center font-bold text-slate-900 border-r border-indigo-200">202,170</td>
+                                    <td class="px-4 py-4 whitespace-nowrap text-center font-extrabold text-indigo-900 bg-indigo-200">3,298,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Electronic Goods in NZ -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-purple-700 uppercase bg-purple-100 rounded-full">Data Table 3</span>
+                        <h2 class="text-xl font-bold text-slate-800">Electronic Goods in New Zealand Households</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The table provides data on the proportion of households in New Zealand owning electronic goods in 1998 and 2002.</p>
+                        </div>
+                    </div>
+                    <div class="max-w-3xl mx-auto overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-300">
+                            <thead class="bg-indigo-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 text-left text-sm font-bold text-indigo-900 border-r border-slate-300">Electronic Goods in New Zealand Households</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-indigo-900 border-r border-slate-300"></th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-indigo-900"></th>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-slate-800 border-r border-slate-300">% of households with</th>
+                                    <th scope="col" class="px-6 py-3 text-center text-sm font-bold text-slate-800 border-r border-slate-300">1998</th>
+                                    <th scope="col" class="px-6 py-3 text-center text-sm font-bold text-slate-800">2002</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-300">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-900 border-r border-slate-300">Washing Machine</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">98</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">98</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-900 border-r border-slate-300">Color TV</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">95</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">97</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-900 border-r border-slate-300">Computer</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">50</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">78</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-900 border-r border-slate-300">Cell Phone</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">20</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">80</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-900 border-r border-slate-300">Video Recorder</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">75</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">60</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-900 border-r border-slate-300">Dishwasher</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">18</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">55</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-900 border-r border-slate-300">Digital Camera</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">2</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">39</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Aus Uni Departments -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-purple-700 uppercase bg-purple-100 rounded-full">Data Table 4</span>
+                        <h2 class="text-xl font-bold text-slate-800">Students studying in six departments in an Australian university in 2009</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The table provides data on the number of students enrolled in six different departments at an Australian university in 2009.</p>
+                        </div>
+                    </div>
+                    <div class="max-w-4xl mx-auto overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-300">
+                            <thead class="bg-indigo-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 text-left text-sm font-bold text-slate-800 border-r border-slate-300">Department</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800 border-r border-slate-300">Females</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800 border-r border-slate-300">First language not English</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800">Born outside Australian</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-300">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-indigo-700 border-r border-slate-300">English</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">67%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">16%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">27%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-indigo-700 border-r border-slate-300">Modern Languages</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">63%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">41%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">54%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-indigo-700 border-r border-slate-300">History</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">58%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">10%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">18%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-indigo-700 border-r border-slate-300">Physics</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">37%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">38%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">44%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-indigo-700 border-r border-slate-300">Math</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">42%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">36%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">43%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-indigo-700 border-r border-slate-300">Chemistry</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">29%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">32%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">47%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Women in Workforce -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-purple-700 uppercase bg-purple-100 rounded-full">Data Table 5</span>
+                        <h2 class="text-xl font-bold text-slate-800">Women in the Workforce and Management</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The table below gives information on the percentage of women in the workforce and the proportion of female managers across five countries.</p>
+                        </div>
+                    </div>
+                    <div class="max-w-3xl mx-auto overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-300">
+                            <thead class="bg-indigo-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800 border-r border-slate-300">Country</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800 border-r border-slate-300">Women as % of<br>workforce</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800">Women as % of<br>managers</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-300">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-medium text-slate-900 border-r border-slate-300">Australia</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">42</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">43</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-medium text-slate-900 border-r border-slate-300">Egypt</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">20</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">12</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-medium text-slate-900 border-r border-slate-300">Sri Lanka</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">41</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">9</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-medium text-slate-900 border-r border-slate-300">Japan</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">48</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">17</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-medium text-slate-900 border-r border-slate-300">United States</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">46</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">43</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Average Annual Distance -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-purple-700 uppercase bg-purple-100 rounded-full">Data Table 6</span>
+                        <h2 class="text-xl font-bold text-slate-800">Average annual distance (in miles) travelled by adults, by mode of travel</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The table below provides information about the average annual travel distance and the types of transportation used by adults in 1977 and 2007.</p>
+                        </div>
+                    </div>
+                    <div class="max-w-3xl mx-auto overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-300">
+                            <thead class="bg-indigo-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 text-left text-sm font-bold text-slate-800 border-r border-slate-300"></th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800 border-r border-slate-300">1997</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800">2007</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-300">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Walking</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">400</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">300</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Bicycle</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">100</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">80</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Car</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">3500</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">7100</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Motorcycle</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">100</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">90</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Bus</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">800</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">500</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Train</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">900</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">1000</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Taxi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">200</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">800</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Temporary Migrant Workers -->
+                <div>
+                    <div class="mb-6 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-purple-700 uppercase bg-purple-100 rounded-full">Data Table 7</span>
+                        <h2 class="text-xl font-bold text-slate-800">Temporary migrant workers (2003 and 2006)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The table below provides data on the number of temporary migrant workers in four countries for 2003 and 2006, along with the number of such workers per 1,000 people in 2006.</p>
+                        </div>
+                    </div>
+                    <div class="max-w-4xl mx-auto overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-300">
+                            <thead class="bg-indigo-600">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-white border-r border-indigo-500 bg-indigo-700">Country</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-white border-r border-indigo-500 bg-indigo-700">2003</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-white border-r border-indigo-500 bg-indigo-700">2006</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-white bg-indigo-700">Per 1,000<br>people in<br>2006</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-300">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">Australia</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">152,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">219,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">10.7</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">New Zealand</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">65,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">87,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">21.1</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">United Kingdom</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">137,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">266,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">4.4</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 bg-indigo-50 text-center">United States</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">577,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">678,000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-900 bg-slate-50">2.3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab: Mixed Charts -->
+            <div id="tab-mixed" class="tab-content hidden space-y-16">
+                
+                <!-- University Subjects Selection -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-rose-700 uppercase bg-rose-100 rounded-full">Bar & Line Combo 1</span>
+                        <h2 class="text-xl font-bold text-slate-800">The number of students choosing different subjects in a university, 2012.</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium"> The graph and the chart below show the number of students choosing different kinds of courses in a university in 2012.</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-[500px] relative max-w-5xl mx-auto">
+                        <canvas id="chart-mixed-subjects"></canvas>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Vehicles in Use (Bar + Table) -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-rose-700 uppercase bg-rose-100 rounded-full">Bar & Table Combo 2</span>
+                        <h2 class="text-xl font-bold text-slate-800">Vehicles in use (in millions) and % change</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The chart below provides data on the registration figures for different categories of vehicles in Europe from 1996 to 2006.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-center max-w-6xl mx-auto">
+                        <div class="lg:col-span-3 w-full h-[400px] relative">
+                            <canvas id="chart-mixed-vehicles"></canvas>
+                        </div>
+                        <div class="lg:col-span-1 overflow-x-auto w-full">
+                            <table class="min-w-full divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                                <thead class="bg-indigo-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-semibold text-slate-700 tracking-wider">% change</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-200 text-sm">
+                                    <tr class="h-[60px]"><td class="px-6 py-4 whitespace-nowrap text-center text-slate-600 font-medium">26.32%</td></tr>
+                                    <tr class="h-[60px]"><td class="px-6 py-4 whitespace-nowrap text-center text-rose-600 font-medium">-40.00%</td></tr>
+                                    <tr class="h-[60px]"><td class="px-6 py-4 whitespace-nowrap text-center text-slate-600 font-medium">0.00%</td></tr>
+                                    <tr class="h-[60px]"><td class="px-6 py-4 whitespace-nowrap text-center text-rose-600 font-medium">-20.00%</td></tr>
+                                    <tr class="h-[60px]"><td class="px-6 py-4 whitespace-nowrap text-center text-emerald-600 font-medium">58.33%</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Leisure & Housework (Table + Bar) -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-rose-700 uppercase bg-rose-100 rounded-full">Table & Bar Combo 3</span>
+                        <h2 class="text-xl font-bold text-slate-800">Leisure and Housework Activities</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium"> The charts compare the daily time, in minutes, spent by UK men and women on household and leisure activities in 2008.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col space-y-12 max-w-5xl mx-auto">
+                        <!-- Table Top -->
+                        <div class="overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                            <table class="min-w-full divide-y divide-slate-300">
+                                <thead class="bg-emerald-600">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-left text-sm font-bold text-white border-r border-emerald-500">Leisure Activities<br><span class="text-xs font-normal">(Average minute per day)</span></th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-white border-r border-emerald-500 w-1/4">Men</th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-white w-1/4">Women</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-300">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">TV, radio, video</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-sky-700 font-bold border-r border-slate-300">137</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-rose-600 font-bold">118</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Books</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-sky-700 font-bold border-r border-slate-300">18</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-rose-600 font-bold">19</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300">Sport exercises</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-sky-700 font-bold border-r border-slate-300">15</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-rose-600 font-bold">11</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Chart Bottom -->
+                        <div class="w-full h-[400px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">Housework Activities (Average minute per day)</h3>
+                            <canvas id="chart-mixed-housework"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Protein / Calories -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-rose-700 uppercase bg-rose-100 rounded-full">Bar & Line Combo 4</span>
+                        <h2 class="text-xl font-bold text-slate-800">Average protein and calorie intake</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The charts below compare the protein and calorie intakes of individuals from different parts of the world.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col space-y-12 max-w-5xl mx-auto">
+                        <div class="w-full h-[350px] relative">
+                            <canvas id="chart-mixed-protein"></canvas>
+                        </div>
+                        <div class="w-full h-[350px] relative">
+                            <canvas id="chart-mixed-calories"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Graduates Line & Table -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-rose-700 uppercase bg-rose-100 rounded-full">Line & Table Combo 5</span>
+                        <h2 class="text-xl font-bold text-slate-800">Percentage and Average Salary of Graduates</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The graphs below illustrate the proportion of Australian university graduates who secured full-time jobs after graduation, along with their average salaries, from 2004 to 2012.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col space-y-12 max-w-4xl mx-auto">
+                        <div class="w-full h-[350px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">Percentage of full-time workers holding a university degree</h3>
+                            <canvas id="chart-mixed-grad-line"></canvas>
+                        </div>
+                        <div class="overflow-x-auto border border-slate-300 rounded-lg shadow-sm">
+                            <table class="min-w-full divide-y divide-slate-300">
+                                <thead class="bg-indigo-100">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-left text-sm font-bold text-indigo-900">Average salary of graduates</th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-indigo-900">2004</th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-indigo-900">2006</th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-indigo-900">2008</th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-indigo-900">2010</th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-indigo-900">2012</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-300">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-blue-600 bg-slate-50">Math Graduates</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">$41,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">$43,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">$50,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">$51,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 font-bold">$56,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-teal-600 bg-slate-50">Other Graduates</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">$41,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">$43,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">$45,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700">$47,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 font-bold">$51,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Research Students Table & Pies -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-rose-700 uppercase bg-rose-100 rounded-full">Table & Pies Combo 6</span>
+                        <h2 class="text-xl font-bold text-slate-800">Local and International Research Students (2001 vs 2010)</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium"> The table and pie charts below provide information about the number of research students at Australian universities in 2001 and 2010.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col space-y-12 max-w-5xl mx-auto">
+                        <div class="overflow-x-auto border border-slate-300 rounded-lg shadow-sm max-w-3xl mx-auto w-full">
+                            <table class="min-w-full divide-y divide-slate-300">
+                                <thead class="bg-indigo-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800 border-r border-slate-300"></th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800 border-r border-slate-300">Local research<br>students</th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800 border-r border-slate-300">International<br>research students</th>
+                                        <th scope="col" class="px-6 py-4 text-center text-sm font-bold text-slate-800">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-300">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 text-center">2001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">33,657</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">5,192</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-900">38,849</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900 border-r border-slate-300 text-center">2010</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">39,488</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 border-r border-slate-300">14,593</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-900">54,081</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Shared Legend for Research Students -->
+                        <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4">
+                            <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#3b82f6"></span><span class="text-sm text-slate-700 font-medium">Local Male</span></div>
+                            <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#ec4899"></span><span class="text-sm text-slate-700 font-medium">Local Female</span></div>
+                            <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#4f46e5"></span><span class="text-sm text-slate-700 font-medium">Non-local Male</span></div>
+                            <div class="flex items-center"><span class="w-3 h-3 inline-block mr-2 rounded-sm" style="background-color:#9333ea"></span><span class="text-sm text-slate-700 font-medium">Non-local Female</span></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mt-2">
+                            <div class="flex flex-col items-center">
+                                <h3 class="font-bold text-xl mb-4 text-center">2001</h3>
+                                <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
+                                    <canvas id="chart-pie-research-2001"></canvas>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <h3 class="font-bold text-xl mb-4 text-center">2010</h3>
+                                <div class="w-full max-w-[450px] h-[250px] sm:h-[300px] relative">
+                                    <canvas id="chart-pie-research-2010"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Aus Workforce / Unemployed Mixed combo -->
+                <div>
+                    <div class="mb-10 text-center">
+                        <span class="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-rose-700 uppercase bg-rose-100 rounded-full">Pie & Line Combo 7</span>
+                        <h2 class="text-xl font-bold text-slate-800">Workforce and Unemployment in Australia by place of birth</h2>
+                        <div class="mt-4 bg-yellow-50 p-4 rounded-r shadow-sm text-left border-l-4 border-l-yellow-400 max-w-3xl mx-auto">
+                            <p class="text-sm text-slate-700 italic font-medium">The chart and graph below illustrate data on three types of workers in Australia and the unemployment rates among these groups.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                        <div class="flex flex-col items-center w-full">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">Workforce in Australia by place of birth (2003)</h3>
+                            <div class="w-full max-w-[500px] h-[250px] sm:h-[300px] relative">
+                                <canvas id="chart-pie-aus-birth"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col w-full h-[400px] relative">
+                            <h3 class="text-center font-bold mb-4 text-slate-800">Unemployment in Australia by place of birth (1993-2003)</h3>
+                            <canvas id="chart-line-aus-unemp-birth"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            // Show target tab content
+            const target = document.getElementById(tabId);
+            target.classList.remove('hidden');
+            target.classList.add('block');
+
+            // Reset tab button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('tab-inactive');
+            });
+            // Set active button style
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('tab-inactive');
+            activeBtn.classList.add('tab-active');
+        }
+
+        // Global Chart Defaults
+        Chart.defaults.font.family = 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+        Chart.defaults.color = '#475569';
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.9)';
+        Chart.defaults.plugins.tooltip.padding = 10;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        
+        // Add padding around charts to avoid clipping newly added data labels
+        Chart.defaults.layout = {
+            padding: { top: 24, right: 36, bottom: 8, left: 8 }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Register the DataLabels plugin
+            Chart.register(ChartDataLabels);
+
+            // Configure DataLabels globally
+            Chart.defaults.plugins.datalabels = {
+                backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                borderColor: 'rgba(203, 213, 225, 0.8)',
+                borderWidth: 1,
+                borderRadius: 4,
+                color: '#1e293b',
+                font: {
+                    weight: 'bold',
+                    size: 10
+                },
+                padding: { top: 3, bottom: 3, left: 5, right: 5 },
+                
+                // Position logic based on the chart/dataset type
+                anchor: function(context) {
+                    const type = context.dataset.type || context.chart.config.type;
+                    const isStacked = context.chart.config.options?.scales?.y?.stacked || context.chart.config.options?.scales?.x?.stacked;
+                    if (type === 'pie' || type === 'doughnut' || isStacked) return 'center';
+                    if (type === 'bar') return 'end';
+                    return 'center';
+                },
+                align: function(context) {
+                    const type = context.dataset.type || context.chart.config.type;
+                    const isStacked = context.chart.config.options?.scales?.y?.stacked || context.chart.config.options?.scales?.x?.stacked;
+                    if (type === 'pie' || type === 'doughnut' || isStacked) return 'center';
+                    if (type === 'bar') return 'end';
+                    return 'top'; // top for line charts
+                },
+                offset: 4,
+                
+                // Format large numbers with commas
+                formatter: function(value) {
+                    if (typeof value === 'number') {
+                        return value.toLocaleString();
+                    }
+                    return value;
+                }
+            };
+
+
+            // --- TAB: LINE GRAPHS ---
+
+            // 1. Annual Immigration
+            new Chart(document.getElementById('chart-line-immigration'), {
+                type: 'line',
+                data: {
+                    labels: ['1991', '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000', '2001'],
+                    datasets: [
+                        { label: 'USA', data: [1450, 1800, 1000, 900, 820, 780, 920, 820, 680, 680, 880], borderColor: '#ef4444', backgroundColor: '#ef4444', pointStyle: 'rect', tension: 0.1 },
+                        { label: 'Canada', data: [200, 220, 250, 250, 240, 230, 240, 230, 240, 260, 430], borderColor: '#3b82f6', backgroundColor: '#3b82f6', borderDash: [5, 5], pointStyle: 'crossRot', pointRadius: 5, tension: 0.1 },
+                        { label: 'Australia', data: [100, 110, 100, 60, 80, 100, 100, 100, 110, 120, 130], borderColor: '#10b981', backgroundColor: '#ffffff', pointBackgroundColor: '#ffffff', pointBorderColor: '#10b981', pointStyle: 'circle', tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 2000, title: { display: true, text: 'Number of immigrants (in thousands)' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 2. European Gym Goers
+            new Chart(document.getElementById('chart-line-gym'), {
+                type: 'line',
+                data: {
+                    labels: ['1990', '1994', '1998', '2002', '2006', '2010'],
+                    datasets: [
+                        { label: '18-24', data: [5, 14, 26, 45, 58, 59], borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', borderDash: [10, 5], tension: 0.4 },
+                        { label: '25-34', data: [6, 17, 28, 35, 43, 50], borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.4 },
+                        { label: '35-44', data: [4, 8, 12, 18, 23, 41], borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.4 },
+                        { label: '45 and over', data: [2, 5, 7, 9, 11, 23], borderColor: '#14b8a6', backgroundColor: '#14b8a6', borderDash: [4, 4], tension: 0.4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 60, title: { display: true, text: '%' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 3. UK Birth Rate
+            new Chart(document.getElementById('chart-line-uk-births'), {
+                type: 'line',
+                data: {
+                    labels: ['1973', '1978', '1983', '1988', '1993', '1998', '2003', '2008'],
+                    datasets: [
+                        { label: '25-29', data: [140, 123, 118, 129, 133, 120, 116, 118], borderColor: '#3b82f6', backgroundColor: '#ffffff', pointBackgroundColor: '#ffffff', pointBorderColor: '#3b82f6', pointStyle: 'rect', borderDash: [15, 5], tension: 0.1 },
+                        { label: '20-25', data: [126, 117, 115, 111, 105, 102, 98, 94], borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', pointStyle: 'crossRot', pointRadius: 5, borderDash: [4, 4], tension: 0.1 },
+                        { label: '30-35', data: [72, 75, 79, 80, 82, 83, 84, 86], borderColor: '#ec4899', backgroundColor: '#ffffff', pointBackgroundColor: '#ffffff', pointBorderColor: '#ec4899', pointStyle: 'star', pointRadius: 6, borderDash: [10, 5], tension: 0.1 },
+                        { label: 'under 20', data: [60, 59, 56, 51, 48, 45, 43, 40], borderColor: '#14b8a6', backgroundColor: '#ffffff', pointBackgroundColor: '#ffffff', pointBorderColor: '#14b8a6', pointStyle: 'rectRot', borderDash: [5, 5], tension: 0.1 },
+                        { label: '35-39', data: [40, 43, 43, 44, 55, 63, 65, 66], borderColor: '#f59e0b', backgroundColor: '#ffffff', pointBackgroundColor: '#ffffff', pointBorderColor: '#f59e0b', pointStyle: 'circle', tension: 0.1 },
+                        { label: '40 and over', data: [20, 19, 16, 15, 14, 13, 12, 10], borderColor: '#ef4444', backgroundColor: '#ef4444', pointStyle: 'cross', pointRadius: 6, tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 140, title: { display: true, text: 'Birth per 1000 people' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 4. Aus Workforce
+            new Chart(document.getElementById('chart-line-aus-workforce'), {
+                type: 'line',
+                data: {
+                    labels: ['1962', '1972', '1982', '1992', '2002', '2012'],
+                    datasets: [
+                        { label: 'Services', data: [53, 58, 64, 73, 75, 78], borderColor: '#3b82f6', backgroundColor: 'transparent', tension: 0.1 },
+                        { label: 'Manufacturing', data: [26, 25, 20, 15, 12, 10], borderColor: '#f43f5e', backgroundColor: 'transparent', borderDash: [5,5], tension: 0.1 },
+                        { label: 'Agriculture', data: [11, 8, 7, 5, 5, 4], borderColor: '#10b981', backgroundColor: 'transparent', borderDash: [10,5], tension: 0.1 },
+                        { label: 'Construction', data: [8, 9, 8, 7, 8, 9], borderColor: '#f59e0b', backgroundColor: 'transparent', borderWidth: 3, tension: 0.1 },
+                        { label: 'Mining', data: [1, 2, 2, 2, 1, 2], borderColor: '#8b5cf6', backgroundColor: 'transparent', borderDash: [2,2], tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 80, title: { display: true, text: '%' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 5. Unemployment UK/EU/Japan
+            new Chart(document.getElementById('chart-line-unemployment-3'), {
+                type: 'line',
+                data: {
+                    labels: ['1993', '1995', '1997', '1999', '2001', '2003', '2005', '2007'],
+                    datasets: [
+                        { label: 'UK', data: [11, 9, 8, 6.5, 5, 5, 5, 6], borderColor: '#ec4899', backgroundColor: 'transparent', borderDash: [5,5], tension: 0.1 },
+                        { label: 'EU', data: [9, 11, 11.5, 10, 9, 8.5, 8.6, 7.8], borderColor: '#06b6d4', backgroundColor: 'transparent', tension: 0.1 },
+                        { label: 'Japan', data: [2, 3, 3, 3, 5, 6, 5, 4], borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 14, title: { display: true, text: 'Percentage' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 6. Aus Exports
+            new Chart(document.getElementById('chart-line-aus-exports'), {
+                type: 'line',
+                data: {
+                    labels: ['1990', '1995', '2000', '2005', '2010', '2012'],
+                    datasets: [
+                        { label: 'Japan', data: [25, 20, 18, 17, 17, 17], borderColor: '#ef4444', backgroundColor: 'transparent', borderDash: [5,5], tension: 0.1 },
+                        { label: 'US', data: [11, 8, 11, 8, 5, 6], borderColor: '#3b82f6', backgroundColor: 'transparent', tension: 0.1 },
+                        { label: 'China', data: [2, 4, 5, 12, 24, 28], borderColor: '#f59e0b', backgroundColor: 'transparent', borderDash: [2,2], borderWidth: 3, tension: 0.1 },
+                        { label: 'India', data: [1, 2, 2, 6, 7, 5], borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 30, title: { display: true, text: '%' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 7. UK Fuels
+            new Chart(document.getElementById('chart-line-uk-fuels'), {
+                type: 'line',
+                data: {
+                    labels: ['1981', '1986', '1991', '1996', '2000'],
+                    datasets: [
+                        { label: 'Petroleum', data: [90, 140, 100, 140, 145], borderColor: '#8b5cf6', backgroundColor: 'transparent', borderDash: [5,5], tension: 0.2 },
+                        { label: 'Coal', data: [80, 60, 55, 38, 36], borderColor: '#3b82f6', backgroundColor: 'transparent', tension: 0.2 },
+                        { label: 'Natural gas', data: [35, 40, 45, 80, 100], borderColor: '#10b981', backgroundColor: 'transparent', borderDash: [10,5], tension: 0.2 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 160 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+
+            // --- TAB: BAR CHARTS ---
+
+            // 1. Fruit and Veg Portions
+            new Chart(document.getElementById('chart-bar-fruit'), {
+                type: 'bar',
+                data: {
+                    labels: ['2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008'],
+                    datasets: [
+                        { label: 'Men', data: [18, 19, 18, 21, 25, 27, 26, 25], backgroundColor: '#3b82f6' },
+                        { label: 'Women', data: [22, 25, 28, 30, 33, 37, 33, 30], backgroundColor: '#ec4899' },
+                        { label: 'Children', data: [13, 14, 13, 26, 28, 23, 25, 24], backgroundColor: '#f59e0b' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 45, ticks: { callback: function(value) { return value + '%'; } } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 2. Passenger Kilometers
+            new Chart(document.getElementById('chart-bar-passenger'), {
+                type: 'bar',
+                data: {
+                    labels: ['Bicycle', 'Motorbike', 'Air', 'Bus', 'Rail', 'Total'],
+                    datasets: [
+                        { label: '1990', data: [6, 7, 5, 46, 43, 107], backgroundColor: '#93c5fd' },
+                        { label: '2000', data: [5, 6, 7, 46, 47, 113], backgroundColor: '#2563eb' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 125, title: { display: true, text: 'Passenger kilometers (billions)' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 3. Supermarket Food & Goods
+            new Chart(document.getElementById('chart-bar-supermarket-food'), {
+                type: 'bar',
+                data: {
+                    labels: ['Country A', 'Country B', 'Country C'],
+                    datasets: [
+                        { label: '1998', data: [10, 23, 6.5], backgroundColor: '#fcd34d', borderColor: '#d97706', borderWidth: 1 },
+                        { label: '2008', data: [35, 28, 8.5], backgroundColor: '#818cf8', borderColor: '#4338ca', borderWidth: 1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 40, ticks: { callback: function(value) { return value + '%'; } } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            new Chart(document.getElementById('chart-bar-supermarket-goods'), {
+                type: 'bar',
+                data: {
+                    labels: ['Country A', 'Country B', 'Country C'],
+                    datasets: [
+                        { label: '1998', data: [4, 24.5, 1], backgroundColor: '#fcd34d', borderColor: '#d97706', borderWidth: 1 },
+                        { label: '2008', data: [39, 26, 14.5], backgroundColor: '#818cf8', borderColor: '#4338ca', borderWidth: 1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 45, ticks: { callback: function(value) { return value + '%'; } } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 4. Water Levels
+            new Chart(document.getElementById('chart-bar-water-levels'), {
+                type: 'bar',
+                data: {
+                    labels: ['Darwin', 'Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Canberra'],
+                    datasets: [
+                        { label: 'Oct 2009', data: [47, 78, 23, 56, 40, 76], backgroundColor: '#7dd3fc' },
+                        { label: 'Oct 2010', data: [26, 82, 40, 56, 71, 96], backgroundColor: '#0369a1' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 120, title: { display: true, text: 'Percentage' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 5. People Employed
+            new Chart(document.getElementById('chart-bar-employed'), {
+                type: 'bar',
+                data: {
+                    labels: ['Sales', 'Accounting', 'Computing', 'Nursing', 'Farming'],
+                    datasets: [
+                        { label: '2001', data: [155000, 68000, 58000, 56000, 30000], backgroundColor: '#2dd4bf' },
+                        { label: '2008', data: [165000, 58000, 78000, 60000, 18000], backgroundColor: '#10b981' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 180000 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 6. International Applicants
+            new Chart(document.getElementById('chart-bar-applicants'), {
+                type: 'bar',
+                data: {
+                    labels: ['2004', '2005', '2006', '2007', '2008'],
+                    datasets: [
+                        { label: 'China', data: [27000, 22000, 18000, 18000, 15500], backgroundColor: '#ef4444' },
+                        { label: 'Japan', data: [7000, 7000, 7500, 8500, 10000], backgroundColor: '#f472b6' },
+                        { label: 'USA', data: [13000, 15000, 18000, 22000, 27000], backgroundColor: '#3b82f6' },
+                        { label: 'Russia', data: [3000, 2000, 2500, 2500, 3500], backgroundColor: '#06b6d4' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 30000, title: { display: true, text: 'Number of applicants' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 7. Household Waste
+            new Chart(document.getElementById('chart-bar-waste'), {
+                type: 'bar',
+                data: {
+                    labels: ['Plastic', 'Cans', 'Paper', 'Glass'],
+                    datasets: [
+                        { label: '1992', data: [10, 18, 15, 16], backgroundColor: '#fb7185' },
+                        { label: '1997', data: [11.5, 13, 31, 28], backgroundColor: '#60a5fa' },
+                        { label: '2002', data: [11.5, 23.5, 39, 48], backgroundColor: '#34d399' }
+                    ]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { beginAtZero: true, max: 60, title: { display: true, text: '% of each type of waste that was recycled' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 8. Unemployment Rate
+            new Chart(document.getElementById('chart-bar-unemployment'), {
+                type: 'bar',
+                data: {
+                    labels: ['Poland', 'Italy', 'Hungary', 'Germany', 'Denmark'],
+                    datasets: [
+                        { label: 'unemployed people (15-24 years old)', data: [37, 28, 24, 23, 12.5], backgroundColor: '#f97316' },
+                        { label: 'overall unemployment', data: [27, 15, 12.5, 20, 8], backgroundColor: '#0ea5e9' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 40 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 9. Number of Films
+            new Chart(document.getElementById('chart-bar-films'), {
+                type: 'bar',
+                data: {
+                    labels: ['A', 'B', 'C', 'D', 'E'],
+                    datasets: [
+                        { label: '2007', data: [87, 50, 8, 15, 10], backgroundColor: '#a855f7' },
+                        { label: '2008', data: [87, 51, 14, 9.5, 10.5], backgroundColor: '#d946ef' },
+                        { label: '2009', data: [80, 70, 18, 14, 11], backgroundColor: '#f472b6' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 10. Car Ownership
+            new Chart(document.getElementById('chart-bar-cars'), {
+                type: 'bar',
+                data: {
+                    labels: ['1971', '1981', '1991', '2001'],
+                    datasets: [
+                        { label: 'No car', data: [49, 41, 30, 29], backgroundColor: '#ef4444' },
+                        { label: 'One car', data: [35, 32, 49, 43], backgroundColor: '#3b82f6' },
+                        { label: 'Two car', data: [17, 28, 21, 30], backgroundColor: '#10b981' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 60, title: { display: true, text: 'Percentage of households' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 11. Sectors 1980 / 2010
+            const sectorOpts = { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 90, ticks: { callback: v => v + '%' } } }, plugins: { legend: { position: 'bottom' } } };
+            new Chart(document.getElementById('chart-bar-sectors-1980'), {
+                type: 'bar',
+                data: {
+                    labels: ['Germany', 'USA', 'Japan', 'China'],
+                    datasets: [
+                        { label: 'Agriculture', data: [5, 8, 11, 70], backgroundColor: '#10b981' },
+                        { label: 'Industry', data: [60, 52, 49, 40], backgroundColor: '#f59e0b' },
+                        { label: 'Services', data: [50, 48, 39, 49], backgroundColor: '#3b82f6' }
+                    ]
+                }, options: sectorOpts
+            });
+            new Chart(document.getElementById('chart-bar-sectors-2010'), {
+                type: 'bar',
+                data: {
+                    labels: ['Germany', 'USA', 'Japan', 'China'],
+                    datasets: [
+                        { label: 'Agriculture', data: [2, 6, 8, 50], backgroundColor: '#10b981' },
+                        { label: 'Industry', data: [81, 70, 79, 40], backgroundColor: '#f59e0b' },
+                        { label: 'Services', data: [42, 38, 29, 22], backgroundColor: '#3b82f6' }
+                    ]
+                }, options: sectorOpts
+            });
+
+            // 12. Foreign Languages
+            new Chart(document.getElementById('chart-bar-lang-students'), {
+                type: 'bar',
+                data: {
+                    labels: ['1984', '2007'],
+                    datasets: [
+                        { label: 'Girls', data: [48, 40], backgroundColor: '#f472b6' },
+                        { label: 'Boys', data: [30, 26], backgroundColor: '#60a5fa' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 60 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+            new Chart(document.getElementById('chart-bar-lang-top3'), {
+                type: 'bar',
+                data: {
+                    labels: ['1984', '2007'],
+                    datasets: [
+                        { label: 'French', data: [50, 25], backgroundColor: '#3b82f6' },
+                        { label: 'German', data: [20, 15], backgroundColor: '#ef4444' },
+                        { label: 'Spanish', data: [5, 10], backgroundColor: '#facc15' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 60 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 13. Drug Company Sales
+            new Chart(document.getElementById('chart-bar-drug-sales'), {
+                type: 'bar',
+                data: {
+                    labels: ['2002', '2003', '2004', '2005', '2006'],
+                    datasets: [
+                        { label: 'Asia', data: [25, 30, 35, 37, 40], backgroundColor: '#3b82f6' },
+                        { label: 'Europe', data: [34, 35, 38, 34, 30], backgroundColor: '#10b981' },
+                        { label: 'America', data: [41, 35, 27, 29, 30], backgroundColor: '#f59e0b' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, max: 100 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 14. Employment Aged 60-64
+            new Chart(document.getElementById('chart-bar-emp-men'), {
+                type: 'bar',
+                data: {
+                    labels: ['Belgium', 'USA', 'Japan', 'Australia'],
+                    datasets: [
+                        { label: '1970', data: [79, 73, 85, 76], backgroundColor: '#0ea5e9' },
+                        { label: '2000', data: [19, 55, 74, 47], backgroundColor: '#7dd3fc' }
+                    ]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { max: 100 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+            new Chart(document.getElementById('chart-bar-emp-women'), {
+                type: 'bar',
+                data: {
+                    labels: ['Belgium', 'USA', 'Japan', 'Australia'],
+                    datasets: [
+                        { label: '1970', data: [8, 36, 43, 16], backgroundColor: '#ec4899' },
+                        { label: '2000', data: [7, 39, 40, 18], backgroundColor: '#f9a8d4' }
+                    ]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { max: 100 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+
+            // --- TAB: PIE CHARTS ---
+
+            // 1. Kinds of Books Sold
+            const labelsBooks = ["Adult fiction", "Children's fiction", "Biography", "Travel", "Others"];
+            const colorsBooks = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+            // Setting display: false because we are using a custom HTML legend for these
+            const optsBooks = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+
+            new Chart(document.getElementById('chart-pie-books-1972'), {
+                type: 'pie', data: { labels: labelsBooks, datasets: [{ data: [20, 20, 20, 15, 25], backgroundColor: colorsBooks, borderColor: '#fff' }] }, options: optsBooks
+            });
+            new Chart(document.getElementById('chart-pie-books-1992'), {
+                type: 'pie', data: { labels: labelsBooks, datasets: [{ data: [25, 22, 15, 18, 20], backgroundColor: colorsBooks, borderColor: '#fff' }] }, options: optsBooks
+            });
+            new Chart(document.getElementById('chart-pie-books-2012'), {
+                type: 'pie', data: { labels: labelsBooks, datasets: [{ data: [45, 25, 8, 10, 12], backgroundColor: colorsBooks, borderColor: '#fff' }] }, 
+                options: optsBooks
+            });
+
+            // 2. Courses Enrolled
+            new Chart(document.getElementById('chart-pie-courses-1985'), {
+                type: 'pie',
+                data: {
+                    labels: ['Art', 'Modern languages', 'Local history', 'Music appreciation', 'Cookery', 'Fitness and dance'],
+                    datasets: [{ data: [17, 24, 15, 8, 14, 22], backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'], borderColor: '#ffffff' }]
+                },
+                // Hiding legend to use custom unified HTML legend above
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            new Chart(document.getElementById('chart-pie-courses-now'), {
+                type: 'pie',
+                data: {
+                    labels: ['Art', 'Modern languages', 'IT', 'Cookery', 'Fitness and dance'],
+                    datasets: [{ data: [15, 17, 27, 19, 22], backgroundColor: ['#ef4444', '#3b82f6', '#f43f5e', '#8b5cf6', '#06b6d4'], borderColor: '#ffffff' }]
+                },
+                // Hiding legend to use custom unified HTML legend above
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // --- TAB: MIXED CHARTS ---
+
+            // 1. University Subjects Selection
+            new Chart(document.getElementById('chart-mixed-subjects'), {
+                type: 'bar',
+                data: {
+                    labels: ['Social Sciences', 'Engineering', 'Health', 'Humanities', 'Science and Math', 'Agriculture'],
+                    datasets: [
+                        { type: 'line', label: 'Total', data: [7000, 3100, 2300, 2400, 2000, 600], borderColor: '#0f172a', backgroundColor: '#0f172a', borderWidth: 2, tension: 0, pointRadius: 4 },
+                        { type: 'bar', label: 'Males', data: [2900, 2300, 750, 1000, 1300, 300], backgroundColor: '#3b82f6' },
+                        { type: 'bar', label: 'Females', data: [4000, 950, 1800, 1600, 750, 300], backgroundColor: '#f472b6' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 8000, title: { display: true, text: 'Number of students' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 2. Vehicles in Use
+            new Chart(document.getElementById('chart-mixed-vehicles'), {
+                type: 'bar',
+                data: {
+                    labels: ['Private cars', 'Motorcycles', 'Bus, Coach, and Taxi', 'Lorries', 'Other types'],
+                    datasets: [
+                        { label: '1996', data: [19, 1, 0.1, 0.5, 1.5], backgroundColor: '#f59e0b' },
+                        { label: '2006', data: [24, 0.6, 0.1, 0.4, 2], backgroundColor: '#8b5cf6' }
+                    ]
+                },
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { x: { beginAtZero: true, max: 30 } }, 
+                    plugins: { legend: { position: 'bottom' } },
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.7
+                }
+            });
+
+            // 3. Housework Activities (Bar)
+            new Chart(document.getElementById('chart-mixed-housework'), {
+                type: 'bar',
+                data: {
+                    labels: ['cooking and washing', 'shopping', 'repair', 'clothing washing and ironing'],
+                    datasets: [
+                        { label: 'Men', data: [30, 25, 19, 10], backgroundColor: '#38bdf8' },
+                        { label: 'Women', data: [75, 35, 9, 30], backgroundColor: '#fb7185' }
+                    ]
+                },
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { x: { beginAtZero: true, max: 80 } }, 
+                    plugins: { legend: { position: 'bottom' } },
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.6
+                }
+            });
+
+            // 4. Protein / Calories Intake
+            new Chart(document.getElementById('chart-mixed-protein'), {
+                type: 'bar',
+                data: {
+                    labels: ['India', 'East Africa', 'Latin America', 'North America'],
+                    datasets: [
+                        { type: 'line', label: 'Ideal protein intake', data: [68, 68, 68, 68], borderColor: '#000000', borderWidth: 2, tension: 0, pointRadius: 0 },
+                        { label: 'Animal protein', data: [13, 16, 32, 62], backgroundColor: '#ef4444' },
+                        { label: 'Other protein', data: [15, 15, 13, 18], backgroundColor: '#f97316' }
+                    ]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, max: 90, title: { display: true, text: 'Units' } } },
+                    plugins: { legend: { position: 'bottom' } } 
+                }
+            });
+            new Chart(document.getElementById('chart-mixed-calories'), {
+                type: 'bar',
+                data: {
+                    labels: ['India', 'East Africa', 'Latin America', 'North America'],
+                    datasets: [
+                        { type: 'line', label: 'Ideal calorie intake', data: [2900, 2900, 2900, 2900], borderColor: '#000000', borderWidth: 2, tension: 0, pointRadius: 0 },
+                        { label: 'Calories', data: [2000, 2300, 2800, 3500], backgroundColor: '#10b981' }
+                    ]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    scales: { y: { beginAtZero: true, max: 4000, title: { display: true, text: 'Calories' } } },
+                    plugins: { legend: { display: true, position: 'bottom' } }, barPercentage: 0.4 
+                }
+            });
+
+            // 5. Graduates Line Chart
+            new Chart(document.getElementById('chart-mixed-grad-line'), {
+                type: 'line',
+                data: {
+                    labels: ['2004', '2006', '2008', '2010', '2012'],
+                    datasets: [
+                        { label: 'Math Graduates', data: [80, 82, 85, 79, 76], borderColor: '#3b82f6', backgroundColor: '#3b82f6', pointStyle: 'rect', pointRadius: 5 },
+                        { label: 'Other Graduates', data: [65, 87, 85, 75, 65], borderColor: '#14b8a6', backgroundColor: '#ffffff', pointBorderColor: '#14b8a6', pointBackgroundColor: '#ffffff', pointStyle: 'rect', pointRadius: 5 }
+                    ]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: '% of graduates' } } },
+                    plugins: { legend: { position: 'bottom' } } 
+                }
+            });
+
+            // 6. Research Students Pie Charts
+            const researchLabels = ['Local Male', 'Local Female', 'Non-local Male', 'Non-local Female'];
+            new Chart(document.getElementById('chart-pie-research-2001'), {
+                type: 'pie',
+                data: { labels: researchLabels, datasets: [{ data: [44, 43, 9, 4], backgroundColor: ['#3b82f6', '#ec4899', '#4f46e5', '#9333ea'], borderColor: '#fff' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            new Chart(document.getElementById('chart-pie-research-2010'), {
+                type: 'pie',
+                data: { labels: researchLabels, datasets: [{ data: [38, 35, 12, 15], backgroundColor: ['#3b82f6', '#ec4899', '#4f46e5', '#9333ea'], borderColor: '#fff' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 7. Aus Workforce / Unemployed Mixed Combo
+            new Chart(document.getElementById('chart-pie-aus-birth'), {
+                type: 'pie',
+                data: {
+                    labels: ['Born in Australia', 'NESC', 'ESC'],
+                    datasets: [{ data: [76, 14, 10], backgroundColor: ['#3b82f6', '#f59e0b', '#10b981'], borderColor: '#ffffff' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+            new Chart(document.getElementById('chart-line-aus-unemp-birth'), {
+                type: 'line',
+                data: {
+                    labels: ['1993', '1995', '1997', '1999', '2001', '2003'],
+                    datasets: [
+                        { label: 'NESC', data: [7.2, 5.8, 4.8, 3.2, 3.5, 3.2], borderColor: '#f59e0b', borderDash: [5,5], tension: 0.1 },
+                        { label: 'Australia', data: [4.0, 2.6, 3.2, 2.7, 2.5, 2.0], borderColor: '#3b82f6', borderWidth: 3, tension: 0.1 },
+                        { label: 'ESC', data: [3.5, 2.5, 2.8, 2.6, 1.8, 1.0], borderColor: '#10b981', tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 8, title: { display: true, text: 'Percentage of group' } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+        });
+    </script>
+</body>
+</html>
