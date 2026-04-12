@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Unit 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --app-font-size: 17px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+            background-color: #f3f4f6;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 2rem 3rem;
+            font-size: var(--app-font-size);
+            scroll-behavior: smooth;
+        }
+        #left-pane {
+            background-color: #fdfdfd;
+        }
+        #right-pane {
+            background-color: #f8fafc;
+        }
+        .splitter {
+            background-color: #cbd5e1;
+            cursor: col-resize;
+            z-index: 10;
+            transition: background-color 0.2s;
+        }
+        .splitter:hover, .splitter:active {
+            background-color: #94a3b8;
+        }
+        
+        /* Typography Improvements */
+        .reading-passage {
+            font-family: 'Merriweather', serif;
+            line-height: 1.9;
+            color: #334155;
+            text-align: left;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+            text-indent: 1.5rem;
+        }
+        .reading-passage h3 {
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        /* Question Styles */
+        .q-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        /* Radio Button Styles */
+        .custom-radio-label {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background-color: white;
+        }
+        .custom-radio-label:hover {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        
+        /* Input Styles for Fill-in-the-blanks */
+        .fill-in-blank {
+            border: none;
+            border-bottom: 2px dashed #94a3b8;
+            background-color: #f8fafc;
+            padding: 2px 8px;
+            font-weight: 600;
+            color: #0f172a;
+            width: 180px;
+            transition: all 0.2s;
+            text-align: center;
+            border-radius: 4px 4px 0 0;
+            margin: 0 4px;
+        }
+        .fill-in-blank:focus {
+            outline: none;
+            border-bottom: 2px solid #2563eb;
+            background-color: #eff6ff;
+        }
+
+        /* Vocabulary Styles */
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+            padding: 0 2px;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+            border-radius: 2px;
+        }
+
+        /* UI Elements */
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1e293b;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .content-panes {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 5px 1fr;
+            }
+            .splitter {
+                cursor: row-resize;
+            }
+            .pane {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-20 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <h1 class="text-xl font-bold text-gray-800 hidden sm:block">IELTS Academic <span class="text-blue-600 font-medium">| Unit 1</span></h1>
+        </div>
+        <div class="flex items-center space-x-5">
+            <div class="flex items-center space-x-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
+                <button id="decrease-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Decrease Font Size">A-</button>
+                <button id="increase-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Increase Font Size">A+</button>
+            </div>
+            <div class="text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-100 px-3 py-1 rounded-full">Academic Reading</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages -->
+        <div id="left-pane" class="pane">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter relative flex items-center justify-center">
+            <div class="w-1 h-8 bg-gray-400 rounded-full opacity-50"></div>
+        </div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane">
+            <div id="questions-section" class="max-w-2xl mx-auto">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 px-6 py-3 z-20">
+        <div class="flex justify-between items-center max-w-7xl mx-auto">
+            <div id="passage-indicator" class="text-sm text-gray-500 font-medium">
+                Passage 1 of 2
+            </div>
+            <div id="section-tabs" class="flex space-x-2">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight Text</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50 transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative transform transition-all scale-95 opacity-0" id="vocab-modal-content">
+        <button id="close-vocab-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">&times;</button>
+        <div class="flex items-center mb-6 border-b pb-4">
+            <h3 id="vocab-word" class="text-3xl font-extrabold text-gray-900 capitalize tracking-tight"></h3>
+        </div>
+        <div class="flex items-center mb-5">
+            <button id="play-audio-btn" class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white mr-4 transition-all shadow-sm border border-blue-100" title="Listen to pronunciation">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-500 font-mono text-lg bg-gray-50 px-3 py-1 rounded-md border border-gray-100"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 text-lg leading-relaxed"></p>
+    </div>
+</div>
+
+<script>
+    // --- DATA ---
+    const vocabulary = {
+        // Passage 1
+        'virtuoso': { meaning: 'A person highly skilled in music or another artistic pursuit.', phonetic: '/vɜːtʃʊˈəʊsəʊ/' },
+        'unleash': { meaning: 'Release from a leash or restraint; to let happen.', phonetic: '/ʌnˈliːʃ/' },
+        'symbiosis': { meaning: 'A mutually beneficial relationship between different people or groups.', phonetic: '/ˌsɪmbɪˈəʊsɪs/' },
+        'iterative': { meaning: 'Doing something again and again, usually to improve it.', phonetic: '/ˈɪtərətɪv/' },
+        'augment': { meaning: 'Make (something) greater by adding to it; increase.', phonetic: '/ɔːɡˈmɛnt/' },
+        'synthesise': { meaning: 'Produce a substance by means of chemical or biological reactions.', phonetic: '/ˈsɪnθɪsaɪz/' },
+        // Passage 2
+        'irresistible': { meaning: 'Too attractive and tempting to be resisted.', phonetic: '/ˌɪrɪˈzɪstɪb(ə)l/' },
+        'supplementing': { meaning: 'Adding an extra element or amount to.', phonetic: '/ˈsʌplɪmɛntɪŋ/' },
+        'reinvigorating': { meaning: 'Giving new energy or strength to.', phonetic: '/ˌriːɪnˈvɪɡəreɪtɪŋ/' },
+        'auspices': { meaning: 'Under the support, guidance, or sponsorship of someone/something.', phonetic: '/ˈɔːspɪsɪz/' },
+        'streamline': { meaning: 'Make (an organization or system) more efficient and effective.', phonetic: '/ˈstriːmlaɪn/' }
+    };
+
+    const testData = {
+        reading: {
+            sections: [
+                // --- SECTION 0: PASSAGE 1 ---
+                {
+                    title: "The MIT factor: celebrating 150 years of maverick genius",
+                    passage: `
+                        <h3>The MIT factor: celebrating 150 years of maverick genius</h3>
+                        <p class="text-center italic text-gray-500 mb-6">by Ed Pilkington<br>The Massachusetts Institute of Technology has led the world into the future for 150 years with scientific innovations.</p>
+                        
+                        <p>The musician Yo-Yo Ma’s cello may not be the obvious starting point for a journey into one of the world’s great universities. But, as you quickly realise when you step inside the Massachusetts Institute of Technology, there’s precious little going on that you would normally see on a university campus. The cello, resting in a corner of MIT’s celebrated media laboratory – a hub of creativity – looks like any other electric classical instrument. But it is much more. Machover, the composer, teacher and inventor responsible for its creation, calls it a ‘hyperinstrument’, a sort of thinking machine that allows Ma and his cello to interact with one another and make music together. ‘The aim is to build an instrument worthy of a great musician like Yo-Yo Ma that can understand what he is trying to do and respond to it,’ Machover says. The cello has numerous sensors across its body and by measuring the pressure, speed and angle of the <span class="vocab-word" data-word="virtuoso">virtuoso</span>’s performance it can interpret his mood and engage with it, producing extraordinary new sounds. The virtuoso cellist frequently performs on the instrument as he tours around the world.</p>
+                        
+                        <p>Machover’s passion for pushing at the boundaries of the existing world to extend and <span class="vocab-word" data-word="unleash">unleash</span> human potential is not a bad description of MIT as a whole. This unusual community brings highly gifted, highly motivated individuals together from a vast range of disciplines, united by a common desire: to leap into the dark and reach for the unknown.</p>
+                        
+                        <p>The result of that single unifying ambition is visible all around. For the past 150 years, MIT has been leading the world into the future. The discoveries of its teachers and students have become the common everyday objects that we now all take for granted. The telephone, electromagnets, radars, high-speed photography, office photocopiers, cancer treatments, pocket calculators, computers, the Internet, the decoding of the human genome, lasers, space travel … the list of innovations that involved essential contributions from MIT and its faculty goes on and on.</p>
+                        
+                        <p>From the moment MIT was founded by William Barton Rogers in 1861, it was clear what it was not. While Harvard stuck to the English model of a classical education, with its emphasis on Latin and Greek, MIT looked to the German system of learning based on research and hands-on experimentation. Knowledge was at a premium, but it had to be useful.</p>
+                        
+                        <p>This down-to-earth quality is enshrined in the school motto, <em>Mens et manus</em> – Mind and hand – as well as its logo, which shows a gowned scholar standing beside an ironmonger bearing a hammer and anvil. That <span class="vocab-word" data-word="symbiosis">symbiosis</span> of intellect and craftsmanship still suffuses the institute’s classrooms, where students are not so much taught as engaged and inspired.</p>
+                        
+                        <p>Take Christopher Merrill, 21, a third-year undergraduate in computer science. He is spending most of his time on a competition set in his robotics class. The contest is to see which student can most effectively program a robot to build a house out of blocks in under ten minutes. Merrill says he could have gone for the easiest route – designing a simple robot that would build the house quickly. But he wanted to try to master an area of robotics that remains unconquered – adaptability, the ability of the robot to rethink its plans as the environment around it changes, as would a human. ‘I like to take on things that have never been done before rather than to work in an <span class="vocab-word" data-word="iterative">iterative</span> way just making small steps forward,’ he explains.</p>
+
+                        <p>Merrill is already planning the start-up he wants to set up when he graduates in a year’s time. He has an idea for an original version of a contact lens that would <span class="vocab-word" data-word="augment">augment</span> reality by allowing consumers to see additional visual information. He is fearful that he might be just too late in taking his concept to market, as he has heard that a Silicon Valley firm is already developing something similar. As such, he might become one of many MIT graduates who go on to form companies that fail. Alternatively, he might become one of those who go on to succeed in spectacular fashion. And there are many of them. A survey of living MIT alumni* found that they have formed 25,800 companies, employing more than three million people, including about a quarter of the workforce of Silicon Valley.</p>
+                        
+                        <p>What MIT delights in is taking brilliant minds from around the world in vastly diverse disciplines and putting them together. You can see that in its sparkling new David Koch Institute for Integrative Cancer Research, which brings scientists, engineers and clinicians under one roof. Or in its Energy Initiative, which acts as a bridge for MIT’s combined work across all its five schools, channelling huge resources into the search for a solution to global warming. It works to improve the efficiency of existing energy sources, including nuclear power. It is also forging ahead with alternative energies from solar to wind and geothermal, and has recently developed the use of viruses to <span class="vocab-word" data-word="synthesise">synthesise</span> batteries that could prove crucial in the advancement of electric cars.</p>
+                        
+                        <p>In the words of Tim Berners-Lee, the Briton who invented the World Wide Web, ‘It’s not just another university. Even though I spend my time with my head buried in the details of web technology, the nice thing is that when I do walk the corridors, I bump into people who are working in other fields with their students that are fascinating, and that keeps me intellectually alive.’</p>
+                        <p class="text-sm text-gray-500 italic mt-4">* people who have left a university or college after completing their studies there</p>
+                    `,
+                    questions: `
+                        <!-- True/False/Not Given -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 1-5</span>
+                                <h4 class="font-bold text-gray-800">True / False / Not Given</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Do the following statements agree with the information in the reading passage?<br><br>
+                                <strong>TRUE</strong> if the statement agrees with the information<br>
+                                <strong>FALSE</strong> if the statement contradicts the information<br>
+                                <strong>NOT GIVEN</strong> if there is no information on this
+                            </p>
+                            
+                            <div class="space-y-8">
+                                <div class="q-item" id="container-s0_q1">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">1</span> The activities going on at the MIT campus are like those at any other university.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q1" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q1" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q1" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                                <div class="q-item" id="container-s0_q2">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">2</span> Harvard and MIT shared a similar approach to education when they were founded.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q2" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q2" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q2" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                                <div class="q-item" id="container-s0_q3">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">3</span> The school motto was suggested by a former MIT student.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q3" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q3" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q3" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                                <div class="q-item" id="container-s0_q4">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">4</span> MIT’s logo reflects the belief that intellect and craftsmanship go together.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q4" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q4" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q4" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                                <div class="q-item" id="container-s0_q5">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">5</span> Silicon Valley companies pay higher salaries to graduates from MIT.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q5" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q5" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s0_q5" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes Completion -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 6-9</span>
+                                <h4 class="font-bold text-gray-800">Complete the notes below.</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <h5 class="font-bold text-lg text-center text-gray-800 mb-4 border-b pb-2">Christopher Merrill – student at MIT</h5>
+                                <div class="space-y-4">
+                                    <div class="q-item flex flex-col md:flex-row md:items-center" id="container-s0_q6">
+                                        <span class="font-semibold w-40 text-gray-700">Degree subject:</span>
+                                        <div><strong class="text-blue-600 mr-2">6</strong><input type="text" name="s0_q6" class="fill-in-blank w-48" autocomplete="off"></div>
+                                    </div>
+                                    <div class="q-item flex flex-col md:flex-row md:items-center" id="container-s0_q7">
+                                        <span class="font-semibold w-40 text-gray-700">Competition:</span>
+                                        <div>to <strong class="text-blue-600 mx-1">7</strong><input type="text" name="s0_q7" class="fill-in-blank w-32" autocomplete="off"> the automated construction of a house</div>
+                                    </div>
+                                    <div class="q-item flex flex-col md:flex-row md:items-center" id="container-s0_q8">
+                                        <span class="font-semibold w-40 text-gray-700">Special focus on:</span>
+                                        <div>the <strong class="text-blue-600 mx-1">8</strong><input type="text" name="s0_q8" class="fill-in-blank w-40" autocomplete="off"> of the robots</div>
+                                    </div>
+                                    <div class="q-item flex flex-col md:flex-row md:items-center" id="container-s0_q9">
+                                        <span class="font-semibold w-40 text-gray-700">Future plans:</span>
+                                        <div>to develop new type of <strong class="text-blue-600 mx-1">9</strong><input type="text" name="s0_q9" class="fill-in-blank w-40" autocomplete="off"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Short Answer -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 10-13</span>
+                                <h4 class="font-bold text-gray-800">Answer the questions below.</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <div class="q-item" id="container-s0_q10">
+                                    <p class="mb-3 text-gray-800 font-medium"><strong class="text-blue-600 mr-2">10</strong> What proportion of workers at Silicon Valley are employed in companies set up by MIT graduates?</p>
+                                    <input type="text" name="s0_q10" class="fill-in-blank w-full max-w-sm" autocomplete="off">
+                                </div>
+                                <div class="q-item" id="container-s0_q11">
+                                    <p class="mb-3 text-gray-800 font-medium"><strong class="text-blue-600 mr-2">11</strong> What problem does MIT’s Energy Initiative aim to solve?</p>
+                                    <input type="text" name="s0_q11" class="fill-in-blank w-full max-w-sm" autocomplete="off">
+                                </div>
+                                <div class="q-item" id="container-s0_q12">
+                                    <p class="mb-3 text-gray-800 font-medium"><strong class="text-blue-600 mr-2">12</strong> Which ‘green’ innovation might MIT’s work with viruses help improve?</p>
+                                    <input type="text" name="s0_q12" class="fill-in-blank w-full max-w-sm" autocomplete="off">
+                                </div>
+                                <div class="q-item" id="container-s0_q13">
+                                    <p class="mb-3 text-gray-800 font-medium"><strong class="text-blue-600 mr-2">13</strong> In which part of the university does Tim Berners-Lee enjoy stimulating conversations with other MIT staff?</p>
+                                    <input type="text" name="s0_q13" class="fill-in-blank w-full max-w-sm" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                // --- SECTION 1: PASSAGE 2 ---
+                {
+                    title: "The University of Life",
+                    passage: `
+                        <h3>The University of Life</h3>
+                        <p class="text-center italic text-gray-500 mb-6">Katherine Demopoulos meets students who took a break from study to volunteer overseas and returned with a new sense of purpose</p>
+                        
+                        <p>The majority of 18-year-old students entering higher education go straight from school to university. For many school leavers, however, there is the <span class="vocab-word" data-word="irresistible">irresistible</span> attraction of the 'gap year', a time between school and university when they decide to experience something new, different or exciting. Many of these so-called 'gappers' go off travelling around the world, often <span class="vocab-word" data-word="supplementing">supplementing</span> their limited funds by taking on casual work, while others may do voluntary work in a village in a distant part of the world.</p>
+                        
+                        <p>For the majority of gappers, the gap year is simply a chance to enjoy life as an independent adult for the first time. Increasingly, however, they are also proving a great way of <span class="vocab-word" data-word="reinvigorating">reinvigorating</span> a lapsed or flagging interest in education, offering a chance to think about why you should study, or if you need to study at all. A growing number of students, having taken a break after school, are heading back into further and higher education via a roundabout route of working and 'gapping'. According to the latest data from the British university admissions service, UCAS, 105,000 students aged 19, and 44,400 aged 20, entered higher education last year — figures that show a steady annual increase in this age group over the previous three years.</p>
+                        
+                        <p>19-year-old student Christine Samways is a typical example. She left school at 16 with nine good exam passes at grades A to C, but did not want to continue studying at the time. She was also worried that, despite having all the attributes of a good student, she would find the challenges of higher education too great and would be forced to drop out. Instead, she gained a vocational qualification in hairdressing. However, she very quickly began to realise it was not quite what she wanted and that going back into some kind of education could be her next step. Like many 16-year-old school leavers starting work for the first time, it dawned on her that if you don't have qualifications, or the right qualifications, you have fewer work choices. 'The things that you want to do just aren't available to you,' she says.</p>
+                        
+                        <p>Unsure of what her next step should be, Christine decided to head to Mexico to do voluntary work at a children's home. She was there for a year under the <span class="vocab-word" data-word="auspices">auspices</span> of the International Cultural Youth Exchange (ICYE) — an organisation which has been running since 1949, when it sent 50 German students to the US as peace ambassadors. She never expected that working in Mexico would give her such a sense of confidence and, perhaps just as importantly, direction. On returning home to the UK, she decided to make a fresh start in education by enrolling on a course in Social Sciences and Humanities to prepare herself for university. Her new sense of confidence helped at her college interview. Previously, a formal interview would have made her very nervous, but she now found it much easier to talk on an informal and formal level to people she didn't know. 'l feel more comfortable in these situations,' she says. 'Mexico was the first time I'd been out of my comfort zone. Now I think I can cope with things better.'</p>
+                        
+                        <p>Christine is now working towards a degree in International Development at Bath University, a choice of subject informed by her experience of working with Mexican children. And, as well as finding some direction in her career, she now speaks good Spanish - a skill she says she intends to keep up, perhaps by working abroad. She knows that the Mexican children's home benefited from her time there, just as she did. As well as being 'an extra pair of hands', she helped to <span class="vocab-word" data-word="streamline">streamline</span> the children's timetable so they spent more structured time on homework. The children began to 'do better in school,' she says. 'You only move up a year if you pass a year — I got four children that at the beginning of the year were told they were going to stay down, but they moved up. Ifs a good feeling.'</p>
+                        
+                        <p>ICYE also brings students to Europe from the countries that European students traditionally visit. Agnes Eldad, from Kampala, Uganda, has just graduated with a degree in Social Work. She came to the UK in January this year, getting a voluntary work placement relieving full-time carers of elderly people in Bexleyheath, Kent. With her social work background, she wanted to understand how elderly people were treated in Britain and to see for herself how their relationships with their children, grandchildren and in-laws worked.</p>
+
+                        <p>Agnes found the experience extremely beneficial, but says that the ICYE only really works if participants have a focus for what they want to do, see and study. Ironically, for her, this could be the only chance to work with elderly people before she goes back home in January. In Uganda, old people live with, and are supported by, their families, so she won't have an opportunity to work with them. Instead, she now wants to set up her own vocational training programme for young girls in northern Uganda. Agnes says her time in the UK has helped her to set her goals for the future.</p>
+                    `,
+                    questions: `
+                        <!-- True/False/Not Given -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 1-5</span>
+                                <h4 class="font-bold text-gray-800">True / False / Not Given</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Do the following statements agree with the information in the reading passage?<br><br>
+                                <strong>TRUE</strong> if the statement agrees with the information<br>
+                                <strong>FALSE</strong> if the statement contradicts the information<br>
+                                <strong>NOT GIVEN</strong> if there is no information on this
+                            </p>
+                            
+                            <div class="space-y-8">
+                                <div class="q-item" id="container-s1_q1">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">1</span> The majority of young people who go travelling during their gap year must work in order to finance their trip.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q1" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q1" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q1" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                                <div class="q-item" id="container-s1_q2">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">2</span> Taking a gap year can give young people time to consider whether or not they want to continue with their studies.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q2" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q2" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q2" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                                <div class="q-item" id="container-s1_q3">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">3</span> The number of university students has increased in the last few years.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q3" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q3" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q3" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                                <div class="q-item" id="container-s1_q4">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">4</span> Christine Samways lacks the right qualities to be a good student.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q4" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q4" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q4" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                                <div class="q-item" id="container-s1_q5">
+                                    <p class="mb-3 text-gray-800 font-medium"><span class="font-bold text-blue-600 mr-2">5</span> Christine Samways believes that if you lack educational qualifications, your career options are reduced.</p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q5" value="true" class="mr-2 hidden"><span class="font-semibold text-gray-600">True</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q5" value="false" class="mr-2 hidden"><span class="font-semibold text-gray-600">False</span></label>
+                                        <label class="custom-radio-label flex-1 justify-center"><input type="radio" name="s1_q5" value="not given" class="mr-2 hidden"><span class="font-semibold text-gray-600">Not Given</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes Completion -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 6-10</span>
+                                <h4 class="font-bold text-gray-800">Complete the notes below.</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.
+                            </p>
+                            
+                            <div class="space-y-4">
+                                <h5 class="font-bold text-lg text-center text-gray-800 mb-4 border-b pb-2">Christine Samways: ICYE participant</h5>
+                                <ul class="list-disc list-inside space-y-4 text-gray-800">
+                                    <li class="q-item" id="container-s1_q6">Carried out <strong class="text-blue-600 mr-1">6</strong> <input type="text" name="s1_q6" class="fill-in-blank" autocomplete="off"> in Mexico.</li>
+                                    <li class="q-item" id="container-s1_q7">Programme gave her more <strong class="text-blue-600 mr-1">7</strong> <input type="text" name="s1_q7" class="fill-in-blank" autocomplete="off"> in herself.</li>
+                                    <li class="q-item" id="container-s1_q8">Returned to <strong class="text-blue-600 mr-1">8</strong> <input type="text" name="s1_q8" class="fill-in-blank" autocomplete="off"> when she was back in the UK.</li>
+                                    <li class="q-item" id="container-s1_q9">Currently studying <strong class="text-blue-600 mr-1">9</strong> <input type="text" name="s1_q9" class="fill-in-blank" autocomplete="off">.</li>
+                                    <li class="q-item" id="container-s1_q10">Thinks that <strong class="text-blue-600 mr-1">10</strong> <input type="text" name="s1_q10" class="fill-in-blank" autocomplete="off"> may be a good way of maintaining her Spanish.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Short Answer -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 11-13</span>
+                                <h4 class="font-bold text-gray-800">Answer the questions below.</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <div class="q-item" id="container-s1_q11">
+                                    <p class="mb-3 text-gray-800 font-medium"><strong class="text-blue-600 mr-2">11</strong> According to Agnes Eldad, what do people need in order to benefit from an ICYE exchange programme?</p>
+                                    <input type="text" name="s1_q11" class="fill-in-blank w-full max-w-sm" autocomplete="off">
+                                </div>
+                                <div class="q-item" id="container-s1_q12">
+                                    <p class="mb-3 text-gray-800 font-medium"><strong class="text-blue-600 mr-2">12</strong> Who does Agnes Eldad plan to work with when she finishes her ICYE programme?</p>
+                                    <input type="text" name="s1_q12" class="fill-in-blank w-full max-w-sm" autocomplete="off">
+                                </div>
+                                <div class="q-item" id="container-s1_q13">
+                                    <p class="mb-3 text-gray-800 font-medium"><strong class="text-blue-600 mr-2">13</strong> What does Agnes Eldad have now that she didn't have before she came to the UK?</p>
+                                    <input type="text" name="s1_q13" class="fill-in-blank w-full max-w-sm" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentSection: 0,
+            currentFontSize: 17,
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            passageIndicator: document.getElementById('passage-indicator'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabModal: document.getElementById('vocab-modal'),
+            vocabModalContent: document.getElementById('vocab-modal-content'),
+            closeVocabModalBtn: document.getElementById('close-vocab-modal'),
+            vocabWordEl: document.getElementById('vocab-word'),
+            vocabMeaningEl: document.getElementById('vocab-meaning'),
+            vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
+            playAudioBtn: document.getElementById('play-audio-btn'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                // Font Size Events
+                document.getElementById('increase-font-btn').addEventListener('click', () => this.changeFontSize(1));
+                document.getElementById('decrease-font-btn').addEventListener('click', () => this.changeFontSize(-1));
+
+                // Close modal events
+                this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
+                this.vocabModal.addEventListener('click', (e) => {
+                   if (e.target === this.vocabModal) this.closeModal();
+                });
+
+                // Input delegator for saving answers and UI styling
+                document.body.addEventListener('input', (e) => this.handleInput(e));
+                document.body.addEventListener('change', (e) => this.handleChange(e));
+                
+                // Vocab Words Event Delegation
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const wordKey = e.target.dataset.word;
+                        this.openVocabModal(wordKey);
+                    }
+                });
+                
+                // Real Audio Pronunciation Event
+                this.playAudioBtn.addEventListener('click', () => {
+                   const word = this.vocabWordEl.textContent;
+                   if (!word) return;
+                   
+                   if ('speechSynthesis' in window) {
+                       window.speechSynthesis.cancel();
+                   }
+                   
+                   this.playAudioBtn.classList.remove('text-blue-600', 'bg-blue-50');
+                   this.playAudioBtn.classList.add('bg-green-500', 'text-white');
+                   
+                   if ('speechSynthesis' in window) {
+                       const utterance = new SpeechSynthesisUtterance(word);
+                       utterance.lang = 'en-GB'; 
+                       utterance.rate = 0.9; 
+                       
+                       utterance.onend = () => {
+                           this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                           this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+                       };
+                       
+                       utterance.onerror = () => {
+                           this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                           this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+                       };
+                       
+                       window.speechSynthesis.speak(utterance);
+                   } else {
+                       alert("Sorry, your browser doesn't support text-to-speech audio.");
+                       setTimeout(() => {
+                           this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                           this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+                       }, 500);
+                   }
+                });
+            },
+            
+            changeFontSize(delta) {
+                this.currentFontSize += delta;
+                if (this.currentFontSize < 14) this.currentFontSize = 14;
+                if (this.currentFontSize > 26) this.currentFontSize = 26;
+                document.documentElement.style.setProperty('--app-font-size', `${this.currentFontSize}px`);
+            },
+
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        this.vocabModalContent.classList.remove('scale-95', 'opacity-0');
+                        this.vocabModalContent.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                }
+            },
+
+            closeModal() {
+                if ('speechSynthesis' in window) {
+                   window.speechSynthesis.cancel();
+                }
+                this.vocabModalContent.classList.remove('scale-100', 'opacity-100');
+                this.vocabModalContent.classList.add('scale-95', 'opacity-0');
+                this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+                
+                setTimeout(() => {
+                    this.vocabModal.classList.add('hidden');
+                }, 200);
+            },
+            
+            handleInput(e) {
+                if (e.target.name && e.target.type === 'text') {
+                    this.userAnswers[e.target.name] = e.target.value;
+                }
+            },
+
+            handleChange(e) {
+                if (e.target.name && e.target.type === 'radio') {
+                    if (e.target.checked) {
+                        this.userAnswers[e.target.name] = e.target.value;
+                        
+                        if (e.target.classList.contains('hidden')) {
+                            const groupRadios = document.querySelectorAll(`input[name="${e.target.name}"]`);
+                            groupRadios.forEach(radio => {
+                                const label = radio.closest('label');
+                                if (radio.checked) {
+                                    label.classList.add('bg-blue-50', 'border-blue-400', 'text-blue-800');
+                                    label.classList.remove('bg-white', 'border-gray-200');
+                                } else {
+                                    label.classList.remove('bg-blue-50', 'border-blue-400', 'text-blue-800');
+                                    label.classList.add('bg-white', 'border-gray-200');
+                                }
+                            });
+                        }
+                    }
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const inputs = document.querySelectorAll(`input[name="${qId}"]`);
+                    
+                    inputs.forEach(input => {
+                        if (input.type === 'text') {
+                            input.value = value;
+                        } else if (input.type === 'radio' && input.value === value) {
+                            input.checked = true;
+                            if (input.classList.contains('hidden')) {
+                                const label = input.closest('label');
+                                label.classList.add('bg-blue-50', 'border-blue-400', 'text-blue-800');
+                            }
+                        }
+                    });
+                }
+            },
+
+            loadContent() {
+                const data = testData.reading;
+                const sectionData = data.sections[this.currentSection];
+
+                // Load left and right panes
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                // Load Navigation Tabs
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="px-4 py-1.5 ${index === this.currentSection ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-md text-sm font-semibold shadow-sm transition-colors section-tab-btn" data-section="${index}">Passage ${index + 1}</button>`
+                ).join('');
+
+                // Assign Tab Switching Events
+                this.sectionTabsContainer.querySelectorAll('.section-tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.currentSection = parseInt(e.target.dataset.section);
+                        // Reset scroll
+                        this.leftPane.scrollTop = 0;
+                        this.rightPane.scrollTop = 0;
+                        this.loadContent();
+                    });
+                });
+                
+                // Update text indicator
+                this.passageIndicator.textContent = `Passage ${this.currentSection + 1} of ${data.sections.length}`;
+
+                // Restore previously answered questions visually
+                this.restoreAnswers();
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                    document.body.style.cursor = 'col-resize';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    if (window.innerWidth <= 768) return; 
+                    
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 200) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        document.body.style.cursor = 'default';
+                    }
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        this.highlightTooltip.style.left = `${e.pageX - 30}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 40}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>

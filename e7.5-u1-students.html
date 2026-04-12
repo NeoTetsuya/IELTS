@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Test Simulator - Module 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --app-font-size: 17px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+            background-color: #f3f4f6;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 2rem 3rem;
+            font-size: var(--app-font-size);
+            scroll-behavior: smooth;
+        }
+        #left-pane {
+            background-color: #fdfdfd;
+        }
+        #right-pane {
+            background-color: #f8fafc;
+        }
+        .splitter {
+            background-color: #cbd5e1;
+            cursor: col-resize;
+            z-index: 10;
+            transition: background-color 0.2s;
+        }
+        .splitter:hover, .splitter:active {
+            background-color: #94a3b8;
+        }
+        
+        /* Typography Improvements */
+        .reading-passage {
+            font-family: 'Merriweather', serif;
+            line-height: 1.9;
+            color: #334155;
+            text-align: left;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .reading-passage p {
+            margin-bottom: 1.5rem;
+            text-indent: 1.5rem;
+        }
+        .reading-passage h3 {
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        /* Question Styles */
+        .q-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        /* Input Styles for Fill-in-the-blanks */
+        .fill-in-blank {
+            border: none;
+            border-bottom: 2px dashed #94a3b8;
+            background-color: #f8fafc;
+            padding: 2px 8px;
+            font-weight: 600;
+            color: #0f172a;
+            width: 180px;
+            transition: all 0.2s;
+            text-align: center;
+            border-radius: 4px 4px 0 0;
+            margin: 0 4px;
+        }
+        .fill-in-blank:focus {
+            outline: none;
+            border-bottom: 2px solid #2563eb;
+            background-color: #eff6ff;
+        }
+
+        /* Vocabulary Styles */
+        .vocab-word {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #93c5fd;
+            transition: all 0.2s ease-in-out;
+            padding: 0 2px;
+        }
+        .vocab-word:hover {
+            background-color: #dbeafe;
+            border-bottom-style: solid;
+            border-radius: 2px;
+        }
+
+        /* Tables */
+        .ielts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .ielts-table th, .ielts-table td {
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+        .ielts-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        /* UI Elements */
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1e293b;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 3px;
+            padding: 2px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .content-panes {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 5px 1fr;
+            }
+            .splitter {
+                cursor: row-resize;
+            }
+            .pane {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="test-container" class="ielts-container">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-20 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <h1 class="text-xl font-bold text-gray-800 hidden sm:block">IELTS BAND 7.5 <span class="text-blue-600 font-medium">| Module 1</span></h1>
+        </div>
+        <div class="flex items-center space-x-5">
+            <div class="flex items-center space-x-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
+                <button id="decrease-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Decrease Font Size">A-</button>
+                <button id="increase-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Increase Font Size">A+</button>
+            </div>
+            <div class="text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-100 px-3 py-1 rounded-full">Academic Reading</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="content-panes" class="content-panes">
+        <!-- Left Pane: Passages -->
+        <div id="left-pane" class="pane">
+            <!-- Content will be loaded here by JS -->
+        </div>
+
+        <!-- Splitter -->
+        <div id="splitter" class="splitter relative flex items-center justify-center">
+            <div class="w-1 h-8 bg-gray-400 rounded-full opacity-50"></div>
+        </div>
+
+        <!-- Right Pane: Questions -->
+        <div id="right-pane" class="pane">
+            <div id="questions-section" class="max-w-2xl mx-auto">
+                <!-- Questions will be loaded here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 px-6 py-3 z-20">
+        <div class="flex justify-between items-center max-w-7xl mx-auto">
+            <div id="passage-indicator" class="text-sm text-gray-500 font-medium">
+                Passage 1 of 2
+            </div>
+            <div id="section-tabs" class="flex space-x-2">
+                <!-- Section buttons will be loaded here by JS -->
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight Text</div>
+
+<!-- Vocabulary Modal -->
+<div id="vocab-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50 transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative transform transition-all scale-95 opacity-0" id="vocab-modal-content">
+        <button id="close-vocab-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">&times;</button>
+        <div class="flex items-center mb-6 border-b pb-4">
+            <h3 id="vocab-word" class="text-3xl font-extrabold text-gray-900 capitalize tracking-tight"></h3>
+        </div>
+        <div class="flex items-center mb-5">
+            <button id="play-audio-btn" class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white mr-4 transition-all shadow-sm border border-blue-100" title="Listen to pronunciation">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-500 font-mono text-lg bg-gray-50 px-3 py-1 rounded-md border border-gray-100"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 text-lg leading-relaxed"></p>
+    </div>
+</div>
+
+<script>
+    // --- DATA ---
+    const vocabulary = {
+        // Passage 1
+        'phenomena': { meaning: 'A fact or situation that is observed to exist or happen, especially one whose cause or explanation is in question.', phonetic: '/fɪˈnɒmɪnə/' },
+        'endangered': { meaning: 'Seriously at risk of extinction.', phonetic: '/ɪnˈdeɪndʒəd/' },
+        'withstand': { meaning: 'Remain undamaged or unaffected by; resist.', phonetic: '/wɪðˈstænd/' },
+        'offspring': { meaning: 'A person\'s child or children / an animal\'s young.', phonetic: '/ˈɒfsprɪŋ/' },
+        'navigational': { meaning: 'Relating to the direct route or travel of a vehicle or animal.', phonetic: '/ˌnævɪˈɡeɪʃənəl/' },
+        'plummeted': { meaning: 'Decreased rapidly in value or amount.', phonetic: '/ˈplʌmɪtɪd/' },
+        'robust': { meaning: 'Strong and healthy; vigorous.', phonetic: '/rəʊˈbʌst/' },
+        // Passage 2
+        'accomplished': { meaning: 'Achieve or complete successfully.', phonetic: '/əˈkʌmplɪʃt/' },
+        'conducive': { meaning: 'Making a certain situation or outcome likely or possible.', phonetic: '/kənˈdjuːsɪv/' },
+        'slump': { meaning: 'A period of substantial failure or decline in energy or performance.', phonetic: '/slʌmp/' },
+        'consolidating': { meaning: 'Make (something) physically stronger or more solid; reinforce.', phonetic: '/kənˈsɒlɪdeɪtɪŋ/' },
+        'rejuvenates': { meaning: 'Make (someone or something) look or feel younger, fresher, or more lively.', phonetic: '/rɪˈdʒuːvəneɪts/' }
+    };
+
+    const testData = {
+        reading: {
+            sections: [
+                // --- SECTION 0: PASSAGE 1 ---
+                {
+                    title: "Inside the brain of the monarch butterfly",
+                    passage: `
+                        <h3>Inside the brain of the monarch butterfly</h3>
+                        <p>The annual migration of monarch butterflies is considered to be one of the most remarkable natural <span class="vocab-word" data-word="phenomena">phenomena</span> on the planet. The insects are typically found in the eastern US and south-eastern Canada, where they spend the summer months before flying south to a single spot in central Mexico (on top of the Michoacan Mountains) for the winter. The journey can involve travelling up to 3,000 miles. At these wintering sites they cluster on top of trees in their millions, and the air is full of the sound of their wings. Their reliance on this single spot to spend the winter has led to the monarch butterfly being rated as one of the most <span class="vocab-word" data-word="endangered">endangered</span> creatures in the world.</p>
+                        
+                        <p>Monarch butterflies migrate for two reasons. Firstly, they cannot <span class="vocab-word" data-word="withstand">withstand</span> the freezing temperatures in northern and central climates. Secondly, the milkweed plants, which are the food that their larvae prefer, do not grow in their overwintering sites, so the spring generation must fly back northwards to lay their eggs in places where the plants are plentiful.</p>
+                        
+                        <p>This ability to continue travelling in the same direction to the same spot year after year has been the subject of scientific interest for decades. The butterflies have a relatively short lifespan: individuals live between two and eight months. Some butterflies make the whole trip, but others lay eggs and die on the way, leaving <span class="vocab-word" data-word="offspring">offspring</span> to complete the journey. It follows from this that the butterflies do not learn their route; instead their <span class="vocab-word" data-word="navigational">navigational</span> abilities appear to be part of a genetic programme that enables them to make the journey. Their migration is repeated instinctively by generations, and has continued even as monarch numbers have <span class="vocab-word" data-word="plummeted">plummeted</span> due to loss of their main food source.</p>
+                        
+                        <p>Now at last, scientists believe they have cracked the secret of how the monarch butterfly's brain works to establish the direction of flight during migration. It is hoped this discovery will help scientists understand how they navigate and locate their food. Dr Eli Shlizerman, lead author of the study, joined with colleagues at the University of Michigan and the University of Massachusetts to show how the monarch's internal compass works. Dr Shlizerman, who is an assistant professor at the University of Washington in the US, said: "Their brain, which contains a compass, integrates two pieces of information — the time of day and the sun's position on the horizon — to find the southerly direction. We wanted to understand how the monarch is processing these different types of information to yield this constant behaviour — flying south-west each autumn."</p>
+                        
+                        <p>Monarchs use their large, complex eyes to monitor where the sun is in the sky, but this information alone is not enough to determine direction. Each butterfly must combine that information with the time of day to know where to go. Like most animals, including humans, monarchs possess an internal clock based on the rhythmic expression of key genes. This clock maintains a daily pattern of physiology and behaviour and in the monarch butterfly, it is centred in the antennae.</p>
+                        
+                        <p>Dr Shlizerman added: "We created a computer model that incorporated this information — how the antennae and eyes send this information to the brain. Our goal was to model what type of control mechanism would be at work within the brain, and then asked whether our model could guarantee sustained navigation in the south-westerly direction."</p>
+
+                        <p>Their model also shows that when they make a mistake, monarchs do not simply make the shortest turn to get back on route. The model includes a unique feature — a 'separation point' that controls whether the monarch turns right or left to make a course correction. Dr Shlizerman explained: "The location of this point in the monarch butterfly's visual field changes throughout the day, and our model predicts that the monarch will not cross this point when it makes a course correction. In experiments with living monarchs at different times of the day, it is evident that there are occasions where their turns in course corrections are unusually long, slow, or meandering. These could be cases where they can't do a shorter turn, because that would require crossing the separation point. And when that happens, their compass points north-east instead of south-west. It's a simple, <span class="vocab-word" data-word="robust">robust</span> system to explain how these butterflies — generation after generation — make this remarkable migration."</p>
+                    `,
+                    questions: `
+                        <!-- Notes Completion -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 1-6</span>
+                                <h4 class="font-bold text-gray-800">Complete the notes below.</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <h5 class="font-bold text-lg text-center text-gray-800">Monarch Butterflies</h5>
+                                
+                                <div class="pl-4 border-l-4 border-blue-200">
+                                    <h6 class="font-semibold text-gray-700 mb-2">Habitats</h6>
+                                    <ul class="list-disc list-inside space-y-2 text-gray-800 ml-2">
+                                        <li>Summer - eastern US and south-eastern Canada</li>
+                                        <li>Winter - central Mexico</li>
+                                        <li class="q-item" id="container-s0_q1">The monarch's dependence on wintering in a <strong class="text-blue-600">1</strong> <input type="text" name="s0_q1" class="fill-in-blank" autocomplete="off"> highly endangered.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="pl-4 border-l-4 border-blue-200">
+                                    <h6 class="font-semibold text-gray-700 mb-2">Reasons for migration</h6>
+                                    <ul class="list-disc list-inside space-y-2 text-gray-800 ml-2">
+                                        <li class="q-item" id="container-s0_q2">Southwards to escape <strong class="text-blue-600">2</strong> <input type="text" name="s0_q2" class="fill-in-blank" autocomplete="off"></li>
+                                        <li class="q-item" id="container-s0_q3">Northwards to lay eggs near <strong class="text-blue-600">3</strong> <input type="text" name="s0_q3" class="fill-in-blank" autocomplete="off"></li>
+                                    </ul>
+                                </div>
+
+                                <div class="pl-4 border-l-4 border-blue-200">
+                                    <h6 class="font-semibold text-gray-700 mb-2">Scientific interest</h6>
+                                    <ul class="list-disc list-inside space-y-2 text-gray-800 ml-2">
+                                        <li class="q-item" id="container-s0_q4">Individuals live for less than one year, so cannot <strong class="text-blue-600">4</strong> <input type="text" name="s0_q4" class="fill-in-blank" autocomplete="off"> a route.</li>
+                                        <li class="q-item" id="container-s0_q5">The butterflies' <strong class="text-blue-600">5</strong> <input type="text" name="s0_q5" class="fill-in-blank" autocomplete="off"> skills seem to be genetic.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="pl-4 border-l-4 border-blue-200">
+                                    <h6 class="font-semibold text-gray-700 mb-2">New findings</h6>
+                                    <ul class="list-disc list-inside space-y-2 text-gray-800 ml-2">
+                                        <li class="q-item" id="container-s0_q6">Scientists have discovered how the butterflies determine <strong class="text-blue-600">6</strong> <input type="text" name="s0_q6" class="fill-in-blank" autocomplete="off"> while flying.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Table Completion -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 7-10</span>
+                                <h4 class="font-bold text-gray-800">Complete the table below.</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Choose <strong>NO MORE THAN TWO WORDS AND/OR A NUMBER</strong> from the passage for each answer.
+                            </p>
+                            
+                            <h5 class="font-bold text-lg text-center text-gray-800 mb-4">How the monarch butterfly finds its way</h5>
+                            <div class="overflow-x-auto">
+                                <table class="ielts-table text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Part of the body</th>
+                                            <th>Characteristics</th>
+                                            <th>Function</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>eyes</td>
+                                            <td class="q-item" id="container-s0_q7">big and <strong class="text-blue-600">7</strong> <input type="text" name="s0_q7" class="fill-in-blank w-24" autocomplete="off"></td>
+                                            <td class="q-item" id="container-s0_q8">check the position of the <strong class="text-blue-600">8</strong> <input type="text" name="s0_q8" class="fill-in-blank w-24" autocomplete="off"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="q-item" id="container-s0_q9"><strong class="text-blue-600">9</strong> <input type="text" name="s0_q9" class="fill-in-blank w-24" autocomplete="off"></td>
+                                            <td>contain the internal clock</td>
+                                            <td>register the time of day</td>
+                                        </tr>
+                                        <tr>
+                                            <td>brain</td>
+                                            <td class="q-item" id="container-s0_q10">has a <strong class="text-blue-600">10</strong> <input type="text" name="s0_q10" class="fill-in-blank w-24" autocomplete="off"></td>
+                                            <td>combines two pieces of information</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `
+                },
+                // --- SECTION 1: PASSAGE 2 ---
+                {
+                    title: "Using neuroscience to manage your time",
+                    passage: `
+                        <h3>Using neuroscience to manage your time</h3>
+                        <p>In the face of pressure, our instinct is to study or work as much as we can for as long as we can. So why do we still feel as if we have not <span class="vocab-word" data-word="accomplished">accomplished</span> enough at the end of the day?</p>
+                        
+                        <p>Neuroscientist and professor at the Manhattan NeuroLeadership Institute, Josh Davis, suggests that, rather than focusing on what is urgent, people should decide what matters most and pinpoint the best time to do it. "It's really about being highly effective as far as it's reasonable for a human being," Davis says. He believes that, rather than making a to-do list and working through each item, people should decide on the main aim for the day and work out when they are most likely to achieve peak productivity. Then this time can be devoted to the task with the highest priority, such as writing an essay or revising.</p>
+                        
+                        <p>It is obviously impossible to work intensively all the time, so simple tasks not requiring much attention — emails or paperwork — can be done in any 'downtime'. However, there are times when the extent to which small tasks can tax our brains is underestimated. Sending an email, for example, may appear simple on the surface but can involve a decision which, although trivial, can cause mental exhaustion. In this case, it is better to reorder the day and deal with less pressing concerns only after the work target has been achieved.</p>
+                        
+                        <p>The time of day when people are most alert varies from person to person but as a general rule the first two hours after waking up are not <span class="vocab-word" data-word="conducive">conducive</span> to serious study. Research measuring attention, verbal reasoning and reaction times has also shown that when our body temperature falls below 37 degrees C, the brain is not at its full potential so the worst time to do anything involving thinking is between midnight and 6am. This is almost as bad as the afternoon <span class="vocab-word" data-word="slump">slump</span> between 2pm and 4pm, which is more to do with feeling cold than a heavy lunch.</p>
+                        
+                        <p>Rather than being afraid of getting distracted, just be careful how you do it "These days, when people decide to take a break, they tend to go on social media", says Davis, "and then they spend too much time there." Instead, they should go back to day-dreaming, where it is possible to stop thinking about work without really focusing on anything else. This allows for creative thinking and the integration between different parts of the brain, which cannot occur when the mind is required to focus on something specific.</p>
+                        
+                        <p>Neuroscience has revealed much about the mind-body connection and how exercise can be used as a tool. "It's a different way of seeing exercise," says Davis "Usually we think about how in the long term it will make us healthy and look better but this is focused on the short term." A short session — 20 minutes or so — of moderate exercise will be sufficient. It does not need to be a lengthy gym visit; just running up and down stairs or jogging on the spot can be an effective method of lessening tension and boosting positive emotions.</p>
+
+                        <p>Food that keeps blood-sugar levels stable will also help people to work most effectively, says Davis. If people snack during the day, they should choose foods that contain fats such as nuts and cheese rather than carbohydrates, to avoid blood-sugar spikes. Starting the day with high-protein food such as eggs and toast will have a high impact on the neurotransmitters in the brain. The amino acid tyrosine, which is found in proteins, will stimulate the transmitters responsible for alertness and the calming protein tryptophan will relax the brain. On meal breaks, people should eat only to 80 percent capacity; people's best work will be done when they are slightly hungry but not starving. Keep hydrated and improve your mood by sipping water. Just remember not to overdo caffeine; it may improve your alertness but also minimizes concentration.</p>
+
+                        <p>Ensure you have a well-lit study space and that your desk space is clear; clutter is a distraction and not a good one, as it reminds you of uncompleted work A clear desk also gives you room for increased movement, whether sitting with your arms behind your head or your feet up. You could alternate between standing and sitting.</p>
+
+                        <p>Finally, try to get eight hours sleep a night. While we sleep, our brains process and retain information, <span class="vocab-word" data-word="consolidating">consolidating</span> facts and reinforcing how to perform tasks. It also <span class="vocab-word" data-word="rejuvenates">rejuvenates</span> us both physically and mentally.</p>
+                    `,
+                    questions: `
+                        <!-- Notes Completion -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 1-4</span>
+                                <h4 class="font-bold text-gray-800">Complete the notes below.</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.
+                            </p>
+                            
+                            <div class="space-y-4">
+                                <h5 class="font-bold text-lg text-center text-gray-800 mb-4">Using your time effectively</h5>
+                                <ul class="list-disc list-inside space-y-4 text-gray-800">
+                                    <li class="q-item" id="container-s1_q1">keep times of highest <strong class="text-blue-600">1</strong> <input type="text" name="s1_q1" class="fill-in-blank" autocomplete="off"> for most important work</li>
+                                    <li class="q-item" id="container-s1_q2">do not send an email that requires a non-urgent <strong class="text-blue-600">2</strong> <input type="text" name="s1_q2" class="fill-in-blank" autocomplete="off"> until main work done</li>
+                                    <li class="q-item" id="container-s1_q3">a drop in <strong class="text-blue-600">3</strong> <input type="text" name="s1_q3" class="fill-in-blank" autocomplete="off"> affects mental power – avoid early/post-lunch hours</li>
+                                    <li class="q-item" id="container-s1_q4"><strong class="text-blue-600">4</strong> <input type="text" name="s1_q4" class="fill-in-blank" autocomplete="off"> is a good way of 'switching off'</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Table Completion -->
+                        <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3">Questions 5-9</span>
+                                <h4 class="font-bold text-gray-800">Complete the table below.</h4>
+                            </div>
+                            <p class="mb-6 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                Choose <strong>NO MORE THAN TWO WORDS AND/OR A NUMBER</strong> from the passage for each answer.
+                            </p>
+                            
+                            <h5 class="font-bold text-lg text-center text-gray-800 mb-4">Brain boosting</h5>
+                            <div class="overflow-x-auto">
+                                <table class="ielts-table text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>ADVICE</th>
+                                            <th>BENEFITS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="font-semibold">Exercise</td>
+                                            <td class="q-item" id="container-s1_q5"><strong class="text-blue-600">5</strong> <input type="text" name="s1_q5" class="fill-in-blank w-24" autocomplete="off"> not necessary<br><br>run up steps or on foot</td>
+                                            <td class="q-item" id="container-s1_q6">reduces <strong class="text-blue-600">6</strong> <input type="text" name="s1_q6" class="fill-in-blank w-24" autocomplete="off"> ; improves mood</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">Food</td>
+                                            <td class="q-item" id="container-s1_q7">have breakfast rich in <strong class="text-blue-600">7</strong> <input type="text" name="s1_q7" class="fill-in-blank w-24" autocomplete="off"><br><br>stop eating when <strong class="text-blue-600" id="container-s1_q8">8</strong> <input type="text" name="s1_q8" class="fill-in-blank w-24" autocomplete="off"> full</td>
+                                            <td>makes you calmer and more alert<br><br>you achieve more when a bit hungry</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold">Study/Work area</td>
+                                            <td>remove unnecessary mess from your workspace</td>
+                                            <td class="q-item" id="container-s1_q9">prevents attention wandering; allows more freedom of <strong class="text-blue-600">9</strong> <input type="text" name="s1_q9" class="fill-in-blank w-24" autocomplete="off"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    // --- APPLICATION LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            // State
+            userAnswers: {},
+            currentSection: 0,
+            currentFontSize: 17,
+
+            // Elements
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            questionsSection: document.getElementById('questions-section'),
+            splitter: document.getElementById('splitter'),
+            sectionTabsContainer: document.getElementById('section-tabs'),
+            passageIndicator: document.getElementById('passage-indicator'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabModal: document.getElementById('vocab-modal'),
+            vocabModalContent: document.getElementById('vocab-modal-content'),
+            closeVocabModalBtn: document.getElementById('close-vocab-modal'),
+            vocabWordEl: document.getElementById('vocab-word'),
+            vocabMeaningEl: document.getElementById('vocab-meaning'),
+            vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
+            playAudioBtn: document.getElementById('play-audio-btn'),
+
+            init() {
+                this.setupEventListeners();
+                this.loadContent();
+                this.initSplitter();
+                this.initHighlighter();
+            },
+
+            setupEventListeners() {
+                // Font Size Events
+                document.getElementById('increase-font-btn').addEventListener('click', () => this.changeFontSize(1));
+                document.getElementById('decrease-font-btn').addEventListener('click', () => this.changeFontSize(-1));
+
+                // Close modal events
+                this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
+                this.vocabModal.addEventListener('click', (e) => {
+                   if (e.target === this.vocabModal) this.closeModal();
+                });
+
+                // Input delegator for saving answers
+                document.body.addEventListener('input', (e) => this.handleInput(e));
+                
+                // Vocab Words Event Delegation
+                this.leftPane.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('vocab-word')) {
+                        const wordKey = e.target.dataset.word;
+                        this.openVocabModal(wordKey);
+                    }
+                });
+                
+                // Real Audio Pronunciation Event
+                this.playAudioBtn.addEventListener('click', () => {
+                   const word = this.vocabWordEl.textContent;
+                   if (!word) return;
+                   
+                   if ('speechSynthesis' in window) {
+                       window.speechSynthesis.cancel();
+                   }
+                   
+                   this.playAudioBtn.classList.remove('text-blue-600', 'bg-blue-50');
+                   this.playAudioBtn.classList.add('bg-green-500', 'text-white');
+                   
+                   if ('speechSynthesis' in window) {
+                       const utterance = new SpeechSynthesisUtterance(word);
+                       utterance.lang = 'en-GB'; 
+                       utterance.rate = 0.9; 
+                       
+                       utterance.onend = () => {
+                           this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                           this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+                       };
+                       
+                       utterance.onerror = () => {
+                           this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                           this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+                       };
+                       
+                       window.speechSynthesis.speak(utterance);
+                   } else {
+                       alert("Sorry, your browser doesn't support text-to-speech audio.");
+                       setTimeout(() => {
+                           this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                           this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+                       }, 500);
+                   }
+                });
+            },
+            
+            changeFontSize(delta) {
+                this.currentFontSize += delta;
+                if (this.currentFontSize < 14) this.currentFontSize = 14;
+                if (this.currentFontSize > 26) this.currentFontSize = 26;
+                document.documentElement.style.setProperty('--app-font-size', `${this.currentFontSize}px`);
+            },
+
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        this.vocabModalContent.classList.remove('scale-95', 'opacity-0');
+                        this.vocabModalContent.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                }
+            },
+
+            closeModal() {
+                if ('speechSynthesis' in window) {
+                   window.speechSynthesis.cancel();
+                }
+                this.vocabModalContent.classList.remove('scale-100', 'opacity-100');
+                this.vocabModalContent.classList.add('scale-95', 'opacity-0');
+                this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+                
+                setTimeout(() => {
+                    this.vocabModal.classList.add('hidden');
+                }, 200);
+            },
+            
+            handleInput(e) {
+                if (e.target.name && e.target.type === 'text') {
+                    this.userAnswers[e.target.name] = e.target.value;
+                }
+            },
+
+            restoreAnswers() {
+                for (const qId in this.userAnswers) {
+                    const value = this.userAnswers[qId];
+                    const input = document.querySelector(`input[name="${qId}"]`);
+                    
+                    if (input && input.type === 'text') {
+                        input.value = value;
+                    }
+                }
+            },
+
+            loadContent() {
+                const data = testData.reading;
+                const sectionData = data.sections[this.currentSection];
+
+                // Load left and right panes
+                this.leftPane.innerHTML = `<div class="reading-passage">${sectionData.passage}</div>`;
+                this.questionsSection.innerHTML = sectionData.questions;
+
+                // Load Navigation Tabs
+                this.sectionTabsContainer.innerHTML = data.sections.map((sec, index) =>
+                    `<button class="px-4 py-1.5 ${index === this.currentSection ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-md text-sm font-semibold shadow-sm transition-colors section-tab-btn" data-section="${index}">Passage ${index + 1}</button>`
+                ).join('');
+
+                // Assign Tab Switching Events
+                this.sectionTabsContainer.querySelectorAll('.section-tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.currentSection = parseInt(e.target.dataset.section);
+                        // Reset scroll
+                        this.leftPane.scrollTop = 0;
+                        this.rightPane.scrollTop = 0;
+                        this.loadContent();
+                    });
+                });
+                
+                // Update text indicator
+                this.passageIndicator.textContent = `Passage ${this.currentSection + 1} of ${data.sections.length}`;
+
+                // Restore previously answered questions visually
+                this.restoreAnswers();
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                    document.body.style.cursor = 'col-resize';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    if (window.innerWidth <= 768) return; 
+                    
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 200) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        document.body.style.cursor = 'default';
+                    }
+                });
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        this.highlightTooltip.style.left = `${e.pageX - 30}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 40}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {
+                            } finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
