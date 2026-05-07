@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 5: The World Around Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* Softer slate background */
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .font-serif-text {
+            font-family: 'Lora', serif;
+        }
+
+        /* Tabs styling */
+        .tab-btn {
+            transition: all 0.2s ease-in-out;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            color: #4338ca !important;
+            border-bottom: 3px solid #4f46e5;
+            background-color: #e0e7ff;
+        }
+        .tab-btn:hover:not(.active) {
+            background-color: #f8fafc;
+            color: #334155;
+            border-bottom: 3px solid #cbd5e1;
+        }
+
+        /* Input fields */
+        .input-blank {
+            font-family: 'Inter', sans-serif;
+            border: 1px solid transparent;
+            border-bottom: 2px dashed #94a3b8;
+            background: #f8fafc;
+            outline: none;
+            text-align: center;
+            padding: 0.25rem 0.5rem;
+            margin: 0.25rem 0.3rem;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #1e293b;
+            border-radius: 6px 6px 0 0;
+            box-shadow: inset 0 -2px 0 0 transparent;
+            font-size: 16px; /* Prevents iOS Safari zoom */
+            max-width: 100%;
+        }
+        .input-blank:hover {
+            background: #f1f5f9;
+            border-bottom: 2px dashed #64748b;
+        }
+        .input-blank:focus {
+            border-bottom: 2px solid #4f46e5;
+            background: #eef2ff;
+            box-shadow: inset 0 -2px 0 0 #c7d2fe;
+        }
+        select.input-blank {
+            text-align: left;
+            cursor: pointer;
+            padding-right: 1.5rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.35rem center;
+            background-size: 1em;
+        }
+
+        /* Feedback states */
+        .correct {
+            border-bottom: 2px solid #16a34a !important;
+            color: #166534 !important;
+            background-color: #dcfce7 !important;
+        }
+        .incorrect {
+            border-bottom: 2px solid #dc2626 !important;
+            color: #991b1b !important;
+            background-color: #fee2e2 !important;
+        }
+
+        /* Check Buttons */
+        .check-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2), 0 2px 4px -1px rgba(79, 70, 229, 0.1);
+        }
+        .check-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px -1px rgba(79, 70, 229, 0.3), 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+        .check-btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            left: 24px; /* Mobile full width fallback */
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        @media (min-width: 640px) {
+            .toast {
+                left: auto;
+                max-width: 400px;
+            }
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.error { background-color: #ef4444; }
+        .toast.success { background-color: #10b981; }
+        .toast.warning { background-color: #f59e0b; color: #fffbeb; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+        
+        /* Responsive Chart Container */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Subtle numbering badge */
+        .num-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 9999px;
+            background-color: #e0e7ff;
+            color: #4338ca;
+            font-weight: 700;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast" role="alert" aria-live="assertive">
+        <div id="toast-icon"></div>
+        <span id="toast-message">Message</span>
+    </div>
+
+    <!-- Header & Tabs (Sticky Container) -->
+    <div class="sticky top-0 z-40 w-full shadow-sm bg-white border-b border-slate-200">
+        <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-0 sm:h-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-xl flex items-center justify-center font-bold text-xl sm:text-2xl shadow-inner shrink-0">
+                    5
+                </div>
+                <div>
+                    <p class="text-[10px] sm:text-xs text-indigo-600 font-bold tracking-widest uppercase mb-0.5">IELTS Expert 5</p>
+                    <h1 class="font-extrabold text-slate-900 text-lg sm:text-xl leading-tight">The world around us</h1>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Tabs Navigation -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto custom-scrollbar" aria-label="Tabs">
+                <button onclick="switchTab('tab-grammar')" id="btn-tab-grammar" class="tab-btn active text-indigo-700 shrink-0 px-4 py-3 sm:px-5 sm:py-3.5 text-sm font-semibold rounded-t-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    Grammar
+                </button>
+                <button onclick="switchTab('tab-vocab-travel')" id="btn-tab-vocab-travel" class="tab-btn text-slate-500 shrink-0 px-4 py-3 sm:px-5 sm:py-3.5 text-sm font-semibold rounded-t-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Travel Vocab
+                </button>
+                <button onclick="switchTab('tab-vocab-env')" id="btn-tab-vocab-env" class="tab-btn text-slate-500 shrink-0 px-4 py-3 sm:px-5 sm:py-3.5 text-sm font-semibold rounded-t-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Environment
+                </button>
+                <button onclick="switchTab('tab-writing')" id="btn-tab-writing" class="tab-btn text-slate-500 shrink-0 px-4 py-3 sm:px-5 sm:py-3.5 text-sm font-semibold rounded-t-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    Writing
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
+
+        <!-- ==================== TAB 1: GRAMMAR ==================== -->
+        <div id="tab-grammar" class="tab-content block animate-fadeIn">
+            <div class="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-2 sm:gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Language Development</h2>
+                    <p class="text-slate-500 mt-1 sm:mt-2 text-base sm:text-lg">-ing forms, infinitives, and prepositions</p>
+                </div>
+            </div>
+
+            <div class="space-y-6 sm:space-y-8 lg:space-y-10">
+                <!-- Grammar Exercise 1 -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="flex items-center gap-3 mb-5 sm:mb-6 pb-4 border-b border-slate-100">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 1</span>
+                        <h3 class="font-bold text-lg sm:text-xl text-slate-900">Choose the correct options</h3>
+                    </div>
+                    <div class="space-y-5 sm:space-y-6 text-base sm:text-lg text-slate-800 leading-relaxed">
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-1 sm:pt-0">1.</span> 
+                            <span>I'm thinking about</span>
+                            <select class="input-blank w-full sm:w-32 text-base" data-ex="gram-1" data-ans='["inviting"]'>
+                                <option value="">- Choose -</option><option value="to invite">to invite</option><option value="inviting">inviting</option>
+                            </select> 
+                            <span>my friend on holiday with me.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-1 sm:pt-0">2.</span> 
+                            <span>I think I'll</span>
+                            <select class="input-blank w-full sm:w-32 text-base" data-ex="gram-1" data-ans='["have"]'>
+                                <option value="">- Choose -</option><option value="have">have</option><option value="having">having</option>
+                            </select> 
+                            <span>a holiday at the beach next year.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-1 sm:pt-0">3.</span> 
+                            <select class="input-blank w-full sm:w-32 text-base" data-ex="gram-1" data-ans='["visiting"]'>
+                                <option value="">- Choose -</option><option value="visit">Visit</option><option value="visiting">Visiting</option>
+                            </select> 
+                            <span>a new city is really exciting.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-1 sm:pt-0">4.</span> 
+                            <span>I believe</span>
+                            <select class="input-blank w-full sm:w-32 text-base" data-ex="gram-1" data-ans='["going"]'>
+                                <option value="">- Choose -</option><option value="to go">to go</option><option value="going">going</option>
+                            </select> 
+                            <span>on holiday is the best way to relax.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-1 sm:pt-0">5.</span> 
+                            <span>I went to Paris to</span>
+                            <select class="input-blank w-full sm:w-32 text-base" data-ex="gram-1" data-ans='["see"]'>
+                                <option value="">- Choose -</option><option value="see">see</option><option value="seeing">seeing</option>
+                            </select> 
+                            <span>the Eiffel Tower.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-1 sm:pt-0">6.</span> 
+                            <span>It's really interesting to</span>
+                            <select class="input-blank w-full sm:w-32 text-base" data-ex="gram-1" data-ans='["look"]'>
+                                <option value="">- Choose -</option><option value="look">look</option><option value="looking">looking</option>
+                            </select> 
+                            <span>around museums in other countries.</span>
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <button onclick="checkExercise('gram-1')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2 w-full sm:w-auto">Check Answers</button>
+                        <span id="score-gram-1" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                    </div>
+                </div>
+
+                <!-- Grammar Exercise 2 -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 2</span>
+                            <h3 class="font-bold text-lg sm:text-xl text-slate-900">Complete the text</h3>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-500 font-medium bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-center">-ing or infinitive</p>
+                    </div>
+                    <div class="bg-indigo-50/40 p-5 sm:p-8 rounded-xl border border-indigo-100 font-serif-text text-base sm:text-lg leading-loose text-slate-800 shadow-inner">
+                        <h4 class="font-extrabold text-lg sm:text-xl mb-4 sm:mb-6 text-center font-sans text-slate-900">Why you shouldn't drive to work</h4>
+                        <p class="mb-4 sm:mb-6 sm:indent-8">
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">1</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(get)" data-ex="gram-2" data-ans='["getting"]'> the bus or train to work makes us happier than 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">2</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(drive)" data-ex="gram-2" data-ans='["driving"]'>, a study has found. 
+                            Researchers at the University of East Anglia asked 18,000 British workers 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">3</span><input type="text" class="input-blank w-28 sm:w-32 text-base max-w-[calc(100%-2rem)]" placeholder="(answer)" data-ex="gram-2" data-ans='["to answer"]'> questions about sleep and happiness levels, and also 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">4</span><input type="text" class="input-blank w-20 sm:w-24 text-base max-w-[calc(100%-2rem)]" placeholder="(do)" data-ex="gram-2" data-ans='["to do", "do"]'> some physical tests.
+                        </p>
+                        <p class="mb-4 sm:mb-6 sm:indent-8">
+                            The results showed that <span class="font-bold text-indigo-400 mr-1 text-sm">5</span><input type="text" class="input-blank w-28 sm:w-32 text-base max-w-[calc(100%-2rem)]" placeholder="(travel)" data-ex="gram-2" data-ans='["travelling", "traveling"]'> to work by bus, train, bicycle or on foot can 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">6</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(make)" data-ex="gram-2" data-ans='["make"]'> people happier than those who use their car each day.
+                        </p>
+                        <p class="mb-4 sm:mb-6 sm:indent-8">
+                            Researcher Adam Martin said he was surprised <span class="font-bold text-indigo-400 mr-1 text-sm">7</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(find)" data-ex="gram-2" data-ans='["to find"]'> that workers felt better when they used public transport, compared to 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">8</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(drive)" data-ex="gram-2" data-ans='["driving"]'>. He thinks it is because public transport gives us time 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">9</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(relax)" data-ex="gram-2" data-ans='["to relax"]'>. 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">10</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(walk)" data-ex="gram-2" data-ans='["walking"]'> to the bus stop or railway station might also 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">11</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(make)" data-ex="gram-2" data-ans='["make"]'> people feel better.
+                        </p>
+                        <p class="sm:indent-8">
+                            The results suggest that <span class="font-bold text-indigo-400 mr-1 text-sm">12</span><input type="text" class="input-blank w-28 sm:w-32 text-base max-w-[calc(100%-2rem)]" placeholder="(reduce)" data-ex="gram-2" data-ans='["reducing"]'> how much we drive our cars can 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">13</span><input type="text" class="input-blank w-24 sm:w-28 text-base max-w-[calc(100%-2rem)]" placeholder="(benefit)" data-ex="gram-2" data-ans='["benefit"]'> our health. 
+                            <span class="font-bold text-indigo-400 mr-1 text-sm">14</span><input type="text" class="input-blank w-28 sm:w-32 text-base max-w-[calc(100%-2rem)]" placeholder="(change)" data-ex="gram-2" data-ans='["changing"]'> from driving to using public transport also brings our weight down, researchers said.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <button onclick="checkExercise('gram-2')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2">Check Answers</button>
+                        <span id="score-gram-2" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                    </div>
+                </div>
+
+                <!-- Grammar Exercise 3 -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-5 sm:mb-6 pb-4 border-b border-slate-100">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 3</span>
+                        <h3 class="font-bold text-lg sm:text-xl text-slate-900">Error correction</h3>
+                    </div>
+                    <div class="grid grid-cols-1 gap-4 sm:gap-6 text-[15px] text-slate-800">
+                        <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center gap-3 sm:gap-4">
+                            <div class="md:w-1/2 font-medium">1. I don't mind <span class="line-through text-red-500 decoration-2">to travel</span> on my own.</div>
+                            <div class="md:w-1/2 flex items-center text-indigo-700 font-semibold">&rarr; I don't mind <input type="text" class="input-blank w-full sm:w-32 max-w-[150px]" data-ex="gram-3" data-ans='["travelling", "traveling"]'> on my own.</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center gap-3 sm:gap-4">
+                            <div class="md:w-1/2 font-medium">2. <span class="line-through text-red-500 decoration-2">To visit</span> museums and art galleries by myself is enjoyable.</div>
+                            <div class="md:w-1/2 flex items-center text-indigo-700 font-semibold">&rarr; <input type="text" class="input-blank w-full sm:w-32 max-w-[120px]" data-ex="gram-3" data-ans='["visiting"]'> museums and art galleries...</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center gap-3 sm:gap-4">
+                            <div class="md:w-1/2 font-medium">3. I'm good at <span class="line-through text-red-500 decoration-2">learn</span> a few phrases in a new language.</div>
+                            <div class="md:w-1/2 flex items-center text-indigo-700 font-semibold">&rarr; I'm good at <input type="text" class="input-blank w-full sm:w-32 max-w-[120px]" data-ex="gram-3" data-ans='["learning"]'> a few phrases...</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center gap-3 sm:gap-4">
+                            <div class="md:w-1/2 font-medium">4. For me, it's better <span class="line-through text-red-500 decoration-2">going</span> with other people on holiday.</div>
+                            <div class="md:w-1/2 flex items-center text-indigo-700 font-semibold">&rarr; For me, it's better <input type="text" class="input-blank w-full sm:w-32 max-w-[120px]" data-ex="gram-3" data-ans='["to go"]'> with other people...</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center gap-3 sm:gap-4">
+                            <div class="md:w-1/2 font-medium">5. I always want to <span class="line-through text-red-500 decoration-2">talking</span> to someone about the plan.</div>
+                            <div class="md:w-1/2 flex items-center text-indigo-700 font-semibold">&rarr; I always want to <input type="text" class="input-blank w-full sm:w-32 max-w-[120px]" data-ex="gram-3" data-ans='["talk"]'> to someone...</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center gap-3 sm:gap-4">
+                            <div class="md:w-1/2 font-medium">6. <span class="line-through text-red-500 decoration-2">Travel</span> with them is always fun.</div>
+                            <div class="md:w-1/2 flex items-center text-indigo-700 font-semibold">&rarr; <input type="text" class="input-blank w-full sm:w-32 max-w-[150px]" data-ex="gram-3" data-ans='["travelling", "traveling"]'> with them is always fun.</div>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <button onclick="checkExercise('gram-3')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2">Check Answers</button>
+                        <span id="score-gram-3" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                    </div>
+                </div>
+
+                <!-- Grammar Exercise 4 -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-5 sm:mb-6 pb-4 border-b border-slate-100">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 4</span>
+                        <h3 class="font-bold text-lg sm:text-xl text-slate-900">Prepositions of place</h3>
+                    </div>
+                    <div class="bg-slate-50 p-5 sm:p-8 rounded-2xl border border-slate-100 text-base sm:text-[17px] leading-loose sm:leading-loose text-slate-800 shadow-inner">
+                        <p>A great part of my town which tourists might like is <span class="font-bold text-indigo-400 text-sm align-top">1</span> 
+                            <select class="input-blank w-auto min-w-[70px] text-base" data-ex="gram-4" data-ans='["in"]'>
+                                <option value="">-</option><option value="at">at</option><option value="in">in</option>
+                            </select> the centre, <span class="font-bold text-indigo-400 text-sm align-top">2</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-4" data-ans='["near"]'>
+                                <option value="">-</option><option value="near">near</option><option value="between">between</option>
+                            </select> the river. There is an area called South Bank and it is <span class="font-bold text-indigo-400 text-sm align-top">3</span> 
+                            <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-4" data-ans='["opposite"]'>
+                                <option value="">-</option><option value="between">between</option><option value="opposite">opposite</option>
+                            </select> the city, <span class="font-bold text-indigo-400 text-sm align-top">4</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-4" data-ans='["over"]'>
+                                <option value="">-</option><option value="over">over</option><option value="next">next</option>
+                            </select> the river. There is a path <span class="font-bold text-indigo-400 text-sm align-top">5</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-4" data-ans='["along"]'>
+                                <option value="">-</option><option value="along">along</option><option value="between">between</option>
+                            </select> the river for people to walk, jog or cycle and <span class="font-bold text-indigo-400 text-sm align-top">6</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-4" data-ans='["behind"]'>
+                                <option value="">-</option><option value="over">over</option><option value="behind">behind</option>
+                            </select> this is a man-made beach area. It's a really popular place because <span class="font-bold text-indigo-400 text-sm align-top">7</span> 
+                            <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-4" data-ans='["next to"]'>
+                                <option value="">-</option><option value="next to">next to</option><option value="in">in</option>
+                            </select> the beach is a big children's playground and <span class="font-bold text-indigo-400 text-sm align-top">8</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-4" data-ans='["above"]'>
+                                <option value="">-</option><option value="above">above</option><option value="at">at</option>
+                            </select> all of this sits a big wheel. You can pay to go <span class="font-bold text-indigo-400 text-sm align-top">9</span> 
+                            <select class="input-blank w-auto min-w-[70px] text-base" data-ex="gram-4" data-ans='["on"]'>
+                                <option value="">-</option><option value="on">on</option><option value="under">under</option>
+                            </select> the wheel and see the city sights. <span class="font-bold text-indigo-400 text-sm align-top">10</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-4" data-ans='["below"]'>
+                                <option value="">-</option><option value="below">Below</option><option value="on">On</option>
+                            </select> the wheel there are bikes to rent. You can cycle to the museum and art galleries which are very close by. <span class="font-bold text-indigo-400 text-sm align-top">11</span> 
+                            <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-4" data-ans='["between"]'>
+                                <option value="">-</option><option value="between">Between</option><option value="over">Over</option>
+                            </select> the beach area and the museum is a bus station, so it's a really convenient place to get to.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <button onclick="checkExercise('gram-4')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2">Check Answers</button>
+                        <span id="score-gram-4" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                    </div>
+                </div>
+
+                <!-- Grammar Exercise 5 & 6 & 7 grouped -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
+                    
+                    <!-- Grammar Exercise 5 -->
+                    <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 5</span>
+                            <h3 class="font-bold text-lg text-slate-900">Prepositions of Time</h3>
+                        </div>
+                        <p class="text-[14px] sm:text-[15px] font-medium text-slate-600 mb-6 inline-block">Complete the gaps with <strong>on, at,</strong> or <strong>in</strong>.</p>
+                        
+                        <div class="space-y-4 text-[15px] sm:text-base text-slate-800">
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">1.</span> <input type="text" class="input-blank w-16" data-ex="gram-5" data-ans='["in"]'> <span>December in my country...</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">2.</span> <input type="text" class="input-blank w-16" data-ex="gram-5" data-ans='["at"]'> <span>New Year in my country...</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">3.</span> <input type="text" class="input-blank w-16" data-ex="gram-5" data-ans='["on"]'> <span>Monday mornings I feel...</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">4.</span> <input type="text" class="input-blank w-16" data-ex="gram-5" data-ans='["at"]'> <span>8 o'clock in the morning...</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">5.</span> <span>On holiday,</span> <input type="text" class="input-blank w-16" data-ex="gram-5" data-ans='["at"]'> <span>the weekend...</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">6.</span> <input type="text" class="input-blank w-16" data-ex="gram-5" data-ans='["in"]'> <span>the evening I like...</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">7.</span> <input type="text" class="input-blank w-16" data-ex="gram-5" data-ans='["on"]'> <span>my birthday I like to...</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">8.</span> <span>My favourite thing</span> <input type="text" class="input-blank w-16" data-ex="gram-5" data-ans='["on"]'> <span>Saturday...</span></p>
+                        </div>
+                        <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                            <button onclick="checkExercise('gram-5')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check</button>
+                            <span id="score-gram-5" class="font-bold text-sm hidden text-center"></span>
+                        </div>
+                    </div>
+
+                    <!-- Grammar Exercise 6 -->
+                    <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 6</span>
+                            <h3 class="font-bold text-lg text-slate-900">Movement</h3>
+                        </div>
+                        <div class="text-[15px] sm:text-base leading-loose text-slate-800">
+                            <h4 class="font-bold mb-4 text-indigo-900 bg-indigo-50 p-3 rounded-lg border border-indigo-100 text-center sm:text-left">Great Ocean Road tour</h4>
+                            <p>Starting from Melbourne, it's an easy drive <span class="font-bold text-indigo-400 text-sm align-top">1</span> 
+                                <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-6" data-ans='["across"]'>
+                                    <option value="">-</option><option value="through">through</option><option value="across">across</option>
+                                </select> cliff tops. Stop at the top and look <span class="font-bold text-indigo-400 text-sm align-top">2</span> 
+                                <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-6" data-ans='["down"]'>
+                                    <option value="">-</option><option value="down">down</option><option value="away">away</option>
+                                </select> on surf beaches below. Stop and look up <span class="font-bold text-indigo-400 text-sm align-top">3</span> 
+                                <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-6" data-ans='["into"]'>
+                                    <option value="">-</option><option value="into">into</option><option value="over">over</option>
+                                </select> the branches of eucalyptus trees. Kangaroos might walk <span class="font-bold text-indigo-400 text-sm align-top">4</span> 
+                                <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-6" data-ans='["along"]'>
+                                    <option value="">-</option><option value="into">into</option><option value="along">along</option>
+                                </select> branches. From Apollo Bay, take the road that turns <span class="font-bold text-indigo-400 text-sm align-top">5</span> 
+                                <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-6" data-ans='["towards", "toward"]'>
+                                    <option value="">-</option><option value="towards">towards</option><option value="back">back</option>
+                                </select> Cape Otway. Continue your journey <span class="font-bold text-indigo-400 text-sm align-top">6</span> 
+                                <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-6" data-ans='["back"]'>
+                                    <option value="">-</option><option value="through">through</option><option value="back">back</option>
+                                </select> to Apollo Bay.</p>
+                        </div>
+                        <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                            <button onclick="checkExercise('gram-6')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check</button>
+                            <span id="score-gram-6" class="font-bold text-sm hidden text-center"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grammar Exercise 7 -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-5 sm:mb-6 pb-4 border-b border-slate-100">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 7</span>
+                        <h3 class="font-bold text-lg sm:text-xl text-slate-900">Graph Summary (Prepositions)</h3>
+                    </div>
+                    <div class="bg-slate-50 p-5 sm:p-6 rounded-xl border border-slate-100 text-[15px] sm:text-base leading-loose text-slate-800">
+                        <p>The graph shows forest loss <span class="font-bold text-indigo-400 text-sm align-top">1</span> 
+                            <select class="input-blank w-auto min-w-[70px] text-base" data-ex="gram-7" data-ans='["in"]'>
+                                <option value="">-</option><option value="at">at</option><option value="in">in</option>
+                            </select> Indonesia and the Amazon <span class="font-bold text-indigo-400 text-sm align-top">2</span> 
+                            <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-7" data-ans='["between"]'>
+                                <option value="">-</option><option value="through">through</option><option value="between">between</option>
+                            </select> 2001 and 2012. Overall, forest loss in the Amazon went <span class="font-bold text-indigo-400 text-sm align-top">3</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-7" data-ans='["down"]'>
+                                <option value="">-</option><option value="up">up</option><option value="down">down</option>
+                            </select>, while in Indonesia it went <span class="font-bold text-indigo-400 text-sm align-top">4</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-7" data-ans='["up"]'>
+                                <option value="">-</option><option value="up">up</option><option value="down">down</option>
+                            </select> significantly <span class="font-bold text-indigo-400 text-sm align-top">5</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-7" data-ans='["over"]'>
+                                <option value="">-</option><option value="over">over</option><option value="on">on</option>
+                            </select> the period. In the Amazon, it rose <span class="font-bold text-indigo-400 text-sm align-top">6</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-7" data-ans='["to"]'>
+                                <option value="">-</option><option value="up">up</option><option value="to">to</option>
+                            </select> 2.7 million hectares in 2004, then fell <span class="font-bold text-indigo-400 text-sm align-top">7</span> 
+                            <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-7" data-ans='["over"]'>
+                                <option value="">-</option><option value="around">around</option><option value="over">over</option>
+                            </select> the next eight years. Meanwhile, in Indonesia, <span class="font-bold text-indigo-400 text-sm align-top">8</span> 
+                            <select class="input-blank w-auto min-w-[70px] text-base" data-ex="gram-7" data-ans='["at"]'>
+                                <option value="">-</option><option value="on">on</option><option value="at">at</option>
+                            </select> the start of the period the number was low, <span class="font-bold text-indigo-400 text-sm align-top">9</span> 
+                            <select class="input-blank w-auto min-w-[90px] text-base" data-ex="gram-7" data-ans='["below"]'>
+                                <option value="">-</option><option value="below">below</option><option value="above">above</option>
+                            </select> 1 million hectares. This figure increased <span class="font-bold text-indigo-400 text-sm align-top">10</span> 
+                            <select class="input-blank w-auto min-w-[80px] text-base" data-ex="gram-7" data-ans='["to"]'>
+                                <option value="">-</option><option value="by">by</option><option value="to">to</option>
+                            </select> 2 million hectares in 2012.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <button onclick="checkExercise('gram-7')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2 w-full sm:w-auto">Check Answers</button>
+                        <span id="score-gram-7" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==================== TAB 2: TRAVEL VOCAB ==================== -->
+        <div id="tab-vocab-travel" class="tab-content hidden animate-fadeIn">
+            <div class="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-2 sm:gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Travel and Transport</h2>
+                    <p class="text-slate-500 mt-1 sm:mt-2 text-base sm:text-lg">Vocabulary focus on holidays, transport, and phrasal verbs.</p>
+                </div>
+            </div>
+
+            <div class="space-y-6 sm:space-y-8 lg:space-y-10">
+                <!-- Vocab Ex 1 -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center gap-3 mb-5 sm:mb-6 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 1</span>
+                            <h3 class="font-bold text-lg sm:text-xl text-slate-900">Complete the sentences</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-indigo-50 border border-indigo-100 p-4 sm:p-5 rounded-xl mb-6 sm:mb-8 flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:gap-y-3 font-mono text-[13px] sm:text-[14px] justify-center font-bold text-indigo-700 shadow-inner">
+                        <span>activity</span> <span>adventure</span> <span>beach</span> <span>camping</span> <span>city</span> <span>package</span> <span>sightseeing</span>
+                        <span class="text-indigo-300 hidden sm:inline">|</span>
+                        <span>bike</span> <span>bus</span> <span>coach</span> <span>ferry</span> <span>ship</span> <span>train</span>
+                    </div>
+
+                    <div class="space-y-5 sm:space-y-6 text-base sm:text-lg text-slate-800">
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">1.</span>
+                            <span>I really love</span>
+                            <input type="text" class="input-blank w-24 sm:w-28 text-base" data-ex="voc-travel-1" data-ans='["package", "beach"]'> 
+                            <span>holidays because I like to relax, swim and get a suntan.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">2.</span>
+                            <input type="text" class="input-blank w-20 sm:w-24 text-base" data-ex="voc-travel-1" data-ans='["city"]'> 
+                            <span>breaks are fun. It's great being in the centre, surrounded by shops.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">3.</span>
+                            <span>I often travel by</span>
+                            <input type="text" class="input-blank w-20 sm:w-24 text-base" data-ex="voc-travel-1" data-ans='["bike"]'> 
+                            <span>because it helps me to keep fit.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">4.</span>
+                            <span>Travelling by</span>
+                            <input type="text" class="input-blank w-24 sm:w-28 text-base" data-ex="voc-travel-1" data-ans='["coach", "bus"]'> 
+                            <span>on the motorway is a cheaper way to get to your destination.</span>
+                        </p>
+                        <p class="flex items-start sm:items-center flex-wrap gap-x-2 gap-y-1">
+                            <span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">5.</span>
+                            <span>On holiday I prefer to stay in a</span>
+                            <input type="text" class="input-blank w-24 sm:w-28 text-base" data-ex="voc-travel-1" data-ans='["hotel"]'> 
+                            <span>especially one with a pool and a gym.</span>
+                        </p>
+                    </div>
+
+                    <div class="mt-8 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <button onclick="checkExercise('voc-travel-1')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2 w-full sm:w-auto">Check Answers</button>
+                        <span id="score-voc-travel-1" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                    </div>
+                </div>
+
+                <!-- Grouped Ex 2 & 3 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
+                    <!-- Vocab Ex 2 -->
+                    <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 2</span>
+                            <h3 class="font-bold text-lg text-slate-900">Holiday routine</h3>
+                        </div>
+                        <div class="bg-slate-50 p-5 sm:p-6 rounded-xl border border-slate-100 text-[15px] sm:text-base leading-loose text-slate-800">
+                            <p>I fly to New Zealand every year. The <span class="font-bold text-indigo-400 text-sm align-top">1</span> 
+                                <select class="input-blank w-auto min-w-[80px] text-base" data-ex="voc-travel-2" data-ans='["fares"]'>
+                                    <option value="">-</option><option value="fares">fares</option><option value="distances">distances</option>
+                                </select> are quite cheap. The <span class="font-bold text-indigo-400 text-sm align-top">2</span> 
+                                <select class="input-blank w-auto min-w-[90px] text-base" data-ex="voc-travel-2" data-ans='["distance"]'>
+                                    <option value="">-</option><option value="departure">departure</option><option value="distance">distance</option>
+                                </select> from Brisbane to Auckland is about 2,300 km and the <span class="font-bold text-indigo-400 text-sm align-top">3</span> 
+                                <select class="input-blank w-auto min-w-[80px] text-base" data-ex="voc-travel-2" data-ans='["flight"]'>
+                                    <option value="">-</option><option value="flight">flight</option><option value="cruise">cruise</option>
+                                </select> takes four hours. I get to the airport before my departure <span class="font-bold text-indigo-400 text-sm align-top">4</span> 
+                                <select class="input-blank w-auto min-w-[80px] text-base" data-ex="voc-travel-2" data-ans='["time"]'>
+                                    <option value="">-</option><option value="lounge">lounge</option><option value="time">time</option>
+                                </select> and sit in the <span class="font-bold text-indigo-400 text-sm align-top">5</span> 
+                                <select class="input-blank w-auto min-w-[140px] text-base" data-ex="voc-travel-2" data-ans='["departure lounge"]'>
+                                    <option value="">-</option><option value="reception desk">reception desk</option><option value="departure lounge">departure lounge</option>
+                                </select>. I usually make a <span class="font-bold text-indigo-400 text-sm align-top">6</span> 
+                                <select class="input-blank w-auto min-w-[110px] text-base" data-ex="voc-travel-2" data-ans='["reservation"]'>
+                                    <option value="">-</option><option value="reservation">reservation</option><option value="guest">guest</option>
+                                </select> for seven nights.</p>
+                        </div>
+                        <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                            <button onclick="checkExercise('voc-travel-2')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check</button>
+                            <span id="score-voc-travel-2" class="font-bold text-sm hidden text-center"></span>
+                        </div>
+                    </div>
+
+                    <!-- Vocab Ex 3 -->
+                    <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 3</span>
+                            <h3 class="font-bold text-lg text-slate-900">Compound nouns</h3>
+                        </div>
+                        <div class="space-y-4 sm:space-y-5 text-[15px] sm:text-base text-slate-800">
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-1 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">1.</span> <span>Public t</span><input type="text" class="input-blank w-20 sm:w-28 text-base" data-ex="voc-travel-3" data-ans='["ransport"]'> <span>is cheap where I live.</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-1 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">2.</span> <span>I want to stay in a five-star h</span><input type="text" class="input-blank w-16 sm:w-20 text-base" data-ex="voc-travel-3" data-ans='["otel"]'>.</p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-1 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">3.</span> <span>I don't want to be a f</span><input type="text" class="input-blank w-16 sm:w-24 text-base" data-ex="voc-travel-3" data-ans='["light"]'> <span>attendant.</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-1 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">4.</span> <span>A o</span><input type="text" class="input-blank w-10 sm:w-12 text-base" data-ex="voc-travel-3" data-ans='["ne"]'><span>-w</span><input type="text" class="input-blank w-10 sm:w-12 text-base" data-ex="voc-travel-3" data-ans='["ay"]'> <span>train ticket.</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-1 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">5.</span> <span>Go to the information d</span><input type="text" class="input-blank w-16 sm:w-20 text-base" data-ex="voc-travel-3" data-ans='["esk"]'> <span>to get a map.</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-1 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">6.</span> <span>There are direct f</span><input type="text" class="input-blank w-20 sm:w-24 text-base" data-ex="voc-travel-3" data-ans='["lights"]'> <span>from my airport.</span></p>
+                            <p class="flex items-start sm:items-center flex-wrap gap-x-1 gap-y-1"><span class="font-bold text-slate-400 w-5 sm:w-6 shrink-0 pt-0.5 sm:pt-0">7.</span> <span>It's a r</span><input type="text" class="input-blank w-16 sm:w-24 text-base" data-ex="voc-travel-3" data-ans='["ound"]'> <span>trip of around 1,200 km.</span></p>
+                        </div>
+                        <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                            <button onclick="checkExercise('voc-travel-3')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check</button>
+                            <span id="score-voc-travel-3" class="font-bold text-sm hidden text-center"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vocab Ex 4 -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-5 sm:mb-6 pb-4 border-b border-slate-100">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 4</span>
+                        <h3 class="font-bold text-lg sm:text-xl text-slate-900">Phrasal verbs</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-x-8 sm:gap-y-6 text-base sm:text-lg text-slate-800">
+                        <div class="flex items-stretch">
+                            <span class="num-badge mt-3 sm:mt-3 mr-3">1</span>
+                            <div class="flex-grow bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 flex flex-col justify-center">
+                                <div class="mb-1 flex items-center flex-wrap gap-1">eat <input type="text" class="input-blank w-16 sm:w-20 text-base font-bold text-indigo-700 m-0" data-ex="voc-travel-4" data-ans='["out"]'></div>
+                                <span class="text-slate-500 italic text-xs sm:text-sm">go to restaurants</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch">
+                            <span class="num-badge mt-3 sm:mt-3 mr-3">2</span>
+                            <div class="flex-grow bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 flex flex-col justify-center">
+                                <div class="mb-1 flex items-center flex-wrap gap-1">show someone <input type="text" class="input-blank w-24 sm:w-28 text-base font-bold text-indigo-700 m-0" data-ex="voc-travel-4" data-ans='["around", "about"]'></div>
+                                <span class="text-slate-500 italic text-xs sm:text-sm">take someone to visit local places</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch">
+                            <span class="num-badge mt-3 sm:mt-3 mr-3">3</span>
+                            <div class="flex-grow bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 flex flex-col justify-center">
+                                <div class="mb-1 flex items-center flex-wrap gap-1">look forward <input type="text" class="input-blank w-20 sm:w-24 text-base font-bold text-indigo-700 m-0" data-ex="voc-travel-4" data-ans='["to"]'></div>
+                                <span class="text-slate-500 italic text-xs sm:text-sm">feel excited about something</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch">
+                            <span class="num-badge mt-3 sm:mt-3 mr-3">4</span>
+                            <div class="flex-grow bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 flex flex-col justify-center">
+                                <div class="mb-1 flex items-center flex-wrap gap-1">take <input type="text" class="input-blank w-16 sm:w-20 text-base font-bold text-indigo-700 m-0" data-ex="voc-travel-4" data-ans='["off"]'></div>
+                                <span class="text-slate-500 italic text-xs sm:text-sm">leave the ground (for a plane)</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch">
+                            <span class="num-badge mt-3 sm:mt-3 mr-3">5</span>
+                            <div class="flex-grow bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 flex flex-col justify-center">
+                                <div class="mb-1 flex items-center flex-wrap gap-1">check <input type="text" class="input-blank w-16 sm:w-20 text-base font-bold text-indigo-700 m-0" data-ex="voc-travel-4" data-ans='["in"]'></div>
+                                <span class="text-slate-500 italic text-xs sm:text-sm">register your details (e.g. in a hotel)</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch">
+                            <span class="num-badge mt-3 sm:mt-3 mr-3">6</span>
+                            <div class="flex-grow bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 flex flex-col justify-center">
+                                <div class="mb-1 flex items-center flex-wrap gap-1">set <input type="text" class="input-blank w-16 sm:w-24 text-base font-bold text-indigo-700 m-0" data-ex="voc-travel-4" data-ans='["off", "out"]'></div>
+                                <span class="text-slate-500 italic text-xs sm:text-sm">leave home to start a journey</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch">
+                            <span class="num-badge mt-3 sm:mt-3 mr-3">7</span>
+                            <div class="flex-grow bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 flex flex-col justify-center">
+                                <div class="mb-1 flex items-center flex-wrap gap-1">get <input type="text" class="input-blank w-20 sm:w-28 text-base font-bold text-indigo-700 m-0" data-ex="voc-travel-4" data-ans='["around", "about"]'></div>
+                                <span class="text-slate-500 italic text-xs sm:text-sm">travel to different places</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch">
+                            <span class="num-badge mt-3 sm:mt-3 mr-3">8</span>
+                            <div class="flex-grow bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 flex flex-col justify-center">
+                                <div class="mb-1 flex items-center flex-wrap gap-1">look <input type="text" class="input-blank w-20 sm:w-28 text-base font-bold text-indigo-700 m-0" data-ex="voc-travel-4" data-ans='["around", "about"]'></div>
+                                <span class="text-slate-500 italic text-xs sm:text-sm">visit a place and look at the things in it</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <button onclick="checkExercise('voc-travel-4')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2 w-full sm:w-auto">Check Answers</button>
+                        <span id="score-voc-travel-4" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==================== TAB 3: ENVIRONMENT VOCAB ==================== -->
+        <div id="tab-vocab-env" class="tab-content hidden animate-fadeIn">
+            <div class="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-2 sm:gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Our Environment</h2>
+                    <p class="text-slate-500 mt-1 sm:mt-2 text-base sm:text-lg">Vocabulary focus on Weather and Climate Change.</p>
+                </div>
+            </div>
+
+            <div class="space-y-6 sm:space-y-8 lg:space-y-10">
+                <!-- Vocab Env Ex 1 -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-5 sm:mb-6 pb-4 border-b border-slate-100">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 1</span>
+                        <h3 class="font-bold text-lg sm:text-xl text-slate-900">Complete the weather words</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-[15px] text-slate-800">
+                        <div class="flex items-stretch gap-3 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                            <span class="num-badge">1</span>
+                            <div>
+                                <div class="font-bold font-mono tracking-widest text-lg sm:text-xl text-indigo-700 mb-1 flex items-center">f<input type="text" class="input-blank w-20 sm:w-24 ml-1 tracking-normal font-sans text-base" data-ex="voc-env-1" data-ans='["og"]'></div>
+                                <span class="text-slate-600 text-[13px] sm:text-sm leading-snug block">A thick cloud close to the ground that is hard to see through</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch gap-3 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                            <span class="num-badge">2</span>
+                            <div>
+                                <div class="font-bold font-mono tracking-widest text-lg sm:text-xl text-indigo-700 mb-1 flex items-center">d<input type="text" class="input-blank w-24 sm:w-28 ml-1 tracking-normal font-sans text-base" data-ex="voc-env-1" data-ans='["rought"]'></div>
+                                <span class="text-slate-600 text-[13px] sm:text-sm leading-snug block">A long period of time without rain</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch gap-3 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                            <span class="num-badge">3</span>
+                            <div>
+                                <div class="font-bold font-mono tracking-widest text-lg sm:text-xl text-indigo-700 mb-1 flex items-center">h<input type="text" class="input-blank w-28 sm:w-32 ml-1 tracking-normal font-sans text-base" data-ex="voc-env-1" data-ans='["eatwave"]'></div>
+                                <span class="text-slate-600 text-[13px] sm:text-sm leading-snug block">A period of time when the weather is hotter than usual</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch gap-3 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                            <span class="num-badge">4</span>
+                            <div>
+                                <div class="font-bold font-mono tracking-widest text-lg sm:text-xl text-indigo-700 mb-1 flex items-center">t<input type="text" class="input-blank w-36 sm:w-40 ml-1 tracking-normal font-sans text-base" data-ex="voc-env-1" data-ans='["hunderstorm"]'></div>
+                                <span class="text-slate-600 text-[13px] sm:text-sm leading-snug block">Flashes of light followed by loud noises during a storm</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch gap-3 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                            <span class="num-badge">5</span>
+                            <div>
+                                <div class="font-bold font-mono tracking-widest text-lg sm:text-xl text-indigo-700 mb-1 flex items-center">f<input type="text" class="input-blank w-20 sm:w-24 ml-1 tracking-normal font-sans text-base" data-ex="voc-env-1" data-ans='["lood"]'></div>
+                                <span class="text-slate-600 text-[13px] sm:text-sm leading-snug block">When a very large amount of water covers an area that is usually dry</span>
+                            </div>
+                        </div>
+                        <div class="flex items-stretch gap-3 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                            <span class="num-badge">6</span>
+                            <div>
+                                <div class="font-bold font-mono tracking-widest text-lg sm:text-xl text-indigo-700 mb-1 flex items-center">h<input type="text" class="input-blank w-28 sm:w-32 ml-1 tracking-normal font-sans text-base" data-ex="voc-env-1" data-ans='["urricane"]'></div>
+                                <span class="text-slate-600 text-[13px] sm:text-sm leading-snug block">A storm with very strong winds that can cause lots of damage</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <button onclick="checkExercise('voc-env-1')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2 w-full sm:w-auto">Check Answers</button>
+                        <span id="score-voc-env-1" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                    </div>
+                </div>
+
+                <!-- Grouped Ex 2 & 3 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
+                    <!-- Vocab Env Ex 2 -->
+                    <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 2</span>
+                            <h3 class="font-bold text-lg text-slate-900">Choose the adjectives</h3>
+                        </div>
+                        <div class="space-y-4 text-[14px] sm:text-[15px] text-slate-800 leading-relaxed">
+                            <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <span class="font-bold text-indigo-600 mt-1">A</span> 
+                                <div class="flex-grow">We got very <select class="input-blank w-auto min-w-[70px] text-base" data-ex="voc-env-2" data-ans='["thick"]'><option value="">-</option><option value="strong">strong</option><option value="thick">thick</option></select> fogs in the mornings, but not now.</div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <span class="font-bold text-indigo-600 mt-1">B</span> 
+                                <div class="flex-grow">I love rain! <select class="input-blank w-auto min-w-[70px] text-base" data-ex="voc-env-2" data-ans='["light"]'><option value="">-</option><option value="light">light</option><option value="soft">soft</option></select> rain, <select class="input-blank w-auto min-w-[80px] text-base" data-ex="voc-env-2" data-ans='["heavy"]'><option value="">-</option><option value="strong">strong</option><option value="heavy">heavy</option></select> rain.</div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <span class="font-bold text-indigo-600 mt-1">C</span> 
+                                <div class="flex-grow">I come from a region with a very <select class="input-blank w-auto min-w-[70px] text-base" data-ex="voc-env-2" data-ans='["mild"]'><option value="">-</option><option value="mild">mild</option><option value="soft">soft</option></select> climate.</div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <span class="font-bold text-indigo-600 mt-1">D</span> 
+                                <div class="flex-grow">We get much <select class="input-blank w-auto min-w-[80px] text-base" data-ex="voc-env-2" data-ans='["higher"]'><option value="">-</option><option value="bigger">bigger</option><option value="higher">higher</option></select> temperatures now. They were much <select class="input-blank w-auto min-w-[80px] text-base" data-ex="voc-env-2" data-ans='["lower"]'><option value="">-</option><option value="lower">lower</option><option value="smaller">smaller</option></select> when I was young.</div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <span class="font-bold text-indigo-600 mt-1">E</span> 
+                                <div class="flex-grow">We get more <select class="input-blank w-auto min-w-[90px] text-base" data-ex="voc-env-2" data-ans='["extreme"]'><option value="">-</option><option value="great">great</option><option value="extreme">extreme</option></select> weather, you could say.</div>
+                            </div>
+                        </div>
+                        <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                            <button onclick="checkExercise('voc-env-2')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check</button>
+                            <span id="score-voc-env-2" class="font-bold text-sm hidden text-center"></span>
+                        </div>
+                    </div>
+
+                    <!-- Vocab Env Ex 3 -->
+                    <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 3</span>
+                            <h3 class="font-bold text-lg text-slate-900">Environmental issues</h3>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-500 mb-5 font-medium">The words in bold are all in the wrong sentences. Type the correct word.</p>
+                        <div class="space-y-4 text-[14px] sm:text-[15px] text-slate-800">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-50 p-3 sm:p-4 rounded-lg gap-2">
+                                <span class="w-full sm:w-2/3">1. Big airplanes cause noise <b>quality</b>.</span> 
+                                <span class="w-full sm:w-1/3 flex sm:justify-end text-indigo-600 font-bold">&rarr; <input type="text" class="input-blank w-24 sm:w-28 text-base ml-1" data-ex="voc-env-3" data-ans='["pollution"]'></span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-50 p-3 sm:p-4 rounded-lg gap-2">
+                                <span class="w-full sm:w-2/3">2. Put their <b>pollution</b> in the bin.</span> 
+                                <span class="w-full sm:w-1/3 flex sm:justify-end text-indigo-600 font-bold">&rarr; <input type="text" class="input-blank w-24 sm:w-28 text-base ml-1" data-ex="voc-env-3" data-ans='["rubbish"]'></span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-50 p-3 sm:p-4 rounded-lg gap-2">
+                                <span class="w-full sm:w-2/3">3. <b>Pollution</b> paper is common.</span> 
+                                <span class="w-full sm:w-1/3 flex sm:justify-end text-indigo-600 font-bold">&rarr; <input type="text" class="input-blank w-24 sm:w-28 text-base ml-1" data-ex="voc-env-3" data-ans='["recycling"]'></span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-50 p-3 sm:p-4 rounded-lg gap-2">
+                                <span class="w-full sm:w-2/3">4. Toxic <b>recycling</b> is a problem.</span> 
+                                <span class="w-full sm:w-1/3 flex sm:justify-end text-indigo-600 font-bold">&rarr; <input type="text" class="input-blank w-24 sm:w-28 text-base ml-1" data-ex="voc-env-3" data-ans='["waste"]'></span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-50 p-3 sm:p-4 rounded-lg gap-2">
+                                <span class="w-full sm:w-2/3">5. Air <b>waste</b> causes issues.</span> 
+                                <span class="w-full sm:w-1/3 flex sm:justify-end text-indigo-600 font-bold">&rarr; <input type="text" class="input-blank w-24 sm:w-28 text-base ml-1" data-ex="voc-env-3" data-ans='["pollution"]'></span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-50 p-3 sm:p-4 rounded-lg gap-2">
+                                <span class="w-full sm:w-2/3">6. Improve the air <b>rubbish</b>.</span> 
+                                <span class="w-full sm:w-1/3 flex sm:justify-end text-indigo-600 font-bold">&rarr; <input type="text" class="input-blank w-24 sm:w-28 text-base ml-1" data-ex="voc-env-3" data-ans='["quality"]'></span>
+                            </div>
+                        </div>
+                        <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                            <button onclick="checkExercise('voc-env-3')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check</button>
+                            <span id="score-voc-env-3" class="font-bold text-sm hidden text-center"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB 4: WRITING ==================== -->
+        <div id="tab-writing" class="tab-content hidden animate-fadeIn">
+            <div class="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-2 sm:gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Writing (Task 1)</h2>
+                    <p class="text-slate-500 mt-1 sm:mt-2 text-base sm:text-lg">Organise information, describe changes and trends.</p>
+                </div>
+            </div>
+
+            <div class="space-y-6 sm:space-y-8 lg:space-y-10">
+                <!-- Writing Ex 1 & 2 (Australia Visitors) -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-6 sm:mb-8 pb-4 border-b border-slate-100">
+                        <h3 class="font-bold text-xl sm:text-2xl text-slate-900">Part 1: Short-term visitor arrivals to Australia</h3>
+                    </div>
+
+                    <!-- Interactive Chart 1 -->
+                    <div class="bg-slate-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 mb-8 sm:mb-10 shadow-inner">
+                        <div class="chart-container">
+                            <canvas id="chartVisitors"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+                        <div>
+                            <div class="flex items-center gap-3 mb-5 sm:mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 1</span>
+                                <h4 class="font-bold text-lg text-slate-900">True or False?</h4>
+                            </div>
+                            <div class="space-y-4 text-[14px] sm:text-[15px] text-slate-800">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div class="flex items-start gap-3 w-full sm:w-auto flex-grow">
+                                        <span class="num-badge">1</span>
+                                        <div>The graph gives information about the number of visitors to Australia.</div>
+                                    </div>
+                                    <select class="input-blank w-full sm:w-24 text-base font-bold text-indigo-700 shrink-0 mt-2 sm:mt-0" data-ex="write-1" data-ans='["t", "true"]'><option value="">-</option><option value="t">True</option><option value="f">False</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div class="flex items-start gap-3 w-full sm:w-auto flex-grow">
+                                        <span class="num-badge">2</span>
+                                        <div>It shows changes over time.</div>
+                                    </div>
+                                    <select class="input-blank w-full sm:w-24 text-base font-bold text-indigo-700 shrink-0 mt-2 sm:mt-0" data-ex="write-1" data-ans='["t", "true"]'><option value="">-</option><option value="t">True</option><option value="f">False</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div class="flex items-start gap-3 w-full sm:w-auto flex-grow">
+                                        <span class="num-badge">3</span>
+                                        <div>It includes predictions about the future.</div>
+                                    </div>
+                                    <select class="input-blank w-full sm:w-24 text-base font-bold text-indigo-700 shrink-0 mt-2 sm:mt-0" data-ex="write-1" data-ans='["f", "false"]'><option value="">-</option><option value="t">True</option><option value="f">False</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div class="flex items-start gap-3 w-full sm:w-auto flex-grow">
+                                        <span class="num-badge">4</span>
+                                        <div>It shows numbers of tourists.</div>
+                                    </div>
+                                    <select class="input-blank w-full sm:w-24 text-base font-bold text-indigo-700 shrink-0 mt-2 sm:mt-0" data-ex="write-1" data-ans='["t", "true"]'><option value="">-</option><option value="t">True</option><option value="f">False</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div class="flex items-start gap-3 w-full sm:w-auto flex-grow">
+                                        <span class="num-badge">5</span>
+                                        <div>It has information about different countries.</div>
+                                    </div>
+                                    <select class="input-blank w-full sm:w-24 text-base font-bold text-indigo-700 shrink-0 mt-2 sm:mt-0" data-ex="write-1" data-ans='["t", "true"]'><option value="">-</option><option value="t">True</option><option value="f">False</option></select>
+                                </div>
+                            </div>
+                            <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                                <button onclick="checkExercise('write-1')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check Ex 1</button>
+                                <span id="score-write-1" class="font-bold text-sm hidden text-center"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center gap-3 mb-5 sm:mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 2</span>
+                                <h4 class="font-bold text-lg text-slate-900">Describe trends</h4>
+                            </div>
+                            <div class="space-y-4 text-[14px] sm:text-[15px] text-slate-800">
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-100">
+                                    <span class="font-semibold text-base sm:text-lg pl-1">increased</span>
+                                    <select class="input-blank w-full sm:w-48 text-base" data-ex="write-2" data-ans='["up"]'><option value="">-</option><option value="up">Going up</option><option value="down">Going down</option><option value="same">Staying the same</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-100">
+                                    <span class="font-semibold text-base sm:text-lg pl-1">fell</span>
+                                    <select class="input-blank w-full sm:w-48 text-base" data-ex="write-2" data-ans='["down"]'><option value="">-</option><option value="up">Going up</option><option value="down">Going down</option><option value="same">Staying the same</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-100">
+                                    <span class="font-semibold text-base sm:text-lg pl-1">levelled off</span>
+                                    <select class="input-blank w-full sm:w-48 text-base" data-ex="write-2" data-ans='["same"]'><option value="">-</option><option value="up">Going up</option><option value="down">Going down</option><option value="same">Staying the same</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-100">
+                                    <span class="font-semibold text-base sm:text-lg pl-1">stayed constant</span>
+                                    <select class="input-blank w-full sm:w-48 text-base" data-ex="write-2" data-ans='["same"]'><option value="">-</option><option value="up">Going up</option><option value="down">Going down</option><option value="same">Staying the same</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-100">
+                                    <span class="font-semibold text-base sm:text-lg pl-1">rose</span>
+                                    <select class="input-blank w-full sm:w-48 text-base" data-ex="write-2" data-ans='["up"]'><option value="">-</option><option value="up">Going up</option><option value="down">Going down</option><option value="same">Staying the same</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-100">
+                                    <span class="font-semibold text-base sm:text-lg pl-1">declined</span>
+                                    <select class="input-blank w-full sm:w-48 text-base" data-ex="write-2" data-ans='["down"]'><option value="">-</option><option value="up">Going up</option><option value="down">Going down</option><option value="same">Staying the same</option></select>
+                                </div>
+                            </div>
+                            <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                                <button onclick="checkExercise('write-2')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check Ex 2</button>
+                                <span id="score-write-2" class="font-bold text-sm hidden text-center"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Writing Ex 3 & 4 (Recycling USA) -->
+                <div class="bg-white p-5 sm:p-8 lg:p-10 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-6 sm:mb-8 pb-4 border-b border-slate-100">
+                        <h3 class="font-bold text-xl sm:text-2xl text-slate-900">Part 2: Recycling rates in the USA</h3>
+                    </div>
+
+                    <!-- Interactive Chart 2 -->
+                    <div class="bg-slate-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 mb-8 sm:mb-10 shadow-inner">
+                        <div class="chart-container">
+                            <canvas id="chartRecycling"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 mb-8 sm:mb-10">
+                        <div>
+                            <div class="flex items-center gap-3 mb-5 sm:mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 3</span>
+                                <h4 class="font-bold text-lg text-slate-900">Understand the task</h4>
+                            </div>
+                            <p class="text-[14px] sm:text-[15px] text-slate-600 mb-6 italic border-l-4 border-indigo-400 pl-4 py-2 bg-indigo-50/50 rounded-r-lg">"The graph above shows the percentage of aluminium, glass, paper and plastic recycled in the USA over the period 1960-2010. Summarise the information by selecting and reporting the main features..."</p>
+                            <p class="text-base text-slate-900 font-bold mb-4">Which statement about the writing task is false?</p>
+                            
+                            <div class="space-y-3 text-[14px] sm:text-[15px] text-slate-800">
+                                <label class="flex items-start sm:items-center gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 cursor-pointer hover:border-indigo-300 transition-colors">
+                                    <input type="radio" name="write3" value="a" class="w-5 h-5 mt-0.5 sm:mt-0 text-indigo-600 focus:ring-indigo-500 shrink-0">
+                                    <span class="font-medium">A. You have to summarise trends in the graph.</span>
+                                </label>
+                                <label class="flex items-start sm:items-center gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 cursor-pointer hover:border-indigo-300 transition-colors">
+                                    <input type="radio" name="write3" value="b" class="w-5 h-5 mt-0.5 sm:mt-0 text-indigo-600 focus:ring-indigo-500 shrink-0">
+                                    <span class="font-medium">B. You have to explain the reasons for the trends.</span>
+                                </label>
+                                <label class="flex items-start sm:items-center gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100 cursor-pointer hover:border-indigo-300 transition-colors">
+                                    <input type="radio" name="write3" value="c" class="w-5 h-5 mt-0.5 sm:mt-0 text-indigo-600 focus:ring-indigo-500 shrink-0">
+                                    <span class="font-medium">C. You have to include data (numbers) in your answer.</span>
+                                </label>
+                            </div>
+                            <div class="mt-4 hidden">
+                                <input type="text" class="input-blank" data-ex="write-3" data-ans='["b"]' id="hidden-write-3">
+                            </div>
+                            <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                                <button onclick="checkRadioExercise('write3', 'write-3')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check Ex 3</button>
+                                <span id="score-write-3" class="font-bold text-sm hidden text-center"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center gap-3 mb-5 sm:mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 4</span>
+                                <h4 class="font-bold text-lg text-slate-900">Structure of the summary</h4>
+                            </div>
+                            <p class="text-[14px] sm:text-[15px] text-slate-600 mb-6 font-medium">Match the parts of a model answer (A-D) with their descriptions.</p>
+                            
+                            <div class="space-y-4 text-[14px] sm:text-[15px] text-slate-800">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                                    <span class="flex-grow font-medium">1. a sentence about the overall trend in the graph</span>
+                                    <select class="input-blank w-full sm:w-36 text-base font-bold text-indigo-700 m-0 mt-2 sm:mt-0" data-ex="write-4" data-ans='["b"]'><option value="">-</option><option value="a">A (Intro)</option><option value="b">B (Overview)</option><option value="c">C (Main 1)</option><option value="d">D (Main 2)</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                                    <span class="flex-grow font-medium">2. recycling rates that decreased</span>
+                                    <select class="input-blank w-full sm:w-36 text-base font-bold text-indigo-700 m-0 mt-2 sm:mt-0" data-ex="write-4" data-ans='["d"]'><option value="">-</option><option value="a">A (Intro)</option><option value="b">B (Overview)</option><option value="c">C (Main 1)</option><option value="d">D (Main 2)</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                                    <span class="flex-grow font-medium">3. recycling rates that increased</span>
+                                    <select class="input-blank w-full sm:w-36 text-base font-bold text-indigo-700 m-0 mt-2 sm:mt-0" data-ex="write-4" data-ans='["c"]'><option value="">-</option><option value="a">A (Intro)</option><option value="b">B (Overview)</option><option value="c">C (Main 1)</option><option value="d">D (Main 2)</option></select>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-100">
+                                    <span class="flex-grow font-medium">4. explaining what the graph is about</span>
+                                    <select class="input-blank w-full sm:w-36 text-base font-bold text-indigo-700 m-0 mt-2 sm:mt-0" data-ex="write-4" data-ans='["a"]'><option value="">-</option><option value="a">A (Intro)</option><option value="b">B (Overview)</option><option value="c">C (Main 1)</option><option value="d">D (Main 2)</option></select>
+                                </div>
+                            </div>
+                            <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                                <button onclick="checkExercise('write-4')" class="check-btn bg-indigo-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold hover:bg-indigo-700 text-sm w-full sm:w-auto text-center">Check Ex 4</button>
+                                <span id="score-write-4" class="font-bold text-sm hidden text-center"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Writing Ex 5 -->
+                    <div class="border-t-2 border-slate-100 pt-8 sm:pt-10">
+                        <div class="flex items-center gap-3 mb-5 sm:mb-6">
+                            <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg text-xs sm:text-sm">Ex 5</span>
+                            <h4 class="font-bold text-lg text-slate-900">Sentence structure variety</h4>
+                        </div>
+                        <p class="text-[14px] sm:text-[15px] text-slate-600 mb-6">Rewrite the phrases converting <span class="font-mono bg-slate-100 px-2 py-0.5 rounded text-[13px] sm:text-sm text-indigo-600 font-bold border border-slate-200">Verb + adverb</span> to <span class="font-mono bg-slate-100 px-2 py-0.5 rounded text-[13px] sm:text-sm text-indigo-600 font-bold border border-slate-200">Adjective + noun</span>.</p>
+                        
+                        <div class="space-y-6 text-base text-slate-800">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center">
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm text-base sm:text-lg text-center md:text-left">The figures <b class="text-indigo-900">increased dramatically</b>.</div>
+                                <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-2 text-indigo-700 font-medium text-base sm:text-lg">
+                                    <span class="hidden md:inline">&rarr;</span>
+                                    <span class="md:hidden text-slate-400">&darr;</span>
+                                    <span>There was a <input type="text" class="input-blank w-[85vw] sm:w-64 text-center font-bold" placeholder="e.g. dramatic increase" data-ex="write-5" data-ans='["dramatic increase"]'>.</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center">
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm text-base sm:text-lg text-center md:text-left">The percentage <b class="text-indigo-900">rose steadily</b>.</div>
+                                <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-2 text-indigo-700 font-medium text-base sm:text-lg">
+                                    <span class="hidden md:inline">&rarr;</span>
+                                    <span class="md:hidden text-slate-400">&darr;</span>
+                                    <span>There was a <input type="text" class="input-blank w-[85vw] sm:w-64 text-center font-bold" data-ex="write-5" data-ans='["steady rise"]'>.</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center">
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm text-base sm:text-lg text-center md:text-left">There was a <b class="text-indigo-900">sudden growth</b>...</div>
+                                <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-2 text-indigo-700 font-medium text-base sm:text-lg text-center md:text-left">
+                                    <span class="hidden md:inline">&rarr;</span>
+                                    <span class="md:hidden text-slate-400">&darr;</span>
+                                    <span>... in those numbers, which <input type="text" class="input-blank w-[80vw] sm:w-56 text-center font-bold" data-ex="write-5" data-ans='["grew suddenly"]'>.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                            <button onclick="checkExercise('write-5')" class="check-btn bg-indigo-600 text-white px-6 py-3 sm:py-2.5 rounded-xl font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2 w-full sm:w-auto">Check Answers</button>
+                            <span id="score-write-5" class="font-bold text-base sm:text-lg hidden bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-center"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Store chart instances globally to resize them
+        let charts = {};
+
+        // Tab switching logic
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+                tab.classList.remove('block');
+            });
+            
+            // Remove active state from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-indigo-700');
+                btn.classList.add('text-slate-500');
+            });
+
+            // Show selected tab
+            const targetTab = document.getElementById(tabId);
+            if(targetTab) {
+                targetTab.classList.remove('hidden');
+                targetTab.classList.add('block');
+            }
+            
+            // Set active state on clicked button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) {
+                activeBtn.classList.add('active', 'text-indigo-700');
+                activeBtn.classList.remove('text-slate-500');
+            }
+
+            // Resize charts if switching to writing tab
+            if (tabId === 'tab-writing' && typeof charts !== 'undefined') {
+                for (let key in charts) {
+                    if(charts[key]) {
+                        charts[key].resize();
+                    }
+                }
+            }
+            
+            // Scroll back to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toast Notification System
+        let toastTimeout;
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMessage.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            // Set icon based on type
+            if (type === 'success') {
+                toastIcon.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            } else if (type === 'error') {
+                toastIcon.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+            } else if (type === 'warning') {
+                toastIcon.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+            }
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Validate blanks before checking
+        function validateBlanks(inputs) {
+            let allFilled = true;
+            inputs.forEach(input => {
+                const val = input.value.trim();
+                if (val === "") {
+                    allFilled = false;
+                    input.style.borderBottomColor = '#f59e0b'; // warning color
+                    input.style.backgroundColor = '#fef3c7';
+                    setTimeout(() => {
+                        input.style.borderBottomColor = '';
+                        input.style.backgroundColor = '';
+                    }, 1500);
+                }
+            });
+            return allFilled;
+        }
+
+        // Grading Logic
+        function checkExercise(exerciseId) {
+            const inputs = document.querySelectorAll(`[data-ex="${exerciseId}"]`);
+            if (inputs.length === 0) return;
+
+            if (!validateBlanks(inputs)) {
+                showToast("Please answer all required blanks before checking!", "warning");
+                return;
+            }
+
+            let correctCount = 0;
+            const totalCount = inputs.length;
+
+            inputs.forEach(input => {
+                const userVal = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+                const possibleAns = JSON.parse(input.getAttribute('data-ans'));
+                
+                if (possibleAns.includes(userVal)) {
+                    correctCount++;
+                    input.classList.add('correct');
+                    input.classList.remove('incorrect');
+                } else {
+                    input.classList.add('incorrect');
+                    input.classList.remove('correct');
+                }
+            });
+
+            const scoreLabel = document.getElementById(`score-${exerciseId}`);
+            const percentage = correctCount / totalCount;
+            const scoreText = `${Math.round(percentage * 100)}% (${correctCount}/${totalCount})`;
+            
+            scoreLabel.classList.remove('hidden', 'text-green-600', 'text-red-600', 'border-green-200', 'border-red-200', 'bg-green-50', 'bg-red-50');
+            scoreLabel.classList.remove('bg-slate-50', 'border-slate-100');
+            
+            if (percentage >= 0.8) {
+                scoreLabel.innerHTML = `<span class="flex items-center justify-center gap-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ${scoreText}</span>`;
+                scoreLabel.classList.add('text-green-700', 'bg-green-50', 'border-green-200');
+                showToast("Great job!", "success");
+            } else {
+                scoreLabel.innerHTML = `<span class="flex items-center justify-center gap-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> ${scoreText}</span>`;
+                scoreLabel.classList.add('text-red-700', 'bg-red-50', 'border-red-200');
+                showToast(`You scored ${Math.round(percentage * 100)}%. Keep trying!`, "error");
+            }
+        }
+
+        // Special check for Radio Button Exercise
+        function checkRadioExercise(radioName, exerciseId) {
+            const radios = document.getElementsByName(radioName);
+            let selectedValue = "";
+            for (const radio of radios) {
+                if (radio.checked) {
+                    selectedValue = radio.value;
+                    break;
+                }
+            }
+
+            if (!selectedValue) {
+                showToast("Please select an option before checking!", "warning");
+                return;
+            }
+
+            // Sync hidden input
+            const hiddenInput = document.getElementById('hidden-' + exerciseId);
+            hiddenInput.value = selectedValue;
+
+            checkExercise(exerciseId);
+        }
+
+        // Initialize Chart.js
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global Chart Defaults
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#475569';
+            Chart.defaults.font.size = window.innerWidth < 640 ? 10 : 12;
+
+            // Chart 1: Visitors to Australia
+            const canvasVisitors = document.getElementById('chartVisitors');
+            if (canvasVisitors) {
+                const ctxVisitors = canvasVisitors.getContext('2d');
+                charts['visitors'] = new Chart(ctxVisitors, {
+                    type: 'line',
+                    data: {
+                        labels: ['1990', '1995', '2000', '2005', '2010', '2015'],
+                        datasets: [
+                            {
+                                label: 'New Zealand',
+                                data: [450000, 650000, 800000, 1050000, 1100000, 1300000],
+                                borderColor: '#0f172a',
+                                backgroundColor: '#0f172a',
+                                tension: 0.3,
+                                borderWidth: 2,
+                                pointRadius: 3
+                            },
+                            {
+                                label: 'China',
+                                data: [100000, 200000, 300000, 420000, 650000, 1300000],
+                                borderColor: '#b91c1c',
+                                backgroundColor: '#b91c1c',
+                                tension: 0.3,
+                                borderWidth: 2,
+                                pointRadius: 3
+                            },
+                            {
+                                label: 'Japan',
+                                data: [550000, 800000, 700000, 650000, 350000, 350000],
+                                borderColor: '#94a3b8',
+                                backgroundColor: '#94a3b8',
+                                tension: 0.3,
+                                borderWidth: 2,
+                                pointRadius: 3
+                            },
+                            {
+                                label: 'USA',
+                                data: [280000, 320000, 500000, 450000, 450000, 600000],
+                                borderColor: '#f472b6',
+                                backgroundColor: '#f472b6',
+                                tension: 0.3,
+                                borderWidth: 2,
+                                pointRadius: 3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                position: 'bottom',
+                                labels: {
+                                    padding: window.innerWidth < 640 ? 10 : 20,
+                                    font: { weight: 'bold', size: window.innerWidth < 640 ? 10 : 12 },
+                                    boxWidth: window.innerWidth < 640 ? 15 : 40
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Short-term visitor arrivals to Australia',
+                                font: { size: window.innerWidth < 640 ? 14 : 18, weight: 'bold' },
+                                padding: { bottom: window.innerWidth < 640 ? 10 : 20 }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 1400000,
+                                ticks: {
+                                    callback: function(value) {
+                                        return window.innerWidth < 640 ? (value/1000) + 'k' : value.toLocaleString();
+                                    },
+                                    maxTicksLimit: 6
+                                },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Recycling in USA
+            const canvasRecycling = document.getElementById('chartRecycling');
+            if (canvasRecycling) {
+                const ctxRecycling = canvasRecycling.getContext('2d');
+                charts['recycling'] = new Chart(ctxRecycling, {
+                    type: 'line',
+                    data: {
+                        labels: ['1960', '1970', '1980', '1990', '2000', '2010'],
+                        datasets: [
+                            {
+                                label: 'Aluminium',
+                                data: [null, null, 18, 38, 28, 20],
+                                borderColor: '#0f172a',
+                                backgroundColor: '#0f172a',
+                                pointStyle: 'circle',
+                                pointRadius: window.innerWidth < 640 ? 4 : 6,
+                                borderWidth: 2,
+                                spanGaps: true
+                            },
+                            {
+                                label: 'Glass',
+                                data: [2, 2, 5, 18, 22, 25],
+                                borderColor: '#dc2626',
+                                backgroundColor: '#dc2626',
+                                pointStyle: 'rectRounded',
+                                pointRadius: window.innerWidth < 640 ? 4 : 6,
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Paper',
+                                data: [18, 16, 22, 28, 43, 64],
+                                borderColor: '#fca5a5',
+                                backgroundColor: '#fca5a5',
+                                pointStyle: 'circle',
+                                pointRadius: window.innerWidth < 640 ? 4 : 6,
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Plastic',
+                                data: [null, null, 1, 3, 6, 9],
+                                borderColor: '#94a3b8',
+                                backgroundColor: '#94a3b8',
+                                pointStyle: 'circle',
+                                pointRadius: window.innerWidth < 640 ? 4 : 6,
+                                borderWidth: 2,
+                                spanGaps: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: window.innerWidth < 640 ? 10 : 20,
+                                    font: { weight: 'bold', size: window.innerWidth < 640 ? 10 : 12 }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Recycling rates in the USA',
+                                font: { size: window.innerWidth < 640 ? 14 : 18, weight: 'bold' },
+                                padding: { bottom: window.innerWidth < 640 ? 10 : 20 }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 70,
+                                title: {
+                                    display: true,
+                                    text: 'Percentage recycled',
+                                    font: { weight: '600' }
+                                },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Handle resize to update chart ticks/text sizes
+            window.addEventListener('resize', function() {
+                const isMobile = window.innerWidth < 640;
+                Chart.defaults.font.size = isMobile ? 10 : 12;
+                
+                if (charts['visitors']) {
+                    charts['visitors'].options.plugins.legend.labels.padding = isMobile ? 10 : 20;
+                    charts['visitors'].options.plugins.legend.labels.boxWidth = isMobile ? 15 : 40;
+                    charts['visitors'].options.plugins.title.font.size = isMobile ? 14 : 18;
+                    charts['visitors'].options.plugins.title.padding.bottom = isMobile ? 10 : 20;
+                    charts['visitors'].update('none'); // Update without animation
+                }
+
+                if (charts['recycling']) {
+                    charts['recycling'].options.plugins.legend.labels.padding = isMobile ? 10 : 20;
+                    charts['recycling'].options.plugins.title.font.size = isMobile ? 14 : 18;
+                    charts['recycling'].options.plugins.title.padding.bottom = isMobile ? 10 : 20;
+                    charts['recycling'].update('none');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
