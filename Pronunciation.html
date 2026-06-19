@@ -499,13 +499,15 @@
         const DB_NAME = 'VowelCoachCache';
         const STORE_NAME = 'audioCache';
 
+        // Initialize local IndexedDB setup with versioning support for settings metadata
         function initDB() {
             return new Promise((resolve, reject) => {
                 if (!window.indexedDB) {
                     resolve(null);
                     return;
                 }
-                const request = indexedDB.open(DB_NAME, 1);
+                // Upgrade version from 1 to 2 to support split object stores for cache & configurations
+                const request = indexedDB.open(DB_NAME, 2);
                 request.onerror = (e) => reject(e);
                 request.onsuccess = (e) => {
                     db = e.target.result;
@@ -513,7 +515,12 @@
                 };
                 request.onupgradeneeded = (e) => {
                     const database = e.target.result;
-                    database.createObjectStore(STORE_NAME);
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        database.createObjectStore(STORE_NAME);
+                    }
+                    if (!database.objectStoreNames.contains('settings')) {
+                        database.createObjectStore('settings');
+                    }
                 };
             });
         }
@@ -551,6 +558,37 @@
             });
         }
 
+        // Local State persistence methods to store configurations entirely on-device
+        function saveLocalSetting(key, value) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                try {
+                    const transaction = db.transaction(['settings'], 'readwrite');
+                    const store = transaction.objectStore('settings');
+                    const request = store.put(value, key);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => resolve();
+                } catch (err) {
+                    resolve();
+                }
+            });
+        }
+
+        function getLocalSetting(key) {
+            return new Promise((resolve) => {
+                if (!db) return resolve(null);
+                try {
+                    const transaction = db.transaction(['settings'], 'readonly');
+                    const store = transaction.objectStore('settings');
+                    const request = store.get(key);
+                    request.onsuccess = (e) => resolve(e.target.result);
+                    request.onerror = () => resolve(null);
+                } catch (err) {
+                    resolve(null);
+                }
+            });
+        }
+
         function clearAudioCache() {
             if (!db) return;
             const transaction = db.transaction([STORE_NAME], 'readwrite');
@@ -573,16 +611,31 @@
         }
 
         window.onload = function () {
-            const activeKey = state.apiKeyValue || apiKey;
-            if (activeKey) {
-                state.speechEngine = 'gemini';
-                setEngine('gemini');
-            } else {
-                setEngine('webspeech');
-            }
-
-            initDB().then(() => {
+            // Load DB and retrieve stored config credentials locally
+            initDB().then(async () => {
                 updateCacheCounter();
+                
+                // Retrieve settings if saved before on-device
+                const savedApiKey = await getLocalSetting('apiKey');
+                const savedVoice = await getLocalSetting('geminiVoice');
+                
+                if (savedApiKey) {
+                    state.apiKeyValue = savedApiKey;
+                    document.getElementById('apiKeyValueInput').value = savedApiKey;
+                }
+                if (savedVoice) {
+                    state.geminiVoice = savedVoice;
+                    document.getElementById('geminiVoiceSelect').value = savedVoice;
+                }
+
+                // Check active speech engine on startup
+                const activeKey = state.apiKeyValue || apiKey;
+                if (activeKey) {
+                    state.speechEngine = 'gemini';
+                    setEngine('gemini');
+                } else {
+                    setEngine('webspeech');
+                }
             }).catch(e => console.error("IDB Fail", e));
 
             loadVowelGrid();
@@ -930,10 +983,15 @@
             }
         }
 
-        function saveSettings() {
+        // Modified settings save logic with fully local state storage tracking
+        async function saveSettings() {
             stopAllPlayback();
             state.apiKeyValue = document.getElementById('apiKeyValueInput').value.trim();
             state.geminiVoice = document.getElementById('geminiVoiceSelect').value;
+            
+            // Persist parameters natively to offline database object store
+            await saveLocalSetting('apiKey', state.apiKeyValue);
+            await saveLocalSetting('geminiVoice', state.geminiVoice);
             
             const activeKey = state.apiKeyValue || apiKey;
             if (activeKey !== "") {
