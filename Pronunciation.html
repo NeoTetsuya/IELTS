@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Lora:ital,wght=0,400;0,500;1,400&display=swap" rel="stylesheet">
+    
     <script>
         tailwind.config = {
             theme: {
@@ -104,9 +105,26 @@
     <!-- Main Workspace -->
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden">
         
-        <!-- Left Column: Anatomy Model & Vowel Sounds Grid -->
+        <!-- Left Column: Anatomy Model, Stats Dashboard & Vowel Sounds Grid -->
         <section class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-1">
             
+            <!-- Persistent Progress Dashboard -->
+            <div class="bg-gradient-to-tr from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <h3 class="font-display font-semibold text-xs tracking-wider text-indigo-300 uppercase mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line"></i> Learning Statistics
+                </h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-950/80 border border-slate-800/60 rounded-xl p-3">
+                        <span class="text-[10px] text-slate-400 block uppercase font-medium mb-1">Completed Units</span>
+                        <span id="lblProgressUnitCount" class="text-lg font-bold text-slate-100">0 / 8</span>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800/60 rounded-xl p-3">
+                        <span class="text-[10px] text-slate-400 block uppercase font-medium mb-1">Average Score</span>
+                        <span id="lblProgressAvgScore" class="text-lg font-bold text-brand-400">0%</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Animated Mouth Anatomy Model -->
             <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-xl">
                 <div class="flex items-center justify-between mb-3">
@@ -175,7 +193,7 @@
         <!-- Right Column: Interactive Practice Board -->
         <section class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6 overflow-hidden h-full">
             
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-xl flex-1">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-0 flex flex-col overflow-hidden shadow-xl flex-1">
                 
                 <!-- Practice Mode Control Header -->
                 <div class="bg-slate-950 border-b border-slate-800/80 px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -224,7 +242,7 @@
                             </div>
                         </div>
                         <h4 class="font-display font-bold text-sm text-rose-300">Speaking Practice Active</h4>
-                        <p class="text-[11px] text-slate-500 max-w-sm mt-0.5 leading-relaxed">Speak clearly and slowly. Pronounce the highlighted vowels with care!</p>
+                        <p class="text-[11px] text-slate-400 max-w-sm mt-0.5 leading-relaxed">Speak clearly and slowly. Pronounce the highlighted vowels with care!</p>
                         
                         <!-- Target Box: Displays the text being read while recording -->
                         <div class="my-4 w-full max-w-2xl bg-slate-900 border border-slate-800/80 rounded-2xl p-5 text-left shadow-lg">
@@ -243,7 +261,7 @@
                         </button>
                     </div>
 
-                    <!-- Sentence Navigation Panel (Only active during Sentence mode) -->
+                    <!-- Sentence Navigator Panel (Active only in Sentence Mode) -->
                     <div id="sentenceNavigator" class="hidden bg-indigo-950/30 border border-indigo-900/40 rounded-xl p-3 flex items-center justify-between gap-3 mb-2">
                         <button onclick="prevSentence()" class="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-100 transition">
                             <i class="fa-solid fa-chevron-left text-xs"></i> Prev Sentence
@@ -378,6 +396,17 @@
                         <option value="Leda">Leda (Gentle, Deliberate Voice)</option>
                     </select>
                 </div>
+
+                <!-- Audio Cache Manager Area -->
+                <div class="mt-4 pt-3 border-t border-slate-800">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span>Cached Audio Tracks:</span>
+                        <span id="cacheCountLabel" class="font-bold text-brand-400">0</span>
+                    </div>
+                    <button onclick="clearAudioCache()" class="mt-2 w-full py-1.5 bg-slate-950 hover:bg-red-950/40 text-slate-400 hover:text-red-400 rounded-lg text-xs font-semibold border border-slate-800 hover:border-red-900/50 transition">
+                        Clear Audio Cache
+                    </button>
+                </div>
             </div>
 
             <div class="px-6 py-4 bg-slate-950/60 border-t border-slate-800/80 flex justify-end">
@@ -411,7 +440,7 @@
             currentParagraphIndex: 0,
             selectedWord: 'peter',
             apiKeyValue: '', 
-            localSpeechRate: 0.75, // Defaulting to clear, slower speech
+            localSpeechRate: 1, // Changed default speaking speed to 1x as requested
             isRecording: false,
             geminiVoice: 'Kore',
             readingMode: 'full', // 'full' or 'sentence'
@@ -430,18 +459,18 @@
             'o_long': { symbol: '/ɔ:/', name: 'Long /ɔ:/', label: 'Corner', class: 'bg-vowel-o_long/15 text-vowel-o_long border-vowel-o_long/30', unit: 'Unit 5', words: ['wall', 'four', 'floor', 'corner', 'warm', 'thought', 'forty', 'all', 'door'], description: 'Pull your lips into a deep, long forward-circle shape.', lipOpen: 'Q 58,74 68,69', tongueD: 'M 160,120 C 140,112 120,95 95,95 C 75,95 58,105 48,112 C 48,122 65,132 110,132 C 140,132 155,127 160,120 Z', lowerTeethY: 67, isolateIpa: 'ɔː' },
             'e_short': { symbol: '/e/', name: 'Short /e/', label: 'Bread', class: 'bg-vowel-e_short/15 text-vowel-e_short border-vowel-e_short/30', unit: 'Unit 6', words: ['desk', 'ten', 'friends', 'fresh', 'bread', 'heavy', 'men', 'weather'], description: 'Mouth open wide. Lips neutral, tongue high-mid.', lipOpen: 'Q 65,65 75,63', tongueD: 'M 160,118 C 138,104 118,80 88,77 C 68,77 52,83 47,93 C 47,103 65,121 110,126 C 140,126 155,122 160,118 Z', lowerTeethY: 62, isolateIpa: 'e' },
             'ae_short': { symbol: '/æ/', name: 'Short /æ/', label: 'Jam', class: 'bg-vowel-ae_short/15 text-vowel-ae_short border-vowel-ae_short/30', unit: 'Unit 6', words: ['map', 'plan', 'black', 'bag', 'jacket', 'family', 'apples', 'pack', 'manager', 'jam', 'hat'], description: 'Jaw fully down, mouth open wide, corners of lips stretched back.', lipOpen: 'Q 65,78 75,74', tongueD: 'M 160,123 C 140,115 118,95 90,95 C 70,95 55,108 45,115 C 45,125 65,135 110,135 C 140,135 155,129 160,123 Z', lowerTeethY: 71, isolateIpa: 'æ' },
-            'er_long': { symbol: '/ɜ:/', name: 'Long /ɜ:/', label: 'Thursday', class: 'bg-vowel-er_long/15 text-vowel-er_long border-vowel-er_long/30', unit: 'Unit 7', words: ['thursday', 'thursdays', 'thirty-third', 'birthday', 'work', 'university', 'german', 'bird', 'turn', 'journey'], description: 'Long, completely neutral sound. Relax your lips, jaw, and tongue flat.', lipOpen: 'Q 65,68 75,65', tongueD: 'M 160,119 C 140,110 118,88 90,88 C 70,88 55,100 45,108 C 45,118 65,128 110,128 C 140,128 155,123 160,119 Z', lowerTeethY: 63, isolateIpa: 'ɜ:/' }
+            'er_long': { symbol: '/ɜ:/', name: 'Long /ɜ:/', label: 'Thursday', class: 'bg-vowel-er_long/15 text-vowel-er_long border-vowel-er_long/30', unit: 'Unit 7', words: ['thursday', 'thursdays', 'thirty-third', 'birthday', 'work', 'university', 'german', 'bird', 'turn', 'journey'], description: 'Long, completely neutral sound. Relax your lips, jaw, and tongue flat.', lipOpen: 'Q 65,68 75,65', tongueD: 'M 160,119 C 140,110 118,88 90,88 C 70,88 55,100 45,108 C 45,118 65,128 110,128 C 140,128 155,123 160,119 Z', lowerTeethY: 63, isolateIpa: 'ɜː' }
         };
 
         const WORD_DICTIONARY = {
-            'peter': { vowelKey: 'i_long', ipa: 'piːtə', info: 'Long /i:/ in "Peter". Keep it long!' },
-            'mother': { vowelKey: 'a_short', ipa: 'mʌðə', info: 'Short /ʌ/ central vowel in "Mother".' },
-            'kitchen': { vowelKey: 'i_short', ipa: 'kɪtʃɪn', info: 'Short crisp /ɪ/ sound in "Kitchen".' },
-            'thursday': { vowelKey: 'er_long', ipa: 'θɜːzdeɪ', info: 'Vowel neutral /ɜ:/ in "Thursday".' },
+            'peter': { vowelKey: 'i_long', ipa: 'piːtə', localUrl: 'audio/peter.wav', info: 'Long /i:/ in "Peter". Keep it long!' },
+            'mother': { vowelKey: 'a_short', ipa: 'mʌðə', localUrl: 'audio/mother.wav', info: 'Short /ʌ/ central vowel in "Mother".' },
+            'kitchen': { vowelKey: 'i_short', ipa: 'kɪtʃɪn', localUrl: 'audio/kitchen.wav', info: 'Short crisp /ɪ/ sound in "Kitchen".' },
+            'thursday': { vowelKey: 'er_long', ipa: 'θɜːzdeɪ', localUrl: 'audio/thursday.wav', info: 'Vowel neutral /ɜ:/ in "Thursday".' },
             'thursdays': { vowelKey: 'er_long', ipa: 'θɜːzdeɪz', info: 'Vowel neutral /ɜ:/ in "Thursdays".' },
-            'map': { vowelKey: 'ae_short', ipa: 'mæp', info: 'Open front /æ/ sound in "Map".' },
-            'desk': { vowelKey: 'e_short', ipa: 'desk', info: 'Mid front /e/ sound in "Desk".' },
-            'plan': { vowelKey: 'ae_short', ipa: 'plæn', info: 'Open /æ/ sound in "Plan".' },
+            'map': { vowelKey: 'ae_short', ipa: 'mæp', localUrl: 'audio/map.wav', info: 'Open front /æ/ sound in "Map".' },
+            'desk': { vowelKey: 'e_short', ipa: 'desk', localUrl: 'audio/desk.wav', info: 'Mid front /e/ sound in "Desk".' },
+            'plan': { vowelKey: 'ae_short', ipa: 'plæn', localUrl: 'audio/plan.wav', info: 'Open /æ/ sound in "Plan".' },
             'good': { vowelKey: 'u_short', ipa: 'ɡʊd', info: 'Short back rounded /ʊ/ sound.' },
             'dinner': { vowelKey: 'i_short', ipa: 'dɪnə', info: 'Short central-ending /ɪ/.' },
             'ten': { vowelKey: 'e_short', ipa: 'ten', info: 'Mid short vowel /e/ in "Ten".' },
@@ -575,11 +604,95 @@
             ]
         };
 
-        window.addEventListener('DOMContentLoaded', () => {
+        // IndexedDB Audio Cache System
+        let db = null;
+        const DB_NAME = 'VowelCoachCache';
+        const STORE_NAME = 'audioCache';
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                if (!window.indexedDB) {
+                    resolve(null);
+                    return;
+                }
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onerror = (e) => reject(e);
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (e) => {
+                    const database = e.target.result;
+                    database.createObjectStore(STORE_NAME);
+                };
+            });
+        }
+
+        function getCachedAudio(key) {
+            return new Promise((resolve) => {
+                if (!db) return resolve(null);
+                try {
+                    const transaction = db.transaction([STORE_NAME], 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.get(key);
+                    request.onsuccess = (e) => resolve(e.target.result);
+                    request.onerror = () => resolve(null);
+                } catch (err) {
+                    resolve(null);
+                }
+            });
+        }
+
+        function cacheAudio(key, base64Data) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                try {
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.put(base64Data, key);
+                    request.onsuccess = () => {
+                        resolve();
+                        updateCacheCounter();
+                    };
+                    request.onerror = () => resolve();
+                } catch (err) {
+                    resolve();
+                }
+            });
+        }
+
+        function clearAudioCache() {
+            if (!db) return;
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.clear();
+            request.onsuccess = () => {
+                updateCacheCounter();
+                showToast("Cache Cleared", "Local audio caches have been deleted.");
+            };
+        }
+
+        function updateCacheCounter() {
+            if (!db) return;
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.count();
+            request.onsuccess = (e) => {
+                document.getElementById('cacheCountLabel').innerText = e.target.result;
+            };
+        }
+
+        // Load configurations and set up speech
+        window.onload = function () {
+            initDB().then(() => {
+                updateCacheCounter();
+            }).catch(e => console.error("IDB Fail", e));
+
             loadVowelGrid();
             loadParagraphSelector();
             loadActiveParagraph();
             updateMouthAnatomy('i_long');
+            updateProgressDashboard();
             
             populateVoiceDropdown();
             if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
@@ -597,11 +710,15 @@
                 document.getElementById('speechRateLabel').innerText = state.localSpeechRate + 'x';
                 document.getElementById('lblSpeedSummary').innerText = state.localSpeechRate + 'x';
             });
-        });
+        };
 
         function stopAllPlayback() {
             if (typeof speechSynthesis !== 'undefined') {
                 speechSynthesis.cancel();
+            }
+            if (state.activeAudio) {
+                state.activeAudio.pause();
+                state.activeAudio = null;
             }
             const playIcon = document.getElementById('btnPlayParagraphIcon');
             if (playIcon) {
@@ -627,19 +744,17 @@
                 select.appendChild(opt);
             });
 
-            let ukFemaleVoice = voices.find(v => v.name.includes("Google") && v.name.includes("UK") && v.name.toLowerCase().includes("female"));
-            if (!ukFemaleVoice) {
-                ukFemaleVoice = voices.find(v => v.name.includes("Google") && v.name.includes("UK"));
+            // Prioritize setting "Google UK Female" or Hazel/UK variations
+            let defaultUKFemale = englishVoices.find(v => v.name.includes("Google") && v.name.includes("UK") && v.name.toLowerCase().includes("female"));
+            if (!defaultUKFemale) {
+                defaultUKFemale = englishVoices.find(v => v.name.includes("UK") && v.name.toLowerCase().includes("female"));
             }
-            if (!ukFemaleVoice) {
-                ukFemaleVoice = voices.find(v => v.lang.startsWith("en-GB") && v.name.toLowerCase().includes("female"));
-            }
-            if (!ukFemaleVoice) {
-                ukFemaleVoice = voices.find(v => v.lang.startsWith("en-GB"));
+            if (!defaultUKFemale) {
+                defaultUKFemale = englishVoices.find(v => v.lang.startsWith("en-GB"));
             }
 
-            if (ukFemaleVoice) {
-                select.value = ukFemaleVoice.name;
+            if (defaultUKFemale) {
+                select.value = defaultUKFemale.name;
             }
         }
 
@@ -698,12 +813,31 @@
             container.innerHTML = '';
             
             const pList = TEXT_DATABASE[state.currentCategory];
+            const scores = JSON.parse(localStorage.getItem('vowel_coach_scores') || '{}');
+
             pList.forEach((item, index) => {
                 const btn = document.createElement('button');
                 btn.id = `paraSelect_${index}`;
                 btn.onclick = () => selectParagraph(index);
-                btn.className = `w-7 h-7 rounded-full border text-xs font-bold transition-all duration-200 ${index === state.currentParagraphIndex ? 'bg-indigo-600 text-white border-indigo-500 shadow' : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800'}`;
+                
+                const storageKey = `${state.currentCategory}_${index}`;
+                const highScore = scores[storageKey];
+
+                let ringClass = "border-slate-800";
+                if (highScore !== undefined) {
+                    ringClass = highScore >= 70 ? "border-emerald-500 ring-2 ring-emerald-500/30" : "border-amber-500 ring-2 ring-amber-500/30";
+                }
+
+                btn.className = `w-7 h-7 rounded-full border text-xs font-bold transition-all duration-200 relative ${ringClass} ${index === state.currentParagraphIndex ? 'bg-indigo-600 text-white shadow' : 'bg-slate-950 text-slate-400 hover:bg-slate-800'}`;
                 btn.innerText = index + 1;
+                
+                if (highScore !== undefined) {
+                    const badge = document.createElement('span');
+                    badge.className = "absolute -top-1 -right-1 text-[7px] w-3 h-3 flex items-center justify-center bg-slate-800 text-slate-300 rounded-full border border-slate-700";
+                    badge.innerText = `${Math.round(highScore / 10)}`;
+                    btn.appendChild(badge);
+                }
+
                 container.appendChild(btn);
             });
         }
@@ -986,21 +1120,22 @@
         // =========================================================================
         // SPEECH SYNTHESIS ENGINE (WITH CORRECT IPA TRANSLATIONS TO PREVENT CH/TF ERRORS)
         // =========================================================================
-        
         function getCleanSpokenText(textToSay) {
-            const clean = textToSay.replace(/[\/]/g, "").trim();
+            const clean = textToSay.replace(/[\/:ː]/g, "").trim().toLowerCase();
+            
+            // Fix standalone phonetic representations into clean British respellings
             const ipaToPhoneticMap = {
-                'iː': "ee",     
-                'ɪ': "ih",      
-                'uː': "oo",     
-                'ʊ': "uu",      
-                'ɑː': "ah",     
-                'ʌ': "uh",      
-                'ɒ': "oh",      
-                'ɔː': "or",     
-                'e': "eh",      
-                'æ': "aah",     
-                'ɜː': "er"      
+                'i': "ee",       // /i:/ -> ee (as in "meet")
+                'ɪ': "ihh",      // /ɪ/ -> ihh
+                'u': "oo",       // /u:/ -> oo
+                'ʊ': "uuh",      // /ʊ/ -> uuh
+                'ɑ': "ahh",      // /ɑ:/ -> ahh
+                'ʌ': "uh",       // /ʌ/ -> uh
+                'ɒ': "odd",      // /ɒ/ -> odd
+                'ɔ': "or",       // /ɔ:/ -> or
+                'e': "ehh",      // /e/ -> ehh
+                'æ': "add",      // /æ/ -> add
+                'ɜ': "err"       // /ɜ:/ -> err
             };
             return ipaToPhoneticMap[clean] || ipaToPhoneticMap[textToSay] || textToSay;
         }
@@ -1014,6 +1149,7 @@
         }
 
         function speakSelectedWord() {
+            // Standalone words use local speech engine for fast execution
             speakViaWebSpeech(state.selectedWord);
         }
 
@@ -1044,7 +1180,7 @@
                 showToast("System Unstable", "Speech Synthesis API is blocked.", "error");
                 return;
             }
-            stopAllPlayback(); 
+            window.speechSynthesis.cancel(); 
 
             const spokenText = getCleanSpokenText(textToSay);
 
@@ -1058,6 +1194,21 @@
                 const matchedVoice = voices.find(v => v.name === selectedVoiceName);
                 if (matchedVoice) {
                     utterance.voice = matchedVoice;
+                }
+            } else {
+                const voices = speechSynthesis.getVoices();
+                let ukFemaleVoice = voices.find(v => v.name.includes("Google") && v.name.includes("UK") && v.name.toLowerCase().includes("female"));
+                if (!ukFemaleVoice) {
+                    ukFemaleVoice = voices.find(v => v.name.includes("Google") && v.name.includes("UK"));
+                }
+                if (!ukFemaleVoice) {
+                    ukFemaleVoice = voices.find(v => v.lang.startsWith("en-GB") && v.name.toLowerCase().includes("female"));
+                }
+                if (!ukFemaleVoice) {
+                    ukFemaleVoice = voices.find(v => v.lang.startsWith("en-GB"));
+                }
+                if (ukFemaleVoice) {
+                    utterance.voice = ukFemaleVoice;
                 }
             }
 
@@ -1096,6 +1247,16 @@
             const playIcon = document.getElementById('btnPlayParagraphIcon');
             playIcon.className = "fa-solid fa-spinner animate-spin";
 
+            // Check if present in our local browser DB cache
+            const cacheKey = `${state.geminiVoice}_${textToSay}`;
+            const cachedBase64 = await getCachedAudio(cacheKey);
+
+            if (cachedBase64) {
+                playIcon.className = "fa-solid fa-play";
+                playBase64Audio(cachedBase64);
+                return;
+            }
+
             try {
                 const teacherContextPrompt = `Say this slowly, warmly, and clearly like an encouraging elementary English teacher, pausing slightly between words: ${textToSay}`;
                 const response = await callGeminiTTSAPI(teacherContextPrompt);
@@ -1105,15 +1266,11 @@
                     throw new Error("Voice bytes empty");
                 }
 
-                const blob = pcmToWav(base64Audio, 24000); 
-                const audioUrl = URL.createObjectURL(blob);
-                const audio = new Audio(audioUrl);
-                
-                audio.onended = () => {
-                    playIcon.className = "fa-solid fa-play";
-                };
-                
-                await audio.play();
+                // Cache it locally so consecutive clicks use 0 tokens
+                await cacheAudio(cacheKey, base64Audio);
+
+                playIcon.className = "fa-solid fa-play";
+                playBase64Audio(base64Audio);
 
             } catch (err) {
                 console.error("Premium speaking failed:", err);
@@ -1124,6 +1281,16 @@
                     playIcon.className = "fa-solid fa-play";
                 }
             }
+        }
+
+        function playBase64Audio(base64Data) {
+            stopAllPlayback();
+            const blob = pcmToWav(base64Data, 24000); 
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            state.activeAudio = audio;
+            audio.playbackRate = state.localSpeechRate;
+            audio.play().catch(e => console.error("Audio playback error", e));
         }
 
         async function callGeminiTTSAPI(textPrompt) {
@@ -1206,9 +1373,8 @@
         }
 
         // ============================================
-        // SPEECH RECOGNITION AND AUDIO EVALUATION
+        // SPEECH STUDIO - CONTINUOUS MODE FOR ELEMENTARY LEARNERS
         // ============================================
-        
         let recognition = null;
 
         function startSpeechRecognition() {
@@ -1217,35 +1383,37 @@
                 return;
             }
 
+            // Continuous recognition: patient loop so slow elementary students never get cut off
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
-            
-            // Set to continuous to allow deliberate pauses between words for elementary students
             recognition.continuous = true; 
             recognition.interimResults = true;
-            recognition.lang = 'en-GB';
+            recognition.lang = 'en-US';
 
             state.isRecording = true;
             document.getElementById('recordingWaveform').classList.remove('hidden');
             document.getElementById('liveTranscriptText').innerText = "Begin speaking clearly...";
 
-            // Clear green highlights
+            // Duplicate target text inside the modal
+            let activeText = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
+            if (state.readingMode === 'sentence' && state.sentences.length > 0) {
+                activeText = state.sentences[state.currentSentenceIndex];
+            }
+            document.getElementById('recordingTargetText').innerText = activeText;
+
             document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
                 if (el.dataset.vowelKey) {
                     el.classList.remove('bg-emerald-950/40', 'border-emerald-500', 'text-emerald-300');
                 }
             });
 
-            // Set recording overlay text to the paragraph/sentence text to read
-            const targetDisplayArea = document.getElementById('paragraphDisplayArea');
-            document.getElementById('recordingTargetText').innerHTML = targetDisplayArea.innerHTML;
+            let fullAccumulatedTranscript = '';
 
             recognition.onresult = (event) => {
                 let interimTranscript = '';
                 let finalTranscript = '';
 
-                // Loop from 0 to capture entire aggregated continuous transcripts
-                for (let i = 0; i < event.results.length; ++i) {
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         finalTranscript += event.results[i][0].transcript + ' ';
                     } else {
@@ -1253,18 +1421,17 @@
                     }
                 }
                 
-                document.getElementById('liveTranscriptText').innerText = (finalTranscript + interimTranscript).trim() || "Listening closely...";
+                fullAccumulatedTranscript += finalTranscript;
+                document.getElementById('liveTranscriptText').innerText = (fullAccumulatedTranscript + interimTranscript).trim() || "Listening closely...";
             };
 
             recognition.onerror = (e) => {
-                console.error("Mic error", e.error);
-                if (e.error === 'no-speech') {
-                    showToast("No speech detected", "Please speak clearly into your microphone.", "error");
-                } else if (e.error === 'not-allowed') {
-                    showToast("Mic Access Blocked", "Please allow microphone access in browser settings.", "error");
-                } else {
-                    showToast("System Error", "Speech engine error: " + e.error, "error");
+                // Gracefully ignore expected manual abort events
+                if (e.error === 'aborted') {
+                    console.log("Mic manual abort processed correctly.");
+                    return;
                 }
+                console.error("Mic recognition error", e);
                 stopSpeechRecognition(true);
             };
 
@@ -1288,7 +1455,7 @@
 
             const transcript = document.getElementById('liveTranscriptText').innerText.toLowerCase();
             if (transcript === "begin speaking clearly..." || transcript === "listening closely...") {
-                showToast("Try Speaking Again", "We couldn't hear any words.", "error");
+                showToast("No speech captured", "We couldn't hear any words. Try again!", "error");
                 return;
             }
 
@@ -1315,7 +1482,7 @@
                 }
             });
 
-            // Colorize correctly spoken target vowels
+            // Highlight matches on the text board
             document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
                 if (el.dataset.vowelKey && matchesFound.includes(el.dataset.cleanWord)) {
                     el.classList.add('bg-emerald-950/45', 'border-emerald-500', 'text-emerald-300');
@@ -1332,6 +1499,33 @@
             } else {
                 showToast("Let's Try Again", `Target Match: ${score}%. Take your time and make vowels twice as long!`, "error");
             }
+
+            // Save persistent student progress 
+            saveProgress(score);
+        }
+
+        function saveProgress(score) {
+            const scores = JSON.parse(localStorage.getItem('vowel_coach_scores') || '{}');
+            const storageKey = `${state.currentCategory}_${state.currentParagraphIndex}`;
+            if (!scores[storageKey] || score > scores[storageKey]) {
+                scores[storageKey] = score;
+                localStorage.setItem('vowel_coach_scores', JSON.stringify(scores));
+            }
+            updateProgressDashboard();
+            loadParagraphSelector();
+        }
+
+        function updateProgressDashboard() {
+            const scores = JSON.parse(localStorage.getItem('vowel_coach_scores') || '{}');
+            const attempts = Object.keys(scores).length;
+            const total = TEXT_DATABASE.elementary.length + TEXT_DATABASE.longer.length;
+            
+            let sum = 0;
+            Object.values(scores).forEach(val => sum += val);
+            const avg = attempts > 0 ? Math.round(sum / attempts) : 0;
+
+            document.getElementById('lblProgressUnitCount').innerText = `${attempts} / ${total}`;
+            document.getElementById('lblProgressAvgScore').innerText = `${avg}%`;
         }
 
         function practiceVowelMicrophone() {
@@ -1344,7 +1538,7 @@
             
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const singleRec = new SpeechRecognition();
-            singleRec.lang = 'en-GB';
+            singleRec.lang = 'en-US';
             
             document.getElementById('btnRecordVowel').innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Listening...';
             
