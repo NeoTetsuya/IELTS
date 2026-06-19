@@ -74,9 +74,8 @@
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans h-full flex flex-col antialiased selection:bg-brand-500/30 selection:text-brand-200">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen lg:h-full flex flex-col antialiased selection:bg-brand-500/30 selection:text-brand-200 overflow-y-auto lg:overflow-hidden">
 
-    <!-- Top Navigation -->
     <header class="border-b border-slate-900 bg-slate-900/95 sticky top-0 z-40 px-4 py-3 sm:px-6">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -90,7 +89,7 @@
             </div>
 
             <!-- Speech Config & Engine Selection -->
-            <div class="flex flex-wrap items-center gap-3 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+            <div class="flex flex-wrap items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
                 <button id="btnEngineWebSpeech" onclick="setEngine('webspeech')" class="px-3 py-1.5 text-xs font-semibold rounded-lg transition bg-slate-800 text-slate-200 flex items-center gap-1.5 shadow">
                     <i class="fa-solid fa-circle-dot text-emerald-400 text-[10px]"></i> Local Speech
                 </button>
@@ -104,108 +103,40 @@
         </div>
     </header>
 
-    <!-- Main Workspace -->
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-y-auto lg:overflow-hidden">
         
-        <!-- Left Column: Anatomy Model, Stats Dashboard & Vowel Sounds Grid -->
-        <section class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-1">
-            
-            <!-- Persistent Progress Dashboard -->
-            <div class="bg-gradient-to-tr from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                <h3 class="font-display font-semibold text-xs tracking-wider text-indigo-300 uppercase mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line"></i> Learning Statistics
-                </h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-slate-950/80 border border-slate-800/60 rounded-xl p-3">
-                        <span class="text-[10px] text-slate-400 block uppercase font-medium mb-1">Completed Units</span>
-                        <span id="lblProgressUnitCount" class="text-lg font-bold text-slate-100">0 / 8</span>
-                    </div>
-                    <div class="bg-slate-950/80 border border-slate-800/60 rounded-xl p-3">
-                        <span class="text-[10px] text-slate-400 block uppercase font-medium mb-1">Average Score</span>
-                        <span id="lblProgressAvgScore" class="text-lg font-bold text-brand-400">0%</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Animated Mouth Anatomy Model -->
-            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-xl">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-display font-semibold text-xs tracking-wider text-indigo-300 uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-teeth"></i> Mouth Shape Guide
-                    </h3>
-                    <span id="activeVowelBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">/i:/</span>
-                </div>
-
-                <!-- SVG Mouth/Lips/Tongue -->
-                <div class="bg-slate-950 rounded-xl p-4 border border-slate-800/60 flex items-center justify-center relative min-h-[160px]">
-                    <svg id="mouthModelSvg" viewBox="0 0 200 160" class="w-full max-w-[170px] h-auto drop-shadow">
-                        <!-- Upper Head Palate / Back Jaw -->
-                        <path d="M 30,10 C 130,10 180,40 180,100" fill="none" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
-                        <path d="M 60,10 C 110,10 140,25 140,50 C 140,75 160,85 170,90" fill="none" stroke="#475569" stroke-width="4"/>
-                        <!-- Soft Palate -->
-                        <path d="M 139,50 Q 142,65 137,70 Q 133,65 135,50" fill="#fda4af" stroke="#f43f5e" stroke-width="1.5"/>
-                        <!-- Tongue (Dynamic Morphs) -->
-                        <path id="tonguePath" d="M 160,120 C 140,110 110,80 80,80 C 60,80 45,95 40,105 C 40,115 65,130 110,130 C 140,130 155,125 160,120 Z" fill="#f43f5e" fill-opacity="0.85" stroke="#be123c" stroke-width="2.5" class="transition-all duration-300 ease-out"/>
-                        <!-- Teeth -->
-                        <rect x="75" y="32" width="6" height="10" rx="1" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
-                        <rect id="lowerTeeth" x="76" y="73" width="5" height="9" rx="1" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" class="transition-all duration-300 ease-out"/>
-                        <!-- Lips -->
-                        <path d="M 45,35 Q 65,30 75,34" fill="none" stroke="#f43f5e" stroke-width="6" stroke-linecap="round"/>
-                        <path id="lowerLipPath" d="M 45,85 Q 65,90 75,82" fill="none" stroke="#f43f5e" stroke-width="6" stroke-linecap="round" class="transition-all duration-300 ease-out"/>
-                    </svg>
-                    <div class="absolute bottom-2 right-3 text-[10px] text-slate-500 flex items-center gap-1">
-                        <span class="inline-block w-2 h-2 rounded-full bg-rose-500"></span> Active Vowel Mapping
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <h4 id="vowelCategoryName" class="font-display font-bold text-sm text-slate-200">Close Front Long Vowel</h4>
-                    <p id="vowelInstructionText" class="text-xs text-slate-400 mt-1 leading-relaxed">Smile wide, pull your lips back. Make the sound last longer than usual.</p>
-                </div>
-            </div>
-
-            <!-- Vowel Deck Selector -->
-            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-xl flex-1 flex flex-col">
+        <!-- Left Column: Vowel Target Selection Deck -->
+        <section class="lg:col-span-4 flex flex-col gap-6 overflow-visible lg:overflow-y-auto custom-scrollbar lg:pr-1">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-display font-semibold text-xs tracking-wider text-brand-400 uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-list"></i> Select Target Vowel
+                        <i class="fa-solid fa-filter"></i> Filter Target Vowel
                     </h3>
                     <button onclick="resetVowelFilter()" class="text-xs text-indigo-400 hover:text-indigo-300 transition flex items-center gap-1">
-                        <i class="fa-solid fa-arrows-rotate"></i> Reset
+                        <i class="fa-solid fa-arrows-rotate"></i> Show All
                     </button>
                 </div>
 
-                <!-- Vowel Sound Grid -->
-                <div id="vowelGridContainer" class="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+                <!-- Vowel Sound Grid (Tailored for mobile-friendly touch inputs) -->
+                <div id="vowelGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5 max-h-[300px] lg:max-h-none overflow-y-auto custom-scrollbar pr-1">
                     <!-- Loaded dynamically in JavaScript -->
-                </div>
-
-                <!-- Target Soundboard Isolation -->
-                <div class="mt-4 pt-4 border-t border-slate-800/60 flex gap-2">
-                    <button onclick="playIsolatedVowel()" class="flex-1 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl py-2.5 text-xs font-semibold flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-volume-high text-brand-400"></i> Hear Sound
-                    </button>
-                    <button id="btnRecordVowel" onclick="practiceVowelMicrophone()" class="flex-1 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl py-2.5 text-xs font-semibold flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-microphone text-rose-400"></i> Try Mimicking
-                    </button>
                 </div>
             </div>
         </section>
 
         <!-- Right Column: Interactive Practice Board -->
-        <section class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6 overflow-hidden h-full">
+        <section class="lg:col-span-8 flex flex-col gap-6 overflow-visible lg:overflow-hidden h-full">
             
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-0 flex flex-col overflow-hidden shadow-xl flex-1">
                 
-                <!-- Practice Mode Control Header -->
-                <div class="bg-slate-950 border-b border-slate-800/80 px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="bg-slate-950 border-b border-slate-800 px-4 sm:px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-2.5">
                         <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
                         <h2 class="font-display font-bold text-xs tracking-wider text-slate-300 uppercase">Interactive Practice Desk</h2>
                     </div>
 
                     <!-- Category Tab Selectors -->
-                    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800/80">
+                    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
                         <button id="tabElementary" onclick="switchCategory('elementary')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-100 shadow">
                             Elementary Focus
                         </button>
@@ -216,7 +147,7 @@
                 </div>
 
                 <!-- Sub-selector for specific chapters/paragraphs -->
-                <div class="bg-slate-900/50 border-b border-slate-800/40 px-5 py-2.5 flex items-center justify-between gap-3 overflow-x-auto">
+                <div class="bg-slate-900/50 border-b border-slate-800/40 px-4 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 overflow-x-auto">
                     <div class="flex items-center gap-2.5">
                         <span class="text-xs font-semibold text-slate-500 whitespace-nowrap">Paragraph Unit:</span>
                         <div id="paragraphSelectorsContainer" class="flex items-center gap-1.5">
@@ -225,75 +156,23 @@
                     </div>
 
                     <!-- Read Mode Toggle: Word vs Sentence Chunks -->
-                    <div class="flex items-center gap-2 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800">
-                        <span class="text-[10px] text-slate-400 font-semibold">Speak Mode:</span>
-                        <button id="btnModeFull" onclick="setReadingMode('full')" class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition">Full</button>
-                        <button id="btnModeSentence" onclick="setReadingMode('sentence')" class="px-2 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition">Sentence-by-Sentence</button>
+                    <div class="flex items-center gap-2 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+                        <span class="text-[10px] text-slate-400 font-semibold">Mode:</span>
+                        <button id="btnModeFull" onclick="setReadingMode('full')" class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition">Full Text</button>
+                        <button id="btnModeSentence" onclick="setReadingMode('sentence')" class="px-2.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition">Sentence</button>
                     </div>
                 </div>
 
-                <!-- Text Display Container -->
-                <div class="flex-1 p-6 overflow-y-auto custom-scrollbar flex flex-col justify-between gap-6 relative">
+                <div class="flex-1 p-4 sm:p-6 overflow-y-auto custom-scrollbar flex flex-col justify-between gap-6 relative min-h-[250px]">
                     
-                    <!-- Microphone Waveform Overlay -->
-                    <div id="recordingWaveform" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-8 text-center animate-fade-in font-sans">
-                        <div class="relative w-16 h-16 flex items-center justify-center mb-3">
-                            <span class="absolute inline-flex h-full w-full rounded-full bg-rose-500/10 animate-ping"></span>
-                            <div class="relative rounded-full bg-rose-950/50 p-4 border-2 border-rose-500 text-rose-400">
-                                <i class="fa-solid fa-microphone text-xl animate-pulse"></i>
-                            </div>
-                        </div>
-                        <h4 class="font-display font-bold text-sm text-rose-300">Speaking Practice Active</h4>
-                        <p class="text-[11px] text-slate-400 max-w-sm mt-0.5 leading-relaxed">Speak clearly and slowly. Pronounce the highlighted vowels with care!</p>
-                        
-                        <!-- Target Box: Displays the text being read while recording -->
-                        <div class="my-4 w-full max-w-2xl bg-slate-900 border border-slate-800/80 rounded-2xl p-5 text-left shadow-lg">
-                            <span class="text-[9px] uppercase tracking-wider text-rose-400 font-bold mb-2 block">Read This Text Aloud:</span>
-                            <div id="recordingTargetText" class="font-serif text-lg leading-relaxed text-slate-200 tracking-wide select-none">
-                                <!-- Duplicated paragraph displays here in real-time -->
-                            </div>
-                        </div>
-
-                        <!-- Animated Canvas Waveform -->
-                        <div class="w-full max-w-lg bg-slate-950/80 border border-slate-800 rounded-xl p-3 min-h-[80px] flex flex-col items-center justify-center gap-2">
-                            <canvas id="waveformCanvas" width="400" height="40" class="w-full h-10"></canvas>
-                            <p id="liveTranscriptText" class="text-xs italic text-slate-400">Listening to your voice...</p>
-                        </div>
-
-                        <!-- Sandbox Warning / Action Fallback Deck -->
-                        <div id="sandboxFallbackControls" class="hidden my-4 flex flex-col items-center gap-3">
-                            <div class="flex items-center gap-2 bg-indigo-950/40 border border-indigo-900/60 p-3 rounded-xl max-w-lg text-left">
-                                <i class="fa-solid fa-circle-info text-indigo-400 text-lg flex-shrink-0"></i>
-                                <p class="text-[10px] text-indigo-200 leading-relaxed">
-                                    <strong>Browser Sandbox Detected:</strong> Interactive previews strictly block physical microphones. We have loaded the **Self-Assessment Lab** so you can still practice speaking and grade yourself!
-                                </p>
-                            </div>
-                            <div class="flex items-center justify-center gap-2 w-full max-w-lg">
-                                <button onclick="simulateSelfGrade(100)" class="flex-1 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 rounded-lg text-emerald-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
-                                    <i class="fa-solid fa-star text-[9px]"></i> Excellent
-                                </button>
-                                <button onclick="simulateSelfGrade(80)" class="flex-1 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 rounded-lg text-indigo-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
-                                    <i class="fa-solid fa-circle-check text-[9px]"></i> Good
-                                </button>
-                                <button onclick="simulateSelfGrade(50)" class="flex-1 py-2 bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/40 rounded-lg text-amber-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
-                                    <i class="fa-solid fa-arrows-rotate text-[9px]"></i> Try Again
-                                </button>
-                            </div>
-                        </div>
-
-                        <button id="btnStopRecord" onclick="stopSpeechRecognition(false)" class="mt-4 px-5 py-2 bg-rose-600 hover:bg-rose-700 active:scale-95 text-xs font-bold text-white rounded-xl transition flex items-center gap-2 shadow-lg shadow-rose-900/40">
-                            <i class="fa-solid fa-square"></i> Stop & Evaluate
-                        </button>
-                    </div>
-
                     <!-- Sentence Navigator Panel (Active only in Sentence Mode) -->
                     <div id="sentenceNavigator" class="hidden bg-indigo-950/30 border border-indigo-900/40 rounded-xl p-3 flex items-center justify-between gap-3 mb-2">
-                        <button onclick="prevSentence()" class="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-100 transition">
-                            <i class="fa-solid fa-chevron-left text-xs"></i> Prev Sentence
+                        <button onclick="prevSentence()" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-100 transition text-xs font-semibold">
+                            <i class="fa-solid fa-chevron-left text-[10px] mr-1"></i> Prev
                         </button>
                         <span id="sentenceProgress" class="text-xs font-bold text-indigo-300">Sentence 1 of 5</span>
-                        <button onclick="nextSentence()" class="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-100 transition">
-                            Next Sentence <i class="fa-solid fa-chevron-right text-xs"></i>
+                        <button onclick="nextSentence()" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-100 transition text-xs font-semibold">
+                            Next <i class="fa-solid fa-chevron-right text-[10px] ml-1"></i>
                         </button>
                     </div>
 
@@ -305,13 +184,13 @@
                         </div>
 
                         <!-- Active Text Rendering Area with highlighted targets -->
-                        <div id="paragraphDisplayArea" class="font-serif text-lg leading-relaxed text-slate-300 sm:text-xl tracking-wide select-none">
+                        <div id="paragraphDisplayArea" class="font-serif text-lg leading-relaxed text-slate-300 sm:text-xl tracking-wide select-none font-medium">
                             <!-- Populated by JS -->
                         </div>
                     </div>
 
                     <!-- Highlighted Phoneme Details Panel -->
-                    <div id="wordInfoPanel" class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div id="wordInfoPanel" class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-3">
                             <div id="wordInfoColorIndicator" class="w-2.5 h-10 rounded-full bg-vowel-i_long"></div>
                             <div>
@@ -323,39 +202,29 @@
                             </div>
                         </div>
 
-                        <!-- Word-specific Play controls -->
-                        <div class="flex items-center gap-2">
-                            <button onclick="speakSelectedWord()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-semibold text-slate-200 transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-volume-high text-brand-400"></i> Say Word
-                            </button>
-                            <button onclick="playSelectedWordVowelSoundOnly()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-semibold text-slate-200 transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-bullhorn text-indigo-400"></i> Say Vowel
+                        <!-- Word-specific Play controls (Optimized Touch target) -->
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button onclick="speakSelectedWord()" class="flex-1 sm:flex-initial justify-center px-4 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-bold text-slate-200 transition flex items-center gap-2">
+                                <i class="fa-solid fa-volume-high text-brand-400"></i> Speak Word
                             </button>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Playback Command Bar -->
-                <div class="bg-slate-950 border-t border-slate-800 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="bg-slate-950 border-t border-slate-800 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="flex items-center gap-3 w-full sm:w-auto">
-                        <button id="btnPlayFullParagraph" onclick="speakParagraph()" class="flex-1 sm:flex-initial bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold text-xs py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-brand-900/20">
+                        <button id="btnPlayFullParagraph" onclick="speakParagraph()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold text-xs py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-brand-900/20">
                             <i id="btnPlayParagraphIcon" class="fa-solid fa-play"></i> Listen to Practice Text
-                        </button>
-                        <button id="btnRecordParagraph" onclick="startSpeechRecognition()" class="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-800 border border-slate-800 text-rose-400 hover:text-rose-300 font-bold text-xs py-3 px-5 rounded-xl transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-microphone"></i> Practice Speaking
                         </button>
                     </div>
 
                     <!-- Quick visual settings info -->
-                    <div class="flex flex-col sm:items-end text-right">
-                        <div class="flex items-center gap-1.5 text-xs text-brand-400 font-semibold mb-0.5">
+                    <div class="flex flex-col sm:items-end text-center sm:text-right w-full sm:w-auto">
+                        <div class="flex items-center justify-center sm:justify-end gap-1.5 text-xs text-brand-400 font-semibold mb-0.5">
                             <i class="fa-solid fa-gauge-simple-high"></i> Current Speed: <span id="lblSpeedSummary">1x</span>
                         </div>
-                        <div id="accuracyIndicator" class="hidden items-center gap-1.5 text-xs text-emerald-400 font-bold">
-                            <i class="fa-solid fa-circle-check"></i> Score: <span id="accuracyScore">--</span>
-                        </div>
-                        <span class="text-[10px] text-slate-500 italic mt-0.5">Perfected slow pace optimized for elementary learners</span>
+                        <span class="text-[10px] text-slate-500 italic mt-0.5">Perfected slow pace optimized for English learners</span>
                     </div>
                 </div>
 
@@ -364,7 +233,6 @@
         </section>
     </main>
 
-    <!-- Settings Dialog Modal overlay -->
     <div id="settingsModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
         <div class="bg-slate-900 border border-slate-800 max-w-md w-full rounded-2xl overflow-hidden shadow-2xl relative">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950/60">
@@ -384,13 +252,13 @@
                         <input id="speechRateRange" type="range" min="0.5" max="1.1" step="0.05" value="1" class="flex-1 accent-brand-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
                         <span id="speechRateLabel" class="text-xs font-bold text-brand-400 whitespace-nowrap min-w-[50px] text-right">1x</span>
                     </div>
-                    <p class="text-[10px] text-slate-500 mt-1.5">Slower speeds (0.7x - 0.8x) make target vowels dramatically clearer to hear and mimic.</p>
+                    <p class="text-[10px] text-slate-500 mt-1.5">Slower speeds (0.7x - 0.8x) make target words dramatically clearer to hear and master.</p>
                 </div>
 
-                <!-- Local Voice Target Scanner (Crucial upgrade for natural offline speech) -->
+                <!-- Local Voice Target Scanner -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1.5">Your System English Voice</label>
-                    <select id="localVoiceSelector" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 outline-none focus:border-indigo-500">
+                    <select id="localVoiceSelector" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-300 outline-none focus:border-indigo-500">
                         <!-- Auto-loaded system voice list -->
                         <option value="">System Default</option>
                     </select>
@@ -404,7 +272,7 @@
                         <span class="text-[9px] bg-indigo-950 text-indigo-300 border border-indigo-900/50 px-1.5 py-0.5 rounded font-semibold uppercase">Optional</span>
                     </div>
                     <div class="relative">
-                        <input id="apiKeyValueInput" type="password" placeholder="AI-generated key..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none">
+                        <input id="apiKeyValueInput" type="password" placeholder="AI-generated key..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2.5 text-xs text-slate-200 outline-none">
                         <button onclick="toggleApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs">
                             <i id="apiKeyEyeIcon" class="fa-solid fa-eye"></i>
                         </button>
@@ -414,7 +282,7 @@
                 <!-- Premium Voice Select options -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1.5">Gemini Vocal Profile</label>
-                    <select id="geminiVoiceSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 outline-none focus:border-indigo-500">
+                    <select id="geminiVoiceSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-300 outline-none focus:border-indigo-500">
                         <option value="Kore" selected>Kore (Clear, Professional Teacher)</option>
                         <option value="Puck">Puck (Warm, Friendly Accent)</option>
                         <option value="Zephyr">Zephyr (Bright Narrator)</option>
@@ -453,7 +321,6 @@
         </div>
     </div>
 
-    <!-- Script Application -->
     <script>
         let apiKey = "";
 
@@ -465,37 +332,36 @@
             currentParagraphIndex: 0,
             selectedWord: 'peter',
             apiKeyValue: '', 
-            localSpeechRate: 1, // Default speaking speed to 1x
-            isRecording: false,
+            localSpeechRate: 1, 
             geminiVoice: 'Kore',
-            readingMode: 'full', // 'full' or 'sentence'
+            readingMode: 'full', 
             currentSentenceIndex: 0,
             sentences: []
         };
 
         const VOWEL_DECK = {
-            'i_long': { symbol: '/i:/', name: 'Long /i:/', label: 'Pizza', class: 'bg-vowel-i_long/15 text-vowel-i_long border-vowel-i_long/30', unit: 'Unit 2', words: ['peter', 'steve', 'pizza', 'cheese', 'peaches', 'green', 'tea', 'cream', 'evening', 'see', 'tree', 'street'], description: 'Smile wide, pull your lips back. Make the sound last longer than usual.', lipOpen: 'Q 65,55 75,54', tongueD: 'M 160,115 C 135,100 115,70 85,68 C 65,68 50,75 45,85 C 45,95 65,115 110,120 C 140,120 155,118 160,115 Z', lowerTeethY: 53, isolateIpa: 'ee' },
-            'i_short': { symbol: '/ɪ/', name: 'Short /ɪ/', label: 'Dinner', class: 'bg-vowel-i_short/15 text-vowel-i_short border-vowel-i_short/30', unit: 'Unit 2', words: ['kitchen', 'dinner', 'listening', 'window', 'finish', 'busy', 'biscuits'], description: 'Mouth semi-closed. Lips relaxed, short crisp breath.', lipOpen: 'Q 65,60 75,58', tongueD: 'M 160,118 C 138,103 118,75 88,72 C 68,72 52,78 47,88 C 47,98 65,118 110,123 C 140,123 155,120 160,118 Z', lowerTeethY: 58, isolateIpa: 'ihh' },
-            'u_long': { symbol: '/u:/', name: 'Long /u:/', label: 'Blue', class: 'bg-vowel-u_long/15 text-vowel-u_long border-vowel-u_long/30', unit: 'Unit 3', words: ['soup', 'fruit', 'juice', 'blue', 'boots', 'shoes', 'supermarket', 'student', 'new', 'food', 'music'], description: 'Lips are tightly rounded forward into a small, tight circle.', lipOpen: 'Q 55,60 62,59', tongueD: 'M 160,112 C 140,105 125,82 98,82 C 78,82 60,92 50,102 C 50,112 65,125 110,125 C 140,125 155,120 160,112 Z', lowerTeethY: 55, isolateIpa: 'oo' },
-            'u_short': { symbol: '/ʊ/', name: 'Short /ʊ/', label: 'Sugar', class: 'bg-vowel-u_short/15 text-vowel-u_short border-vowel-u_short/30', unit: 'Unit 3', words: ['good', 'sugar', 'full', 'spoonful', 'bush', 'book'], description: 'Lips are slightly rounded and relaxed. Short simple burst.', lipOpen: 'Q 58,63 67,61', tongueD: 'M 160,115 C 140,108 122,86 95,86 C 75,86 58,96 48,106 C 48,116 65,127 110,127 C 140,127 155,122 160,115 Z', lowerTeethY: 61, isolateIpa: 'uuh' },
-            'a_long': { symbol: '/ɑ:/', name: 'Long /ɑ:/', label: 'Father', class: 'bg-vowel-a_long/15 text-vowel-a_long border-vowel-a_long/30', unit: 'Unit 4', words: ['fast', 'large', 'bar', 'park', 'father', 'aunt', 'car', 'laughed', 'hours', 'start'], description: 'Open your mouth completely wide, jaw down. Keep tongue low and flat.', lipOpen: 'Q 65,85 75,82', tongueD: 'M 160,125 C 140,118 115,102 90,102 C 70,102 55,115 45,122 C 45,130 65,138 110,138 C 140,138 155,132 160,125 Z', lowerTeethY: 78, isolateIpa: 'ahh' },
-            'a_short': { symbol: '/ʌ/', name: 'Short /ʌ/', label: 'Mother', class: 'bg-vowel-a_short/15 text-vowel-a_short border-vowel-a_short/30', unit: 'Unit 4', words: ['mother', 'month', 'brother', 'young', 'fun', 'monday', 'sun', 'studies', 'much'], description: 'A relaxed, short central vowel. Open mouth slightly, relax tongue.', lipOpen: 'Q 65,72 75,68', tongueD: 'M 160,120 C 140,112 118,92 90,92 C 70,92 55,105 45,112 C 45,122 65,132 110,132 C 140,132 155,127 160,120 Z', lowerTeethY: 66, isolateIpa: 'uh' },
-            'o_short': { symbol: '/ɒ/', name: 'Short /ɒ/', label: 'Clock', class: 'bg-vowel-o_short/15 text-vowel-o_short border-vowel-o_short/30', unit: 'Unit 5', words: ['clock', 'shop', 'box', 'chocolates', 'bottle', 'dog', 'hot', 'coffee', 'shopping', 'cost', 'holiday'], description: 'Lips are rounded slightly, jaw dropped. Short sound.', lipOpen: 'Q 62,80 72,75', tongueD: 'M 160,123 C 140,115 118,100 92,100 C 72,100 58,110 48,118 C 48,126 65,135 110,135 C 140,135 155,130 160,123 Z', lowerTeethY: 73, isolateIpa: 'odd' },
-            'o_long': { symbol: '/ɔ:/', name: 'Long /ɔ:/', label: 'Corner', class: 'bg-vowel-o_long/15 text-vowel-o_long border-vowel-o_long/30', unit: 'Unit 5', words: ['wall', 'four', 'floor', 'corner', 'warm', 'thought', 'forty', 'all', 'door'], description: 'Pull your lips into a deep, long forward-circle shape.', lipOpen: 'Q 58,74 68,69', tongueD: 'M 160,120 C 140,112 120,95 95,95 C 75,95 58,105 48,112 C 48,122 65,132 110,132 C 140,132 155,127 160,120 Z', lowerTeethY: 67, isolateIpa: 'or' },
-            'e_short': { symbol: '/e/', name: 'Short /e/', label: 'Bread', class: 'bg-vowel-e_short/15 text-vowel-e_short border-vowel-e_short/30', unit: 'Unit 6', words: ['desk', 'ten', 'friends', 'fresh', 'bread', 'heavy', 'men', 'weather'], description: 'Mouth open wide. Lips neutral, tongue high-mid.', lipOpen: 'Q 65,65 75,63', tongueD: 'M 160,118 C 138,104 118,80 88,77 C 68,77 52,83 47,93 C 47,103 65,121 110,126 C 140,126 155,122 160,118 Z', lowerTeethY: 62, isolateIpa: 'ehh' },
-            'ae_short': { symbol: '/æ/', name: 'Short /æ/', label: 'Jam', class: 'bg-vowel-ae_short/15 text-vowel-ae_short border-vowel-ae_short/30', unit: 'Unit 6', words: ['map', 'plan', 'black', 'bag', 'jacket', 'family', 'apples', 'pack', 'manager', 'jam', 'hat'], description: 'Jaw fully down, mouth open wide, corners of lips stretched back.', lipOpen: 'Q 65,78 75,74', tongueD: 'M 160,123 C 140,115 118,95 90,95 C 70,95 55,108 45,115 C 45,125 65,135 110,135 C 140,135 155,129 160,123 Z', lowerTeethY: 71, isolateIpa: 'add' },
-            'er_long': { symbol: '/ɜ:/', name: 'Long /ɜ:/', label: 'Thursday', class: 'bg-vowel-er_long/15 text-vowel-er_long border-vowel-er_long/30', unit: 'Unit 7', words: ['thursday', 'thursdays', 'thirty-third', 'birthday', 'work', 'university', 'german', 'bird', 'turn', 'journey'], description: 'Long, completely neutral sound. Relax your lips, jaw, and tongue flat.', lipOpen: 'Q 65,68 75,65', tongueD: 'M 160,119 C 140,110 118,88 90,88 C 70,88 55,100 45,108 C 45,118 65,128 110,128 C 140,128 155,123 160,119 Z', lowerTeethY: 63, isolateIpa: 'err' }
+            'i_long': { symbol: '/i:/', name: 'Long /i:/', label: 'Pizza', class: 'bg-vowel-i_long/15 text-vowel-i_long border-vowel-i_long/30', unit: 'Unit 2', words: ['peter', 'steve', 'pizza', 'cheese', 'peaches', 'green', 'tea', 'cream', 'evening', 'see', 'tree', 'street'], description: 'Smile wide, pull your lips back. Make the sound last longer than usual.' },
+            'i_short': { symbol: '/ɪ/', name: 'Short /ɪ/', label: 'Dinner', class: 'bg-vowel-i_short/15 text-vowel-i_short border-vowel-i_short/30', unit: 'Unit 2', words: ['kitchen', 'dinner', 'listening', 'window', 'finish', 'busy', 'biscuits'], description: 'Mouth semi-closed. Lips relaxed, short crisp breath.' },
+            'u_long': { symbol: '/u:/', name: 'Long /u:/', label: 'Blue', class: 'bg-vowel-u_long/15 text-vowel-u_long border-vowel-u_long/30', unit: 'Unit 3', words: ['soup', 'fruit', 'juice', 'blue', 'boots', 'shoes', 'supermarket', 'student', 'new', 'food', 'music'], description: 'Lips are tightly rounded forward into a small, tight circle.' },
+            'u_short': { symbol: '/ʊ/', name: 'Short /ʊ/', label: 'Sugar', class: 'bg-vowel-u_short/15 text-vowel-u_short border-vowel-u_short/30', unit: 'Unit 3', words: ['good', 'sugar', 'full', 'spoonful', 'bush', 'book'], description: 'Lips are slightly rounded and relaxed. Short simple burst.' },
+            'a_long': { symbol: '/ɑ:/', name: 'Long /ɑ:/', label: 'Father', class: 'bg-vowel-a_long/15 text-vowel-a_long border-vowel-a_long/30', unit: 'Unit 4', words: ['fast', 'large', 'bar', 'park', 'father', 'aunt', 'car', 'laughed', 'hours', 'start'], description: 'Open your mouth completely wide, jaw down. Keep tongue low and flat.' },
+            'a_short': { symbol: '/ʌ/', name: 'Short /ʌ/', label: 'Mother', class: 'bg-vowel-a_short/15 text-vowel-a_short border-vowel-a_short/30', unit: 'Unit 4', words: ['mother', 'month', 'brother', 'young', 'fun', 'monday', 'sun', 'studies', 'much'], description: 'A relaxed, short central vowel. Open mouth slightly, relax tongue.' },
+            'o_short': { symbol: '/ɒ/', name: 'Short /ɒ/', label: 'Clock', class: 'bg-vowel-o_short/15 text-vowel-o_short border-vowel-o_short/30', unit: 'Unit 5', words: ['clock', 'shop', 'box', 'chocolates', 'bottle', 'dog', 'hot', 'coffee', 'shopping', 'cost', 'holiday'], description: 'Lips are rounded slightly, jaw dropped. Short sound.' },
+            'o_long': { symbol: '/ɔ:/', name: 'Long /ɔ:/', label: 'Corner', class: 'bg-vowel-o_long/15 text-vowel-o_long border-vowel-o_long/30', unit: 'Unit 5', words: ['wall', 'four', 'floor', 'corner', 'warm', 'thought', 'forty', 'all', 'door'], description: 'Pull your lips into a deep, long forward-circle shape.' },
+            'e_short': { symbol: '/e/', name: 'Short /e/', label: 'Bread', class: 'bg-vowel-e_short/15 text-vowel-e_short border-vowel-e_short/30', unit: 'Unit 6', words: ['desk', 'ten', 'friends', 'fresh', 'bread', 'heavy', 'men', 'weather'], description: 'Mouth open wide. Lips neutral, tongue high-mid.' },
+            'ae_short': { symbol: '/æ/', name: 'Short /æ/', label: 'Jam', class: 'bg-vowel-ae_short/15 text-vowel-ae_short border-vowel-ae_short/30', unit: 'Unit 6', words: ['map', 'plan', 'black', 'bag', 'jacket', 'family', 'apples', 'pack', 'manager', 'jam', 'hat'], description: 'Jaw fully down, mouth open wide, corners of lips stretched back.' },
+            'er_long': { symbol: '/ɜ:/', name: 'Long /ɜ:/', label: 'Thursday', class: 'bg-vowel-er_long/15 text-vowel-er_long border-vowel-er_long/30', unit: 'Unit 7', words: ['thursday', 'thursdays', 'thirty-third', 'birthday', 'work', 'university', 'german', 'bird', 'turn', 'journey'], description: 'Long, completely neutral sound. Relax your lips, jaw, and tongue flat.' }
         };
 
         const WORD_DICTIONARY = {
-            'peter': { vowelKey: 'i_long', ipa: 'piːtə', localUrl: 'audio/peter.wav', info: 'Long /i:/ in "Peter". Keep it long!' },
-            'mother': { vowelKey: 'a_short', ipa: 'mʌðə', localUrl: 'audio/mother.wav', info: 'Short /ʌ/ central vowel in "Mother".' },
-            'kitchen': { vowelKey: 'i_short', ipa: 'kɪtʃɪn', localUrl: 'audio/kitchen.wav', info: 'Short crisp /ɪ/ sound in "Kitchen".' },
-            'thursday': { vowelKey: 'er_long', ipa: 'θɜːzdeɪ', localUrl: 'audio/thursday.wav', info: 'Vowel neutral /ɜ:/ in "Thursday".' },
+            'peter': { vowelKey: 'i_long', ipa: 'piːtə', info: 'Long /i:/ in "Peter". Keep it long!' },
+            'mother': { vowelKey: 'a_short', ipa: 'mʌðə', info: 'Short /ʌ/ central vowel in "Mother".' },
+            'kitchen': { vowelKey: 'i_short', ipa: 'kɪtʃɪn', info: 'Short crisp /ɪ/ sound in "Kitchen".' },
+            'thursday': { vowelKey: 'er_long', ipa: 'θɜːzdeɪ', info: 'Vowel neutral /ɜ:/ in "Thursday".' },
             'thursdays': { vowelKey: 'er_long', ipa: 'θɜːzdeɪz', info: 'Vowel neutral /ɜ:/ in "Thursdays".' },
-            'map': { vowelKey: 'ae_short', ipa: 'mæp', localUrl: 'audio/map.wav', info: 'Open front /æ/ sound in "Map".' },
-            'desk': { vowelKey: 'e_short', ipa: 'desk', localUrl: 'audio/desk.wav', info: 'Mid front /e/ sound in "Desk".' },
-            'plan': { vowelKey: 'ae_short', ipa: 'plæn', localUrl: 'audio/plan.wav', info: 'Open /æ/ sound in "Plan".' },
+            'map': { vowelKey: 'ae_short', ipa: 'mæp', info: 'Open front /æ/ sound in "Map".' },
+            'desk': { vowelKey: 'e_short', ipa: 'desk', info: 'Mid front /e/ sound in "Desk".' },
+            'plan': { vowelKey: 'ae_short', ipa: 'plæn', info: 'Open /æ/ sound in "Plan".' },
             'good': { vowelKey: 'u_short', ipa: 'ɡʊd', info: 'Short back rounded /ʊ/ sound.' },
             'dinner': { vowelKey: 'i_short', ipa: 'dɪnə', info: 'Short central-ending /ɪ/.' },
             'ten': { vowelKey: 'e_short', ipa: 'ten', info: 'Mid short vowel /e/ in "Ten".' },
@@ -629,7 +495,6 @@
             ]
         };
 
-        // IndexedDB Audio Cache System
         let db = null;
         const DB_NAME = 'VowelCoachCache';
         const STORE_NAME = 'audioCache';
@@ -707,7 +572,6 @@
             };
         }
 
-        // Setup window loaders
         window.onload = function () {
             const activeKey = state.apiKeyValue || apiKey;
             if (activeKey) {
@@ -724,9 +588,14 @@
             loadVowelGrid();
             loadParagraphSelector();
             loadActiveParagraph();
-            updateMouthAnatomy('i_long');
-            updateProgressDashboard();
-            
+
+            // Highlight the initial vowel selection button style
+            const firstVowelKey = Object.keys(VOWEL_DECK)[0];
+            const activeBtn = document.getElementById(`vowelBtn_${firstVowelKey}`);
+            if (activeBtn) {
+                activeBtn.classList.add('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            }
+
             populateVoiceDropdown();
             if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
                 speechSynthesis.onvoiceschanged = populateVoiceDropdown;
@@ -736,12 +605,7 @@
                 stopAllPlayback();
             });
 
-            // Set up speech rate UI updates
             const rateRange = document.getElementById('speechRateRange');
-            rateRange.value = state.localSpeechRate;
-            document.getElementById('speechRateLabel').innerText = state.localSpeechRate + 'x';
-            document.getElementById('lblSpeedSummary').innerText = state.localSpeechRate + 'x';
-
             rateRange.addEventListener('input', (e) => {
                 stopAllPlayback();
                 state.localSpeechRate = parseFloat(e.target.value);
@@ -804,7 +668,7 @@
                 const btn = document.createElement('button');
                 btn.id = `vowelBtn_${key}`;
                 btn.onclick = () => filterVowel(key);
-                btn.className = `p-2.5 rounded-xl border bg-slate-950 hover:bg-slate-900 text-left transition border-slate-800 hover:border-slate-700 flex flex-col justify-between min-h-[64px] group`;
+                btn.className = `p-3 rounded-xl border bg-slate-950 hover:bg-slate-900 text-left transition border-slate-800 hover:border-slate-700 flex flex-col justify-between min-h-[64px] group w-full`;
                 btn.innerHTML = `
                     <div class="flex items-center justify-between w-full">
                         <span class="font-display font-bold text-sm" style="color: ${getVowelHex(key)}">${item.symbol}</span>
@@ -850,31 +714,15 @@
             container.innerHTML = '';
             
             const pList = TEXT_DATABASE[state.currentCategory];
-            const scores = JSON.parse(localStorage.getItem('vowel_coach_scores') || '{}');
 
             pList.forEach((item, index) => {
                 const btn = document.createElement('button');
                 btn.id = `paraSelect_${index}`;
                 btn.onclick = () => selectParagraph(index);
                 
-                const storageKey = `${state.currentCategory}_${index}`;
-                const highScore = scores[storageKey];
-
-                let ringClass = "border-slate-800";
-                if (highScore !== undefined) {
-                    ringClass = highScore >= 70 ? "border-emerald-500 ring-2 ring-emerald-500/30" : "border-amber-500 ring-2 ring-amber-500/30";
-                }
-
-                btn.className = `w-7 h-7 rounded-full border text-xs font-bold transition-all duration-200 relative ${ringClass} ${index === state.currentParagraphIndex ? 'bg-indigo-600 text-white shadow' : 'bg-slate-950 text-slate-400 hover:bg-slate-800'}`;
+                btn.className = `w-8 h-8 sm:w-7 sm:h-7 rounded-full border text-xs font-bold transition-all duration-200 relative ${index === state.currentParagraphIndex ? 'bg-indigo-600 text-white shadow border-indigo-500' : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800'}`;
                 btn.innerText = index + 1;
                 
-                if (highScore !== undefined) {
-                    const badge = document.createElement('span');
-                    badge.className = "absolute -top-1 -right-1 text-[7px] w-3 h-3 flex items-center justify-center bg-slate-800 text-slate-300 rounded-full border border-slate-700";
-                    badge.innerText = `${Math.round(highScore / 10)}`;
-                    btn.appendChild(badge);
-                }
-
                 container.appendChild(btn);
             });
         }
@@ -884,7 +732,6 @@
             state.currentParagraphIndex = index;
             loadParagraphSelector();
             loadActiveParagraph();
-            document.getElementById('accuracyIndicator').classList.add('hidden');
         }
 
         function setReadingMode(mode) {
@@ -895,12 +742,12 @@
             const navigator = document.getElementById('sentenceNavigator');
 
             if (mode === 'full') {
-                btnFull.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition";
-                btnSent.className = "px-2 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition";
+                btnFull.className = "px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition";
+                btnSent.className = "px-2.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition";
                 navigator.classList.add('hidden');
             } else {
-                btnSent.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition";
-                btnFull.className = "px-2 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition";
+                btnSent.className = "px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition";
+                btnFull.className = "px-2.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition";
                 navigator.classList.remove('hidden');
                 
                 const raw = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
@@ -961,7 +808,7 @@
                     
                     const span = document.createElement('span');
                     span.id = `paraWord_${cleanWord}_${index}`;
-                    span.className = `cursor-pointer border-b-2 border-dashed font-semibold transition-all duration-200 px-1 py-0.5 rounded-md hover:bg-slate-800/80 active:scale-95 text-slate-100 inline-block`;
+                    span.className = `cursor-pointer border-b-2 border-dashed font-semibold transition-all duration-200 px-1 py-0.5 rounded-md hover:bg-slate-800 active:scale-95 text-slate-100 inline-block`;
                     span.style.borderBottomColor = getVowelHex(activeVowel);
                     span.dataset.vowelKey = activeVowel;
                     span.dataset.cleanWord = cleanWord;
@@ -1011,23 +858,6 @@
             document.getElementById('wordInfoUnit').innerText = activeVowelMeta.unit;
             document.getElementById('wordInfoColorIndicator').style.backgroundColor = getVowelHex(vowelKey);
 
-            updateMouthAnatomy(vowelKey);
-        }
-
-        function updateMouthAnatomy(vowelKey) {
-            const data = VOWEL_DECK[vowelKey];
-            
-            document.getElementById('activeVowelBadge').innerText = data.symbol;
-            document.getElementById('activeVowelBadge').style.borderColor = getVowelHex(vowelKey);
-            document.getElementById('activeVowelBadge').style.color = getVowelHex(vowelKey);
-            
-            document.getElementById('vowelCategoryName').innerText = data.name;
-            document.getElementById('vowelInstructionText').innerText = data.description;
-
-            document.getElementById('tonguePath').setAttribute('d', data.tongueD);
-            document.getElementById('lowerLipPath').setAttribute('d', 'M 45,85 ' + data.lipOpen); 
-            document.getElementById('lowerTeeth').setAttribute('y', data.lowerTeethY);
-
             document.querySelectorAll('#vowelGridContainer button').forEach(el => {
                 el.classList.remove('ring-2', 'ring-indigo-500', 'bg-slate-900');
             });
@@ -1043,7 +873,15 @@
                 return;
             }
             state.selectedVowel = vowelKey;
-            updateMouthAnatomy(vowelKey);
+            
+            document.querySelectorAll('#vowelGridContainer button').forEach(el => {
+                el.classList.remove('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            });
+            const activeBtn = document.getElementById(`vowelBtn_${vowelKey}`);
+            if (activeBtn) {
+                activeBtn.classList.add('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            }
+
             updateTextFiltering();
         }
 
@@ -1158,29 +996,6 @@
             }, 3000);
         }
 
-        // =========================================================================
-        // SPEECH SYNTHESIS ENGINE (WITH CORRECT IPA TRANSLATIONS TO PREVENT CH/TF ERRORS)
-        // =========================================================================
-        function getCleanSpokenText(textToSay) {
-            const clean = textToSay.replace(/[\/:ː]/g, "").trim().toLowerCase();
-            
-            // Fix phonetic representations to produce natural local accents
-            const ipaToPhoneticMap = {
-                'ee': "ee",
-                'ihh': "ihh",
-                'oo': "oo",
-                'uuh': "uuh",
-                'ahh': "ahh",
-                'uh': "uh",
-                'odd': "odd",
-                'or': "or",
-                'ehh': "ehh",
-                'add': "add",
-                'err': "err"
-            };
-            return ipaToPhoneticMap[clean] || ipaToPhoneticMap[textToSay] || textToSay;
-        }
-
         function speakParagraph() {
             let activeText = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
             if (state.readingMode === 'sentence' && state.sentences.length > 0) {
@@ -1189,27 +1004,9 @@
             triggerSpeech(activeText);
         }
 
-        function speakSelectedWord() {
-            speakViaWebSpeech(state.selectedWord);
-        }
-
-        function playSelectedWordVowelSoundOnly() {
-            const activeVowelMeta = VOWEL_DECK[WORD_DICTIONARY[state.selectedWord].vowelKey];
-            speakViaWebSpeech(activeVowelMeta.isolateIpa);
-        }
-
-        function playIsolatedVowel() {
-            const activeVowelMeta = VOWEL_DECK[state.selectedVowel === 'all' ? 'i_long' : state.selectedVowel];
-            speakViaWebSpeech(activeVowelMeta.isolateIpa);
-        }
-
         function triggerSpeech(textToSay) {
-            const isSingleWordOrSound = !textToSay.trim().includes(" ");
             const activeKey = state.apiKeyValue || apiKey;
-            
-            if (isSingleWordOrSound) {
-                speakViaWebSpeech(textToSay);
-            } else if (state.speechEngine === 'gemini' && activeKey !== "") {
+            if (state.speechEngine === 'gemini' && activeKey !== "") {
                 speakViaGemini(textToSay);
             } else {
                 speakViaWebSpeech(textToSay);
@@ -1223,9 +1020,7 @@
             }
             window.speechSynthesis.cancel(); 
 
-            const spokenText = getCleanSpokenText(textToSay);
-
-            const utterance = new SpeechSynthesisUtterance(spokenText);
+            const utterance = new SpeechSynthesisUtterance(textToSay);
             utterance.lang = 'en-GB'; 
             utterance.rate = state.localSpeechRate;
 
@@ -1412,348 +1207,8 @@
             return new Blob([buffer], { type: 'audio/wav' });
         }
 
-        // ============================================
-        // AUDIO WAVEFORM GRAPHICS (REAL MIC & MOCK MODES)
-        // ============================================
-        let audioContext = null;
-        let analyser = null;
-        let dataArray = null;
-        let sourceNode = null;
-        let animationFrameId = null;
-
-        function startAudioVisualizer() {
-            const canvas = document.getElementById('waveformCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Check if actual browser mic access succeeds
-            navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                audioContext = new AudioContextClass();
-                analyser = audioContext.createAnalyser();
-                analyser.fftSize = 64;
-                
-                sourceNode = audioContext.createMediaStreamSource(stream);
-                sourceNode.connect(analyser);
-                
-                const bufferLength = analyser.frequencyBinCount;
-                dataArray = new Uint8Array(bufferLength);
-                
-                drawRealWaveform(ctx, canvas, bufferLength);
-            })
-            .catch(() => {
-                // Procedural mock waveform visualizer if microphone is locked in Sandbox
-                drawMockWaveform(ctx, canvas);
-            });
-        }
-
-        function stopAudioVisualizer() {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            if (sourceNode) {
-                sourceNode.disconnect();
-                sourceNode = null;
-            }
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close();
-            }
-        }
-
-        function drawRealWaveform(ctx, canvas, bufferLength) {
-            function draw() {
-                animationFrameId = requestAnimationFrame(draw);
-                analyser.getByteFrequencyData(dataArray);
-                
-                ctx.fillStyle = '#090d16';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                const barWidth = (canvas.width / bufferLength) * 2.5;
-                let barHeight;
-                let x = 0;
-                
-                for(let i = 0; i < bufferLength; i++) {
-                    barHeight = dataArray[i] / 4;
-                    ctx.fillStyle = 'rgba(239, 68, 68, ' + (barHeight/40 + 0.2) + ')';
-                    ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
-                    x += barWidth;
-                }
-            }
-            draw();
-        }
-
-        function drawMockWaveform(ctx, canvas) {
-            let phase = 0;
-            function draw() {
-                animationFrameId = requestAnimationFrame(draw);
-                phase += 0.15;
-                
-                ctx.fillStyle = '#090d16';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                ctx.beginPath();
-                ctx.strokeStyle = '#f43f5e';
-                ctx.lineWidth = 1.5;
-                
-                for (let x = 0; x < canvas.width; x++) {
-                    const noise = Math.sin(x * 0.05 + phase) * Math.cos(x * 0.01 - phase);
-                    const y = (canvas.height / 2) + noise * 12 * (state.isRecording ? 1 : 0.1);
-                    if (x === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                }
-                ctx.stroke();
-            }
-            draw();
-        }
-
-        // ============================================
-        // SPEECH STUDIO - CONTINUOUS EVALUATOR & FALLBACK
-        // ============================================
-        let recognition = null;
-        let isWebSpeechBlocked = false;
-
-        function startSpeechRecognition() {
-            isWebSpeechBlocked = false;
-            document.getElementById('sandboxFallbackControls').classList.add('hidden');
-            document.getElementById('btnStopRecord').classList.remove('hidden');
-
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                activateSandboxFallback("Web Speech recognition not supported in this browser.");
-                return;
-            }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = true; 
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
-
-            state.isRecording = true;
-            document.getElementById('recordingWaveform').classList.remove('hidden');
-            document.getElementById('liveTranscriptText').innerText = "Begin speaking clearly...";
-
-            let activeText = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
-            if (state.readingMode === 'sentence' && state.sentences.length > 0) {
-                activeText = state.sentences[state.currentSentenceIndex];
-            }
-            document.getElementById('recordingTargetText').innerText = activeText;
-
-            // Start waveform animation
-            startAudioVisualizer();
-
-            document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
-                if (el.dataset.vowelKey) {
-                    el.classList.remove('bg-emerald-950/40', 'border-emerald-500', 'text-emerald-300');
-                }
-            });
-
-            let fullAccumulatedTranscript = '';
-
-            // Detect within 2.5 seconds if speech recognition is unresponsive due to sandboxing
-            const watchdogTimer = setTimeout(() => {
-                if (state.isRecording && fullAccumulatedTranscript === '') {
-                    activateSandboxFallback("Sandbox restrictions detected. Continuous engine cannot bypass host policies.");
-                }
-            }, 2500);
-
-            recognition.onresult = (event) => {
-                let interimTranscript = '';
-                let finalTranscript = '';
-
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript + ' ';
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
-                    }
-                }
-                
-                fullAccumulatedTranscript += finalTranscript;
-                document.getElementById('liveTranscriptText').innerText = (fullAccumulatedTranscript + interimTranscript).trim() || "Listening closely...";
-            };
-
-            recognition.onerror = (e) => {
-                clearTimeout(watchdogTimer);
-                // Safe ignore for natural click aborts
-                if (e.error === 'aborted') {
-                    console.log("Mic manual abort processed correctly.");
-                    return;
-                }
-                console.warn("Speech engine error occurred:", e.error);
-                activateSandboxFallback(`Audio input error: ${e.error}`);
-            };
-
-            recognition.onend = () => {
-                clearTimeout(watchdogTimer);
-                if (state.isRecording && !isWebSpeechBlocked) {
-                    stopSpeechRecognition(false);
-                }
-            };
-
-            try {
-                recognition.start();
-            } catch (err) {
-                clearTimeout(watchdogTimer);
-                activateSandboxFallback("Microphone capture blocked inside sandbox container.");
-            }
-        }
-
-        function activateSandboxFallback(reason) {
-            isWebSpeechBlocked = true;
-            console.log("Sandbox Fallback Activated:", reason);
-            
-            // Switch layout to Self-Grading Mode
-            document.getElementById('sandboxFallbackControls').classList.remove('hidden');
-            document.getElementById('btnStopRecord').classList.add('hidden');
-            document.getElementById('liveTranscriptText').innerText = "Speak aloud, then grade your attempt below!";
-            
-            if (!state.isRecording) {
-                state.isRecording = true;
-                document.getElementById('recordingWaveform').classList.remove('hidden');
-                startAudioVisualizer();
-            }
-        }
-
-        function simulateSelfGrade(score) {
-            stopAudioVisualizer();
-            state.isRecording = false;
-            document.getElementById('recordingWaveform').classList.add('hidden');
-            
-            let activeText = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
-            if (state.readingMode === 'sentence' && state.sentences.length > 0) {
-                activeText = state.sentences[state.currentSentenceIndex];
-            }
-            
-            const targetWordKeys = Object.keys(WORD_DICTIONARY).filter(k => activeText.toLowerCase().includes(k));
-
-            if (score >= 80) {
-                // Highlight words to signify success in the layout
-                document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
-                    if (el.dataset.vowelKey && targetWordKeys.includes(el.dataset.cleanWord)) {
-                        el.classList.add('bg-emerald-950/45', 'border-emerald-500', 'text-emerald-300');
-                    }
-                });
-                showToast("Perfected Progress!", `Vowel confidence registered at ${score}%!`);
-            } else {
-                showToast("Self-Assessment Saved", "Take your time and practice again whenever you are ready.");
-            }
-
-            document.getElementById('accuracyIndicator').classList.remove('hidden');
-            document.getElementById('accuracyScore').innerText = `${score}%`;
-            
-            saveProgress(score);
-        }
-
-        function stopSpeechRecognition(cancel = false) {
-            stopAudioVisualizer();
-            state.isRecording = false;
-            document.getElementById('recordingWaveform').classList.add('hidden');
-            if (recognition) {
-                recognition.stop();
-            }
-
-            if (cancel || isWebSpeechBlocked) return;
-
-            const transcript = document.getElementById('liveTranscriptText').innerText.toLowerCase();
-            if (transcript === "begin speaking clearly..." || transcript === "listening closely...") {
-                showToast("No speech captured", "We couldn't hear any words. Try again!", "error");
-                return;
-            }
-
-            evaluatePronunciationAccuracy(transcript);
-        }
-
-        function evaluatePronunciationAccuracy(transcript) {
-            const cleanTranscriptWords = transcript.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").split(/\s+/);
-            
-            let activeText = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
-            if (state.readingMode === 'sentence' && state.sentences.length > 0) {
-                activeText = state.sentences[state.currentSentenceIndex];
-            }
-            
-            const targetWordKeys = Object.keys(WORD_DICTIONARY).filter(k => activeText.toLowerCase().includes(k));
-
-            let matchedCount = 0;
-            const matchesFound = [];
-
-            targetWordKeys.forEach(target => {
-                if (cleanTranscriptWords.some(userWord => userWord.includes(target) || target.includes(userWord))) {
-                    matchedCount++;
-                    matchesFound.push(target);
-                }
-            });
-
-            document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
-                if (el.dataset.vowelKey && matchesFound.includes(el.dataset.cleanWord)) {
-                    el.classList.add('bg-emerald-950/45', 'border-emerald-500', 'text-emerald-300');
-                }
-            });
-
-            const score = targetWordKeys.length > 0 ? Math.round((matchedCount / targetWordKeys.length) * 100) : 100;
-            
-            document.getElementById('accuracyIndicator').classList.remove('hidden');
-            document.getElementById('accuracyScore').innerText = `${score}%`;
-            
-            if (score > 65) {
-                showToast("Fantastic Job!", `You hit a vowel accuracy of ${score}%!`);
-            } else {
-                showToast("Let's Try Again", `Target Match: ${score}%. Take your time and make vowels twice as long!`, "error");
-            }
-
-            saveProgress(score);
-        }
-
-        function saveProgress(score) {
-            const scores = JSON.parse(localStorage.getItem('vowel_coach_scores') || '{}');
-            const storageKey = `${state.currentCategory}_${state.currentParagraphIndex}`;
-            if (!scores[storageKey] || score > scores[storageKey]) {
-                scores[storageKey] = score;
-                localStorage.setItem('vowel_coach_scores', JSON.stringify(scores));
-            }
-            updateProgressDashboard();
-            loadParagraphSelector();
-        }
-
-        function updateProgressDashboard() {
-            const scores = JSON.parse(localStorage.getItem('vowel_coach_scores') || '{}');
-            const attempts = Object.keys(scores).length;
-            const total = TEXT_DATABASE.elementary.length + TEXT_DATABASE.longer.length;
-            
-            let sum = 0;
-            Object.values(scores).forEach(val => sum += val);
-            const avg = attempts > 0 ? Math.round(sum / attempts) : 0;
-
-            document.getElementById('lblProgressUnitCount').innerText = `${attempts} / ${total}`;
-            document.getElementById('lblProgressAvgScore').innerText = `${avg}%`;
-        }
-
-        function practiceVowelMicrophone() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                showToast("Mic Blocked", "Your device does not support inline microphone listening.", "error");
-                return;
-            }
-            const activeVowelMeta = VOWEL_DECK[state.selectedVowel === 'all' ? 'i_long' : state.selectedVowel];
-            showToast("Try isolating the sound", `Pronounce: "${activeVowelMeta.symbol}" slowly now...`);
-            
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const singleRec = new SpeechRecognition();
-            singleRec.lang = 'en-US';
-            
-            document.getElementById('btnRecordVowel').innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Listening...';
-            
-            singleRec.onresult = (event) => {
-                const captured = event.results[0][0].transcript;
-                showToast("Sound captured!", `We detected you saying: "${captured}". Keep practicing!`);
-            };
-
-            singleRec.onend = () => {
-                document.getElementById('btnRecordVowel').innerHTML = '<i class="fa-solid fa-microphone text-rose-400"></i> Try Mimicking';
-            };
-
-            singleRec.start();
+        function speakSelectedWord() {
+            speakViaWebSpeech(state.selectedWord);
         }
     </script>
 </body>
