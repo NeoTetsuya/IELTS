@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elementary Vowel Coach & Interactive Speech Studio</title>
+    <!-- Inline SVG Favicon to prevent favicon.ico 404 console errors -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Lora:ital,wght=0,400;0,500;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                        },
+                        vowel: {
+                            'i_long': '#10b981', 
+                            'i_short': '#06b6d4', 
+                            'u_long': '#6366f1', 
+                            'u_short': '#8b5cf6', 
+                            'a_long': '#f43f5e', 
+                            'a_short': '#f97316', 
+                            'o_short': '#eab308', 
+                            'o_long': '#0ea5e9', 
+                            'e_short': '#d946ef', 
+                            'ae_short': '#ec4899', 
+                            'er_long': '#64748b'  
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .speech-highlight {
+            background-color: rgba(250, 204, 21, 0.35);
+            border-radius: 4px;
+            transition: all 0.15s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen lg:h-full flex flex-col antialiased selection:bg-brand-500/30 selection:text-brand-200 overflow-y-auto lg:overflow-hidden">
+
+    <header class="border-b border-slate-900 bg-slate-900/95 sticky top-0 z-40 px-4 py-3 sm:px-6">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-emerald-500 to-indigo-600 p-2.5 rounded-xl text-white shadow-lg shadow-emerald-500/10">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-lg tracking-wide bg-gradient-to-r from-emerald-400 to-indigo-400 bg-clip-text text-transparent">ELEMENTARY VOWEL COACH</h1>
+                    <p class="text-xs text-slate-400">Slow, Clear, & Natural Pronunciation Studio &bull; Units 2–7</p>
+                </div>
+            </div>
+
+            <!-- Speech Config & Engine Selection -->
+            <div class="flex flex-wrap items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                <button id="btnEngineWebSpeech" onclick="setEngine('webspeech')" class="px-3 py-1.5 text-xs font-semibold rounded-lg transition bg-slate-800 text-slate-200 flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-circle-dot text-emerald-400 text-[10px]"></i> Local Speech
+                </button>
+                <button id="btnEngineGemini" onclick="setEngine('gemini')" class="px-3 py-1.5 text-xs font-semibold rounded-lg transition text-slate-400 flex items-center gap-1.5 hover:text-slate-200">
+                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i> Teacher Voice (Gemini TTS)
+                </button>
+                <button onclick="toggleSettingsModal()" class="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition" title="Voice Configuration">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-y-auto lg:overflow-hidden">
+        
+        <!-- Left Column: Vowel Target Selection Deck -->
+        <section class="lg:col-span-4 flex flex-col gap-6 overflow-visible lg:overflow-y-auto custom-scrollbar lg:pr-1">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-display font-semibold text-xs tracking-wider text-brand-400 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-filter"></i> Filter Target Vowel
+                    </h3>
+                    <button onclick="resetVowelFilter()" class="text-xs text-indigo-400 hover:text-indigo-300 transition flex items-center gap-1">
+                        <i class="fa-solid fa-arrows-rotate"></i> Show All
+                    </button>
+                </div>
+
+                <!-- Vowel Sound Grid (Tailored for mobile-friendly touch inputs) -->
+                <div id="vowelGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5 max-h-[300px] lg:max-h-none overflow-y-auto custom-scrollbar pr-1">
+                    <!-- Loaded dynamically in JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Interactive Practice Board -->
+        <section class="lg:col-span-8 flex flex-col gap-6 overflow-visible lg:overflow-hidden h-full">
+            
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-0 flex flex-col overflow-hidden shadow-xl flex-1">
+                
+                <div class="bg-slate-950 border-b border-slate-800 px-4 sm:px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                        <h2 class="font-display font-bold text-xs tracking-wider text-slate-300 uppercase">Interactive Practice Desk</h2>
+                    </div>
+
+                    <!-- Category Tab Selectors -->
+                    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                        <button id="tabElementary" onclick="switchCategory('elementary')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-100 shadow">
+                            Elementary Focus
+                        </button>
+                        <button id="tabLonger" onclick="switchCategory('longer')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 text-slate-400 hover:text-slate-200">
+                            Topic Paragraphs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sub-selector for specific chapters/paragraphs -->
+                <div class="bg-slate-900/50 border-b border-slate-800/40 px-4 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 overflow-x-auto">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-xs font-semibold text-slate-500 whitespace-nowrap">Paragraph Unit:</span>
+                        <div id="paragraphSelectorsContainer" class="flex items-center gap-1.5">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Read Mode Toggle: Word vs Sentence Chunks -->
+                    <div class="flex items-center gap-2 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+                        <span class="text-[10px] text-slate-400 font-semibold">Mode:</span>
+                        <button id="btnModeFull" onclick="setReadingMode('full')" class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition">Full Text</button>
+                        <button id="btnModeSentence" onclick="setReadingMode('sentence')" class="px-2.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition">Sentence</button>
+                    </div>
+                </div>
+
+                <div class="flex-1 p-4 sm:p-6 overflow-y-auto custom-scrollbar flex flex-col justify-between gap-6 relative min-h-[250px]">
+                    
+                    <!-- Sentence Navigator Panel (Active only in Sentence Mode) -->
+                    <div id="sentenceNavigator" class="hidden bg-indigo-950/30 border border-indigo-900/40 rounded-xl p-3 flex items-center justify-between gap-3 mb-2">
+                        <button onclick="prevSentence()" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-100 transition text-xs font-semibold">
+                            <i class="fa-solid fa-chevron-left text-[10px] mr-1"></i> Prev
+                        </button>
+                        <span id="sentenceProgress" class="text-xs font-bold text-indigo-300">Sentence 1 of 5</span>
+                        <button onclick="nextSentence()" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-100 transition text-xs font-semibold">
+                            Next <i class="fa-solid fa-chevron-right text-[10px] ml-1"></i>
+                        </button>
+                    </div>
+
+                    <!-- Reading Board Box -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800/40 pb-2">
+                            <h3 id="currentParagraphTitle" class="font-display font-bold text-base text-slate-200">The Kitchen Plan</h3>
+                            <span id="currentParagraphLevel" class="text-[9px] uppercase tracking-wider bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded font-bold border border-slate-700/50">Elementary Vowel Mix</span>
+                        </div>
+
+                        <!-- Active Text Rendering Area with highlighted targets -->
+                        <div id="paragraphDisplayArea" class="font-serif text-lg leading-relaxed text-slate-300 sm:text-xl tracking-wide select-none font-medium">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Highlighted Phoneme Details Panel -->
+                    <div id="wordInfoPanel" class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div id="wordInfoColorIndicator" class="w-2.5 h-10 rounded-full bg-vowel-i_long"></div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 id="wordInfoWord" class="font-display font-bold text-sm text-white">Peter</h4>
+                                    <span id="wordInfoIpa" class="font-serif text-brand-400 text-xs">/piːtə/</span>
+                                </div>
+                                <p id="wordInfoDescription" class="text-[11px] text-slate-400 mt-0.5">Vowel target: <strong id="wordInfoVowelSymbol" class="text-slate-300">/i:/</strong> &bull; <span id="wordInfoUnit">Unit 2</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Word-specific Play controls (Optimized Touch target) -->
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button onclick="speakSelectedWord()" class="flex-1 sm:flex-initial justify-center px-4 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-bold text-slate-200 transition flex items-center gap-2">
+                                <i class="fa-solid fa-volume-high text-brand-400"></i> Speak Word
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="bg-slate-950 border-t border-slate-800 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <button id="btnPlayFullParagraph" onclick="speakParagraph()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold text-xs py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-brand-900/20">
+                            <i id="btnPlayParagraphIcon" class="fa-solid fa-play"></i> Listen to Practice Text
+                        </button>
+                    </div>
+
+                    <!-- Quick visual settings info -->
+                    <div class="flex flex-col sm:items-end text-center sm:text-right w-full sm:w-auto">
+                        <div class="flex items-center justify-center sm:justify-end gap-1.5 text-xs text-brand-400 font-semibold mb-0.5">
+                            <i class="fa-solid fa-gauge-simple-high"></i> Current Speed: <span id="lblSpeedSummary">1x</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 italic mt-0.5">Perfected slow pace optimized for English learners</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+    <div id="settingsModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+        <div class="bg-slate-900 border border-slate-800 max-w-md w-full rounded-2xl overflow-hidden shadow-2xl relative">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950/60">
+                <h3 class="font-display font-bold text-sm text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-brand-500"></i> Speech Lab Settings
+                </h3>
+                <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-slate-200 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <!-- Speed Slider -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Elementary Speaking Speed</label>
+                    <div class="flex items-center gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <input id="speechRateRange" type="range" min="0.5" max="1.1" step="0.05" value="1" class="flex-1 accent-brand-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                        <span id="speechRateLabel" class="text-xs font-bold text-brand-400 whitespace-nowrap min-w-[50px] text-right">1x</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-1.5">Slower speeds (0.7x - 0.8x) make target words dramatically clearer to hear and master.</p>
+                </div>
+
+                <!-- Local Voice Target Scanner -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Your System English Voice</label>
+                    <select id="localVoiceSelector" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-300 outline-none focus:border-indigo-500">
+                        <!-- Auto-loaded system voice list -->
+                        <option value="">System Default</option>
+                    </select>
+                    <p class="text-[10px] text-slate-500 mt-1">Select a high quality English voice (like "Google US English" or Apple "Samantha") for standard local speech.</p>
+                </div>
+
+                <!-- API configuration for premium high-fidelity Speech -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-semibold text-slate-300">Gemini Key (Premium Teacher Voice)</label>
+                        <span class="text-[9px] bg-indigo-950 text-indigo-300 border border-indigo-900/50 px-1.5 py-0.5 rounded font-semibold uppercase">Optional</span>
+                    </div>
+                    <div class="relative">
+                        <input id="apiKeyValueInput" type="password" placeholder="AI-generated key..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2.5 text-xs text-slate-200 outline-none">
+                        <button onclick="toggleApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs">
+                            <i id="apiKeyEyeIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Premium Voice Select options -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Gemini Vocal Profile</label>
+                    <select id="geminiVoiceSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-300 outline-none focus:border-indigo-500">
+                        <option value="Kore" selected>Kore (Clear, Professional Teacher)</option>
+                        <option value="Puck">Puck (Warm, Friendly Accent)</option>
+                        <option value="Zephyr">Zephyr (Bright Narrator)</option>
+                        <option value="Leda">Leda (Gentle, Deliberate Voice)</option>
+                    </select>
+                </div>
+
+                <!-- Audio Cache Manager Area -->
+                <div class="mt-4 pt-3 border-t border-slate-800">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span>Cached Audio Tracks:</span>
+                        <span id="cacheCountLabel" class="font-bold text-brand-400">0</span>
+                    </div>
+                    <button onclick="clearAudioCache()" class="mt-2 w-full py-1.5 bg-slate-950 hover:bg-red-950/40 text-slate-400 hover:text-red-400 rounded-lg text-xs font-semibold border border-slate-800 hover:border-red-900/50 transition">
+                        Clear Audio Cache
+                    </button>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-slate-950/60 border-t border-slate-800/80 flex justify-end">
+                <button onclick="saveSettings()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs py-2 px-4 rounded-xl transition shadow">
+                    Save Config
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Toast Message box -->
+    <div id="toastNotification" class="hidden fixed bottom-6 right-6 z-50 bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-2xl flex items-center gap-3 max-w-sm animate-scale-up">
+        <div id="toastIconBg" class="bg-emerald-950 text-emerald-400 p-2 rounded-lg">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div>
+            <h4 id="toastTitle" class="text-xs font-bold text-white">Configured!</h4>
+            <p id="toastBody" class="text-[10px] text-slate-400 mt-0.5">Vowel speech engine properties refreshed.</p>
+        </div>
+    </div>
+
+    <script>
+        let apiKey = "";
+
+        // Global State Configuration
+        const state = {
+            speechEngine: 'webspeech', 
+            selectedVowel: 'all',      
+            currentCategory: 'elementary', 
+            currentParagraphIndex: 0,
+            selectedWord: 'peter',
+            apiKeyValue: '', 
+            localSpeechRate: 1, 
+            geminiVoice: 'Kore',
+            readingMode: 'full', 
+            currentSentenceIndex: 0,
+            sentences: [],
+            activeAnimationId: null // Tracks active word sync loops
+        };
+
+        const VOWEL_DECK = {
+            'i_long': { symbol: '/i:/', name: 'Long /i:/', label: 'Pizza', class: 'bg-vowel-i_long/15 text-vowel-i_long border-vowel-i_long/30', unit: 'Unit 2', words: ['peter', 'steve', 'pizza', 'cheese', 'peaches', 'green', 'tea', 'cream', 'evening', 'see', 'tree', 'street'], description: 'Smile wide, pull your lips back. Make the sound last longer than usual.' },
+            'i_short': { symbol: '/ɪ/', name: 'Short /ɪ/', label: 'Dinner', class: 'bg-vowel-i_short/15 text-vowel-i_short border-vowel-i_short/30', unit: 'Unit 2', words: ['kitchen', 'dinner', 'listening', 'window', 'finish', 'busy', 'biscuits'], description: 'Mouth semi-closed. Lips relaxed, short crisp breath.' },
+            'u_long': { symbol: '/u:/', name: 'Long /u:/', label: 'Blue', class: 'bg-vowel-u_long/15 text-vowel-u_long border-vowel-u_long/30', unit: 'Unit 3', words: ['soup', 'fruit', 'juice', 'blue', 'boots', 'shoes', 'supermarket', 'student', 'new', 'food', 'music'], description: 'Lips are tightly rounded forward into a small, tight circle.' },
+            'u_short': { symbol: '/ʊ/', name: 'Short /ʊ/', label: 'Sugar', class: 'bg-vowel-u_short/15 text-vowel-u_short border-vowel-u_short/30', unit: 'Unit 3', words: ['good', 'sugar', 'full', 'spoonful', 'bush', 'book'], description: 'Lips are slightly rounded and relaxed. Short simple burst.' },
+            'a_long': { symbol: '/ɑ:/', name: 'Long /ɑ:/', label: 'Father', class: 'bg-vowel-a_long/15 text-vowel-a_long border-vowel-a_long/30', unit: 'Unit 4', words: ['fast', 'large', 'bar', 'park', 'father', 'aunt', 'car', 'laughed', 'hours', 'start'], description: 'Open your mouth completely wide, jaw down. Keep tongue low and flat.' },
+            'a_short': { symbol: '/ʌ/', name: 'Short /ʌ/', label: 'Mother', class: 'bg-vowel-a_short/15 text-vowel-a_short border-vowel-a_short/30', unit: 'Unit 4', words: ['mother', 'month', 'brother', 'young', 'fun', 'monday', 'sun', 'studies', 'much'], description: 'A relaxed, short central vowel. Open mouth slightly, relax tongue.' },
+            'o_short': { symbol: '/ɒ/', name: 'Short /ɒ/', label: 'Clock', class: 'bg-vowel-o_short/15 text-vowel-o_short border-vowel-o_short/30', unit: 'Unit 5', words: ['clock', 'shop', 'box', 'chocolates', 'bottle', 'dog', 'hot', 'coffee', 'shopping', 'cost', 'holiday'], description: 'Lips are rounded slightly, jaw dropped. Short sound.' },
+            'o_long': { symbol: '/ɔ:/', name: 'Long /ɔ:/', label: 'Corner', class: 'bg-vowel-o_long/15 text-vowel-o_long border-vowel-o_long/30', unit: 'Unit 5', words: ['wall', 'four', 'floor', 'corner', 'warm', 'thought', 'forty', 'all', 'door'], description: 'Pull your lips into a deep, long forward-circle shape.' },
+            'e_short': { symbol: '/e/', name: 'Short /e/', label: 'Bread', class: 'bg-vowel-e_short/15 text-vowel-e_short border-vowel-e_short/30', unit: 'Unit 6', words: ['desk', 'ten', 'friends', 'fresh', 'bread', 'heavy', 'men', 'weather'], description: 'Mouth open wide. Lips neutral, tongue high-mid.' },
+            'ae_short': { symbol: '/æ/', name: 'Short /æ/', label: 'Jam', class: 'bg-vowel-ae_short/15 text-vowel-ae_short border-vowel-ae_short/30', unit: 'Unit 6', words: ['map', 'plan', 'black', 'bag', 'jacket', 'family', 'apples', 'pack', 'manager', 'jam', 'hat'], description: 'Jaw fully down, mouth open wide, corners of lips stretched back.' },
+            'er_long': { symbol: '/ɜ:/', name: 'Long /ɜ:/', label: 'Thursday', class: 'bg-vowel-er_long/15 text-vowel-er_long border-vowel-er_long/30', unit: 'Unit 7', words: ['thursday', 'thursdays', 'thirty-third', 'birthday', 'work', 'university', 'german', 'bird', 'turn', 'journey'], description: 'Long, completely neutral sound. Relax your lips, jaw, and tongue flat.' }
+        };
+
+        const WORD_DICTIONARY = {
+            'peter': { vowelKey: 'i_long', ipa: 'piːtə', info: 'Long /i:/ in "Peter". Keep it long!' },
+            'mother': { vowelKey: 'a_short', ipa: 'mʌðə', info: 'Short /ʌ/ central vowel in "Mother".' },
+            'kitchen': { vowelKey: 'i_short', ipa: 'kɪtʃɪn', info: 'Short crisp /ɪ/ sound in "Kitchen".' },
+            'thursday': { vowelKey: 'er_long', ipa: 'θɜːzdeɪ', info: 'Vowel neutral /ɜ:/ in "Thursday".' },
+            'thursdays': { vowelKey: 'er_long', ipa: 'θɜːzdeɪz', info: 'Vowel neutral /ɜ:/ in "Thursdays".' },
+            'map': { vowelKey: 'ae_short', ipa: 'mæp', info: 'Open front /æ/ sound in "Map".' },
+            'desk': { vowelKey: 'e_short', ipa: 'desk', info: 'Mid front /e/ sound in "Desk".' },
+            'plan': { vowelKey: 'ae_short', ipa: 'plæn', info: 'Open /æ/ sound in "Plan".' },
+            'good': { vowelKey: 'u_short', ipa: 'ɡʊd', info: 'Short back rounded /ʊ/ sound.' },
+            'dinner': { vowelKey: 'i_short', ipa: 'dɪnə', info: 'Short central-ending /ɪ/.' },
+            'ten': { vowelKey: 'e_short', ipa: 'ten', info: 'Mid short vowel /e/ in "Ten".' },
+            'friends': { vowelKey: 'e_short', ipa: 'frendz', info: 'Mid short vowel /e/ spelling group.' },
+            'steve': { vowelKey: 'i_long', ipa: 'stiːv', info: 'Long smiled front vowel /i:/.' },
+            'soup': { vowelKey: 'u_long', ipa: 'suːp', info: 'Tight rounded long /u:/.' },
+            'fresh': { vowelKey: 'e_short', ipa: 'freʃ', info: 'Mid front /e/ in "Fresh".' },
+            'bread': { vowelKey: 'e_short', ipa: 'bred', info: 'Mid front /e/ in "Bread".' },
+            'sugar': { vowelKey: 'u_short', ipa: 'ʃʊɡə', info: 'Short /ʊ/ in "Sugar".' },
+            'clock': { vowelKey: 'o_short', ipa: 'klɒk', info: 'Short rounded /ɒ/ in "Clock".' },
+            'wall': { vowelKey: 'o_long', ipa: 'wɔːl', info: 'Long rounded /ɔ:/ in "Wall".' },
+            'four': { vowelKey: 'o_long', ipa: 'fɔː', info: 'Long rounded /ɔ:/ spelling of "Four".' },
+            'black': { vowelKey: 'ae_short', ipa: 'blæk', info: 'Wide open /æ/ in "Black".' },
+            'bag': { vowelKey: 'ae_short', ipa: 'bæɡ', info: 'Wide open /æ/ in "Bag".' },
+            'fast': { vowelKey: 'a_long', ipa: 'fɑːst', info: 'Deep long back vowel /ɑ:/.' },
+            'shop': { vowelKey: 'o_short', ipa: 'ʃɒp', info: 'Short rounded /ɒ/ in "Shop".' },
+            'month': { vowelKey: 'a_short', ipa: 'mʌnθ', info: 'Central short /ʌ/ in "Month".' },
+            'brother': { vowelKey: 'a_short', ipa: 'brʌðə', info: 'Central short /ʌ/ in "Brother".' },
+            'thirty-third': { vowelKey: 'er_long', ipa: 'θɜːti θɜːd', info: 'Neutral long /ɜ:/ in "Thirty-third".' },
+            'birthday': { vowelKey: 'er_long', ipa: 'bɜːθdeɪ', info: 'Neutral long /ɜ:/ in "Birthday".' },
+            'large': { vowelKey: 'a_long', ipa: 'lɑːdʒ', info: 'Deep long open /ɑ:/.' },
+            'bar': { vowelKey: 'a_long', ipa: 'bɑː', info: 'Deep long open /ɑ:/.' },
+            'park': { vowelKey: 'a_long', ipa: 'pɑːk', info: 'Deep long open /ɑ:/.' },
+            'young': { vowelKey: 'a_short', ipa: 'jʌŋ', info: 'Central short /ʌ/ in "Young".' },
+            'student': { vowelKey: 'u_long', ipa: 'stjuːdənt', info: 'Long front rounded /u:/.' },
+            'heavy': { vowelKey: 'e_short', ipa: 'hevi', info: 'Mid short /e/ in "Heavy".' },
+            'jacket': { vowelKey: 'ae_short', ipa: 'dʒækɪt', info: 'Open wide /æ/ in "Jacket".' },
+            'box': { vowelKey: 'o_short', ipa: 'bɒks', info: 'Short rounded /ɒ/ in "Box".' },
+            'chocolates': { vowelKey: 'o_short', ipa: 'tʃɒklɪts', info: 'Short rounded /ɒ/ spelling.' },
+            'floor': { vowelKey: 'o_long', ipa: 'flɔː', info: 'Long rounded /ɔ:/ spelling of "Floor".' },
+            'laughed': { vowelKey: 'a_long', ipa: 'lɑːft', info: 'Deep long /ɑ:/ spelling.' },
+            'father': { vowelKey: 'a_long', ipa: 'fɑːðə', info: 'Deep long /ɑ:/ in "Father".' },
+            'bottle': { vowelKey: 'o_short', ipa: 'bɒtəl', info: 'Short rounded /ɒ/ in "Bottle".' },
+            'fruit': { vowelKey: 'u_long', ipa: 'fruːt', info: 'Rounded long /u:/ spelling.' },
+            'juice': { vowelKey: 'u_long', ipa: 'dʒuːs', info: 'Rounded long /u:/ spelling.' },
+            'aunt': { vowelKey: 'a_long', ipa: 'ɑːnt', info: 'Deep long open /ɑ:/.' },
+            'green': { vowelKey: 'i_long', ipa: 'ɡriːn', info: 'Smiled long /i:/.' },
+            'tea': { vowelKey: 'i_long', ipa: 'tiː', info: 'Smiled long /i:/ spelling.' },
+            'evening': { vowelKey: 'i_long', ipa: 'iːvnɪŋ', info: 'Smiled long /i:/ spelling.' },
+            'fun': { vowelKey: 'a_short', ipa: 'fʌn', info: 'Central short /ʌ/.' },
+            'family': { vowelKey: 'ae_short', ipa: 'fæməli', info: 'Open wide /æ/.' },
+            'car': { vowelKey: 'a_long', ipa: 'kɑː', info: 'Deep long open /ɑ:/ spelling.' },
+            'monday': { vowelKey: 'a_short', ipa: 'mʌndeɪ', info: 'Central short /ʌ/ spelling.' },
+            'full': { vowelKey: 'u_short', ipa: 'fʊl', info: 'Short back rounded /ʊ/.' },
+            'food': { vowelKey: 'u_long', ipa: 'fuːd', info: 'Rounded long /u:/ in "Food".' },
+            'apples': { vowelKey: 'ae_short', ipa: 'æpəlz', info: 'Open wide /æ/ in "Apples".' },
+            'cream': { vowelKey: 'i_long', ipa: 'kriːm', info: 'Smiled long /i:/ spelling.' },
+            'listening': { vowelKey: 'i_short', ipa: 'lɪsənɪŋ', info: 'Short crisp /ɪ/ sound.' },
+            'music': { vowelKey: 'u_long', ipa: 'mjuːzɪk', info: 'Rounded long /u:/ spelling.' },
+            'tree': { vowelKey: 'i_long', ipa: 'triː', info: 'Smiled long /i:/ spelling.' },
+            'dog': { vowelKey: 'o_short', ipa: 'dɒɡ', info: 'Short rounded /ɒ/ in "Dog".' },
+            'corner': { vowelKey: 'o_long', ipa: 'wɔːm', info: 'Long rounded /ɔ:/ spelling.' },
+            'pizza': { vowelKey: 'i_long', ipa: 'piːtsə', info: 'Long smiled vowel /i:/.' },
+            'sun': { vowelKey: 'a_short', ipa: 'sʌn', info: 'Central short /ʌ/.' },
+            'busy': { vowelKey: 'i_short', ipa: 'bɪzi', info: 'Vowel spelling pronunciation for "Busy".' },
+            'university': { vowelKey: 'er_long', ipa: 'juːnɪvɜːsəti', info: 'Central long neutral /ɜ:/.' },
+            'studies': { vowelKey: 'a_short', ipa: 'stʌdiz', info: 'Central short /ʌ/.' },
+            'german': { vowelKey: 'er_long', ipa: 'dʒɜːmən', info: 'Central neutral /ɜ:/.' },
+            'finish': { vowelKey: 'i_short', ipa: 'fɪnɪʃ', info: 'Short crisp /ɪ/ in "Finish".' },
+            'work': { vowelKey: 'er_long', ipa: 'wɜːk', info: 'Central neutral /ɜ:/ in "Work".' },
+            'head': { vowelKey: 'e_short', ipa: 'hed', info: 'Vowel /e/ in spelling "Head".' },
+            'hot': { vowelKey: 'o_short', ipa: 'hɒt', info: 'Short rounded /ɒ/.' },
+            'coffee': { vowelKey: 'o_short', ipa: 'kɒfi', info: 'Short rounded /ɒ/.' },
+            'spoonful': { vowelKey: 'u_long', ipa: 'spuːnfʊl', info: 'First syllable contains /u:/.' },
+            'window': { vowelKey: 'i_short', ipa: 'wɪndəʊ', info: 'Short crisp /ɪ/.' },
+            'men': { vowelKey: 'e_short', ipa: 'men', info: 'Mid short /e/.' },
+            'new': { vowelKey: 'u_long', ipa: 'njuː', info: 'Rounded long /u:/.' },
+            'street': { vowelKey: 'i_long', ipa: 'striːt', info: 'Smiled long /i:/ spelling.' },
+            'weather': { vowelKey: 'e_short', ipa: 'weðə', info: 'Mid short /e/ spelling.' },
+            'shopping': { vowelKey: 'o_short', ipa: 'ʃɒpɪŋ', info: 'Short rounded /ɒ/.' },
+            'boots': { vowelKey: 'u_long', ipa: 'buːts', info: 'Rounded long /u:/ spelling.' },
+            'shoes': { vowelKey: 'u_long', ipa: 'ʃuːz', info: 'Rounded long /u:/ spelling.' },
+            'blue': { vowelKey: 'u_long', ipa: 'bluː', info: 'Rounded long /u:/.' },
+            'thought': { vowelKey: 'o_long', ipa: 'θɔːt', info: 'Long rounded /ɔ:/ spelling.' },
+            'cost': { vowelKey: 'o_short', ipa: 'kɒst', info: 'Short rounded /ɒ/.' },
+            'much': { vowelKey: 'a_short', ipa: 'mʌtʃ', info: 'Central short /ʌ/.' },
+            'supermarket': { vowelKey: 'u_long', ipa: 'suːpəmɑːkɪt', info: 'First syllable has long /u:/.' },
+            'biscuits': { vowelKey: 'i_short', ipa: 'bɪskɪts', info: 'First syllable is short /ɪ/.' },
+            'pack': { vowelKey: 'ae_short', ipa: 'pæk', info: 'Wide open /æ/.' },
+            'market': { vowelKey: 'a_long', ipa: 'mɑːkɪt', info: 'Long back /ɑ:/ in "Market".' },
+            'bus': { vowelKey: 'a_short', ipa: 'bʌs', info: 'Short central /ʌ/ in "Bus".' },
+            'money': { vowelKey: 'a_short', ipa: 'mʌni', info: 'Short central /ʌ/ in "Money".' },
+            'warm': { vowelKey: 'o_long', ipa: 'wɔːm', info: 'Long rounded /ɔ:/ in "Warm".' },
+            'farm': { vowelKey: 'a_long', ipa: 'fɑːm', info: 'Long open back /ɑ:/ in "Farm".' }
+        };
+
+        const TEXT_DATABASE = {
+            'elementary': [
+                {
+                    title: "The Kitchen Plan",
+                    level: "Elementary Vowel Mix 1",
+                    raw: "Peter and his mother sat in the kitchen on Thursday. They looked at a map on the desk. They wanted to plan a good dinner for ten friends. Steve wanted to make hot soup and fresh bread. But the sugar bowl was empty. The clock on the wall ticked past four. They grabbed a black bag and walked fast to the shop."
+                },
+                {
+                    title: "The Birthday Party",
+                    level: "Elementary Vowel Mix 2",
+                    raw: "Last month, my brother had his thirty-third birthday. We went to a large bar near the park. A young student wore a heavy jacket. He dropped a box of chocolates on the floor, and we all laughed. My father bought a bottle of fruit juice. My aunt drank a cup of green tea. It was a great evening full of fun."
+                },
+                {
+                    title: "A Picnic in the Park",
+                    level: "Elementary Vowel Mix 3",
+                    raw: "Ben's father took the family for a fast drive in the car. They went to the park on Monday. They brought a basket full of food. It had green apples, fresh bread, and cream. While his brother was listening to music under a tree, a dog ran from the corner. The dog took a piece of pizza from his plate. Everyone laughed under the sun."
+                },
+                {
+                    title: "University Homework",
+                    level: "Elementary Vowel Mix 4",
+                    raw: "Peter is a busy university student. He studies German on Thursdays. Yesterday evening, he sat at his desk for four hours. He wanted to finish his work. His head was tired, so he made a hot cup of coffee. He put a spoonful of sugar in it. He looked out the window and saw ten men building a new wall across the street."
+                },
+                {
+                    title: "A Rainy Day",
+                    level: "Elementary Vowel Mix 5",
+                    raw: "The weather was bad, so Steve went inside the shopping centre. He wanted to buy a new pair of black boots. His old shoes were wet from the rain. In one shop, the manager showed him blue shoes. Steve thought they cost too much money. He went to the supermarket instead. He bought a bottle of juice, some biscuits, and a pack of bread for dinner."
+                }
+            ],
+            'longer': [
+                {
+                    title: "The Weekend Market Adventure",
+                    level: "Topical Focus &bull; Units 4 & 5 Focus",
+                    raw: "My father and mother love going to the weekend market. Last Monday, we got off the bus on the corner of the street near the old clock tower. We walked through the large wooden door of the organic shop. A friendly young man sold us forty fresh red apples and a bottle of juice. We spent a lot of money, but we also bought a small cup of sweet coffee and sat in the warm sun. It was a wonderful start to our day!"
+                },
+                {
+                    title: "A Busy Thursday at Work",
+                    level: "Topical Focus &bull; Units 6 & 7 Focus",
+                    raw: "Every Thursday, my friend Ben goes to work early in the morning. He wears a heavy black jacket and a clean hat. Today was his thirty-third birthday, so the office manager bought ten bags of fresh bread and sweet strawberry jam. We sang a song and sat back at our desks to eat. A beautiful little bird sang outside the window while we worked. Ben said it was the best birthday he has ever had!"
+                },
+                {
+                    title: "The Beautiful Blue Lake",
+                    level: "Topical Focus &bull; Units 2 & 3 Focus",
+                    raw: "If you want to see a lovely place, you must visit the blue lake in June. Steve and his school team love to walk there. They carry a bag full of good food and sweet fruit juice with no sugar. Today they sat under the cool trees to listen to the birds and read a book. For dinner, they ate hot vegetable soup and a slice of delicious cheese pizza. It is a simple and happy life by the water!"
+                }
+            ]
+        };
+
+        let db = null;
+        const DB_NAME = 'VowelCoachCache';
+        const STORE_NAME = 'audioCache';
+
+        // Initialize local IndexedDB setup with versioning support for settings metadata
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                if (!window.indexedDB) {
+                    resolve(null);
+                    return;
+                }
+                const request = indexedDB.open(DB_NAME, 2);
+                request.onerror = (e) => reject(e);
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (e) => {
+                    const database = e.target.result;
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        database.createObjectStore(STORE_NAME);
+                    }
+                    if (!database.objectStoreNames.contains('settings')) {
+                        database.createObjectStore('settings');
+                    }
+                };
+            });
+        }
+
+        function getCachedAudio(key) {
+            return new Promise((resolve) => {
+                if (!db) return resolve(null);
+                try {
+                    const transaction = db.transaction([STORE_NAME], 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.get(key);
+                    request.onsuccess = (e) => resolve(e.target.result);
+                    request.onerror = () => resolve(null);
+                } catch (err) {
+                    resolve(null);
+                }
+            });
+        }
+
+        function cacheAudio(key, base64Data) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                try {
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.put(base64Data, key);
+                    request.onsuccess = () => {
+                        resolve();
+                        updateCacheCounter();
+                    };
+                    request.onerror = () => resolve();
+                } catch (err) {
+                    resolve();
+                }
+            });
+        }
+
+        // Local State persistence methods to store configurations entirely on-device
+        function saveLocalSetting(key, value) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                try {
+                    const transaction = db.transaction(['settings'], 'readwrite');
+                    const store = transaction.objectStore('settings');
+                    const request = store.put(value, key);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => resolve();
+                } catch (err) {
+                    resolve();
+                }
+            });
+        }
+
+        function getLocalSetting(key) {
+            return new Promise((resolve) => {
+                if (!db) return resolve(null);
+                try {
+                    const transaction = db.transaction(['settings'], 'readonly');
+                    const store = transaction.objectStore('settings');
+                    const request = store.get(key);
+                    request.onsuccess = (e) => resolve(e.target.result);
+                    request.onerror = () => resolve(null);
+                } catch (err) {
+                    resolve(null);
+                }
+            });
+        }
+
+        function clearAudioCache() {
+            if (!db) return;
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.clear();
+            request.onsuccess = () => {
+                updateCacheCounter();
+                showToast("Cache Cleared", "Local audio caches have been deleted.");
+            };
+        }
+
+        function updateCacheCounter() {
+            if (!db) return;
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.count();
+            request.onsuccess = (e) => {
+                document.getElementById('cacheCountLabel').innerText = e.target.result;
+            };
+        }
+
+        window.onload = function () {
+            // Load DB and retrieve stored config credentials locally
+            initDB().then(async () => {
+                updateCacheCounter();
+                
+                // Retrieve settings if saved before on-device
+                const savedApiKey = await getLocalSetting('apiKey');
+                const savedVoice = await getLocalSetting('geminiVoice');
+                
+                if (savedApiKey) {
+                    state.apiKeyValue = savedApiKey;
+                    document.getElementById('apiKeyValueInput').value = savedApiKey;
+                }
+                if (savedVoice) {
+                    state.geminiVoice = savedVoice;
+                    document.getElementById('geminiVoiceSelect').value = savedVoice;
+                }
+
+                // Check active speech engine on startup
+                const activeKey = state.apiKeyValue || apiKey;
+                if (activeKey) {
+                    state.speechEngine = 'gemini';
+                    setEngine('gemini');
+                } else {
+                    setEngine('webspeech');
+                }
+            }).catch(e => console.error("IDB Fail", e));
+
+            loadVowelGrid();
+            loadParagraphSelector();
+            loadActiveParagraph();
+
+            // Highlight the initial vowel selection button style
+            const firstVowelKey = Object.keys(VOWEL_DECK)[0];
+            const activeBtn = document.getElementById(`vowelBtn_${firstVowelKey}`);
+            if (activeBtn) {
+                activeBtn.classList.add('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            }
+
+            populateVoiceDropdown();
+            if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populateVoiceDropdown;
+            }
+
+            document.getElementById('localVoiceSelector').addEventListener('change', () => {
+                stopAllPlayback();
+            });
+
+            const rateRange = document.getElementById('speechRateRange');
+            rateRange.addEventListener('input', (e) => {
+                stopAllPlayback();
+                state.localSpeechRate = parseFloat(e.target.value);
+                document.getElementById('speechRateLabel').innerText = state.localSpeechRate + 'x';
+                document.getElementById('lblSpeedSummary').innerText = state.localSpeechRate + 'x';
+            });
+        };
+
+        function stopAllPlayback() {
+            if (typeof speechSynthesis !== 'undefined') {
+                speechSynthesis.cancel();
+            }
+            if (state.activeAudio) {
+                state.activeAudio.pause();
+                state.activeAudio = null;
+            }
+            if (state.activeAnimationId) {
+                cancelAnimationFrame(state.activeAnimationId);
+                state.activeAnimationId = null;
+            }
+            const playIcon = document.getElementById('btnPlayParagraphIcon');
+            if (playIcon) {
+                playIcon.className = "fa-solid fa-play";
+            }
+            document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
+                el.classList.remove('speech-highlight');
+            });
+        }
+
+        function populateVoiceDropdown() {
+            if (typeof speechSynthesis === 'undefined') return;
+            const select = document.getElementById('localVoiceSelector');
+            select.innerHTML = '<option value="">System Default (Auto Selection)</option>';
+            
+            const voices = speechSynthesis.getVoices();
+            const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+            
+            englishVoices.forEach(voice => {
+                const opt = document.createElement('option');
+                opt.value = voice.name;
+                opt.innerText = `${voice.name} (${voice.lang})`;
+                select.appendChild(opt);
+            });
+
+            let defaultUKFemale = englishVoices.find(v => v.name.includes("Google") && v.name.includes("UK") && v.name.toLowerCase().includes("female"));
+            if (!defaultUKFemale) {
+                defaultUKFemale = englishVoices.find(v => v.name.includes("UK") && v.name.toLowerCase().includes("female"));
+            }
+            if (!defaultUKFemale) {
+                defaultUKFemale = englishVoices.find(v => v.lang.startsWith("en-GB"));
+            }
+
+            if (defaultUKFemale) {
+                select.value = defaultUKFemale.name;
+            }
+        }
+
+        function loadVowelGrid() {
+            const container = document.getElementById('vowelGridContainer');
+            container.innerHTML = '';
+            
+            Object.keys(VOWEL_DECK).forEach(key => {
+                const item = VOWEL_DECK[key];
+                const btn = document.createElement('button');
+                btn.id = `vowelBtn_${key}`;
+                btn.onclick = () => filterVowel(key);
+                btn.className = `p-3 rounded-xl border bg-slate-950 hover:bg-slate-900 text-left transition border-slate-800 hover:border-slate-700 flex flex-col justify-between min-h-[64px] group w-full`;
+                btn.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <span class="font-display font-bold text-sm" style="color: ${getVowelHex(key)}">${item.symbol}</span>
+                        <span class="text-[8px] text-slate-500 font-bold uppercase">${item.unit}</span>
+                    </div>
+                    <span class="text-[11px] font-semibold text-slate-300 mt-1">${item.name}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function getVowelHex(key) {
+            const colors = {
+                'i_long': '#10b981', 'i_short': '#06b6d4', 'u_long': '#6366f1', 'u_short': '#8b5cf6',
+                'a_long': '#f43f5e', 'a_short': '#f97316', 'o_short': '#eab308', 'o_long': '#0ea5e9',
+                'e_short': '#d946ef', 'ae_short': '#ec4899', 'er_long': '#64748b'
+            };
+            return colors[key] || '#ffffff';
+        }
+
+        function switchCategory(cat) {
+            state.currentCategory = cat;
+            state.currentParagraphIndex = 0;
+            
+            const tabElem = document.getElementById('tabElementary');
+            const tabLong = document.getElementById('tabLonger');
+            
+            if (cat === 'elementary') {
+                tabElem.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-100 shadow";
+                tabLong.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 text-slate-400 hover:text-slate-200";
+            } else {
+                tabElem.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 text-slate-400 hover:text-slate-200";
+                tabLong.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-100 shadow";
+            }
+
+            loadParagraphSelector();
+            loadActiveParagraph();
+            resetVowelFilter();
+        }
+
+        function loadParagraphSelector() {
+            const container = document.getElementById('paragraphSelectorsContainer');
+            container.innerHTML = '';
+            
+            const pList = TEXT_DATABASE[state.currentCategory];
+
+            pList.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.id = `paraSelect_${index}`;
+                btn.onclick = () => selectParagraph(index);
+                
+                btn.className = `w-8 h-8 sm:w-7 sm:h-7 rounded-full border text-xs font-bold transition-all duration-200 relative ${index === state.currentParagraphIndex ? 'bg-indigo-600 text-white shadow border-indigo-500' : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800'}`;
+                btn.innerText = index + 1;
+                
+                container.appendChild(btn);
+            });
+        }
+
+        function selectParagraph(index) {
+            stopAllPlayback();
+            state.currentParagraphIndex = index;
+            loadParagraphSelector();
+            loadActiveParagraph();
+        }
+
+        function setReadingMode(mode) {
+            stopAllPlayback();
+            state.readingMode = mode;
+            const btnFull = document.getElementById('btnModeFull');
+            const btnSent = document.getElementById('btnModeSentence');
+            const navigator = document.getElementById('sentenceNavigator');
+
+            if (mode === 'full') {
+                btnFull.className = "px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition";
+                btnSent.className = "px-2.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition";
+                navigator.classList.add('hidden');
+            } else {
+                btnSent.className = "px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white transition";
+                btnFull.className = "px-2.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-white transition";
+                navigator.classList.remove('hidden');
+                
+                const raw = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
+                state.sentences = raw.match(/[^.!?]+[.!?]+/g) || [raw];
+                state.currentSentenceIndex = 0;
+                updateSentenceProgress();
+            }
+            loadActiveParagraph();
+        }
+
+        function prevSentence() {
+            if (state.currentSentenceIndex > 0) {
+                stopAllPlayback();
+                state.currentSentenceIndex--;
+                updateSentenceProgress();
+                loadActiveParagraph();
+            }
+        }
+
+        function nextSentence() {
+            if (state.currentSentenceIndex < state.sentences.length - 1) {
+                stopAllPlayback();
+                state.currentSentenceIndex++;
+                updateSentenceProgress();
+                loadActiveParagraph();
+            }
+        }
+
+        function updateSentenceProgress() {
+            document.getElementById('sentenceProgress').innerText = `Sentence ${state.currentSentenceIndex + 1} of ${state.sentences.length}`;
+        }
+
+        function loadActiveParagraph() {
+            const activePara = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex];
+            document.getElementById('currentParagraphTitle').innerText = activePara.title;
+            document.getElementById('currentParagraphLevel').innerHTML = activePara.level;
+
+            const displayArea = document.getElementById('paragraphDisplayArea');
+            displayArea.innerHTML = '';
+
+            let textToProcess = activePara.raw;
+            if (state.readingMode === 'sentence' && state.sentences.length > 0) {
+                textToProcess = state.sentences[state.currentSentenceIndex];
+            }
+
+            const words = textToProcess.split(/(\s+)/);
+            words.forEach((chunk, index) => {
+                if (chunk.trim() === '') {
+                    displayArea.appendChild(document.createTextNode(chunk));
+                    return;
+                }
+
+                const cleanWord = chunk.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase();
+                
+                if (WORD_DICTIONARY[cleanWord]) {
+                    const matchData = WORD_DICTIONARY[cleanWord];
+                    const activeVowel = matchData.vowelKey;
+                    
+                    const span = document.createElement('span');
+                    span.id = `paraWord_${cleanWord}_${index}`;
+                    span.className = `cursor-pointer border-b-2 border-dashed font-semibold transition-all duration-200 px-1 py-0.5 rounded-md hover:bg-slate-800 active:scale-95 text-slate-100 inline-block`;
+                    span.style.borderBottomColor = getVowelHex(activeVowel);
+                    span.dataset.vowelKey = activeVowel;
+                    span.dataset.cleanWord = cleanWord;
+                    span.onclick = () => handleWordClick(cleanWord, activeVowel, span);
+                    
+                    span.innerText = chunk;
+                    displayArea.appendChild(span);
+                } else {
+                    const spanNormal = document.createElement('span');
+                    spanNormal.className = "text-slate-300 inline-block px-1 py-0.5";
+                    spanNormal.id = `paraWord_normal_${index}`;
+                    spanNormal.innerText = chunk;
+                    displayArea.appendChild(spanNormal);
+                }
+            });
+
+            const firstTarget = Object.keys(WORD_DICTIONARY).find(k => textToProcess.toLowerCase().includes(k));
+            if (firstTarget) {
+                handleWordClick(firstTarget, WORD_DICTIONARY[firstTarget].vowelKey, null);
+            }
+        }
+
+        function handleWordClick(word, vowelKey, element) {
+            state.selectedWord = word;
+            
+            document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
+                if (el.dataset.vowelKey) {
+                    el.classList.remove('bg-slate-800', 'ring-1', 'ring-slate-700');
+                    el.style.opacity = '1';
+                }
+            });
+
+            if (element) {
+                element.classList.add('bg-slate-800', 'ring-1', 'ring-slate-700');
+            }
+
+            if (state.selectedVowel !== 'all') {
+                updateTextFiltering();
+            }
+
+            const wordMeta = WORD_DICTIONARY[word];
+            const activeVowelMeta = VOWEL_DECK[vowelKey];
+
+            document.getElementById('wordInfoWord').innerText = capitalizeFirst(word);
+            document.getElementById('wordInfoIpa').innerText = `/${wordMeta.ipa}/`;
+            document.getElementById('wordInfoVowelSymbol').innerText = activeVowelMeta.symbol;
+            document.getElementById('wordInfoUnit').innerText = activeVowelMeta.unit;
+            document.getElementById('wordInfoColorIndicator').style.backgroundColor = getVowelHex(vowelKey);
+
+            document.querySelectorAll('#vowelGridContainer button').forEach(el => {
+                el.classList.remove('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            });
+            const activeBtn = document.getElementById(`vowelBtn_${vowelKey}`);
+            if (activeBtn) {
+                activeBtn.classList.add('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            }
+        }
+
+        function filterVowel(vowelKey) {
+            if (state.selectedVowel === vowelKey) {
+                resetVowelFilter();
+                return;
+            }
+            state.selectedVowel = vowelKey;
+            
+            document.querySelectorAll('#vowelGridContainer button').forEach(el => {
+                el.classList.remove('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            });
+            const activeBtn = document.getElementById(`vowelBtn_${vowelKey}`);
+            if (activeBtn) {
+                activeBtn.classList.add('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            }
+
+            updateTextFiltering();
+        }
+
+        // Setup Estimation Alignment Tracker loop for Gemini Audio Track Playbacks
+        function setupGeminiAudioTracking(audio, textToSay) {
+            const spans = Array.from(document.querySelectorAll('#paragraphDisplayArea span'));
+            const words = textToSay.trim().split(/\s+/);
+            
+            if (spans.length !== words.length) {
+                console.warn("Spans count does not correspond to segmented word list.", spans.length, words.length);
+            }
+            
+            // Calculate weights based on character length and punctuation modifiers
+            const weights = words.map(word => {
+                let w = word.length;
+                if (/[.!?]$/.test(word)) {
+                    w += 8; // Sentence end pause
+                } else if (/[,;:]$/.test(word)) {
+                    w += 4; // Mid-sentence breath pause
+                }
+                return w;
+            });
+            
+            const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+            
+            // Generate fraction limits for each index
+            let cumulative = 0;
+            const wordRanges = weights.map(w => {
+                const start = cumulative / totalWeight;
+                cumulative += w;
+                const end = cumulative / totalWeight;
+                return { start, end };
+            });
+            
+            function updateHighlight() {
+                if (!audio || audio.paused || audio.ended) {
+                    cancelAnimationFrame(state.activeAnimationId);
+                    state.activeAnimationId = null;
+                    return;
+                }
+                
+                const duration = audio.duration;
+                if (duration) {
+                    const progress = audio.currentTime / duration;
+                    let activeIndex = -1;
+                    
+                    for (let i = 0; i < wordRanges.length; i++) {
+                        if (progress >= wordRanges[i].start && progress <= wordRanges[i].end) {
+                            activeIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    spans.forEach((span, idx) => {
+                        if (idx === activeIndex) {
+                            span.classList.add('speech-highlight');
+                        } else {
+                            span.classList.remove('speech-highlight');
+                        }
+                    });
+                }
+                
+                state.activeAnimationId = requestAnimationFrame(updateHighlight);
+            }
+            
+            audio.addEventListener('play', () => {
+                state.activeAnimationId = requestAnimationFrame(updateHighlight);
+            });
+            
+            audio.addEventListener('pause', () => {
+                cancelAnimationFrame(state.activeAnimationId);
+                state.activeAnimationId = null;
+            });
+            
+            audio.addEventListener('ended', () => {
+                cancelAnimationFrame(state.activeAnimationId);
+                state.activeAnimationId = null;
+                spans.forEach(span => span.classList.remove('speech-highlight'));
+            });
+        }
+
+        function resetVowelFilter() {
+            state.selectedVowel = 'all';
+            document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
+                if (el.dataset.vowelKey) {
+                    el.style.opacity = '1';
+                }
+            });
+            document.querySelectorAll('#vowelGridContainer button').forEach(el => {
+                el.classList.remove('ring-2', 'ring-indigo-500', 'bg-slate-900');
+            });
+        }
+
+        function updateTextFiltering() {
+            document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
+                if (el.dataset.vowelKey) {
+                    if (el.dataset.vowelKey !== state.selectedVowel) {
+                        el.style.opacity = '0.2';
+                    } else {
+                        el.style.opacity = '1';
+                    }
+                }
+            });
+        }
+
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                document.getElementById('apiKeyValueInput').value = state.apiKeyValue;
+                document.getElementById('geminiVoiceSelect').value = state.geminiVoice;
+            }
+        }
+
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKeyValueInput');
+            const icon = document.getElementById('apiKeyEyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        async function saveSettings() {
+            stopAllPlayback();
+            state.apiKeyValue = document.getElementById('apiKeyValueInput').value.trim();
+            state.geminiVoice = document.getElementById('geminiVoiceSelect').value;
+            
+            // Persist parameters natively to offline database object store
+            await saveLocalSetting('apiKey', state.apiKeyValue);
+            await saveLocalSetting('geminiVoice', state.geminiVoice);
+            
+            const activeKey = state.apiKeyValue || apiKey;
+            if (activeKey !== "") {
+                setEngine('gemini');
+                showToast("Teacher Mode Active!", "High quality AI voices configured with custom speed profile.");
+            } else {
+                setEngine('webspeech');
+                showToast("Local Speech Configured", "Offline engine is configured.");
+            }
+            toggleSettingsModal();
+        }
+
+        function setEngine(engine) {
+            stopAllPlayback();
+            state.speechEngine = engine;
+            const btnWS = document.getElementById('btnEngineWebSpeech');
+            const btnGem = document.getElementById('btnEngineGemini');
+
+            if (engine === 'webspeech') {
+                btnWS.className = "px-3 py-1.5 text-xs font-semibold rounded-lg transition bg-slate-800 text-slate-200 flex items-center gap-1.5 shadow";
+                btnGem.className = "px-3 py-1.5 text-xs font-semibold rounded-lg transition text-slate-400 flex items-center gap-1.5 hover:text-slate-200";
+            } else {
+                const activeKey = state.apiKeyValue || apiKey;
+                if (!activeKey) {
+                    showToast("API Key Needed", "Please enter a Gemini key in settings to unlock natural Teacher Voices.", "error");
+                    state.speechEngine = 'webspeech';
+                    btnWS.className = "px-3 py-1.5 text-xs font-semibold rounded-lg transition bg-slate-800 text-slate-200 flex items-center gap-1.5 shadow";
+                    btnGem.className = "px-3 py-1.5 text-xs font-semibold rounded-lg transition text-slate-400 flex items-center gap-1.5 hover:text-slate-200";
+                    return;
+                }
+                btnGem.className = "px-3 py-1.5 text-xs font-semibold rounded-lg transition bg-slate-800 text-slate-200 flex items-center gap-1.5 shadow";
+                btnWS.className = "px-3 py-1.5 text-xs font-semibold rounded-lg transition text-slate-400 flex items-center gap-1.5 hover:text-slate-200";
+            }
+        }
+
+        function capitalizeFirst(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function showToast(title, body, type = "success") {
+            const toast = document.getElementById('toastNotification');
+            const tTitle = document.getElementById('toastTitle');
+            const tBody = document.getElementById('toastBody');
+            const tIcon = document.getElementById('toastIconBg');
+
+            tTitle.innerText = title;
+            tBody.innerText = body;
+            
+            if (type === "error") {
+                tIcon.className = "bg-rose-950 text-rose-400 p-2 rounded-lg";
+                tIcon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+            } else {
+                tIcon.className = "bg-emerald-950 text-emerald-400 p-2 rounded-lg";
+                tIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            }
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function speakParagraph() {
+            let activeText = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
+            if (state.readingMode === 'sentence' && state.sentences.length > 0) {
+                activeText = state.sentences[state.currentSentenceIndex];
+            }
+            triggerSpeech(activeText);
+        }
+
+        function triggerSpeech(textToSay) {
+            const activeKey = state.apiKeyValue || apiKey;
+            if (state.speechEngine === 'gemini' && activeKey !== "") {
+                speakViaGemini(textToSay);
+            } else {
+                speakViaWebSpeech(textToSay);
+            }
+        }
+
+        function speakViaWebSpeech(textToSay) {
+            if (!('speechSynthesis' in window)) {
+                showToast("System Unstable", "Speech Synthesis API is blocked.", "error");
+                return;
+            }
+            window.speechSynthesis.cancel(); 
+
+            const utterance = new SpeechSynthesisUtterance(textToSay);
+            utterance.lang = 'en-GB'; 
+            utterance.rate = state.localSpeechRate;
+
+            const selectedVoiceName = document.getElementById('localVoiceSelector').value;
+            if (selectedVoiceName) {
+                const voices = speechSynthesis.getVoices();
+                const matchedVoice = voices.find(v => v.name === selectedVoiceName);
+                if (matchedVoice) {
+                    utterance.voice = matchedVoice;
+                }
+            } else {
+                const voices = speechSynthesis.getVoices();
+                let ukFemaleVoice = voices.find(v => v.name.includes("Google") && v.name.includes("UK") && v.name.toLowerCase().includes("female"));
+                if (!ukFemaleVoice) {
+                    ukFemaleVoice = voices.find(v => v.name.includes("Google") && v.name.includes("UK"));
+                }
+                if (!ukFemaleVoice) {
+                    ukFemaleVoice = voices.find(v => v.lang.startsWith("en-GB") && v.name.toLowerCase().includes("female"));
+                }
+                if (!ukFemaleVoice) {
+                    ukFemaleVoice = voices.find(v => v.lang.startsWith("en-GB"));
+                }
+                if (ukFemaleVoice) {
+                    utterance.voice = ukFemaleVoice;
+                }
+            }
+
+            const playIcon = document.getElementById('btnPlayParagraphIcon');
+            utterance.onstart = () => {
+                playIcon.className = "fa-solid fa-spinner animate-spin";
+            };
+
+            const paragraphDisplay = document.getElementById('paragraphDisplayArea');
+            const wordElements = Array.from(paragraphDisplay.querySelectorAll('span'));
+            
+            utterance.onboundary = (event) => {
+                if (event.name !== 'word') return;
+                wordElements.forEach(el => el.classList.remove('speech-highlight'));
+                const currentWordIndex = getWordIndexAtCharOffset(textToSay, event.charIndex);
+                if (wordElements[currentWordIndex]) {
+                    wordElements[currentWordIndex].classList.add('speech-highlight');
+                }
+            };
+
+            utterance.onend = () => {
+                playIcon.className = "fa-solid fa-play";
+                wordElements.forEach(el => el.classList.remove('speech-highlight'));
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function getWordIndexAtCharOffset(text, charOffset) {
+            const upToBoundary = text.substring(0, charOffset);
+            const matches = upToBoundary.match(/\s+/g);
+            return matches ? matches.length : 0;
+        }
+
+        async function speakViaGemini(textToSay) {
+            const playIcon = document.getElementById('btnPlayParagraphIcon');
+            playIcon.className = "fa-solid fa-spinner animate-spin";
+
+            const cacheKey = `${state.geminiVoice}_${textToSay}`;
+            const cachedBase64 = await getCachedAudio(cacheKey);
+
+            if (cachedBase64) {
+                playIcon.className = "fa-solid fa-play";
+                playBase64Audio(cachedBase64, textToSay);
+                return;
+            }
+
+            try {
+                const teacherContextPrompt = `Say this slowly, warmly, and clearly like an encouraging elementary English teacher, pausing slightly between words: ${textToSay}`;
+                const response = await callGeminiTTSAPI(teacherContextPrompt);
+                const base64Audio = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                
+                if (!base64Audio) {
+                    throw new Error("Voice bytes empty");
+                }
+
+                await cacheAudio(cacheKey, base64Audio);
+
+                playIcon.className = "fa-solid fa-play";
+                playBase64Audio(base64Audio, textToSay);
+
+            } catch (err) {
+                console.error("Premium speaking failed:", err);
+                showToast("Vocal fallback initialized", "AI Voice failed. Reverting to local voice engine.", "error");
+                speakViaWebSpeech(textToSay);
+            } finally {
+                if (playIcon.className === "fa-solid fa-spinner animate-spin") {
+                    playIcon.className = "fa-solid fa-play";
+                }
+            }
+        }
+
+        function playBase64Audio(base64Data, textToSay) {
+            stopAllPlayback();
+            const blob = pcmToWav(base64Data, 24000); 
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            state.activeAudio = audio;
+            audio.playbackRate = state.localSpeechRate;
+            
+            // Sync highlight tracking sequentially with the Gemini audio player
+            if (textToSay) {
+                setupGeminiAudioTracking(audio, textToSay);
+            }
+            
+            audio.play().catch(e => console.error("Audio playback error", e));
+        }
+
+        async function callGeminiTTSAPI(textPrompt) {
+            const activeKey = state.apiKeyValue || apiKey;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${activeKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: textPrompt }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: {
+                                voiceName: state.geminiVoice
+                            }
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            let delay = 1000;
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                    if (response.status === 429 || response.status >= 500) {
+                        await new Promise(r => setTimeout(r, delay));
+                        delay *= 2;
+                        continue;
+                    }
+                    throw new Error(`TTS API Response Error: ${response.status}`);
+                } catch (e) {
+                    if (i === 4) throw e;
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        function pcmToWav(pcmDataB64, sampleRate = 24000) {
+            const binaryString = atob(pcmDataB64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            const buffer = new ArrayBuffer(44 + len);
+            const view = new DataView(buffer);
+
+            const writeString = (v, offset, str) => {
+                for (let i = 0; i < str.length; i++) {
+                    v.setUint8(offset + i, str.charCodeAt(i));
+                }
+            };
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + len, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, len, true);
+
+            for (let i = 0; i < len; i++) {
+                view.setUint8(44 + i, bytes[i]);
+            }
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function speakSelectedWord() {
+            speakViaWebSpeech(state.selectedWord);
+        }
+    </script>
+</body>
+</html>
