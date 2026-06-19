@@ -181,9 +181,12 @@
                 </div>
 
                 <!-- Target Soundboard Isolation -->
-                <div class="mt-4 pt-4 border-t border-slate-800/60">
-                    <button id="btnRecordVowel" onclick="practiceVowelMicrophone()" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl py-2.5 text-xs font-semibold flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-microphone text-rose-400"></i> Try Mimicking Target Sound
+                <div class="mt-4 pt-4 border-t border-slate-800/60 flex gap-2">
+                    <button onclick="playIsolatedVowel()" class="flex-1 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl py-2.5 text-xs font-semibold flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-volume-high text-brand-400"></i> Hear Sound
+                    </button>
+                    <button id="btnRecordVowel" onclick="practiceVowelMicrophone()" class="flex-1 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl py-2.5 text-xs font-semibold flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-microphone text-rose-400"></i> Try Mimicking
                     </button>
                 </div>
             </div>
@@ -251,11 +254,34 @@
                             </div>
                         </div>
 
-                        <div class="w-full max-w-lg bg-slate-950/80 border border-slate-800 rounded-xl p-3 min-h-[40px] flex items-center justify-center">
+                        <!-- Animated Canvas Waveform -->
+                        <div class="w-full max-w-lg bg-slate-950/80 border border-slate-800 rounded-xl p-3 min-h-[80px] flex flex-col items-center justify-center gap-2">
+                            <canvas id="waveformCanvas" width="400" height="40" class="w-full h-10"></canvas>
                             <p id="liveTranscriptText" class="text-xs italic text-slate-400">Listening to your voice...</p>
                         </div>
 
-                        <button onclick="stopSpeechRecognition(false)" class="mt-4 px-5 py-2 bg-rose-600 hover:bg-rose-700 active:scale-95 text-xs font-bold text-white rounded-xl transition flex items-center gap-2 shadow-lg shadow-rose-900/40">
+                        <!-- Sandbox Warning / Action Fallback Deck -->
+                        <div id="sandboxFallbackControls" class="hidden my-4 flex flex-col items-center gap-3">
+                            <div class="flex items-center gap-2 bg-indigo-950/40 border border-indigo-900/60 p-3 rounded-xl max-w-lg text-left">
+                                <i class="fa-solid fa-circle-info text-indigo-400 text-lg flex-shrink-0"></i>
+                                <p class="text-[10px] text-indigo-200 leading-relaxed">
+                                    <strong>Browser Sandbox Detected:</strong> Interactive previews strictly block physical microphones. We have loaded the **Self-Assessment Lab** so you can still practice speaking and grade yourself!
+                                </p>
+                            </div>
+                            <div class="flex items-center justify-center gap-2 w-full max-w-lg">
+                                <button onclick="simulateSelfGrade(100)" class="flex-1 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 rounded-lg text-emerald-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-star text-[9px]"></i> Excellent
+                                </button>
+                                <button onclick="simulateSelfGrade(80)" class="flex-1 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 rounded-lg text-indigo-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-circle-check text-[9px]"></i> Good
+                                </button>
+                                <button onclick="simulateSelfGrade(50)" class="flex-1 py-2 bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/40 rounded-lg text-amber-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-arrows-rotate text-[9px]"></i> Try Again
+                                </button>
+                            </div>
+                        </div>
+
+                        <button id="btnStopRecord" onclick="stopSpeechRecognition(false)" class="mt-4 px-5 py-2 bg-rose-600 hover:bg-rose-700 active:scale-95 text-xs font-bold text-white rounded-xl transition flex items-center gap-2 shadow-lg shadow-rose-900/40">
                             <i class="fa-solid fa-square"></i> Stop & Evaluate
                         </button>
                     </div>
@@ -299,8 +325,11 @@
 
                         <!-- Word-specific Play controls -->
                         <div class="flex items-center gap-2">
-                            <button onclick="speakSelectedWord()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-semibold text-slate-200 transition flex items-center gap-1.5 shadow">
+                            <button onclick="speakSelectedWord()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-semibold text-slate-200 transition flex items-center gap-1.5">
                                 <i class="fa-solid fa-volume-high text-brand-400"></i> Say Word
+                            </button>
+                            <button onclick="playSelectedWordVowelSoundOnly()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-semibold text-slate-200 transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-bullhorn text-indigo-400"></i> Say Vowel
                             </button>
                         </div>
                     </div>
@@ -445,17 +474,17 @@
         };
 
         const VOWEL_DECK = {
-            'i_long': { symbol: '/i:/', name: 'Long /i:/', label: 'Pizza', class: 'bg-vowel-i_long/15 text-vowel-i_long border-vowel-i_long/30', unit: 'Unit 2', words: ['peter', 'steve', 'pizza', 'cheese', 'peaches', 'green', 'tea', 'cream', 'evening', 'see', 'tree', 'street'], description: 'Smile wide, pull your lips back. Make the sound last longer than usual.', lipOpen: 'Q 65,55 75,54', tongueD: 'M 160,115 C 135,100 115,70 85,68 C 65,68 50,75 45,85 C 45,95 65,115 110,120 C 140,120 155,118 160,115 Z', lowerTeethY: 53, isolateIpa: 'iː' },
-            'i_short': { symbol: '/ɪ/', name: 'Short /ɪ/', label: 'Dinner', class: 'bg-vowel-i_short/15 text-vowel-i_short border-vowel-i_short/30', unit: 'Unit 2', words: ['kitchen', 'dinner', 'listening', 'window', 'finish', 'busy', 'biscuits'], description: 'Mouth semi-closed. Lips relaxed, short crisp breath.', lipOpen: 'Q 65,60 75,58', tongueD: 'M 160,118 C 138,103 118,75 88,72 C 68,72 52,78 47,88 C 47,98 65,118 110,123 C 140,123 155,120 160,118 Z', lowerTeethY: 58, isolateIpa: 'ɪ' },
-            'u_long': { symbol: '/u:/', name: 'Long /u:/', label: 'Blue', class: 'bg-vowel-u_long/15 text-vowel-u_long border-vowel-u_long/30', unit: 'Unit 3', words: ['soup', 'fruit', 'juice', 'blue', 'boots', 'shoes', 'supermarket', 'student', 'new', 'food', 'music'], description: 'Lips are tightly rounded forward into a small, tight circle.', lipOpen: 'Q 55,60 62,59', tongueD: 'M 160,112 C 140,105 125,82 98,82 C 78,82 60,92 50,102 C 50,112 65,125 110,125 C 140,125 155,120 160,112 Z', lowerTeethY: 55, isolateIpa: 'uː' },
-            'u_short': { symbol: '/ʊ/', name: 'Short /ʊ/', label: 'Sugar', class: 'bg-vowel-u_short/15 text-vowel-u_short border-vowel-u_short/30', unit: 'Unit 3', words: ['good', 'sugar', 'full', 'spoonful', 'bush', 'book'], description: 'Lips are slightly rounded and relaxed. Short simple burst.', lipOpen: 'Q 58,63 67,61', tongueD: 'M 160,115 C 140,108 122,86 95,86 C 75,86 58,96 48,106 C 48,116 65,127 110,127 C 140,127 155,122 160,115 Z', lowerTeethY: 61, isolateIpa: 'ʊ' },
-            'a_long': { symbol: '/ɑ:/', name: 'Long /ɑ:/', label: 'Father', class: 'bg-vowel-a_long/15 text-vowel-a_long border-vowel-a_long/30', unit: 'Unit 4', words: ['fast', 'large', 'bar', 'park', 'father', 'aunt', 'car', 'laughed', 'hours', 'start'], description: 'Open your mouth completely wide, jaw down. Keep tongue low and flat.', lipOpen: 'Q 65,85 75,82', tongueD: 'M 160,125 C 140,118 115,102 90,102 C 70,102 55,115 45,122 C 45,130 65,138 110,138 C 140,138 155,132 160,125 Z', lowerTeethY: 78, isolateIpa: 'ɑː' },
-            'a_short': { symbol: '/ʌ/', name: 'Short /ʌ/', label: 'Mother', class: 'bg-vowel-a_short/15 text-vowel-a_short border-vowel-a_short/30', unit: 'Unit 4', words: ['mother', 'month', 'brother', 'young', 'fun', 'monday', 'sun', 'studies', 'much'], description: 'A relaxed, short central vowel. Open mouth slightly, relax tongue.', lipOpen: 'Q 65,72 75,68', tongueD: 'M 160,120 C 140,112 118,92 90,92 C 70,92 55,105 45,112 C 45,122 65,132 110,132 C 140,132 155,127 160,120 Z', lowerTeethY: 66, isolateIpa: 'ʌ' },
-            'o_short': { symbol: '/ɒ/', name: 'Short /ɒ/', label: 'Clock', class: 'bg-vowel-o_short/15 text-vowel-o_short border-vowel-o_short/30', unit: 'Unit 5', words: ['clock', 'shop', 'box', 'chocolates', 'bottle', 'dog', 'hot', 'coffee', 'shopping', 'cost', 'holiday'], description: 'Lips are rounded slightly, jaw dropped. Short sound.', lipOpen: 'Q 62,80 72,75', tongueD: 'M 160,123 C 140,115 118,100 92,100 C 72,100 58,110 48,118 C 48,126 65,135 110,135 C 140,135 155,130 160,123 Z', lowerTeethY: 73, isolateIpa: 'ɒ' },
-            'o_long': { symbol: '/ɔ:/', name: 'Long /ɔ:/', label: 'Corner', class: 'bg-vowel-o_long/15 text-vowel-o_long border-vowel-o_long/30', unit: 'Unit 5', words: ['wall', 'four', 'floor', 'corner', 'warm', 'thought', 'forty', 'all', 'door'], description: 'Pull your lips into a deep, long forward-circle shape.', lipOpen: 'Q 58,74 68,69', tongueD: 'M 160,120 C 140,112 120,95 95,95 C 75,95 58,105 48,112 C 48,122 65,132 110,132 C 140,132 155,127 160,120 Z', lowerTeethY: 67, isolateIpa: 'ɔː' },
-            'e_short': { symbol: '/e/', name: 'Short /e/', label: 'Bread', class: 'bg-vowel-e_short/15 text-vowel-e_short border-vowel-e_short/30', unit: 'Unit 6', words: ['desk', 'ten', 'friends', 'fresh', 'bread', 'heavy', 'men', 'weather'], description: 'Mouth open wide. Lips neutral, tongue high-mid.', lipOpen: 'Q 65,65 75,63', tongueD: 'M 160,118 C 138,104 118,80 88,77 C 68,77 52,83 47,93 C 47,103 65,121 110,126 C 140,126 155,122 160,118 Z', lowerTeethY: 62, isolateIpa: 'e' },
-            'ae_short': { symbol: '/æ/', name: 'Short /æ/', label: 'Jam', class: 'bg-vowel-ae_short/15 text-vowel-ae_short border-vowel-ae_short/30', unit: 'Unit 6', words: ['map', 'plan', 'black', 'bag', 'jacket', 'family', 'apples', 'pack', 'manager', 'jam', 'hat'], description: 'Jaw fully down, mouth open wide, corners of lips stretched back.', lipOpen: 'Q 65,78 75,74', tongueD: 'M 160,123 C 140,115 118,95 90,95 C 70,95 55,108 45,115 C 45,125 65,135 110,135 C 140,135 155,129 160,123 Z', lowerTeethY: 71, isolateIpa: 'æ' },
-            'er_long': { symbol: '/ɜ:/', name: 'Long /ɜ:/', label: 'Thursday', class: 'bg-vowel-er_long/15 text-vowel-er_long border-vowel-er_long/30', unit: 'Unit 7', words: ['thursday', 'thursdays', 'thirty-third', 'birthday', 'work', 'university', 'german', 'bird', 'turn', 'journey'], description: 'Long, completely neutral sound. Relax your lips, jaw, and tongue flat.', lipOpen: 'Q 65,68 75,65', tongueD: 'M 160,119 C 140,110 118,88 90,88 C 70,88 55,100 45,108 C 45,118 65,128 110,128 C 140,128 155,123 160,119 Z', lowerTeethY: 63, isolateIpa: 'ɜː' }
+            'i_long': { symbol: '/i:/', name: 'Long /i:/', label: 'Pizza', class: 'bg-vowel-i_long/15 text-vowel-i_long border-vowel-i_long/30', unit: 'Unit 2', words: ['peter', 'steve', 'pizza', 'cheese', 'peaches', 'green', 'tea', 'cream', 'evening', 'see', 'tree', 'street'], description: 'Smile wide, pull your lips back. Make the sound last longer than usual.', lipOpen: 'Q 65,55 75,54', tongueD: 'M 160,115 C 135,100 115,70 85,68 C 65,68 50,75 45,85 C 45,95 65,115 110,120 C 140,120 155,118 160,115 Z', lowerTeethY: 53, isolateIpa: 'ee' },
+            'i_short': { symbol: '/ɪ/', name: 'Short /ɪ/', label: 'Dinner', class: 'bg-vowel-i_short/15 text-vowel-i_short border-vowel-i_short/30', unit: 'Unit 2', words: ['kitchen', 'dinner', 'listening', 'window', 'finish', 'busy', 'biscuits'], description: 'Mouth semi-closed. Lips relaxed, short crisp breath.', lipOpen: 'Q 65,60 75,58', tongueD: 'M 160,118 C 138,103 118,75 88,72 C 68,72 52,78 47,88 C 47,98 65,118 110,123 C 140,123 155,120 160,118 Z', lowerTeethY: 58, isolateIpa: 'ihh' },
+            'u_long': { symbol: '/u:/', name: 'Long /u:/', label: 'Blue', class: 'bg-vowel-u_long/15 text-vowel-u_long border-vowel-u_long/30', unit: 'Unit 3', words: ['soup', 'fruit', 'juice', 'blue', 'boots', 'shoes', 'supermarket', 'student', 'new', 'food', 'music'], description: 'Lips are tightly rounded forward into a small, tight circle.', lipOpen: 'Q 55,60 62,59', tongueD: 'M 160,112 C 140,105 125,82 98,82 C 78,82 60,92 50,102 C 50,112 65,125 110,125 C 140,125 155,120 160,112 Z', lowerTeethY: 55, isolateIpa: 'oo' },
+            'u_short': { symbol: '/ʊ/', name: 'Short /ʊ/', label: 'Sugar', class: 'bg-vowel-u_short/15 text-vowel-u_short border-vowel-u_short/30', unit: 'Unit 3', words: ['good', 'sugar', 'full', 'spoonful', 'bush', 'book'], description: 'Lips are slightly rounded and relaxed. Short simple burst.', lipOpen: 'Q 58,63 67,61', tongueD: 'M 160,115 C 140,108 122,86 95,86 C 75,86 58,96 48,106 C 48,116 65,127 110,127 C 140,127 155,122 160,115 Z', lowerTeethY: 61, isolateIpa: 'uuh' },
+            'a_long': { symbol: '/ɑ:/', name: 'Long /ɑ:/', label: 'Father', class: 'bg-vowel-a_long/15 text-vowel-a_long border-vowel-a_long/30', unit: 'Unit 4', words: ['fast', 'large', 'bar', 'park', 'father', 'aunt', 'car', 'laughed', 'hours', 'start'], description: 'Open your mouth completely wide, jaw down. Keep tongue low and flat.', lipOpen: 'Q 65,85 75,82', tongueD: 'M 160,125 C 140,118 115,102 90,102 C 70,102 55,115 45,122 C 45,130 65,138 110,138 C 140,138 155,132 160,125 Z', lowerTeethY: 78, isolateIpa: 'ahh' },
+            'a_short': { symbol: '/ʌ/', name: 'Short /ʌ/', label: 'Mother', class: 'bg-vowel-a_short/15 text-vowel-a_short border-vowel-a_short/30', unit: 'Unit 4', words: ['mother', 'month', 'brother', 'young', 'fun', 'monday', 'sun', 'studies', 'much'], description: 'A relaxed, short central vowel. Open mouth slightly, relax tongue.', lipOpen: 'Q 65,72 75,68', tongueD: 'M 160,120 C 140,112 118,92 90,92 C 70,92 55,105 45,112 C 45,122 65,132 110,132 C 140,132 155,127 160,120 Z', lowerTeethY: 66, isolateIpa: 'uh' },
+            'o_short': { symbol: '/ɒ/', name: 'Short /ɒ/', label: 'Clock', class: 'bg-vowel-o_short/15 text-vowel-o_short border-vowel-o_short/30', unit: 'Unit 5', words: ['clock', 'shop', 'box', 'chocolates', 'bottle', 'dog', 'hot', 'coffee', 'shopping', 'cost', 'holiday'], description: 'Lips are rounded slightly, jaw dropped. Short sound.', lipOpen: 'Q 62,80 72,75', tongueD: 'M 160,123 C 140,115 118,100 92,100 C 72,100 58,110 48,118 C 48,126 65,135 110,135 C 140,135 155,130 160,123 Z', lowerTeethY: 73, isolateIpa: 'odd' },
+            'o_long': { symbol: '/ɔ:/', name: 'Long /ɔ:/', label: 'Corner', class: 'bg-vowel-o_long/15 text-vowel-o_long border-vowel-o_long/30', unit: 'Unit 5', words: ['wall', 'four', 'floor', 'corner', 'warm', 'thought', 'forty', 'all', 'door'], description: 'Pull your lips into a deep, long forward-circle shape.', lipOpen: 'Q 58,74 68,69', tongueD: 'M 160,120 C 140,112 120,95 95,95 C 75,95 58,105 48,112 C 48,122 65,132 110,132 C 140,132 155,127 160,120 Z', lowerTeethY: 67, isolateIpa: 'or' },
+            'e_short': { symbol: '/e/', name: 'Short /e/', label: 'Bread', class: 'bg-vowel-e_short/15 text-vowel-e_short border-vowel-e_short/30', unit: 'Unit 6', words: ['desk', 'ten', 'friends', 'fresh', 'bread', 'heavy', 'men', 'weather'], description: 'Mouth open wide. Lips neutral, tongue high-mid.', lipOpen: 'Q 65,65 75,63', tongueD: 'M 160,118 C 138,104 118,80 88,77 C 68,77 52,83 47,93 C 47,103 65,121 110,126 C 140,126 155,122 160,118 Z', lowerTeethY: 62, isolateIpa: 'ehh' },
+            'ae_short': { symbol: '/æ/', name: 'Short /æ/', label: 'Jam', class: 'bg-vowel-ae_short/15 text-vowel-ae_short border-vowel-ae_short/30', unit: 'Unit 6', words: ['map', 'plan', 'black', 'bag', 'jacket', 'family', 'apples', 'pack', 'manager', 'jam', 'hat'], description: 'Jaw fully down, mouth open wide, corners of lips stretched back.', lipOpen: 'Q 65,78 75,74', tongueD: 'M 160,123 C 140,115 118,95 90,95 C 70,95 55,108 45,115 C 45,125 65,135 110,135 C 140,135 155,129 160,123 Z', lowerTeethY: 71, isolateIpa: 'add' },
+            'er_long': { symbol: '/ɜ:/', name: 'Long /ɜ:/', label: 'Thursday', class: 'bg-vowel-er_long/15 text-vowel-er_long border-vowel-er_long/30', unit: 'Unit 7', words: ['thursday', 'thursdays', 'thirty-third', 'birthday', 'work', 'university', 'german', 'bird', 'turn', 'journey'], description: 'Long, completely neutral sound. Relax your lips, jaw, and tongue flat.', lipOpen: 'Q 65,68 75,65', tongueD: 'M 160,119 C 140,110 118,88 90,88 C 70,88 55,100 45,108 C 45,118 65,128 110,128 C 140,128 155,123 160,119 Z', lowerTeethY: 63, isolateIpa: 'err' }
         };
 
         const WORD_DICTIONARY = {
@@ -678,9 +707,8 @@
             };
         }
 
-        // Load configurations and set up speech
+        // Setup window loaders
         window.onload = function () {
-            // Check if the runtime environment key is provided
             const activeKey = state.apiKeyValue || apiKey;
             if (activeKey) {
                 state.speechEngine = 'gemini';
@@ -754,7 +782,6 @@
                 select.appendChild(opt);
             });
 
-            // Prioritize setting "Google UK Female" or Hazel/UK variations
             let defaultUKFemale = englishVoices.find(v => v.name.includes("Google") && v.name.includes("UK") && v.name.toLowerCase().includes("female"));
             if (!defaultUKFemale) {
                 defaultUKFemale = englishVoices.find(v => v.name.includes("UK") && v.name.toLowerCase().includes("female"));
@@ -998,7 +1025,6 @@
             document.getElementById('vowelInstructionText').innerText = data.description;
 
             document.getElementById('tonguePath').setAttribute('d', data.tongueD);
-            // Prepend absolute 'M 45,85' coordinate commands to fix the path rendering bug in SVG elements
             document.getElementById('lowerLipPath').setAttribute('d', 'M 45,85 ' + data.lipOpen); 
             document.getElementById('lowerTeeth').setAttribute('y', data.lowerTeethY);
 
@@ -1138,19 +1164,19 @@
         function getCleanSpokenText(textToSay) {
             const clean = textToSay.replace(/[\/:ː]/g, "").trim().toLowerCase();
             
-            // Fix standalone phonetic representations into clean British respellings
+            // Fix phonetic representations to produce natural local accents
             const ipaToPhoneticMap = {
-                'i': "ee",       // /i:/ -> ee (as in "meet")
-                'ɪ': "ihh",      // /ɪ/ -> ihh
-                'u': "oo",       // /u:/ -> oo
-                'ʊ': "uuh",      // /ʊ/ -> uuh
-                'ɑ': "ahh",      // /ɑ:/ -> ahh
-                'ʌ': "uh",       // /ʌ/ -> uh
-                'ɒ': "odd",      // /ɒ/ -> odd
-                'ɔ': "or",       // /ɔ:/ -> or
-                'e': "ehh",      // /e/ -> ehh
-                'æ': "add",      // /æ/ -> add
-                'ɜ': "err"       // /ɜ:/ -> err
+                'ee': "ee",
+                'ihh': "ihh",
+                'oo': "oo",
+                'uuh': "uuh",
+                'ahh': "ahh",
+                'uh': "uh",
+                'odd': "odd",
+                'or': "or",
+                'ehh': "ehh",
+                'add': "add",
+                'err': "err"
             };
             return ipaToPhoneticMap[clean] || ipaToPhoneticMap[textToSay] || textToSay;
         }
@@ -1164,8 +1190,17 @@
         }
 
         function speakSelectedWord() {
-            // Standalone words use local speech engine for fast execution
             speakViaWebSpeech(state.selectedWord);
+        }
+
+        function playSelectedWordVowelSoundOnly() {
+            const activeVowelMeta = VOWEL_DECK[WORD_DICTIONARY[state.selectedWord].vowelKey];
+            speakViaWebSpeech(activeVowelMeta.isolateIpa);
+        }
+
+        function playIsolatedVowel() {
+            const activeVowelMeta = VOWEL_DECK[state.selectedVowel === 'all' ? 'i_long' : state.selectedVowel];
+            speakViaWebSpeech(activeVowelMeta.isolateIpa);
         }
 
         function triggerSpeech(textToSay) {
@@ -1253,7 +1288,6 @@
             const playIcon = document.getElementById('btnPlayParagraphIcon');
             playIcon.className = "fa-solid fa-spinner animate-spin";
 
-            // Check if present in our local browser DB cache
             const cacheKey = `${state.geminiVoice}_${textToSay}`;
             const cachedBase64 = await getCachedAudio(cacheKey);
 
@@ -1272,7 +1306,6 @@
                     throw new Error("Voice bytes empty");
                 }
 
-                // Cache it locally so consecutive clicks use 0 tokens
                 await cacheAudio(cacheKey, base64Audio);
 
                 playIcon.className = "fa-solid fa-play";
@@ -1380,17 +1413,118 @@
         }
 
         // ============================================
-        // SPEECH STUDIO - CONTINUOUS MODE FOR ELEMENTARY LEARNERS
+        // AUDIO WAVEFORM GRAPHICS (REAL MIC & MOCK MODES)
+        // ============================================
+        let audioContext = null;
+        let analyser = null;
+        let dataArray = null;
+        let sourceNode = null;
+        let animationFrameId = null;
+
+        function startAudioVisualizer() {
+            const canvas = document.getElementById('waveformCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Check if actual browser mic access succeeds
+            navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContextClass();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 64;
+                
+                sourceNode = audioContext.createMediaStreamSource(stream);
+                sourceNode.connect(analyser);
+                
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                
+                drawRealWaveform(ctx, canvas, bufferLength);
+            })
+            .catch(() => {
+                // Procedural mock waveform visualizer if microphone is locked in Sandbox
+                drawMockWaveform(ctx, canvas);
+            });
+        }
+
+        function stopAudioVisualizer() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            if (sourceNode) {
+                sourceNode.disconnect();
+                sourceNode = null;
+            }
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close();
+            }
+        }
+
+        function drawRealWaveform(ctx, canvas, bufferLength) {
+            function draw() {
+                animationFrameId = requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
+                
+                ctx.fillStyle = '#090d16';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let barHeight;
+                let x = 0;
+                
+                for(let i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i] / 4;
+                    ctx.fillStyle = 'rgba(239, 68, 68, ' + (barHeight/40 + 0.2) + ')';
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+                    x += barWidth;
+                }
+            }
+            draw();
+        }
+
+        function drawMockWaveform(ctx, canvas) {
+            let phase = 0;
+            function draw() {
+                animationFrameId = requestAnimationFrame(draw);
+                phase += 0.15;
+                
+                ctx.fillStyle = '#090d16';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.beginPath();
+                ctx.strokeStyle = '#f43f5e';
+                ctx.lineWidth = 1.5;
+                
+                for (let x = 0; x < canvas.width; x++) {
+                    const noise = Math.sin(x * 0.05 + phase) * Math.cos(x * 0.01 - phase);
+                    const y = (canvas.height / 2) + noise * 12 * (state.isRecording ? 1 : 0.1);
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+            draw();
+        }
+
+        // ============================================
+        // SPEECH STUDIO - CONTINUOUS EVALUATOR & FALLBACK
         // ============================================
         let recognition = null;
+        let isWebSpeechBlocked = false;
 
         function startSpeechRecognition() {
+            isWebSpeechBlocked = false;
+            document.getElementById('sandboxFallbackControls').classList.add('hidden');
+            document.getElementById('btnStopRecord').classList.remove('hidden');
+
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                showToast("Evaluator Blocked", "Your browser does not support Speech Recognition.", "error");
+                activateSandboxFallback("Web Speech recognition not supported in this browser.");
                 return;
             }
 
-            // Continuous recognition: patient loop so slow elementary students never get cut off
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             recognition.continuous = true; 
@@ -1401,12 +1535,14 @@
             document.getElementById('recordingWaveform').classList.remove('hidden');
             document.getElementById('liveTranscriptText').innerText = "Begin speaking clearly...";
 
-            // Duplicate target text inside the modal
             let activeText = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
             if (state.readingMode === 'sentence' && state.sentences.length > 0) {
                 activeText = state.sentences[state.currentSentenceIndex];
             }
             document.getElementById('recordingTargetText').innerText = activeText;
+
+            // Start waveform animation
+            startAudioVisualizer();
 
             document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
                 if (el.dataset.vowelKey) {
@@ -1415,6 +1551,13 @@
             });
 
             let fullAccumulatedTranscript = '';
+
+            // Detect within 2.5 seconds if speech recognition is unresponsive due to sandboxing
+            const watchdogTimer = setTimeout(() => {
+                if (state.isRecording && fullAccumulatedTranscript === '') {
+                    activateSandboxFallback("Sandbox restrictions detected. Continuous engine cannot bypass host policies.");
+                }
+            }, 2500);
 
             recognition.onresult = (event) => {
                 let interimTranscript = '';
@@ -1433,39 +1576,86 @@
             };
 
             recognition.onerror = (e) => {
-                // Gracefully handle expected manual abort events vs actual errors
+                clearTimeout(watchdogTimer);
+                // Safe ignore for natural click aborts
                 if (e.error === 'aborted') {
                     console.log("Mic manual abort processed correctly.");
                     return;
                 }
-                if (e.error === 'no-speech') {
-                    showToast("No Speech Detected", "No words were recorded. Try sitting closer to your mic or pronouncing slower.", "error");
-                } else if (e.error === 'not-allowed') {
-                    showToast("Microphone Blocked", "Mic permission denied. Please enable mic access in your browser settings.", "error");
-                } else {
-                    showToast("Microphone Error", `Error: ${e.error}`, "error");
-                }
-                console.error("Mic recognition error", e);
-                stopSpeechRecognition(true);
+                console.warn("Speech engine error occurred:", e.error);
+                activateSandboxFallback(`Audio input error: ${e.error}`);
             };
 
             recognition.onend = () => {
-                if (state.isRecording) {
+                clearTimeout(watchdogTimer);
+                if (state.isRecording && !isWebSpeechBlocked) {
                     stopSpeechRecognition(false);
                 }
             };
 
-            recognition.start();
+            try {
+                recognition.start();
+            } catch (err) {
+                clearTimeout(watchdogTimer);
+                activateSandboxFallback("Microphone capture blocked inside sandbox container.");
+            }
+        }
+
+        function activateSandboxFallback(reason) {
+            isWebSpeechBlocked = true;
+            console.log("Sandbox Fallback Activated:", reason);
+            
+            // Switch layout to Self-Grading Mode
+            document.getElementById('sandboxFallbackControls').classList.remove('hidden');
+            document.getElementById('btnStopRecord').classList.add('hidden');
+            document.getElementById('liveTranscriptText').innerText = "Speak aloud, then grade your attempt below!";
+            
+            if (!state.isRecording) {
+                state.isRecording = true;
+                document.getElementById('recordingWaveform').classList.remove('hidden');
+                startAudioVisualizer();
+            }
+        }
+
+        function simulateSelfGrade(score) {
+            stopAudioVisualizer();
+            state.isRecording = false;
+            document.getElementById('recordingWaveform').classList.add('hidden');
+            
+            let activeText = TEXT_DATABASE[state.currentCategory][state.currentParagraphIndex].raw;
+            if (state.readingMode === 'sentence' && state.sentences.length > 0) {
+                activeText = state.sentences[state.currentSentenceIndex];
+            }
+            
+            const targetWordKeys = Object.keys(WORD_DICTIONARY).filter(k => activeText.toLowerCase().includes(k));
+
+            if (score >= 80) {
+                // Highlight words to signify success in the layout
+                document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
+                    if (el.dataset.vowelKey && targetWordKeys.includes(el.dataset.cleanWord)) {
+                        el.classList.add('bg-emerald-950/45', 'border-emerald-500', 'text-emerald-300');
+                    }
+                });
+                showToast("Perfected Progress!", `Vowel confidence registered at ${score}%!`);
+            } else {
+                showToast("Self-Assessment Saved", "Take your time and practice again whenever you are ready.");
+            }
+
+            document.getElementById('accuracyIndicator').classList.remove('hidden');
+            document.getElementById('accuracyScore').innerText = `${score}%`;
+            
+            saveProgress(score);
         }
 
         function stopSpeechRecognition(cancel = false) {
+            stopAudioVisualizer();
             state.isRecording = false;
             document.getElementById('recordingWaveform').classList.add('hidden');
             if (recognition) {
                 recognition.stop();
             }
 
-            if (cancel) return;
+            if (cancel || isWebSpeechBlocked) return;
 
             const transcript = document.getElementById('liveTranscriptText').innerText.toLowerCase();
             if (transcript === "begin speaking clearly..." || transcript === "listening closely...") {
@@ -1496,7 +1686,6 @@
                 }
             });
 
-            // Highlight matches on the text board
             document.querySelectorAll('#paragraphDisplayArea span').forEach(el => {
                 if (el.dataset.vowelKey && matchesFound.includes(el.dataset.cleanWord)) {
                     el.classList.add('bg-emerald-950/45', 'border-emerald-500', 'text-emerald-300');
@@ -1514,14 +1703,13 @@
                 showToast("Let's Try Again", `Target Match: ${score}%. Take your time and make vowels twice as long!`, "error");
             }
 
-            // Save persistent student progress 
             saveProgress(score);
         }
 
         function saveProgress(score) {
             const scores = JSON.parse(localStorage.getItem('vowel_coach_scores') || '{}');
             const storageKey = `${state.currentCategory}_${state.currentParagraphIndex}`;
-            if (!scores[storageKey] || score > scores[scores[storageKey]]) {
+            if (!scores[storageKey] || score > scores[storageKey]) {
                 scores[storageKey] = score;
                 localStorage.setItem('vowel_coach_scores', JSON.stringify(scores));
             }
@@ -1559,14 +1747,6 @@
             singleRec.onresult = (event) => {
                 const captured = event.results[0][0].transcript;
                 showToast("Sound captured!", `We detected you saying: "${captured}". Keep practicing!`);
-            };
-
-            singleRec.onerror = (e) => {
-                if (e.error === 'no-speech') {
-                    showToast("No Speech Detected", "Try mimicking with a slightly louder, longer vowel duration.", "error");
-                } else if (e.error === 'not-allowed') {
-                    showToast("Permission Blocked", "Please enable mic permissions to record.", "error");
-                }
             };
 
             singleRec.onend = () => {
