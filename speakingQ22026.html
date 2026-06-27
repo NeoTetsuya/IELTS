@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Speaking Q2 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { border-color: #4f46e5; color: #4f46e5; font-weight: 700; }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 leading-relaxed">
+
+    <div class="container mx-auto max-w-6xl p-4 sm:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">IELTS Speaking Forecast</h1>
+            <p class="text-lg text-slate-500 mt-4 font-medium italic">Quarter 2, 2026 (May - Aug)</p>
+        </header>
+
+        <div class="flex border-b-2 border-slate-200 mb-8 justify-center sticky top-0 bg-slate-50/90 backdrop-blur-sm z-10">
+            <button class="tab-btn py-4 px-8 text-xl border-b-4 border-transparent transition-all duration-200 hover:text-indigo-600 active" onclick="openTab(event, 'part1')">Part 1</button>
+            <button class="tab-btn py-4 px-8 text-xl border-b-4 border-transparent transition-all duration-200 hover:text-indigo-600" onclick="openTab(event, 'parts2and3')">Parts 2 & 3</button>
+        </div>
+
+        <div id="part1" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+        </div>
+
+        <div id="parts2and3" class="tab-content">
+             <div class="space-y-12">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const part1Topics = [
+            { title: "1. Where you live now", questions: ["Which town or city do you live in now?", "Are there any things you don't like about your area? (What are they?)", "Do you think you will continue to live there for a long time? (Why? Why not?)", "What are some changes in the area recently?", "Do you live in a house or an apartment?", "What is your favourite room in your home? (Why?)", "What things make your home pleasant to live in? (Why?)", "Are the people in your neighbourhood nice and friendly?", "Do you know any of your neighbours?", "Do you know any famous people in your area?"] },
+            { title: "2. Work/Study", questions: ["What kind of work do you do?", "What do you find most interesting about your work? (Why?)", "Which is more important to you the people you work with or the work you do? (Why?)", "Do you work best in the morning or the afternoon? (Why?)", "What do you study?", "What do you find most interesting about your studies? (Why?)", "Which is more important to you - the teachers or the other students on your course? (Why?)", "How much time do you spend studying every week?", "How do you usually travel to the city where you study?", "Do you study best in the morning or the afternoon? (Why?)", "Have you always wanted to study this subject/ these subjects? (Why? Why not?)"] },
+            { title: "1. Food", questions: ["What was your favourite food when you were a child?", "Has the kind of food you like changed as you've got older?", "Do you eat different food at different times of the year?", "Do you like to eat with others?", "In your country, is it very important to eat with other people?"] },
+            { title: "2. Pets and animals", questions: ["Did you want to have a pet when you were a child?", "Would you like to have pets in the future?", "Where do you prefer to keep your pet, indoors or outdoors?", "Do you see many birds and animals where you live?", "Have you ever been to a zoo?", "What kind of animals is famous in your country?"] },
+            { title: "3. Typing", questions: ["How often do you type on a keyboard?", "Did you learn how to type at school when you were younger?", "When did you learn how to type on a keyboard?", "Which do you find easier: typing on a keyboard or writing by hand?", "Do you like to improve your typing skills?"] },
+            { title: "4. Stage of life", questions: ["Are you satisfied with your age now?", "What did you enjoy most about your childhood?", "What's the most important thing you've done so far?", "At what age do you think people enjoy their lives most?", "What do you want to do five years later?"] },
+            { title: "5. Long walk", questions: ["Did you go for long walks when you were a child?", "How often do you walk to the shops now?", "Are there many parks near where you live?", "Do people enjoy walking in parks in your country?", "Where would you want to go for a long walk if you have a chance?"] },
+            { title: "6. Reading carefully", questions: ["What kinds of things do you have to read carefully in your language?", "Do you like to read things carefully or quickly in daily life?", "Do you read things more carefully on paper or on a screen?", "Why do you think some people don't read messages very carefully?"] },
+            { title: "7. Morning Routine", questions: ["Do you get up early in the morning?", "Did you get up early in the morning when you were younger?", "What do you do every morning?", "What's your favourite morning of the week?"] },
+            { title: "8. Gifts", questions: ["What kinds of gifts do you like to receive?", "What kinds of gifts did you like when you were younger?", "Have you received any gifts recently?", "Do you enjoy giving people gifts?", "Do you think buying gifts online is a good idea?"] },
+            { title: "9. Team sport", questions: ["Have you ever played a sport in a team?", "Is your sport team famous?", "Are team sports popular in your country?", "Would you like to try a new team sport in the future?", "Do you enjoy watching team sports?"] },
+            { title: "10. Building", questions: ["What is the tallest building in your city?", "Are there many tall buildings where you live?", "Have you ever taken a photo of a building?", "What kind of building would you like to live in?", "Is there a famous building that you would like to have a visit?"] },
+            { title: "11. Travelling", questions: ["When you're travelling, do you usually look at the view?", "Did you ever travel to a faraway place when you were a child?", "Do you prefer to look at mountain views or ocean views?", "When you see a beautiful view, do you like to take a photo of it?", "Would you like to hang a beautiful view picture on the wall at home?"] },
+            { title: "12. Free time activities", questions: ["What's your favourite free-time activity when you were a child?", "What activities do you enjoy doing in your free time now?", "Do you prefer to do free-time activities alone or with other people?", "Is there an activity you would like to try in the future?"] },
+            { title: "13. Memory", questions: ["Do you think it easy to remember people's names?", "Do you remember things easily when you're studying or working?", "Would you like to have a better memory?", "Have you forgotten something that was very important?"] },
+            { title: "14. Singing", questions: ["Did you like singing when you were a child?", "Do you like singing now?", "Will you sing in the car?", "Do you like listening to other people sing?", "How well did you sing?", "Did you take music lessons?"] },
+            { title: "15. Music", questions: ["Do you like music?", "What kinds of music do you listen to?", "Do you prefer sad or happy music?", "Does happy music make you feel more excited?", "Is it easy to learn music?", "Do you learn music lessons at school?"] },
+            { title: "16. Watch", questions: ["Do you wear a watch in your daily life?", "What kind of watch do you have?", "Has anyone ever given you a watch as a gift?", "What kind of watch do the people around you like to wear?", "Do people around you like wearing watches?"] },
+            { title: "17. Parks and Gardens", questions: ["What kind of parks and gardens did you like when you were a child?", "Do you enjoy visiting parks and gardens now?", "Do you think there should be more parks and gardens in your city?", "Is there a famous park or garden that you want to visit?", "Was there a park near your home that you liked to go to when you were a child?"] },
+            { title: "18. Tidiness", questions: ["Were you a tidy person when you were a child?", "Are you a tidy person now?", "What do you think of those who don't care about tidiness?", "What do you think of untidy people?", "What do you think of people who are overly tidy?"] },
+            { title: "19. Headphones", questions: ["How often do you wear headphones?", "Do you think headphones are useful?", "Are headphones popular in your country?", "In what situations should people not wear headphones?"] },
+            { title: "20. Websites", questions: ["Do you usually use websites?", "Which website do you usually use?", "Do you prefer to search for information through websites or books?", "Do you want to create your own website in the future?"] },
+            { title: "21. Telling Jokes", questions: ["Do you like to tell jokes?", "Do you often joke with your friends?", "Do you have friends who love telling jokes?", "What are some common comedy shows in your country?", "Do you like being joked about?"] },
+            { title: "22. Science", questions: ["Did you study science when you were at primary /elementary school?", "Do you think everyone should study science at school?", "How does knowing about science help you in your everyday life?", "Did you learn much about science at school?", "How do you learn about science in daily life?"] },
+            { title: "23. Teachers", questions: ["Do you have a favorite teacher?", "Which teacher do you prefer, the one from primary school or the one from junior high school?", "Do you still keep in touch with your former teachers?", "Is it easy to remember your teachers in elementary school?", "Did you want to be a teacher when you were young?", "Do you think teachers are different now than when your parents were at school?"] },
+            { title: "24. Social Media", questions: ["Do your friends and family use social media?", "Do you think people in your country find social media useful?", "Do you spend too much time on social media?", "When did you start using social media?"] },
+            { title: "25. Cars", questions: ["Would you like to be the driver or the passenger?", "Is there a lot of cars on the roads in your city?", "Do you want to own a very expensive car?"] },
+            { title: "26. Clothes", questions: ["What kind of clothes do you like to wear?", "Do you wear different clothes on the weekend?"] },
+            { title: "27. Shopping", questions: ["Do you often go shopping?", "Do you prefer online or offline shopping?", "Do you compare prices before making a purchase?"] },
+            { title: "28. Space Travel", questions: ["Have you ever learnt anything about space and the stars when you were at school?", "Would you like to know more about space and the stars?", "Do you like science-fiction movies set in space?", "Do you want to go into outer space in the future?"] },
+            { title: "29. Feeling bored", questions: ["Do you often feel bored?", "Did you ever find school boring when you were a child?", "What sort of things do you find most boring now?", "What do you do to stop yourself feeling bored?"] },
+            { title: "30. Dream and ambition", questions: ["When you were a child, what job did you dream of doing?", "Do you think you are an ambitious person?", "What kind of job do you want to do in the future?", "Do you have any dreams or hopes for your life?"] },
+            { title: "31. Talking to elderly people", questions: ["Do you often talk to elderly people?", "Do you enjoy spending time with elderly people?", "How do you feel about getting old?"] },
+            { title: "32. Mirrors", questions: ["Do you like looking at yourself in the mirror? How often?", "Have you ever bought mirrors?", "Would you use mirrors to decorate your room?"] }
+        ];
+
+        const parts2and3Categorized = [
+            {
+                category: "People & Relationships",
+                topics: [
+                    { part2: "Describe a time when you felt very proud of something a family member did", part2_subquestions: ["Who the family member was", "What he/she did", "Where and when this happened", "And explain why you felt so proud of what your family member did"], part3: ["What kinds of behaviors of young children can make their parents feel proud?", "Why do giving academic prizes or rewards help promote children's progress?", "Do you think it is good for parents to give children too many prizes or rewards?", "Does any job bring people a sense of pride?", "When do adults feel proud of themselves?"] },
+                    { part2: "Describe a perfect job you would like to have in the future", part2_subquestions: ["What the job is", "How you knew it", "What skills you need for this job", "And explain why it would be the perfect job for you"], part3: ["What types of jobs do children usually want to do?", "What are the dream jobs of people in your country?", "Why do some jobs attract more people than others?"] },
+                    { part2: "Describe a famous person who you would like to meet", part2_subquestions: ["Who he/she is and what he/she does", "What he/she is famous for", "How long this person has been famous", "And explain why you would like to meet this famous person"], part3: ["What kinds of famous people are often in the news in your country?", "Why do children want to become famous?", "Is it possible for people to become famous without talent?"] },
+                    { part2: "Describe a person you know who enjoys helping other people", part2_subquestions: ["Who this person is", "What this person does to help others", "How often this person helps others", "And explain why you think this person likes to help other people"], part3: ["How can children help their parents at home?", "Should students do community service? Why?", "What kinds of help do people need when they start a new job?"] },
+                    { part2: "Describe a person who learned something new without a teacher", part2_subquestions: ["Who he/she is and how you know him/her", "What he/she learned", "Is it easy to learn this skill", "And explain how you feel about him/her"], part3: ["What can children learn from parents?", "Does a good teacher make learning more interesting?", "What are the benefits for adults of returning to studying after leaving full-time education?"] },
+                    { part2: "Describe a child you know who enjoys painting or drawing", part2_subquestions: ["Who he/she is and how you know him/her", "What kinds of things this child paints or draws", "How often this child paints or draws", "And explain why you think this child likes painting or drawing"], part3: ["At what age do children usually start to paint and draw?", "Should children have art lessons or classes at school?", "Why do children often paint and draw more than adults do?"] },
+                    { part2: "Describe a friend from childhood who you remember very well", part2_subquestions: ["Who the friend is", "How you met him/her", "What you used to do together", "And explain why you remember this childhood friend so well"], part3: ["Why are childhood friendships special?", "Is it easy to maintain friendships as people get older?", "Do children make friends more easily than adults?"] }
+                ]
+            },
+            {
+                category: "Places & Environment",
+                topics: [
+                    { part2: "Describe a car, motorbike or bicycle trip that you think would be interesting", part2_subquestions: ["Where you want to go", "Who you want to go with", "How easy or difficult the trip would be", "And explain why you think using a car, motorbike or bicycle for this trip would be interesting"], part3: ["Are bicycles and motorbikes popular in your country?", "What is the best thing about public transport in the area you live?", "Do city planners consider the needs of pedestrians enough?"] },
+                    { part2: "Describe a place you enjoyed visiting that was very quiet", part2_subquestions: ["When you went there", "Where this place is and why you wanted to visit it", "What you will do when you go there", "And explain why you enjoyed visiting this place"], part3: ["In your country, what quiet places do people like to go?", "Are there more or fewer quiet places now than in the past?", "Can a place ever be completely quiet?"] },
+                    { part2: "Describe a place in another country where you would like to work for a short time", part2_subquestions: ["Where it is", "How you know about it", "What you would like to do there", "And explain why you want to work there for a short period of time"], part3: ["What jobs can people do in another country for a short time?", "Why might some people not want to work in another country?", "What are the advantages of working for an international company?"] },
+                    { part2: "Describe a city that you have been to and enjoy visiting", part2_subquestions: ["Where the city is", "What you did there", "How many times you have been there", "And explain why you really enjoyed visiting this city"], part3: ["Why do tourists choose to visit certain cities?", "Are modern cities more interesting for tourists than historical ones?", "Are cities that tourists like to visit also good places to live?"] },
+                    { part2: "Describe a place you have visited that you think is a good place to live", part2_subquestions: ["Where it is", "What you know about this place", "What people can do there", "And explain why you would recommend this place as a good place to live"], part3: ["What factors make a place suitable for living?", "Is it better to live in the city or in the countryside? Why?", "What can governments do to make cities better places to live?"] },
+                    { part2: "Describe a tall building in your city you like or dislike", part2_subquestions: ["Where it is", "What it is used for", "What it looks like", "And explain why you like or dislike it"], part3: ["Why do cities build more tall buildings nowadays?", "What are the advantages of living or working in tall buildings?", "Do you think modern buildings are better than old buildings?"] },
+                    { part2: "Describe a place you went to on holiday that you would recommend", part2_subquestions: ["Where you went", "Why you went to this place", "What you did", "And explain why you would recommend this place for a holiday"], part3: ["Why do people enjoy traveling?", "What makes a place attractive to tourists?", "What are the benefits of traveling?"] }
+                ]
+            },
+            {
+                category: "Events, Experiences & Actions",
+                topics: [
+                    { part2: "Describe an occasion you remember when you saw a lot of people smiling", part2_subquestions: ["Where you were and when it happened", "Who you were with", "What happened", "And explain why you remember this occasion when people smiled"], part3: ["Why do people smile?", "Do children tend to smile more frequently than adults?", "Why do people usually smile when taking photos?"] },
+                    { part2: "Describe a person who you think is good at planning things", part2_subquestions: ["Who he/she is and how you know him/her", "What does this person usually plan", "What this person does to plan things", "And explain why you think this person is good at planning things"], part3: ["What types of plans do people often make with friends and family?", "Is it important for people to plan special events, such as weddings?", "What are the advantages for young people of planning their future careers?"] },
+                    { part2: "Describe a time you gave advice to someone", part2_subquestions: ["When and who you gave the advice to", "What the advice was", "Why you gave it", "And explain how this person felt about the advice you gave"], part3: ["When is it better to ask friends for advice rather than family?", "Why do older people sometimes ask younger people for advice?", "What kinds of personal qualities do people need to give good advice?"] },
+                    { part2: "Describe a time when you had to pay more than you expected for something", part2_subquestions: ["What you bought", "How you felt when you saw the price", "What you did about it", "And explain why you think you had paid more than you expected"], part3: ["What kinds of things do young people like to spend money on?", "Why do some people spend money on things they don't really need?", "How important is saving money for the future?"] },
+                    { part2: "Describe a difficult decision you made that had a good result", part2_subquestions: ["What the decision was", "Why it was difficult to make the decision", "What helped you to decide", "And explain why the decision you made had a good result"], part3: ["Why do some people find it difficult to make important decisions?", "Do young people make decisions differently from older people?", "Who do people usually ask for advice when making important decisions?"] },
+                    { part2: "Describe a time that you had to change your plan / you changed your mind", part2_subquestions: ["When this happened", "What made you change the plan", "What the new plan was", "And how you felt about the change"], part3: ["Why do people sometimes change their plans?", "Is it important to be flexible in life?", "How do people feel when their plans suddenly change?"] },
+                    { part2: "Describe an occasion when you felt excited about trying an activity for the first time", part2_subquestions: ["What activity you did", "Where and when you did this", "How easy or difficult it was to do", "And explain what was exciting about trying this activity for the first time."], part3: [] }
+                ]
+            },
+            {
+                category: "Objects, Media & Technology",
+                topics: [
+                    { part2: "Describe a time when you were not allowed to use your phone", part2_subquestions: ["Where you were", "Why you couldn't use it", "And explain how you felt about it"], part3: ["In your country, which places are not allowed people to use phones?", "Do you think it is important to introduce new rules for using mobile phones?", "Why do young and old people use mobile phones differently?"] },
+                    { part2: "Describe an app or software you often use on your phone or computer", part2_subquestions: ["What it is", "How long you have used it", "How you use it", "And explain how you feel about it"], part3: ["What kinds of programs or apps are popular in your country?", "Why do some people not like to use programs or apps?", "What are the benefits of using apps as a tool for education?"] },
+                    { part2: "Describe a movie you enjoyed watching", part2_subquestions: ["Where and when you saw it", "Who you saw the movie with", "What the movie was about", "And explain why you enjoyed watching this movie"], part3: ["In your country, what kinds of movies do people like to watch?", "Do people like to watch movies at home or in the cinema?", "What qualities do people need to be good actors?"] },
+                    { part2: "Describe a piece of technology you would like to own in the future", part2_subquestions: ["What it is", "How you knew about it", "What you would use it for", "And explain why you would like to own it"], part3: ["What are the different types of technology that young people often use?", "Do you agree or disagree that technology has a positive effect on young people's lives?", "How healthy is it for young people to spend a lot of time online?"] },
+                    { part2: "Describe a TV or online programme that you enjoy watching", part2_subquestions: ["What it is about", "How often you watch it", "Which country the programme comes from", "And explain why you enjoy watching this TV or online programme"], part3: ["What types of TV or online programmes or shows are popular in your country?", "Do younger and older people enjoy watching similar programmes or shows?", "Why do some people spend so much time watching TV and online programmes or shows?"] },
+                    { part2: "Describe a problem of technology you have encountered, like a computer or a cell phone", part2_subquestions: ["What it was", "When and where you had this problem", "How the problem was solved", "And explain how you felt when you had this problem"], part3: ["What kinds of technological problems do people often face?", "Do older people have more difficulty using technology than young people?", "How has technology made people's lives easier?"] },
+                    { part2: "Describe an interesting video you watched in social media", part2_subquestions: ["When and where you saw it", "What it was about", "Why you think it is interesting", "And explain how you felt about it"], part3: ["Why do people spend so much time watching videos online?", "What types of videos are popular nowadays?", "Do social media videos influence people's opinions?"] },
+                    { part2: "Describe a special cake you received from others", part2_subquestions: ["When it happened", "Where it happened", "Who you got the cake from", "And explain why it's a special cake"], part3: ["What are the differences between special food in China and other countries?", "Is there any food in your country that is eaten at special times or on special occasions?", "Why are some people willing to spend a lot of money on meals on special days?"] }
+                ]
+            }
+        ];
+
+        function openTab(event, tabName) {
+            const tabcontent = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontent.length; i++) tabcontent[i].style.display = "none";
+            const tablinks = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tablinks.length; i++) tablinks[i].className = tablinks[i].className.replace(" active", "");
+            document.getElementById(tabName).style.display = "block";
+            event.currentTarget.className += " active";
+        }
+
+        function createPart1Cards() {
+            const container = document.querySelector('#part1 .grid');
+            let html = '';
+            part1Topics.forEach(topic => {
+                html += `
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border-t-8 border-indigo-600 hover:shadow-md transition-shadow duration-300">
+                        <h3 class="font-extrabold text-xl text-indigo-900 mb-6">${topic.title}</h3>
+                        <ul class="space-y-4 text-slate-700 list-disc list-inside">
+                            ${topic.questions.map(q => `<li class="text-base leading-relaxed font-medium">${q}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function createParts2and3Accordions() {
+            const container = document.querySelector('#parts2and3 .space-y-12');
+            if (!container) return; // Guard against null
+
+            let html = '';
+            parts2and3Categorized.forEach(cat => {
+                html += `
+                    <div class="pt-4">
+                        <h2 class="text-3xl font-black text-slate-900 mb-8 flex items-center gap-4">
+                            <span class="bg-indigo-600 w-3 h-10 rounded-full"></span>
+                            ${cat.category}
+                        </h2>
+                        <div class="space-y-6">
+                `;
+                cat.topics.forEach(q => {
+                    html += `
+                        <details class="bg-white rounded-3xl shadow-sm border-2 border-slate-100 group transition-all duration-300">
+                            <summary class="p-6 font-bold cursor-pointer flex justify-between items-center text-slate-800 hover:bg-indigo-50/50 transition-colors rounded-3xl">
+                                <span class="text-lg pr-4 font-bold text-slate-800">${q.part2}</span>
+                                <svg class="w-6 h-6 transform group-open:rotate-180 transition-transform duration-300 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                            </summary>
+                            <div class="p-8 border-t-2 border-slate-50 bg-white rounded-b-3xl">
+                                <div class="mb-10">
+                                     <h4 class="text-indigo-600 font-black uppercase tracking-widest text-xs mb-6">You should say:</h4>
+                                     <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 text-slate-600 list-disc list-inside">
+                                         ${q.part2_subquestions.map(sq => `<li class="text-base font-medium italic leading-relaxed">${sq}</li>`).join('')}
+                                     </ul>
+                                </div>
+                                <div class="pt-8 border-t-2 border-slate-50">
+                                    <h4 class="text-slate-400 font-black uppercase tracking-widest text-xs mb-6">Part 3 Follow-up Questions:</h4>
+                                    <ul class="space-y-5 text-slate-800">
+                                        ${q.part3.map(p3 => `<li class="text-base font-semibold leading-relaxed pl-2 border-l-4 border-slate-100 hover:border-indigo-200 transition-colors">${p3}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+                    `;
+                });
+                html += `</div></div>`;
+            });
+            container.innerHTML = html;
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            createPart1Cards();
+            createParts2and3Accordions();
+            const firstTab = document.querySelector('.tab-btn');
+            if (firstTab) firstTab.click();
+        });
+    </script>
+</body>
+</html>
