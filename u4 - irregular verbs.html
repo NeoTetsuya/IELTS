@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irregular Verbs Master</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+            background-attachment: fixed;
+            color: #0f172a;
+            min-height: 100vh;
+        }
+        
+        /* Floating background elements for depth */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%; left: -10%;
+            width: 120%; height: 120%;
+            background: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.15) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        
+        .pop-shadow {
+            box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25), 0 0 15px rgba(139, 92, 246, 0.1);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        
+        /* Flashcard Flip Animation */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden; /* Added for Safari support */
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+
+        /* Engaging Animations */
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const verbData = [
+            { infinitive: 'be', pastSimple: 'was/were', pastParticiple: 'been', vietnamese: 'thì, là, ở' },
+            { infinitive: 'beat', pastSimple: 'beat', pastParticiple: 'beaten', vietnamese: 'đánh' },
+            { infinitive: 'become', pastSimple: 'became', pastParticiple: 'become', vietnamese: 'trở nên, trở thành' },
+            { infinitive: 'begin', pastSimple: 'began', pastParticiple: 'begun', vietnamese: 'bắt đầu' },
+            { infinitive: 'bite', pastSimple: 'bit', pastParticiple: 'bitten', vietnamese: 'cắn' },
+            { infinitive: 'blow', pastSimple: 'blew', pastParticiple: 'blown', vietnamese: 'thổi' },
+            { infinitive: 'break', pastSimple: 'broke', pastParticiple: 'broken', vietnamese: 'đập vỡ, làm hỏng' },
+            { infinitive: 'bring', pastSimple: 'brought', pastParticiple: 'brought', vietnamese: 'mang đến' },
+            { infinitive: 'build', pastSimple: 'built', pastParticiple: 'built', vietnamese: 'xây dựng' },
+            { infinitive: 'burn', pastSimple: 'burned/burnt', pastParticiple: 'burned/burnt', vietnamese: 'đốt cháy' },
+            { infinitive: 'buy', pastSimple: 'bought', pastParticiple: 'bought', vietnamese: 'mua' },
+            { infinitive: 'catch', pastSimple: 'caught', pastParticiple: 'caught', vietnamese: 'bắt, tóm được' },
+            { infinitive: 'choose', pastSimple: 'chose', pastParticiple: 'chosen', vietnamese: 'chọn' },
+            { infinitive: 'come', pastSimple: 'came', pastParticiple: 'come', vietnamese: 'đến' },
+            { infinitive: 'cost', pastSimple: 'cost', pastParticiple: 'cost', vietnamese: 'có giá' },
+            { infinitive: 'cut', pastSimple: 'cut', pastParticiple: 'cut', vietnamese: 'cắt' },
+            { infinitive: 'do', pastSimple: 'did', pastParticiple: 'done', vietnamese: 'làm' },
+            { infinitive: 'draw', pastSimple: 'drew', pastParticiple: 'drawn', vietnamese: 'vẽ' },
+            { infinitive: 'dream', pastSimple: 'dreamed/dreamt', pastParticiple: 'dreamed/dreamt', vietnamese: 'mơ' },
+            { infinitive: 'drink', pastSimple: 'drank', pastParticiple: 'drunk', vietnamese: 'uống' },
+            { infinitive: 'drive', pastSimple: 'drove', pastParticiple: 'driven', vietnamese: 'lái xe' },
+            { infinitive: 'eat', pastSimple: 'ate', pastParticiple: 'eaten', vietnamese: 'ăn' },
+            { infinitive: 'fall', pastSimple: 'fell', pastParticiple: 'fallen', vietnamese: 'rơi, ngã' },
+            { infinitive: 'feel', pastSimple: 'felt', pastParticiple: 'felt', vietnamese: 'cảm thấy' },
+            { infinitive: 'fight', pastSimple: 'fought', pastParticiple: 'fought', vietnamese: 'chiến đấu' },
+            { infinitive: 'find', pastSimple: 'found', pastParticiple: 'found', vietnamese: 'tìm thấy' },
+            { infinitive: 'fly', pastSimple: 'flew', pastParticiple: 'flown', vietnamese: 'bay' },
+            { infinitive: 'forget', pastSimple: 'forgot', pastParticiple: 'forgotten', vietnamese: 'quên' },
+            { infinitive: 'get', pastSimple: 'got', pastParticiple: 'got', vietnamese: 'có được, lấy' },
+            { infinitive: 'give', pastSimple: 'gave', pastParticiple: 'given', vietnamese: 'cho, đưa' },
+            { infinitive: 'go', pastSimple: 'went', pastParticiple: 'gone', vietnamese: 'đi' },
+            { infinitive: 'grow', pastSimple: 'grew', pastParticiple: 'grown', vietnamese: 'mọc, phát triển' },
+            { infinitive: 'hang', pastSimple: 'hung', pastParticiple: 'hung', vietnamese: 'treo' },
+            { infinitive: 'have', pastSimple: 'had', pastParticiple: 'had', vietnamese: 'có' },
+            { infinitive: 'hear', pastSimple: 'heard', pastParticiple: 'heard', vietnamese: 'nghe' },
+            { infinitive: 'hide', pastSimple: 'hid', pastParticiple: 'hidden', vietnamese: 'trốn, giấu' },
+            { infinitive: 'hit', pastSimple: 'hit', pastParticiple: 'hit', vietnamese: 'đánh, đập' },
+            { infinitive: 'hold', pastSimple: 'held', pastParticiple: 'held', vietnamese: 'cầm, giữ' },
+            { infinitive: 'hurt', pastSimple: 'hurt', pastParticiple: 'hurt', vietnamese: 'làm đau' },
+            { infinitive: 'keep', pastSimple: 'kept', pastParticiple: 'kept', vietnamese: 'giữ' },
+            { infinitive: 'know', pastSimple: 'knew', pastParticiple: 'known', vietnamese: 'biết' },
+            { infinitive: 'learn', pastSimple: 'learned/learnt', pastParticiple: 'learned/learnt', vietnamese: 'học' },
+            { infinitive: 'leave', pastSimple: 'left', pastParticiple: 'left', vietnamese: 'rời đi, để lại' },
+            { infinitive: 'lend', pastSimple: 'lent', pastParticiple: 'lent', vietnamese: 'cho mượn' },
+            { infinitive: 'let', pastSimple: 'let', pastParticiple: 'let', vietnamese: 'để cho' },
+            { infinitive: 'lie', pastSimple: 'lay', pastParticiple: 'lain', vietnamese: 'nằm' },
+            { infinitive: 'light', pastSimple: 'lit', pastParticiple: 'lit', vietnamese: 'thắp sáng' },
+            { infinitive: 'lose', pastSimple: 'lost', pastParticiple: 'lost', vietnamese: 'làm mất, thua' },
+            { infinitive: 'make', pastSimple: 'made', pastParticiple: 'made', vietnamese: 'làm, chế tạo' },
+            { infinitive: 'mean', pastSimple: 'meant', pastParticiple: 'meant', vietnamese: 'có nghĩa là' },
+            { infinitive: 'meet', pastSimple: 'met', pastParticiple: 'met', vietnamese: 'gặp' },
+            { infinitive: 'pay', pastSimple: 'paid', pastParticiple: 'paid', vietnamese: 'trả tiền' },
+            { infinitive: 'put', pastSimple: 'put', pastParticiple: 'put', vietnamese: 'đặt, để' },
+            { infinitive: 'read', pastSimple: 'read', pastParticiple: 'read', vietnamese: 'đọc' },
+            { infinitive: 'ride', pastSimple: 'rode', pastParticiple: 'ridden', vietnamese: 'cưỡi, đi (xe)' },
+            { infinitive: 'ring', pastSimple: 'rang', pastParticiple: 'rung', vietnamese: 'rung chuông, gọi' },
+            { infinitive: 'rise', pastSimple: 'rose', pastParticiple: 'risen', vietnamese: 'mọc, tăng lên' },
+            { infinitive: 'run', pastSimple: 'ran', pastParticiple: 'run', vietnamese: 'chạy' },
+            { infinitive: 'say', pastSimple: 'said', pastParticiple: 'said', vietnamese: 'nói' },
+            { infinitive: 'see', pastSimple: 'saw', pastParticiple: 'seen', vietnamese: 'nhìn thấy' },
+            { infinitive: 'sell', pastSimple: 'sold', pastParticiple: 'sold', vietnamese: 'bán' },
+            { infinitive: 'send', pastSimple: 'sent', pastParticiple: 'sent', vietnamese: 'gửi' },
+            { infinitive: 'shine', pastSimple: 'shone', pastParticiple: 'shone', vietnamese: 'chiếu sáng' },
+            { infinitive: 'shoot', pastSimple: 'shot', pastParticiple: 'shot', vietnamese: 'bắn' },
+            { infinitive: 'show', pastSimple: 'showed', pastParticiple: 'shown', vietnamese: 'cho thấy' },
+            { infinitive: 'shut', pastSimple: 'shut', pastParticiple: 'shut', vietnamese: 'đóng' },
+            { infinitive: 'sing', pastSimple: 'sang', pastParticiple: 'sung', vietnamese: 'hát' },
+            { infinitive: 'sit', pastSimple: 'sat', pastParticiple: 'sat', vietnamese: 'ngồi' },
+            { infinitive: 'sleep', pastSimple: 'slept', pastParticiple: 'slept', vietnamese: 'ngủ' },
+            { infinitive: 'smell', pastSimple: 'smelled/smelt', pastParticiple: 'smelled/smelt', vietnamese: 'ngửi, có mùi' },
+            { infinitive: 'speak', pastSimple: 'spoke', pastParticiple: 'spoken', vietnamese: 'nói' },
+            { infinitive: 'spend', pastSimple: 'spent', pastParticiple: 'spent', vietnamese: 'tiêu, dành' },
+            { infinitive: 'stand', pastSimple: 'stood', pastParticiple: 'stood', vietnamese: 'đứng' },
+            { infinitive: 'steal', pastSimple: 'stole', pastParticiple: 'stolen', vietnamese: 'ăn cắp' },
+            { infinitive: 'swim', pastSimple: 'swam', pastParticiple: 'swum', vietnamese: 'bơi' },
+            { infinitive: 'take', pastSimple: 'took', pastParticiple: 'taken', vietnamese: 'cầm, lấy' },
+            { infinitive: 'teach', pastSimple: 'taught', pastParticiple: 'taught', vietnamese: 'dạy' },
+            { infinitive: 'tear', pastSimple: 'tore', pastParticiple: 'torn', vietnamese: 'xé' },
+            { infinitive: 'tell', pastSimple: 'told', pastParticiple: 'told', vietnamese: 'kể, bảo' },
+            { infinitive: 'think', pastSimple: 'thought', pastParticiple: 'thought', vietnamese: 'nghĩ' },
+            { infinitive: 'throw', pastSimple: 'threw', pastParticiple: 'thrown', vietnamese: 'ném' },
+            { infinitive: 'understand', pastSimple: 'understood', pastParticiple: 'understood', vietnamese: 'hiểu' },
+            { infinitive: 'wake', pastSimple: 'woke', pastParticiple: 'woken', vietnamese: 'thức dậy' },
+            { infinitive: 'wear', pastSimple: 'wore', pastParticiple: 'worn', vietnamese: 'mặc, đội' },
+            { infinitive: 'win', pastSimple: 'won', pastParticiple: 'won', vietnamese: 'chiến thắng' },
+            { infinitive: 'write', pastSimple: 'wrote', pastParticiple: 'written', vietnamese: 'viết' }
+        ];
+
+        // Helper function for Text-to-Speech
+        const speakText = (text) => {
+            if (!window.speechSynthesis) {
+                console.warn("Speech Synthesis not supported in this browser.");
+                return;
+            }
+
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Function to set the voice
+            const setVoice = () => {
+                const voices = window.speechSynthesis.getVoices();
+                
+                if (voices.length > 0) {
+                    // 1. Try to find "Google UK English Female" specifically
+                    let selectedVoice = voices.find(voice => voice.name === 'Google UK English Female');
+                    
+                    // 2. If not found, try to find any UK Female voice
+                    if (!selectedVoice) {
+                        selectedVoice = voices.find(voice => 
+                            voice.lang.includes('en-GB') && 
+                            (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('zira'))
+                        );
+                    }
+
+                    // 3. If not found, try to find any UK voice
+                    if (!selectedVoice) {
+                        selectedVoice = voices.find(voice => voice.lang.includes('en-GB'));
+                    }
+                    
+                    // 4. Fallback to any female English voice
+                    if (!selectedVoice) {
+                        selectedVoice = voices.find(voice => 
+                            voice.lang.includes('en') && 
+                            voice.name.toLowerCase().includes('female')
+                        );
+                    }
+
+                    if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                    } else {
+                        // Let the system pick the default if our preferences aren't met
+                        utterance.lang = 'en-GB'; 
+                    }
+                }
+                
+                // Slightly slower rate for clearer learning
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            };
+
+            // Voices are loaded asynchronously in some browsers (like Chrome)
+            if (window.speechSynthesis.getVoices().length === 0) {
+                window.speechSynthesis.addEventListener('voiceschanged', setVoice, { once: true });
+            } else {
+                setVoice();
+            }
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = React.useState('study'); // 'study', 'flashcards', 'quiz'
+
+            return (
+                <div className="min-h-screen flex flex-col relative z-0">
+                    {/* Header */}
+                    <header className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 text-white shadow-2xl relative overflow-hidden rounded-b-3xl sm:rounded-3xl sm:mt-6 sm:mx-6">
+                        <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxjaXJjbGUgY3g9IjIiIGN5PSIyIiByPSIyIiBmaWxsPSIjZmZmIi8+Cjwvc3ZnPg==')]"></div>
+                        <div className="max-w-6xl mx-auto px-6 py-10 relative z-10 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between">
+                            <h1 className="text-4xl sm:text-5xl font-black flex items-center gap-4 tracking-tight drop-shadow-xl text-glow justify-center sm:justify-start">
+                                <span className="bg-white/20 p-3 rounded-2xl shadow-inner backdrop-blur-sm">
+                                    <i className="ph-fill ph-magic-wand text-yellow-300 animate-bounce"></i>
+                                </span>
+                                Irregular Verbs
+                            </h1>
+                            <div className="mt-6 sm:mt-0 text-white/90 font-bold bg-black/20 px-5 py-2.5 rounded-full backdrop-blur-sm shadow-inner border border-white/10">
+                                Master {verbData.length} Verbs
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="sticky top-4 z-50 px-4 mt-6 mb-2">
+                        <div className="max-w-max mx-auto glass p-2 rounded-full pop-shadow flex gap-2 overflow-x-auto">
+                            <button 
+                                onClick={() => setActiveTab('study')}
+                                className={`px-6 py-3 font-extrabold text-sm sm:text-base flex items-center gap-2 rounded-full transition-all duration-300 whitespace-nowrap ${activeTab === 'study' ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg scale-105' : 'text-gray-600 hover:text-indigo-600 hover:bg-white/60'}`}
+                            >
+                                <i className={`ph-fill ph-table text-xl ${activeTab === 'study' ? 'text-white' : 'text-violet-500'}`}></i> Study List
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('flashcards')}
+                                className={`px-6 py-3 font-extrabold text-sm sm:text-base flex items-center gap-2 rounded-full transition-all duration-300 whitespace-nowrap ${activeTab === 'flashcards' ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg scale-105' : 'text-gray-600 hover:text-indigo-600 hover:bg-white/60'}`}
+                            >
+                                <i className={`ph-fill ph-cards text-xl ${activeTab === 'flashcards' ? 'text-white' : 'text-fuchsia-500'}`}></i> Flashcards
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('quiz')}
+                                className={`px-6 py-3 font-extrabold text-sm sm:text-base flex items-center gap-2 rounded-full transition-all duration-300 whitespace-nowrap ${activeTab === 'quiz' ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg scale-105' : 'text-gray-600 hover:text-indigo-600 hover:bg-white/60'}`}
+                            >
+                                <i className={`ph-fill ph-game-controller text-xl ${activeTab === 'quiz' ? 'text-white' : 'text-indigo-500'}`}></i> Practice Quiz
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Main Content Area */}
+                    <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-8">
+                        {activeTab === 'study' && <StudySection verbs={verbData} />}
+                        {activeTab === 'flashcards' && <FlashcardSection verbs={verbData} />}
+                        {activeTab === 'quiz' && <QuizSection verbs={verbData} />}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-gray-800 text-gray-300 py-6 text-center text-sm mt-auto">
+                        <p>Reference: "past simple grammar.pdf" Appendix 2 & 3</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const StudySection = ({ verbs }) => {
+            const [searchTerm, setSearchTerm] = React.useState('');
+            const [filterType, setFilterType] = React.useState('all'); // all, same, different
+
+            // Helper to determine verb group based on Appendix 3 logic roughly
+            const getVerbType = (v) => {
+                // Group 1: all same (e.g., cost, cut)
+                if (v.infinitive === v.pastSimple && v.infinitive === v.pastParticiple) return 'same';
+                // Group 2/3/4/5/6: usually different in at least one way
+                return 'different'; 
+            };
+
+            const filteredVerbs = verbs.filter(v => {
+                const matchesSearch = v.infinitive.includes(searchTerm.toLowerCase()) || 
+                                      v.pastSimple.includes(searchTerm.toLowerCase()) ||
+                                      v.pastParticiple.includes(searchTerm.toLowerCase()) ||
+                                      (v.vietnamese && v.vietnamese.toLowerCase().includes(searchTerm.toLowerCase()));
+                
+                if (!matchesSearch) return false;
+                
+                if (filterType === 'same') {
+                    // Simplistic check for 'same' group (cut, cut, cut) OR past == participle (lend, lent, lent)
+                    // The prompt's PDF categorizes heavily. We'll simplify to:
+                    // 'same' means past simple == past participle
+                    return v.pastSimple === v.pastParticiple;
+                }
+                if (filterType === 'different') {
+                    return v.pastSimple !== v.pastParticiple;
+                }
+                return true;
+            });
+
+            return (
+                <div className="glass rounded-3xl pop-shadow overflow-hidden animate-fade-in-up border-2 border-white/60">
+                    <div className="p-6 border-b border-gray-100/50 flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/40">
+                        <div className="relative w-full sm:w-72 group">
+                            <i className="ph-bold ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-violet-400 group-focus-within:text-violet-600 transition-colors"></i>
+                            <input 
+                                type="text" 
+                                placeholder="Search verbs..." 
+                                className="w-full pl-12 pr-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-white/80 rounded-2xl focus:outline-none focus:ring-4 focus:ring-violet-500/20 focus:border-violet-500 transition-all shadow-inner font-medium text-gray-700"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex bg-white/70 backdrop-blur-sm rounded-2xl border-2 border-white/80 overflow-hidden w-full sm:w-auto shadow-sm p-1 gap-1">
+                            <button 
+                                onClick={() => setFilterType('all')}
+                                className={`flex-1 sm:flex-none px-5 py-2.5 text-sm font-bold rounded-xl transition-all ${filterType === 'all' ? 'bg-violet-100 text-violet-800 shadow-sm' : 'text-gray-500 hover:bg-white hover:text-gray-800'}`}
+                            >
+                                All
+                            </button>
+                            <button 
+                                onClick={() => setFilterType('same')}
+                                className={`flex-1 sm:flex-none px-5 py-2.5 text-sm font-bold rounded-xl transition-all ${filterType === 'same' ? 'bg-fuchsia-100 text-fuchsia-800 shadow-sm' : 'text-gray-500 hover:bg-white hover:text-gray-800'}`}
+                                title="Past Simple and Past Participle are the same (e.g., make -> made -> made)"
+                            >
+                                Same
+                            </button>
+                            <button 
+                                onClick={() => setFilterType('different')}
+                                className={`flex-1 sm:flex-none px-5 py-2.5 text-sm font-bold rounded-xl transition-all ${filterType === 'different' ? 'bg-indigo-100 text-indigo-800 shadow-sm' : 'text-gray-500 hover:bg-white hover:text-gray-800'}`}
+                                title="Past Simple and Past Participle are different (e.g., speak -> spoke -> spoken)"
+                            >
+                                Different
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200/50">
+                            <thead className="bg-white/40">
+                                <tr>
+                                    <th scope="col" className="px-6 py-5 text-left text-xs font-black text-gray-600 uppercase tracking-widest">
+                                        <span className="bg-gradient-to-r from-blue-400 to-blue-600 text-white px-3 py-1 rounded-lg shadow-sm mr-2">V1</span> Infinitive
+                                    </th>
+                                    <th scope="col" className="px-6 py-5 text-left text-xs font-black text-gray-600 uppercase tracking-widest">
+                                        <span className="bg-gradient-to-r from-purple-400 to-purple-600 text-white px-3 py-1 rounded-lg shadow-sm mr-2">V2</span> Past Simple
+                                    </th>
+                                    <th scope="col" className="px-6 py-5 text-left text-xs font-black text-gray-600 uppercase tracking-widest">
+                                        <span className="bg-gradient-to-r from-pink-400 to-pink-600 text-white px-3 py-1 rounded-lg shadow-sm mr-2">V3</span> Past Participle
+                                    </th>
+                                    <th scope="col" className="px-6 py-5 text-left text-xs font-black text-gray-600 uppercase tracking-widest">
+                                        <span className="bg-gradient-to-r from-emerald-400 to-emerald-600 text-white px-3 py-1 rounded-lg shadow-sm mr-2">VN</span> Meaning
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white/60 divide-y divide-gray-200/50">
+                                {filteredVerbs.length > 0 ? (
+                                    filteredVerbs.map((verb, index) => (
+                                        <tr key={index} className="hover:bg-white transition-colors group">
+                                            <td className="px-6 py-5 whitespace-nowrap text-base font-extrabold text-indigo-950 flex items-center gap-3">
+                                                {verb.infinitive}
+                                                <button 
+                                                    onClick={() => speakText(verb.infinitive)}
+                                                    className="text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-full p-1.5 focus:outline-none transition-all scale-90 group-hover:scale-100 opacity-50 group-hover:opacity-100"
+                                                    title={`Listen to "${verb.infinitive}"`}
+                                                >
+                                                    <i className="ph-fill ph-speaker-high text-xl"></i>
+                                                </button>
+                                            </td>
+                                            <td className="px-6 py-5 whitespace-nowrap text-base font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+                                                <div className="flex items-center gap-2">
+                                                    {verb.pastSimple}
+                                                    <button 
+                                                        onClick={() => speakText(verb.pastSimple.replace('/', ' or '))}
+                                                        className="text-gray-400 hover:text-indigo-600 focus:outline-none transition-colors"
+                                                        title={`Listen to "${verb.pastSimple}"`}
+                                                    >
+                                                        <i className="ph ph-speaker-high text-lg"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                                <div className="flex items-center gap-2">
+                                                    {verb.pastParticiple}
+                                                    <button 
+                                                        onClick={() => speakText(verb.pastParticiple.replace('/', ' or '))}
+                                                        className="text-gray-400 hover:text-indigo-600 focus:outline-none transition-colors"
+                                                        title={`Listen to "${verb.pastParticiple}"`}
+                                                    >
+                                                        <i className="ph ph-speaker-high text-lg"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-emerald-600">
+                                                {verb.vietnamese}
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="3" className="px-6 py-8 text-center text-gray-500">
+                                            No verbs found matching your search.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="bg-gray-50 px-6 py-3 border-t border-gray-200 text-sm text-gray-500">
+                        Showing {filteredVerbs.length} of {verbs.length} verbs.
+                    </div>
+                </div>
+            );
+        };
+
+        const FlashcardSection = ({ verbs }) => {
+            const [currentIndex, setCurrentIndex] = React.useState(0);
+            const [isFlipped, setIsFlipped] = React.useState(false);
+            const [shuffledVerbs, setShuffledVerbs] = React.useState([...verbs]);
+
+            // Shuffle on mount
+            React.useEffect(() => {
+                shuffleDeck();
+            }, []);
+
+            const shuffleDeck = () => {
+                const shuffled = [...verbs].sort(() => Math.random() - 0.5);
+                setShuffledVerbs(shuffled);
+                setCurrentIndex(0);
+                setIsFlipped(false);
+            };
+
+            const nextCard = () => {
+                setIsFlipped(false);
+                setTimeout(() => {
+                    setCurrentIndex((prev) => (prev + 1) % shuffledVerbs.length);
+                }, 150); // wait for flip animation to start before changing content
+            };
+
+            const prevCard = () => {
+                setIsFlipped(false);
+                setTimeout(() => {
+                    setCurrentIndex((prev) => (prev - 1 + shuffledVerbs.length) % shuffledVerbs.length);
+                }, 150);
+            };
+
+            const currentVerb = shuffledVerbs[currentIndex];
+
+            if (!currentVerb) return null;
+
+            return (
+                <div className="flex flex-col items-center justify-center max-w-2xl mx-auto w-full py-8 animate-fade-in-up">
+                    <div className="mb-8 flex justify-between w-full items-center text-gray-600 px-4">
+                        <span className="text-sm font-bold bg-gray-100 px-4 py-2 rounded-full border border-gray-200 shadow-sm">
+                            Card {currentIndex + 1} of {shuffledVerbs.length}
+                        </span>
+                        <button 
+                            onClick={shuffleDeck}
+                            className="flex items-center gap-2 text-sm font-bold text-violet-600 hover:text-violet-800 hover:bg-violet-50 px-4 py-2 rounded-full transition-all"
+                        >
+                            <i className="ph-bold ph-shuffle"></i> Shuffle Deck
+                        </button>
+                    </div>
+
+                    {/* Flashcard */}
+                    <div 
+                        className="w-full h-80 sm:h-[28rem] perspective-1000 cursor-pointer group transition-all duration-500 hover:-translate-y-4"
+                        onClick={() => setIsFlipped(!isFlipped)}
+                    >
+                        <div className={`relative w-full h-full transform-style-3d flip-card-inner rounded-[3rem] pop-shadow group-hover:shadow-[0_40px_60px_-15px_rgba(139,92,246,0.3)] transition-all duration-500 ${isFlipped ? 'rotate-y-180' : ''}`}>
+                            
+                            {/* Front (Infinitive) */}
+                            <div className="absolute w-full h-full backface-hidden glass border-4 border-white/60 rounded-[3rem] flex flex-col items-center justify-center p-8">
+                                <span className="absolute top-8 right-8 bg-gradient-to-r from-blue-400 to-blue-500 text-white px-4 py-2 rounded-xl text-xs font-black tracking-widest shadow-md">V1 / INFINITIVE</span>
+                                <div className="flex items-center gap-4">
+                                    <h2 className="text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-900 to-violet-800 text-center drop-shadow-sm">{currentVerb.infinitive}</h2>
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); speakText(currentVerb.infinitive); }}
+                                        className="text-violet-400 hover:text-white hover:bg-violet-500 rounded-full transition-all p-4 shadow-sm hover:shadow-lg hover:scale-110 active:scale-95 bg-white/50 border border-violet-100"
+                                        title="Listen"
+                                    >
+                                        <i className="ph-fill ph-speaker-high text-4xl"></i>
+                                    </button>
+                                </div>
+                                <p className="absolute bottom-8 text-gray-500 text-sm font-bold flex items-center gap-2 bg-white/80 backdrop-blur-md px-6 py-3 rounded-full shadow-sm border border-white">
+                                    <i className="ph-bold ph-hand-tap text-violet-500 text-lg"></i> Tap anywhere to flip
+                                </p>
+                            </div>
+
+                            {/* Back (Past Forms) */}
+                            <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 text-white rounded-[3rem] flex flex-col items-center justify-center p-8 border-4 border-white/20 shadow-inner">
+                                <span className="absolute top-8 right-8 bg-black/20 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-black tracking-widest shadow-inner border border-white/10">V2 & V3 / PAST FORMS</span>
+                                
+                                <div className="w-full max-w-lg space-y-6">
+                                    <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 text-center relative group/card border border-white/20 hover:bg-white/20 transition-all hover:scale-105 hover:shadow-lg">
+                                        <div className="text-white/70 text-sm font-black uppercase tracking-widest mb-3">Past Simple (V2)</div>
+                                        <div className="text-5xl font-black flex items-center justify-center gap-4 text-glow">
+                                            {currentVerb.pastSimple}
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); speakText(currentVerb.pastSimple.replace('/', ' or ')); }}
+                                                className="text-white/70 hover:text-white transition-all opacity-0 group-hover/card:opacity-100 focus:opacity-100 bg-black/10 hover:bg-black/30 rounded-full p-3 shadow-inner"
+                                                title="Listen"
+                                            >
+                                                <i className="ph-fill ph-speaker-high text-3xl"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 text-center relative group/card border border-white/20 hover:bg-white/20 transition-all hover:scale-105 hover:shadow-lg">
+                                        <div className="text-white/70 text-sm font-black uppercase tracking-widest mb-3">Past Participle (V3)</div>
+                                        <div className="text-5xl font-black flex items-center justify-center gap-4 text-glow">
+                                            {currentVerb.pastParticiple}
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); speakText(currentVerb.pastParticiple.replace('/', ' or ')); }}
+                                                className="text-white/70 hover:text-white transition-all opacity-0 group-hover/card:opacity-100 focus:opacity-100 bg-black/10 hover:bg-black/30 rounded-full p-3 shadow-inner"
+                                                title="Listen"
+                                            >
+                                                <i className="ph-fill ph-speaker-high text-3xl"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {/* Controls */}
+                    <div className="flex gap-6 mt-12 w-full justify-center">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); prevCard(); }}
+                            className="bg-white/80 backdrop-blur-sm border-2 border-white text-gray-700 p-5 rounded-full shadow-lg hover:bg-white hover:text-violet-600 focus:outline-none transition-all hover:scale-110 active:scale-95"
+                            aria-label="Previous card"
+                        >
+                            <i className="ph-bold ph-caret-left text-2xl"></i>
+                        </button>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); nextCard(); }}
+                            className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white p-5 rounded-full shadow-[0_15px_30px_-5px_rgba(139,92,246,0.4)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.5)] hover:-translate-y-1 focus:outline-none transition-all hover:scale-110 active:scale-95"
+                            aria-label="Next card"
+                        >
+                            <i className="ph-bold ph-caret-right text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const QuizSection = ({ verbs }) => {
+            const [gameState, setGameState] = React.useState('start'); // start, playing, finished
+            const [questions, setQuestions] = React.useState([]);
+            const [currentQIndex, setCurrentQIndex] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+            const [streak, setStreak] = React.useState(0);
+            const [isShaking, setIsShaking] = React.useState(false);
+            
+            // User inputs
+            const [inputV2, setInputV2] = React.useState('');
+            const [inputV3, setInputV3] = React.useState('');
+            const [feedback, setFeedback] = React.useState(null); // { type: 'success'|'error', msg: string }
+
+            const totalQuestions = 10;
+
+            const startQuiz = () => {
+                const shuffled = [...verbs].sort(() => Math.random() - 0.5).slice(0, totalQuestions);
+                setQuestions(shuffled);
+                setCurrentQIndex(0);
+                setScore(0);
+                setStreak(0);
+                setInputV2('');
+                setInputV3('');
+                setFeedback(null);
+                setGameState('playing');
+            };
+
+            const normalizeInput = (str) => {
+                // handle cases like "burned/burnt" by accepting either or both
+                return str.toLowerCase().trim().replace(/\s+/g, '');
+            };
+
+            const checkAnswers = () => {
+                const currentVerb = questions[currentQIndex];
+                
+                // Allow exact match or match of one of the options separated by '/'
+                const v2Options = currentVerb.pastSimple.split('/');
+                const v3Options = currentVerb.pastParticiple.split('/');
+                
+                const isV2Correct = v2Options.some(opt => normalizeInput(opt) === normalizeInput(inputV2));
+                const isV3Correct = v3Options.some(opt => normalizeInput(opt) === normalizeInput(inputV3));
+
+                if (isV2Correct && isV3Correct) {
+                    setFeedback({ type: 'success', msg: 'Awesome! Spot on! 🎉' });
+                    setScore(prev => prev + 1);
+                    setStreak(prev => prev + 1);
+
+                    // Small confetti burst on correct answer if streak is building
+                    if (streak >= 1 && typeof confetti === 'function') {
+                        confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 }, colors: ['#8b5cf6', '#3b82f6', '#f59e0b'] });
+                    }
+                    
+                    setTimeout(nextQuestion, 1500);
+                } else {
+                    let msg = 'Not quite right. ';
+                    if (!isV2Correct && !isV3Correct) msg += `Past Simple is "${currentVerb.pastSimple}", Past Participle is "${currentVerb.pastParticiple}".`;
+                    else if (!isV2Correct) msg += `Past Simple should be "${currentVerb.pastSimple}".`;
+                    else if (!isV3Correct) msg += `Past Participle should be "${currentVerb.pastParticiple}".`;
+                    
+                    setFeedback({ type: 'error', msg: msg });
+                    setStreak(0);
+                    setIsShaking(true);
+                    setTimeout(() => setIsShaking(false), 500);
+                }
+            };
+
+            const nextQuestion = () => {
+                if (currentQIndex + 1 < totalQuestions) {
+                    setCurrentQIndex(prev => prev + 1);
+                    setInputV2('');
+                    setInputV3('');
+                    setFeedback(null);
+                } else {
+                    setGameState('finished');
+                }
+            };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter' && !feedback) {
+                    checkAnswers();
+                } else if (e.key === 'Enter' && feedback && feedback.type === 'error') {
+                    nextQuestion();
+                }
+            };
+
+            if (gameState === 'start') {
+                return (
+                    <div className="flex flex-col items-center justify-center py-24 max-w-2xl mx-auto text-center animate-fade-in-up glass rounded-3xl pop-shadow border-2 border-white/60 px-8">
+                        <div className="w-40 h-40 bg-gradient-to-br from-violet-400 via-fuchsia-500 to-indigo-600 text-white rounded-[2.5rem] shadow-2xl rotate-6 flex items-center justify-center mb-10 card-hover transition-transform duration-500 hover:rotate-12 hover:scale-110 border-4 border-white/30">
+                            <i className="ph-fill ph-rocket-launch text-7xl -rotate-6"></i>
+                        </div>
+                        <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-900 to-indigo-900 mb-6 tracking-tight">Ready to test your memory?</h2>
+                        <p className="text-xl text-gray-600 mb-12 leading-relaxed font-medium">
+                            You will be given <span className="font-black text-fuchsia-600 text-2xl bg-fuchsia-100 px-3 py-1 rounded-xl mx-1 shadow-sm">{totalQuestions}</span> random infinitive verbs. 
+                            Type in the correct Past Simple and Past Participle forms for each to build your streak!
+                        </p>
+                        <button 
+                            onClick={startQuiz}
+                            className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 text-white font-black text-2xl py-5 px-14 rounded-3xl shadow-[0_20px_40px_-10px_rgba(192,38,211,0.4)] transition-all transform hover:-translate-y-2 hover:shadow-[0_25px_50px_-10px_rgba(192,38,211,0.5)] active:scale-95 flex items-center gap-4"
+                        >
+                            <i className="ph-bold ph-play"></i> Start Challenge
+                        </button>
+                    </div>
+                );
+            }
+
+            if (gameState === 'finished') {
+                const percentage = (score / totalQuestions) * 100;
+                let message = "";
+                if (percentage === 100) message = "Perfect Score! You are a verb master! 🏆";
+                else if (percentage >= 80) message = "Great job! You know these well. 🌟";
+                else if (percentage >= 50) message = "Good effort, keep practicing! 💪";
+                else message = "Time to hit the flashcards again. 📚";
+
+                // Trigger massive confetti on high score
+                React.useEffect(() => {
+                    if (percentage >= 80 && typeof confetti === 'function') {
+                        const duration = 3000;
+                        const animationEnd = Date.now() + duration;
+                        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+                        const interval = setInterval(function() {
+                            const timeLeft = animationEnd - Date.now();
+                            if (timeLeft <= 0) return clearInterval(interval);
+                            const particleCount = 50 * (timeLeft / duration);
+                            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+                        }, 250);
+                    }
+                }, [percentage]);
+
+                return (
+                    <div className="flex flex-col items-center justify-center py-20 max-w-lg mx-auto text-center animate-fade-in-up glass rounded-3xl pop-shadow border-2 border-white/60 px-8">
+                        <div className="mb-10 relative">
+                            <svg className="w-48 h-48 transform -rotate-90 drop-shadow-xl">
+                                <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="16" fill="transparent" className="text-white/60" />
+                                <circle cx="96" cy="96" r="80" stroke="url(#gradient)" strokeWidth="16" fill="transparent" 
+                                    strokeDasharray={502} 
+                                    strokeDashoffset={502 - (502 * percentage) / 100}
+                                    strokeLinecap="round"
+                                    className="transition-all duration-1000 ease-out" 
+                                />
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#c026d3" />
+                                        <stop offset="100%" stopColor="#4f46e5" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-indigo-600 drop-shadow-sm">{score}/{totalQuestions}</span>
+                            </div>
+                        </div>
+                        <h2 className="text-4xl font-black text-gray-900 mb-3">Challenge Complete!</h2>
+                        <p className="text-xl text-gray-600 mb-12 font-bold">{message}</p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                            <button 
+                                onClick={startQuiz}
+                                className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 text-white font-black py-4 px-10 rounded-2xl shadow-[0_15px_30px_-5px_rgba(192,38,211,0.4)] transition-all hover:scale-105 active:scale-95"
+                            >
+                                Play Again
+                            </button>
+                            <button 
+                                onClick={() => setGameState('start')}
+                                className="bg-white/80 backdrop-blur-sm border-2 border-white hover:bg-white text-gray-700 font-bold py-4 px-10 rounded-2xl shadow-md transition-all hover:scale-105 active:scale-95"
+                            >
+                                Back to Start
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentVerb = questions[currentQIndex];
+
+            return (
+                <div className="max-w-2xl mx-auto py-8 animate-fade-in-up">
+                    {/* Progress Bar and Streak */}
+                    <div className="mb-10">
+                        <div className="flex justify-between items-end text-sm font-medium text-gray-500 mb-4">
+                            <span className="font-black bg-white/60 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white">Question {currentQIndex + 1} of {totalQuestions}</span>
+                            <div className="flex items-center gap-4">
+                                {streak > 1 && (
+                                    <span className="text-orange-600 font-black flex items-center gap-1 animate-bounce bg-orange-100 px-4 py-2 rounded-xl border-2 border-orange-200 shadow-md">
+                                        <i className="ph-fill ph-fire text-xl"></i> {streak} Streak!
+                                    </span>
+                                )}
+                                <span className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-5 py-2 rounded-xl text-base font-black shadow-md">Score: {score}</span>
+                            </div>
+                        </div>
+                        <div className="w-full bg-white/40 backdrop-blur-sm rounded-full h-4 shadow-inner overflow-hidden border border-white/60">
+                            <div className="bg-gradient-to-r from-fuchsia-500 to-indigo-500 h-4 rounded-full transition-all duration-500 ease-out relative" style={{ width: `${((currentQIndex) / totalQuestions) * 100}%` }}>
+                                <div className="absolute inset-0 bg-white/20"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`glass rounded-[2.5rem] pop-shadow border-2 border-white/60 overflow-hidden ${isShaking ? 'animate-shake' : ''}`}>
+                        <div className="bg-white/40 border-b border-indigo-100/50 p-10 text-center relative backdrop-blur-sm">
+                            <span className="text-sm font-black text-indigo-500 uppercase tracking-widest block mb-4 bg-white shadow-sm inline-block px-4 py-2 rounded-full border border-indigo-100">Infinitive</span>
+                            <div className="flex items-center justify-center gap-4">
+                                <h3 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-900 to-violet-800 drop-shadow-sm">{currentVerb.infinitive}</h3>
+                                <button 
+                                    onClick={() => speakText(currentVerb.infinitive)}
+                                    className="text-violet-500 hover:text-white hover:bg-violet-500 rounded-full p-3 transition-all focus:outline-none shadow-md bg-white border-2 border-violet-100 hover:scale-110 active:scale-95"
+                                    title="Listen"
+                                >
+                                    <i className="ph-fill ph-speaker-high text-4xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div className="p-10 space-y-8 bg-white/60">
+                            <div>
+                                <label className="block text-base font-black text-gray-700 mb-3 flex items-center gap-3">
+                                    <span className="bg-gradient-to-r from-purple-400 to-purple-600 text-white px-3 py-1 rounded-lg text-sm shadow-md">V2</span> Past Simple
+                                </label>
+                                <input 
+                                    type="text" 
+                                    value={inputV2}
+                                    onChange={(e) => setInputV2(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    disabled={feedback?.type === 'success'}
+                                    className="w-full px-6 py-5 bg-white/80 backdrop-blur-md border-2 border-white/80 rounded-2xl focus:ring-4 focus:ring-violet-500/20 focus:border-violet-500 transition-all disabled:bg-gray-100/50 disabled:text-gray-500 text-2xl font-bold shadow-inner outline-none text-indigo-900"
+                                    placeholder="e.g. went"
+                                    autoComplete="off"
+                                    autoFocus
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-base font-black text-gray-700 mb-3 flex items-center gap-3">
+                                    <span className="bg-gradient-to-r from-pink-400 to-pink-600 text-white px-3 py-1 rounded-lg text-sm shadow-md">V3</span> Past Participle
+                                </label>
+                                <input 
+                                    type="text" 
+                                    value={inputV3}
+                                    onChange={(e) => setInputV3(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    disabled={feedback?.type === 'success'}
+                                    className="w-full px-6 py-5 bg-white/80 backdrop-blur-md border-2 border-white/80 rounded-2xl focus:ring-4 focus:ring-fuchsia-500/20 focus:border-fuchsia-500 transition-all disabled:bg-gray-100/50 disabled:text-gray-500 text-2xl font-bold shadow-inner outline-none text-indigo-900"
+                                    placeholder="e.g. gone"
+                                    autoComplete="off"
+                                />
+                            </div>
+
+                            {feedback && (
+                                <div className={`p-6 rounded-2xl flex items-start gap-4 animate-fade-in-up shadow-md border-2 ${feedback.type === 'success' ? 'bg-green-50/90 text-green-800 border-green-200 backdrop-blur-sm' : 'bg-red-50/90 text-red-800 border-red-200 backdrop-blur-sm'}`}>
+                                    <i className={`ph-fill ${feedback.type === 'success' ? 'ph-check-circle text-green-500' : 'ph-warning-circle text-red-500'} text-3xl mt-0.5 drop-shadow-sm`}></i>
+                                    <div>
+                                        <p className="font-bold text-xl">{feedback.msg}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="pt-8 flex justify-end border-t border-gray-200/50">
+                                {!feedback ? (
+                                    <button 
+                                        onClick={checkAnswers}
+                                        disabled={!inputV2.trim() || !inputV3.trim()}
+                                        className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 disabled:from-gray-300 disabled:to-gray-400 disabled:shadow-none text-white font-black text-lg py-5 px-10 rounded-2xl shadow-[0_15px_30px_-5px_rgba(192,38,211,0.4)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_-5px_rgba(192,38,211,0.5)] active:scale-95 disabled:cursor-not-allowed w-full sm:w-auto"
+                                    >
+                                        Check Answers
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={nextQuestion}
+                                        className="bg-gray-900 hover:bg-black text-white font-black text-lg py-5 px-10 rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3 w-full sm:w-auto"
+                                    >
+                                        {currentQIndex + 1 < totalQuestions ? 'Next Verb' : 'See Results'} <i className="ph-bold ph-arrow-right text-xl"></i>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
