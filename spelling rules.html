@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling & Stress Master</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 50%, #e0e7ff 100%);
+            background-attachment: fixed;
+            color: #0f172a;
+            min-height: 100vh;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%; left: -10%;
+            width: 120%; height: 120%;
+            background: radial-gradient(circle at 10% 20%, rgba(20, 184, 166, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .pop-shadow {
+            box-shadow: 0 25px 50px -12px rgba(20, 184, 166, 0.25), 0 0 15px rgba(99, 102, 241, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 35px 60px -15px rgba(20, 184, 166, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.3); 
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(20, 184, 166, 0.4); 
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(20, 184, 166, 0.7); 
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const spellingData = [
+            // Words + -s and -es
+            { base: 'bird', goal: 'Plural (+s)', answer: 'birds', hint: 'Most nouns just add -s.' },
+            { base: 'think', goal: 'He/She/It (+s)', answer: 'thinks', hint: 'Most verbs just add -s.' },
+            { base: 'live', goal: 'He/She/It (+s)', answer: 'lives', hint: 'Most verbs just add -s.' },
+            { base: 'bus', goal: 'Plural (+es)', answer: 'buses', hint: 'Words ending in -s add -es.' },
+            { base: 'pass', goal: 'He/She/It (+es)', answer: 'passes', hint: 'Words ending in -s add -es.' },
+            { base: 'wash', goal: 'He/She/It (+es)', answer: 'washes', hint: 'Words ending in -sh add -es.' },
+            { base: 'dish', goal: 'Plural (+es)', answer: 'dishes', hint: 'Words ending in -sh add -es.' },
+            { base: 'watch', goal: 'Plural (+es)', answer: 'watches', hint: 'Words ending in -ch add -es.' },
+            { base: 'sandwich', goal: 'Plural (+es)', answer: 'sandwiches', hint: 'Words ending in -ch add -es.' },
+            { base: 'box', goal: 'Plural (+es)', answer: 'boxes', hint: 'Words ending in -x add -es.' },
+            { base: 'potato', goal: 'Plural (+es)', answer: 'potatoes', hint: 'Ends in -o, add -es.' },
+            { base: 'do', goal: 'He/She/It (+es)', answer: 'does', hint: 'Ends in -o, add -es.' },
+            { base: 'shelf', goal: 'Plural (f to ves)', answer: 'shelves', hint: 'Words ending in -f change to -ves.' },
+            { base: 'knife', goal: 'Plural (fe to ves)', answer: 'knives', hint: 'Words ending in -fe change to -ves.' },
+            { base: 'roof', goal: 'Plural (+s)', answer: 'roofs', hint: 'Exception: roof just adds -s.' },
+
+            // Words ending in -y
+            { base: 'study', goal: 'He/She/It (+ies)', answer: 'studies', hint: 'Consonant + y changes to -ies.' },
+            { base: 'baby', goal: 'Plural (+ies)', answer: 'babies', hint: 'Consonant + y changes to -ies.' },
+            { base: 'try', goal: 'Past (+ed)', answer: 'tried', hint: 'Consonant + y changes to -ied.' },
+            { base: 'easy', goal: 'Comparative (+er)', answer: 'easier', hint: 'Consonant + y changes to -ier.' },
+            { base: 'funny', goal: 'Superlative (+est)', answer: 'funniest', hint: 'Consonant + y changes to -iest.' },
+            { base: 'happy', goal: 'Adverb (+ly)', answer: 'happily', hint: 'Consonant + y changes to -ily.' },
+            { base: 'holiday', goal: 'Plural (+s)', answer: 'holidays', hint: 'Vowel + y (ay, ey, oy, uy) does not change. Just add -s.' },
+            { base: 'enjoy', goal: 'Past (+ed)', answer: 'enjoyed', hint: 'Vowel + y (ay, ey, oy, uy) does not change. Just add -ed.' },
+            { base: 'say', goal: 'Past (irregular)', answer: 'said', hint: 'Exception: say -> said.' },
+            { base: 'pay', goal: 'Past (irregular)', answer: 'paid', hint: 'Exception: pay -> paid.' },
+
+            // -ing and -e
+            { base: 'make', goal: '+ ing', answer: 'making', hint: 'Verbs ending in -e drop the -e before -ing.' },
+            { base: 'dance', goal: '+ ing', answer: 'dancing', hint: 'Verbs ending in -e drop the -e before -ing.' },
+            { base: 'lie', goal: '+ ing', answer: 'lying', hint: 'Verbs ending in -ie change to -ying.' },
+            { base: 'die', goal: '+ ing', answer: 'dying', hint: 'Verbs ending in -ie change to -ying.' },
+            { base: 'tie', goal: '+ ing', answer: 'tying', hint: 'Verbs ending in -ie change to -ying.' },
+
+            // Consonant doubling (V+C)
+            { base: 'stop', goal: 'Past (+ed)', answer: 'stopped', hint: 'Vowel + Consonant (V+C) -> Double the consonant.' },
+            { base: 'run', goal: '+ ing', answer: 'running', hint: 'Vowel + Consonant (V+C) -> Double the consonant.' },
+            { base: 'hot', goal: 'Superlative (+est)', answer: 'hottest', hint: 'Vowel + Consonant (V+C) -> Double the consonant.' },
+            { base: 'help', goal: '+ ing', answer: 'helping', hint: 'Two consonants (C+C) -> Do NOT double.' },
+            { base: 'fast', goal: 'Comparative (+er)', answer: 'faster', hint: 'Two consonants (C+C) -> Do NOT double.' },
+            { base: 'need', goal: '+ ing', answer: 'needing', hint: 'Two vowels + consonant (V+V+C) -> Do NOT double.' },
+            { base: 'wait', goal: 'Past (+ed)', answer: 'waited', hint: 'Two vowels + consonant (V+V+C) -> Do NOT double.' },
+            
+            // Stress exceptions
+            { base: 'happen', goal: 'Past (+ed)', answer: 'happened', hint: 'Stress is NOT at the end (HAP-pen). Do NOT double.' },
+            { base: 'remember', goal: '+ ing', answer: 'remembering', hint: 'Stress is NOT at the end (re-MEM-ber). Do NOT double.' },
+            { base: 'prefer', goal: '+ ing', answer: 'preferring', hint: 'Stress IS at the end (pre-FER). Double the consonant (r -> rr).' },
+            { base: 'begin', goal: '+ ing', answer: 'beginning', hint: 'Stress IS at the end (be-GIN). Double the consonant (n -> nn).' },
+            { base: 'snow', goal: '+ ing', answer: 'snowing', hint: 'Ends in -y or -w. Do NOT double.' }
+        ];
+
+        const speakText = (text) => {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            const setVoice = () => {
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    let selectedVoice = voices.find(v => v.name === 'Google UK English Female') ||
+                                        voices.find(v => v.lang.includes('en-GB') && v.name.toLowerCase().includes('female')) ||
+                                        voices.find(v => v.lang.includes('en-GB')) ||
+                                        voices.find(v => v.lang.includes('en') && v.name.toLowerCase().includes('female'));
+                    if (selectedVoice) utterance.voice = selectedVoice;
+                    else utterance.lang = 'en-GB'; 
+                }
+                utterance.rate = 0.85; // Slightly slower for clarity
+                window.speechSynthesis.speak(utterance);
+            };
+            if (window.speechSynthesis.getVoices().length === 0) {
+                window.speechSynthesis.addEventListener('voiceschanged', setVoice, { once: true });
+            } else {
+                setVoice();
+            }
+        };
+
+        const RulesSection = () => {
+            const [activeRuleTab, setActiveRuleTab] = React.useState('plurals');
+
+            return (
+                <div className="space-y-6 animate-fade-in-up">
+                    {/* Sub-navigation for Rules */}
+                    <div className="glass p-2 rounded-2xl pop-shadow flex flex-wrap gap-2 justify-center border border-white">
+                        <button 
+                            onClick={() => setActiveRuleTab('plurals')}
+                            className={`px-4 sm:px-6 py-2.5 font-bold text-sm sm:text-base rounded-xl transition-all ${activeRuleTab === 'plurals' ? 'bg-teal-500 text-white shadow-md' : 'text-gray-600 hover:bg-white/60'}`}
+                        >
+                            Plurals & Suffixes (-s/-es)
+                        </button>
+                        <button 
+                            onClick={() => setActiveRuleTab('y_rules')}
+                            className={`px-4 sm:px-6 py-2.5 font-bold text-sm sm:text-base rounded-xl transition-all ${activeRuleTab === 'y_rules' ? 'bg-indigo-500 text-white shadow-md' : 'text-gray-600 hover:bg-white/60'}`}
+                        >
+                            The -y Rules
+                        </button>
+                        <button 
+                            onClick={() => setActiveRuleTab('ing_e')}
+                            className={`px-4 sm:px-6 py-2.5 font-bold text-sm sm:text-base rounded-xl transition-all ${activeRuleTab === 'ing_e' ? 'bg-pink-500 text-white shadow-md' : 'text-gray-600 hover:bg-white/60'}`}
+                        >
+                            -ing & -e
+                        </button>
+                        <button 
+                            onClick={() => setActiveRuleTab('doubling')}
+                            className={`px-4 sm:px-6 py-2.5 font-bold text-sm sm:text-base rounded-xl transition-all ${activeRuleTab === 'doubling' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:bg-white/60'}`}
+                        >
+                            Consonant Doubling
+                        </button>
+                    </div>
+
+                    {/* Content area based on active tab */}
+                    <div className="glass rounded-3xl p-6 sm:p-8 pop-shadow">
+                        
+                        {/* Tab 1: Plurals & -s/-es */}
+                        {activeRuleTab === 'plurals' && (
+                            <div className="animate-fade-in-up">
+                                <h3 className="text-3xl font-black text-teal-700 mb-6">Words + -s and -es</h3>
+                                <div className="grid sm:grid-cols-2 gap-6">
+                                    <div className="bg-white/60 p-6 rounded-2xl border border-white">
+                                        <p className="font-bold text-gray-800 mb-3 text-lg border-b pb-2">Most nouns/verbs just add <span className="text-teal-600 bg-teal-50 px-2 rounded">-s</span></p>
+                                        <div className="text-gray-700 grid grid-cols-2 gap-2 text-sm">
+                                            <span>bird → <strong>birds</strong></span>
+                                            <span>think → <strong>thinks</strong></span>
+                                            <span>mistake → <strong>mistakes</strong></span>
+                                            <span>hotel → <strong>hotels</strong></span>
+                                            <span>live → <strong>lives</strong></span>
+                                            <span>remember → <strong>remembers</strong></span>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white/60 p-6 rounded-2xl border border-white">
+                                        <p className="font-bold text-gray-800 mb-3 text-lg border-b pb-2">After <span className="text-teal-600 bg-teal-50 px-2 rounded">-s, -sh, -ch, -x</span> add <span className="text-teal-600 bg-teal-50 px-2 rounded">-es</span></p>
+                                        <div className="text-gray-700 grid grid-cols-2 gap-2 text-sm">
+                                            <span>bus → <strong>buses</strong></span>
+                                            <span>pass → <strong>passes</strong></span>
+                                            <span>address → <strong>addresses</strong></span>
+                                            <span>dish → <strong>dishes</strong></span>
+                                            <span>wash → <strong>washes</strong></span>
+                                            <span>finish → <strong>finishes</strong></span>
+                                            <span>watch → <strong>watches</strong></span>
+                                            <span>teach → <strong>teaches</strong></span>
+                                            <span>sandwich → <strong>sandwiches</strong></span>
+                                            <span>box → <strong>boxes</strong></span>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white/60 p-6 rounded-2xl border border-white">
+                                        <p className="font-bold text-gray-800 mb-3 text-lg border-b pb-2">Words ending in <span className="text-teal-600 bg-teal-50 px-2 rounded">-o</span></p>
+                                        <div className="text-gray-700 space-y-2 text-sm">
+                                            <p>potato → <strong>potatoes</strong></p>
+                                            <p>tomato → <strong>tomatoes</strong></p>
+                                            <p>do → <strong>does</strong></p>
+                                            <p>go → <strong>goes</strong></p>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white/60 p-6 rounded-2xl border border-white">
+                                        <p className="font-bold text-gray-800 mb-3 text-lg border-b pb-2">Words ending in <span className="text-teal-600 bg-teal-50 px-2 rounded">-f / -fe</span> change to <span className="text-teal-600 bg-teal-50 px-2 rounded">-ves</span></p>
+                                        <div className="text-gray-700 space-y-2 text-sm">
+                                            <p>shelf → <strong>shelves</strong></p>
+                                            <p>knife → <strong>knives</strong></p>
+                                            <p className="text-red-500 font-semibold mt-2 pt-2 border-t border-red-100">Exception: roof → roofs</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tab 2: The -y Rules */}
+                        {activeRuleTab === 'y_rules' && (
+                            <div className="animate-fade-in-up">
+                                <h3 className="text-3xl font-black text-indigo-700 mb-6">Words ending in -y</h3>
+                                <p className="mb-6 text-gray-700 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
+                                    When a word ends in a <strong>Consonant + y</strong>, the 'y' usually changes to 'i' when adding a suffix.
+                                </p>
+                                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                    <div className="bg-white/60 p-4 rounded-2xl border border-white shadow-sm">
+                                        <div className="font-bold text-indigo-700 mb-2 border-b border-indigo-100 pb-2">-y → -ies</div>
+                                        <ul className="text-sm text-gray-700 space-y-1">
+                                            <li>study → <strong>studies</strong></li>
+                                            <li>city → <strong>cities</strong></li>
+                                            <li>story → <strong>stories</strong></li>
+                                            <li>try → <strong>tries</strong></li>
+                                            <li>marry → <strong>marries</strong></li>
+                                            <li>family → <strong>families</strong></li>
+                                            <li>baby → <strong>babies</strong></li>
+                                            <li>fly → <strong>flies</strong></li>
+                                        </ul>
+                                    </div>
+                                    <div className="bg-white/60 p-4 rounded-2xl border border-white shadow-sm">
+                                        <div className="font-bold text-indigo-700 mb-2 border-b border-indigo-100 pb-2">-y → -ied</div>
+                                        <ul className="text-sm text-gray-700 space-y-1">
+                                            <li>study → <strong>studied</strong></li>
+                                            <li>try → <strong>tried</strong></li>
+                                            <li>marry → <strong>married</strong></li>
+                                            <li>copy → <strong>copied</strong></li>
+                                        </ul>
+                                    </div>
+                                    <div className="bg-white/60 p-4 rounded-2xl border border-white shadow-sm">
+                                        <div className="font-bold text-indigo-700 mb-2 border-b border-indigo-100 pb-2">-y → -ier / -iest</div>
+                                        <ul className="text-sm text-gray-700 space-y-1">
+                                            <li>easy → <strong>easier / easiest</strong></li>
+                                            <li>happy → <strong>happier / happiest</strong></li>
+                                            <li>heavy → <strong>heavier / heaviest</strong></li>
+                                            <li>lucky → <strong>luckier / luckiest</strong></li>
+                                            <li>funny → <strong>funnier / funniest</strong></li>
+                                        </ul>
+                                    </div>
+                                    <div className="bg-white/60 p-4 rounded-2xl border border-white shadow-sm">
+                                        <div className="font-bold text-indigo-700 mb-2 border-b border-indigo-100 pb-2">-y → -ily</div>
+                                        <ul className="text-sm text-gray-700 space-y-1">
+                                            <li>easy → <strong>easily</strong></li>
+                                            <li>happy → <strong>happily</strong></li>
+                                            <li>heavy → <strong>heavily</strong></li>
+                                            <li>lucky → <strong>luckily</strong></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div className="bg-orange-50/80 p-5 rounded-2xl border border-orange-200">
+                                    <p className="font-bold text-orange-800 mb-2">Vowel + y (-ay, -ey, -oy, -uy) DOES NOT change!</p>
+                                    <div className="grid sm:grid-cols-2 gap-4 text-sm text-orange-900">
+                                        <ul className="space-y-1">
+                                            <li>holiday → <strong>holidays</strong> <span className="text-xs opacity-70">(not holidaies)</span></li>
+                                            <li>enjoy → <strong>enjoys / enjoyed</strong></li>
+                                            <li>stay → <strong>stays / stayed</strong></li>
+                                            <li>buy → <strong>buys</strong></li>
+                                            <li>key → <strong>keys</strong></li>
+                                        </ul>
+                                        <div className="bg-white/60 p-3 rounded-xl">
+                                            <p className="font-bold text-red-600 mb-1">Exceptions (Irregular Verbs):</p>
+                                            <p>say → <strong>said</strong></p>
+                                            <p>pay → <strong>paid</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tab 3: -ing & -e */}
+                        {activeRuleTab === 'ing_e' && (
+                            <div className="animate-fade-in-up">
+                                <h3 className="text-3xl font-black text-pink-700 mb-6">-ing and words ending in -e</h3>
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="bg-white/60 p-6 rounded-2xl border border-white flex flex-col justify-center">
+                                        <p className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                                            <i className="ph-fill ph-eraser text-pink-500 text-2xl"></i> Drop the -e
+                                        </p>
+                                        <p className="text-gray-600 mb-4">Verbs that end in <span className="bg-pink-100 text-pink-700 px-2 rounded">-e</span> drop it before adding <strong>-ing</strong>.</p>
+                                        <ul className="space-y-2 text-lg">
+                                            <li>mak<span className="line-through text-red-400">e</span> → <strong>making</strong></li>
+                                            <li>writ<span className="line-through text-red-400">e</span> → <strong>writing</strong></li>
+                                            <li>com<span className="line-through text-red-400">e</span> → <strong>coming</strong></li>
+                                            <li>danc<span className="line-through text-red-400">e</span> → <strong>dancing</strong></li>
+                                        </ul>
+                                    </div>
+                                    <div className="bg-white/60 p-6 rounded-2xl border border-white flex flex-col justify-center">
+                                        <p className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                                            <i className="ph-bold ph-arrows-left-right text-pink-500 text-2xl"></i> The -ie to -y change
+                                        </p>
+                                        <p className="text-gray-600 mb-4">Verbs that end in <span className="bg-pink-100 text-pink-700 px-2 rounded">-ie</span> change to <strong>-ying</strong>.</p>
+                                        <ul className="space-y-2 text-lg">
+                                            <li>l<span className="text-red-500 font-bold">ie</span> → l<span className="text-pink-600 font-bold">ying</span></li>
+                                            <li>d<span className="text-red-500 font-bold">ie</span> → d<span className="text-pink-600 font-bold">ying</span></li>
+                                            <li>t<span className="text-red-500 font-bold">ie</span> → t<span className="text-pink-600 font-bold">ying</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tab 4: Consonant Doubling */}
+                        {activeRuleTab === 'doubling' && (
+                            <div className="animate-fade-in-up">
+                                <h3 className="text-3xl font-black text-orange-700 mb-2">Consonant Doubling</h3>
+                                <p className="text-gray-600 mb-6">Rules for adding -ing, -ed, -er, -est</p>
+                                
+                                <div className="space-y-6">
+                                    <div className="bg-green-50/80 p-6 rounded-2xl border border-green-200">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="bg-green-500 text-white p-2 rounded-xl"><i className="ph-bold ph-check text-xl"></i></div>
+                                            <h4 className="font-black text-xl text-green-800">The V+C Rule (Double it!)</h4>
+                                        </div>
+                                        <p className="text-green-900 mb-4">If a word ends in a single <strong>Vowel</strong> + a single <strong>Consonant</strong> (e.g., a, e, i, o, u + p, g, t, m, n), you double the consonant.</p>
+                                        
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                                            <div className="bg-white p-3 rounded-xl text-center shadow-sm">st<span className="text-blue-500 font-bold">o</span><span className="text-red-500 font-bold">p</span> → sto<span className="text-red-500 font-bold">pp</span>ing<br/>stopped</div>
+                                            <div className="bg-white p-3 rounded-xl text-center shadow-sm">r<span className="text-blue-500 font-bold">u</span><span className="text-red-500 font-bold">n</span> → ru<span className="text-red-500 font-bold">nn</span>ing</div>
+                                            <div className="bg-white p-3 rounded-xl text-center shadow-sm">g<span className="text-blue-500 font-bold">e</span><span className="text-red-500 font-bold">t</span> → ge<span className="text-red-500 font-bold">tt</span>ing</div>
+                                            <div className="bg-white p-3 rounded-xl text-center shadow-sm">sw<span className="text-blue-500 font-bold">i</span><span className="text-red-500 font-bold">m</span> → swi<span className="text-red-500 font-bold">mm</span>ing</div>
+                                            <div className="bg-white p-3 rounded-xl text-center shadow-sm">b<span className="text-blue-500 font-bold">i</span><span className="text-red-500 font-bold">g</span> → bi<span className="text-red-500 font-bold">gg</span>er<br/>biggest</div>
+                                            <div className="bg-white p-3 rounded-xl text-center shadow-sm">h<span className="text-blue-500 font-bold">o</span><span className="text-red-500 font-bold">t</span> → ho<span className="text-red-500 font-bold">tt</span>er<br/>hottest</div>
+                                            <div className="bg-white p-3 rounded-xl text-center shadow-sm">th<span className="text-blue-500 font-bold">i</span><span className="text-red-500 font-bold">n</span> → thi<span className="text-red-500 font-bold">nn</span>er<br/>thinnest</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-red-50/80 p-6 rounded-2xl border border-red-200">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="bg-red-500 text-white p-2 rounded-xl"><i className="ph-bold ph-x text-xl"></i></div>
+                                            <h4 className="font-black text-xl text-red-800">When NOT to double</h4>
+                                        </div>
+                                        
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="space-y-4">
+                                                <div className="bg-white p-4 rounded-xl shadow-sm">
+                                                    <p className="font-bold text-red-800 border-b border-red-100 pb-2 mb-2">1. Ends in C+C (Two Consonants)</p>
+                                                    <ul className="text-sm space-y-1 text-gray-700">
+                                                        <li>he<span className="text-red-500 font-bold">lp</span> → helping / helped</li>
+                                                        <li>wo<span className="text-red-500 font-bold">rk</span> → working / worked</li>
+                                                        <li>fa<span className="text-red-500 font-bold">st</span> → faster / fastest</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="bg-white p-4 rounded-xl shadow-sm">
+                                                    <p className="font-bold text-red-800 border-b border-red-100 pb-2 mb-2">2. Ends in V+V+C (Two Vowels)</p>
+                                                    <ul className="text-sm space-y-1 text-gray-700">
+                                                        <li>n<span className="text-blue-500 font-bold">ee</span><span className="text-red-500 font-bold">d</span> → needing / needed</li>
+                                                        <li>w<span className="text-blue-500 font-bold">ai</span><span className="text-red-500 font-bold">t</span> → waiting / waited</li>
+                                                        <li>ch<span className="text-blue-500 font-bold">ea</span><span className="text-red-500 font-bold">p</span> → cheaper / cheapest</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <div className="bg-white p-4 rounded-xl shadow-sm">
+                                                    <p className="font-bold text-red-800 border-b border-red-100 pb-2 mb-2">3. Stress is NOT at the end</p>
+                                                    <p className="text-xs text-gray-500 mb-2">For words with 2+ syllables.</p>
+                                                    <ul className="text-sm space-y-1 text-gray-700">
+                                                        <li><strong>HAP</strong>-pen → happening / happened</li>
+                                                        <li><strong>VIS</strong>-it → visiting / visited</li>
+                                                        <li>re-<strong>MEM</strong>-ber → remembering</li>
+                                                    </ul>
+                                                    <div className="mt-3 pt-2 border-t border-gray-100">
+                                                        <p className="text-xs font-bold text-green-600 mb-1">BUT if stress IS at the end, double it!</p>
+                                                        <ul className="text-sm space-y-1 text-gray-700">
+                                                            <li>pre-<strong>FER</strong> → preferring / preferred</li>
+                                                            <li>be-<strong>GIN</strong> → beginning</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div className="bg-white p-4 rounded-xl shadow-sm">
+                                                    <p className="font-bold text-red-800 border-b border-red-100 pb-2 mb-2">4. Ends in -y or -w</p>
+                                                    <p className="text-xs text-gray-500 mb-2">They aren't considered consonants here.</p>
+                                                    <ul className="text-sm space-y-1 text-gray-700">
+                                                        <li>enjoy → enjoying / enjoyed</li>
+                                                        <li>snow → snowing / snowed</li>
+                                                        <li>few → fewer / fewest</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const QuizSection = () => {
+            const [gameState, setGameState] = React.useState('start'); // start, playing, finished
+            const [questions, setQuestions] = React.useState([]);
+            const [currentQIndex, setCurrentQIndex] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+            const [streak, setStreak] = React.useState(0);
+            const [isShaking, setIsShaking] = React.useState(false);
+            const [inputVal, setInputVal] = React.useState('');
+            const [feedback, setFeedback] = React.useState(null); 
+
+            const totalQuestions = 10;
+
+            const startQuiz = () => {
+                const shuffled = [...spellingData].sort(() => Math.random() - 0.5).slice(0, totalQuestions);
+                setQuestions(shuffled);
+                setCurrentQIndex(0);
+                setScore(0);
+                setStreak(0);
+                setInputVal('');
+                setFeedback(null);
+                setGameState('playing');
+            };
+
+            const checkAnswer = () => {
+                const currentWord = questions[currentQIndex];
+                const cleanInput = inputVal.toLowerCase().trim().replace(/\s+/g, '');
+                
+                if (cleanInput === currentWord.answer.toLowerCase()) {
+                    setFeedback({ type: 'success', msg: 'Nailed it! 🎉', hint: currentWord.hint });
+                    setScore(prev => prev + 1);
+                    setStreak(prev => prev + 1);
+                    
+                    if (streak >= 1 && typeof confetti === 'function') {
+                        confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 }, colors: ['#14b8a6', '#6366f1', '#ec4899'] });
+                    }
+                    
+                    // Don't auto-advance instantly so they can read the rule hint
+                } else {
+                    setFeedback({ 
+                        type: 'error', 
+                        msg: `Oops! The correct spelling is "${currentWord.answer}".`, 
+                        hint: currentWord.hint 
+                    });
+                    setStreak(0);
+                    setIsShaking(true);
+                    setTimeout(() => setIsShaking(false), 500);
+                }
+            };
+
+            const nextQuestion = () => {
+                if (currentQIndex + 1 < totalQuestions) {
+                    setCurrentQIndex(prev => prev + 1);
+                    setInputVal('');
+                    setFeedback(null);
+                } else {
+                    setGameState('finished');
+                }
+            };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter' && !feedback && inputVal.trim()) {
+                    checkAnswer();
+                } else if (e.key === 'Enter' && feedback) {
+                    nextQuestion();
+                }
+            };
+
+            if (gameState === 'start') {
+                return (
+                    <div className="flex flex-col items-center justify-center py-20 max-w-2xl mx-auto text-center animate-fade-in-up glass rounded-3xl pop-shadow px-8">
+                        <div className="w-40 h-40 bg-gradient-to-br from-teal-400 via-indigo-500 to-pink-500 text-white rounded-[2.5rem] shadow-2xl rotate-6 flex items-center justify-center mb-10 card-hover border-4 border-white/50">
+                            <i className="ph-fill ph-text-aa text-7xl -rotate-6"></i>
+                        </div>
+                        <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-800 to-indigo-900 mb-6 tracking-tight">Test Your Spelling!</h2>
+                        <p className="text-xl text-gray-600 mb-12 font-medium">
+                            Apply the suffix rules (like +ing, +ed, +s) to <span className="font-black text-indigo-600 bg-indigo-100 px-3 py-1 rounded-xl mx-1 shadow-sm">{totalQuestions}</span> base words. Watch out for double consonants and tricky 'y's!
+                        </p>
+                        <button 
+                            onClick={startQuiz}
+                            className="bg-gradient-to-r from-teal-500 via-indigo-500 to-pink-500 text-white font-black text-2xl py-5 px-14 rounded-3xl shadow-[0_20px_40px_-10px_rgba(99,102,241,0.5)] transition-all transform hover:-translate-y-2 hover:shadow-[0_25px_50px_-10px_rgba(99,102,241,0.6)] active:scale-95 flex items-center gap-4"
+                        >
+                            <i className="ph-bold ph-play"></i> Start Quiz
+                        </button>
+                    </div>
+                );
+            }
+
+            if (gameState === 'finished') {
+                const percentage = (score / totalQuestions) * 100;
+                let message = percentage === 100 ? "Perfect Score! Spelling Master! 🏆" : 
+                              percentage >= 80 ? "Amazing job! You know the rules. 🌟" : 
+                              percentage >= 50 ? "Good effort! Review the rules and try again. 💪" : 
+                              "Keep practicing! The rulebook is your friend. 📚";
+
+                React.useEffect(() => {
+                    if (percentage >= 80 && typeof confetti === 'function') {
+                        const duration = 3000;
+                        const animationEnd = Date.now() + duration;
+                        const interval = setInterval(function() {
+                            const timeLeft = animationEnd - Date.now();
+                            if (timeLeft <= 0) return clearInterval(interval);
+                            confetti({ particleCount: 50, spread: 360, origin: { x: Math.random(), y: Math.random() - 0.2 }, colors: ['#14b8a6', '#6366f1', '#ec4899'] });
+                        }, 250);
+                    }
+                }, [percentage]);
+
+                return (
+                    <div className="flex flex-col items-center justify-center py-20 max-w-lg mx-auto text-center animate-fade-in-up glass rounded-3xl pop-shadow px-8">
+                        <div className="mb-10 relative">
+                            <svg className="w-48 h-48 transform -rotate-90 drop-shadow-xl">
+                                <circle cx="96" cy="96" r="80" stroke="rgba(255,255,255,0.5)" strokeWidth="16" fill="transparent" />
+                                <circle cx="96" cy="96" r="80" stroke="url(#gradient)" strokeWidth="16" fill="transparent" 
+                                    strokeDasharray={502} 
+                                    strokeDashoffset={502 - (502 * percentage) / 100}
+                                    strokeLinecap="round"
+                                    className="transition-all duration-1000 ease-out" 
+                                />
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#14b8a6" />
+                                        <stop offset="100%" stopColor="#ec4899" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-pink-600 drop-shadow-sm">{score}/{totalQuestions}</span>
+                            </div>
+                        </div>
+                        <h2 className="text-4xl font-black text-gray-900 mb-3">Quiz Complete!</h2>
+                        <p className="text-xl text-gray-600 mb-12 font-bold">{message}</p>
+                        <button 
+                            onClick={startQuiz}
+                            className="bg-gradient-to-r from-teal-500 to-indigo-500 text-white font-black py-4 px-10 rounded-2xl shadow-lg transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
+                        >
+                            Play Again
+                        </button>
+                    </div>
+                );
+            }
+
+            const currentWord = questions[currentQIndex];
+
+            return (
+                <div className="max-w-2xl mx-auto py-8 animate-fade-in-up">
+                    {/* Header Stats */}
+                    <div className="mb-8">
+                        <div className="flex justify-between items-end text-sm font-medium text-gray-500 mb-4">
+                            <span className="font-black bg-white/80 px-4 py-2 rounded-xl shadow-sm border border-white">Q {currentQIndex + 1} / {totalQuestions}</span>
+                            <div className="flex items-center gap-4">
+                                {streak > 1 && (
+                                    <span className="text-orange-600 font-black flex items-center gap-1 animate-bounce bg-orange-100 px-4 py-2 rounded-xl border-2 border-orange-200 shadow-md">
+                                        <i className="ph-fill ph-fire text-xl"></i> {streak} Streak!
+                                    </span>
+                                )}
+                                <span className="bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-5 py-2 rounded-xl text-base font-black shadow-md">Score: {score}</span>
+                            </div>
+                        </div>
+                        <div className="w-full bg-white/50 rounded-full h-4 shadow-inner overflow-hidden border border-white">
+                            <div className="bg-gradient-to-r from-teal-400 to-indigo-500 h-4 rounded-full transition-all duration-500 ease-out" style={{ width: `${((currentQIndex) / totalQuestions) * 100}%` }}></div>
+                        </div>
+                    </div>
+
+                    {/* Quiz Card */}
+                    <div className={`glass rounded-[2.5rem] pop-shadow overflow-hidden border border-white ${isShaking ? 'animate-shake' : ''}`}>
+                        <div className="bg-white/50 border-b border-indigo-100/50 p-8 sm:p-12 text-center relative">
+                            <div className="flex flex-col items-center gap-4 mb-2">
+                                <span className="text-sm font-black text-teal-600 uppercase tracking-widest bg-teal-50 px-4 py-1.5 rounded-full border border-teal-100 shadow-sm inline-block">
+                                    Base Word
+                                </span>
+                                <div className="flex items-center gap-4">
+                                    <h3 className="text-5xl sm:text-6xl font-black text-gray-800 drop-shadow-sm">{currentWord.base}</h3>
+                                    <button 
+                                        onClick={() => speakText(currentWord.base)}
+                                        className="text-indigo-500 hover:text-white hover:bg-indigo-500 rounded-full p-3 transition-all focus:outline-none shadow-md bg-white border-2 border-indigo-100 hover:scale-110 active:scale-95"
+                                        title="Listen"
+                                    >
+                                        <i className="ph-fill ph-speaker-high text-3xl"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div className="mt-8 flex justify-center">
+                                <div className="bg-gradient-to-r from-indigo-600 to-pink-600 text-white px-6 py-3 rounded-2xl font-black text-xl shadow-lg border-2 border-white/20 transform rotate-1 flex items-center gap-3">
+                                    <i className="ph-bold ph-arrow-fat-right"></i> Goal: {currentWord.goal}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="p-8 sm:p-12 bg-white/70">
+                            <div>
+                                <label className="block text-base font-black text-gray-700 mb-3">Type the transformed word:</label>
+                                <input 
+                                    type="text" 
+                                    value={inputVal}
+                                    onChange={(e) => setInputVal(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    disabled={feedback !== null}
+                                    className="w-full px-6 py-5 bg-white/90 border-2 border-indigo-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:bg-gray-100 text-2xl font-bold shadow-inner outline-none text-indigo-900"
+                                    placeholder="e.g. stopping"
+                                    autoComplete="off"
+                                    autoFocus
+                                />
+                            </div>
+
+                            {feedback && (
+                                <div className={`mt-6 p-6 rounded-2xl animate-fade-in-up shadow-md border-2 ${feedback.type === 'success' ? 'bg-green-50/90 text-green-800 border-green-200' : 'bg-red-50/90 text-red-800 border-red-200'}`}>
+                                    <div className="flex items-start gap-4 mb-2">
+                                        <i className={`ph-fill ${feedback.type === 'success' ? 'ph-check-circle text-green-500' : 'ph-warning-circle text-red-500'} text-3xl mt-0.5 drop-shadow-sm`}></i>
+                                        <p className="font-bold text-xl">{feedback.msg}</p>
+                                    </div>
+                                    <div className={`mt-3 pt-3 border-t flex items-start gap-2 ${feedback.type === 'success' ? 'border-green-200/50' : 'border-red-200/50'}`}>
+                                        <i className="ph-fill ph-lightbulb text-lg mt-0.5 opacity-70"></i>
+                                        <p className="text-sm font-semibold opacity-90">{feedback.hint}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="pt-8 mt-6 flex justify-end">
+                                {!feedback ? (
+                                    <button 
+                                        onClick={checkAnswer}
+                                        disabled={!inputVal.trim()}
+                                        className="bg-indigo-600 disabled:bg-gray-300 disabled:shadow-none text-white font-black text-lg py-4 px-10 rounded-2xl shadow-[0_10px_20px_-5px_rgba(79,70,229,0.4)] transition-all hover:-translate-y-1 hover:shadow-[0_15px_30px_-5px_rgba(79,70,229,0.5)] active:scale-95 w-full sm:w-auto"
+                                    >
+                                        Check Answer
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={nextQuestion}
+                                        className="bg-gray-900 hover:bg-black text-white font-black text-lg py-4 px-10 rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3 w-full sm:w-auto"
+                                    >
+                                        {currentQIndex + 1 < totalQuestions ? 'Next Word' : 'See Results'} <i className="ph-bold ph-arrow-right text-xl"></i>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = React.useState('rules'); // rules, quiz
+
+            return (
+                <div className="min-h-screen flex flex-col relative z-0">
+                    {/* Header */}
+                    <header className="bg-gradient-to-r from-teal-500 via-indigo-500 to-pink-500 text-white shadow-2xl relative overflow-hidden rounded-b-3xl sm:rounded-3xl sm:mt-6 sm:mx-6">
+                        <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxjaXJjbGUgY3g9IjIiIGN5PSIyIiByPSIyIiBmaWxsPSIjZmZmIi8+Cjwvc3ZnPg==')]"></div>
+                        <div className="max-w-5xl mx-auto px-6 py-12 relative z-10 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between">
+                            <div className="flex flex-col gap-2 items-center sm:items-start">
+                                <h1 className="text-4xl sm:text-5xl font-black flex items-center gap-4 tracking-tight drop-shadow-xl text-glow">
+                                    <span className="bg-white/20 p-3 rounded-2xl shadow-inner backdrop-blur-sm transform -rotate-3">
+                                        <i className="ph-fill ph-magic-wand text-yellow-300"></i>
+                                    </span>
+                                    Spelling & Stress
+                                </h1>
+                                <p className="text-white/90 font-bold text-lg max-w-lg mt-2">Master suffixes, double consonants, and the tricky 'y' rules!</p>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Navigation */}
+                    <nav className="sticky top-4 z-50 px-4 mt-8 mb-4">
+                        <div className="max-w-max mx-auto glass p-2 rounded-full pop-shadow flex gap-2 overflow-x-auto border border-white/80">
+                            <button 
+                                onClick={() => setActiveTab('rules')}
+                                className={`px-8 py-3 font-extrabold text-sm sm:text-base flex items-center gap-2 rounded-full transition-all duration-300 whitespace-nowrap ${activeTab === 'rules' ? 'bg-gradient-to-r from-teal-500 to-indigo-500 text-white shadow-lg scale-105' : 'text-gray-600 hover:text-indigo-600 hover:bg-white/60'}`}
+                            >
+                                <i className={`ph-fill ph-book-open text-xl ${activeTab === 'rules' ? 'text-white' : 'text-teal-500'}`}></i> Rulebook
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('quiz')}
+                                className={`px-8 py-3 font-extrabold text-sm sm:text-base flex items-center gap-2 rounded-full transition-all duration-300 whitespace-nowrap ${activeTab === 'quiz' ? 'bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-lg scale-105' : 'text-gray-600 hover:text-indigo-600 hover:bg-white/60'}`}
+                            >
+                                <i className={`ph-fill ph-game-controller text-xl ${activeTab === 'quiz' ? 'text-white' : 'text-pink-500'}`}></i> Practice Quiz
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Main Content Area */}
+                    <main className="flex-grow max-w-5xl w-full mx-auto px-4 py-8 mb-8">
+                        {activeTab === 'rules' && <RulesSection />}
+                        {activeTab === 'quiz' && <QuizSection />}
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
