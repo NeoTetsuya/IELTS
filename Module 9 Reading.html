@@ -17,7 +17,7 @@
         }
         .ielts-container {
             display: grid;
-            grid-template-rows: auto 1fr;
+            grid-template-rows: auto 1fr auto;
             height: 100vh;
         }
         .content-panes {
@@ -149,6 +149,44 @@
             background-color: #fef08a;
             border-radius: 3px;
             padding: 2px 0;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            position: relative;
+        }
+        mark:hover {
+            background-color: #fca5a5;
+            color: #7f1d1d;
+        }
+        mark:hover::after {
+            content: ' ×';
+            font-weight: bold;
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        /* Progress Tracker Styles */
+        .progress-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #cbd5e1;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .progress-item.answered {
+            background-color: #22c55e;
+            border-color: #22c55e;
+            color: white;
+        }
+        .progress-item:hover:not(.answered) {
+            border-color: #3b82f6;
+            color: #3b82f6;
         }
         
         @media (max-width: 768px) {
@@ -185,6 +223,12 @@
                 <input type="text" id="student-name" class="border border-gray-300 rounded px-2 py-1 text-sm w-24 sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Your Name">
             </div>
             
+            <!-- Clear Highlights Button -->
+            <button id="clear-highlights-btn" class="hidden sm:flex items-center justify-center px-3 py-1.5 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 transition-colors focus:outline-none border border-amber-200 text-sm font-medium" title="Clear Highlights">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                Clear
+            </button>
+
             <!-- Font controls -->
             <div class="flex items-center space-x-1 sm:space-x-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
                 <button id="decrease-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 font-bold" title="Decrease Font Size">A-</button>
@@ -321,6 +365,21 @@
             </div>
         </div>
     </main>
+
+    <!-- Progress Footer -->
+    <footer class="bg-white border-t border-gray-200 p-3 flex flex-wrap justify-center items-center gap-2 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <span class="text-sm font-bold text-gray-700 mr-2">Progress:</span>
+        <a href="#container-q1" class="progress-item" data-q="q1">1</a>
+        <a href="#container-q2" class="progress-item" data-q="q2">2</a>
+        <a href="#container-q3" class="progress-item" data-q="q3">3</a>
+        <a href="#container-q4" class="progress-item" data-q="q4">4</a>
+        <a href="#container-q5" class="progress-item" data-q="q5">5</a>
+        <a href="#container-q6" class="progress-item" data-q="q6">6</a>
+        <a href="#container-q7" class="progress-item" data-q="q7">7</a>
+        <a href="#container-q8" class="progress-item" data-q="q8">8</a>
+        <a href="#container-q9" class="progress-item" data-q="q9">9</a>
+        <a href="#container-q10" class="progress-item" data-q="q10">10</a>
+    </footer>
 </div>
 
 <!-- Highlight Tooltip -->
@@ -370,16 +429,28 @@
             vocabMeaningEl: document.getElementById('vocab-meaning'),
             vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
             playAudioBtn: document.getElementById('play-audio-btn'),
+            clearHighlightsBtn: document.getElementById('clear-highlights-btn'),
 
             init() {
                 this.setupEventListeners();
                 this.initSplitter();
                 this.initHighlighter();
+                this.initProgressTracker();
             },
 
             setupEventListeners() {
                 document.getElementById('increase-font-btn').addEventListener('click', () => this.changeFontSize(1));
                 document.getElementById('decrease-font-btn').addEventListener('click', () => this.changeFontSize(-1));
+
+                if (this.clearHighlightsBtn) {
+                    this.clearHighlightsBtn.addEventListener('click', () => {
+                        const marks = this.leftPane.querySelectorAll('mark');
+                        marks.forEach(mark => {
+                            const text = document.createTextNode(mark.textContent);
+                            mark.replaceWith(text);
+                        });
+                    });
+                }
 
                 this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
                 this.vocabModal.addEventListener('click', (e) => {
@@ -391,6 +462,11 @@
                     if (e.target.classList.contains('vocab-word')) {
                         const wordKey = e.target.dataset.word;
                         this.openVocabModal(wordKey);
+                    }
+                    
+                    if (e.target.tagName === 'MARK') {
+                        const textNode = document.createTextNode(e.target.textContent);
+                        e.target.replaceWith(textNode);
                     }
                 });
 
@@ -425,132 +501,30 @@
                 });
             },
 
-            resetAudioBtn() {
-                this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
-                this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
-            },
-            
-            changeFontSize(delta) {
-                this.currentFontSize += delta;
-                if (this.currentFontSize < 14) this.currentFontSize = 14;
-                if (this.currentFontSize > 26) this.currentFontSize = 26;
-                document.documentElement.style.setProperty('--app-font-size', `${this.currentFontSize}px`);
-            },
+            initProgressTracker() {
+                const inputs = document.querySelectorAll('.text-input');
+                const progressItems = document.querySelectorAll('.progress-item');
 
-            openVocabModal(wordKey) {
-                const data = vocabulary[wordKey];
-                if (data) {
-                    this.vocabWordEl.textContent = wordKey;
-                    this.vocabMeaningEl.textContent = data.meaning;
-                    this.vocabPronunciationText.textContent = data.phonetic || '';
-                    this.vocabModal.classList.remove('hidden');
-                    setTimeout(() => {
-                        this.vocabModalContent.classList.remove('scale-95', 'opacity-0');
-                        this.vocabModalContent.classList.add('scale-100', 'opacity-100');
-                    }, 10);
-                }
-            },
-
-            closeModal() {
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-                this.vocabModalContent.classList.remove('scale-100', 'opacity-100');
-                this.vocabModalContent.classList.add('scale-95', 'opacity-0');
-                this.resetAudioBtn();
-                setTimeout(() => this.vocabModal.classList.add('hidden'), 200);
-            },
-            
-            submitToGoogleForm() {
-                const nameInput = document.getElementById('student-name');
-                const name = nameInput ? nameInput.value : '';
-
-                const params = new URLSearchParams();
-                params.append('usp', 'pp_url');
-                
-                // Name Field
-                if (name) params.append('entry.909158151', name);
-
-                // Sentence Completion (Questions 1-5)
-                const textEntries = {
-                    'q1': 'entry.2045450076',
-                    'q2': 'entry.1293900591',
-                    'q3': 'entry.1145315644',
-                    'q4': 'entry.724488423',
-                    'q5': 'entry.377857042'
-                };
-
-                for (const [qId, entryId] of Object.entries(textEntries)) {
-                    const el = document.querySelector(`[name="${qId}"]`);
-                    if (el && el.value) {
-                        params.append(entryId, el.value.toUpperCase().trim());
-                    }
-                }
-
-                // Matching Features (Questions 6-10)
-                const matchingEntries = {
-                    'q6': 'entry.1351291555',
-                    'q7': 'entry.818068349',
-                    'q8': 'entry.384049438',
-                    'q9': 'entry.657898952',
-                    'q10': 'entry.100853219'
-                };
-
-                // Map standard 'A, B, C...' selections to the exact strings expected by the Google Form
-                const matchingMap = {
-                    'A': "A. Sarah O'Connor",
-                    'B': "B. David Willetts",
-                    'C': "C. Robert Colville",
-                    'D': "D. Robbie Allen",
-                    'E': "E. Ken Doctor"
-                };
-
-                for (const [qId, entryId] of Object.entries(matchingEntries)) {
-                    const el = document.querySelector(`[name="${qId}"]`);
-                    if (el && el.value) {
-                        const val = el.value.toUpperCase().trim();
-                        if (matchingMap[val]) {
-                            params.append(entryId, matchingMap[val]);
+                const updateProgress = () => {
+                    progressItems.forEach(item => {
+                        const qName = item.dataset.q;
+                        const input = document.querySelector(`[name="${qName}"]`);
+                        if (input && input.value.trim() !== '') {
+                            item.classList.add('answered');
                         } else {
-                            params.append(entryId, val);
+                            item.classList.remove('answered');
                         }
-                    }
-                }
+                    });
+                };
 
-                // Target Google Form link
-                const formId = '1FAIpQLSc3T6x4VcoR8HwYVKKSjQWMyH4iGXsOgtoTHO-XTlc8obZ67w';
-                const url = `https://docs.google.com/forms/d/e/${formId}/viewform?${params.toString()}`;
-                
-                window.open(url, '_blank');
-            },
-
-            initSplitter() {
-                let isDragging = false;
-                const contentPanes = document.getElementById('content-panes');
-
-                this.splitter.addEventListener('mousedown', (e) => {
-                    e.preventDefault();
-                    isDragging = true;
-                    document.body.style.cursor = 'col-resize';
+                // Listen for changes on all inputs and selects
+                inputs.forEach(input => {
+                    input.addEventListener('input', updateProgress);
+                    input.addEventListener('change', updateProgress);
                 });
 
-                document.addEventListener('mousemove', (e) => {
-                    if (!isDragging) return;
-                    e.preventDefault();
-                    if (window.innerWidth <= 768) return; 
-                    
-                    const containerRect = contentPanes.getBoundingClientRect();
-                    const newLeftWidth = e.clientX - containerRect.left;
-                    if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 200) {
-                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
-                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
-                    }
-                });
-
-                document.addEventListener('mouseup', () => {
-                    if (isDragging) {
-                        isDragging = false;
-                        document.body.style.cursor = 'default';
-                    }
-                });
+                // Run initially in case some are pre-filled
+                updateProgress();
             },
 
             initHighlighter() {
@@ -596,6 +570,75 @@
                    if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
                         this.highlightTooltip.style.display = 'none';
                    }
+                });
+            },
+
+            resetAudioBtn() {
+                this.playAudioBtn.classList.add('text-blue-600', 'bg-blue-50');
+                this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+            },
+            
+            changeFontSize(delta) {
+                this.currentFontSize += delta;
+                if (this.currentFontSize < 14) this.currentFontSize = 14;
+                if (this.currentFontSize > 26) this.currentFontSize = 26;
+                document.documentElement.style.setProperty('--app-font-size', `${this.currentFontSize}px`);
+            },
+
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        this.vocabModalContent.classList.remove('scale-95', 'opacity-0');
+                        this.vocabModalContent.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                }
+            },
+
+            closeModal() {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                this.vocabModalContent.classList.remove('scale-100', 'opacity-100');
+                this.vocabModalContent.classList.add('scale-95', 'opacity-0');
+                this.resetAudioBtn();
+                setTimeout(() => this.vocabModal.classList.add('hidden'), 200);
+            },
+            
+            submitToGoogleForm() {
+                alert("This button is ready! You can hook this up to a specific Google Form URL.");
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                    document.body.style.cursor = 'col-resize';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    if (window.innerWidth <= 768) return; 
+                    
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 200) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        document.body.style.cursor = 'default';
+                    }
                 });
             }
         };
