@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Practice - Out of the Ordinary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --app-font-size: 17px;
+            --theme-green: #8cc63f;
+            --theme-orange: #f7931e;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+            background-color: #f3f4f6;
+        }
+        .ielts-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+        
+        .content-panes {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            overflow: hidden;
+        }
+        .pane {
+            overflow-y: auto;
+            padding: 2rem 3rem;
+            font-size: var(--app-font-size);
+            scroll-behavior: smooth;
+        }
+        #left-pane {
+            background-color: #ffffff;
+        }
+        #right-pane {
+            background-color: #f8fafc;
+        }
+        .splitter {
+            background-color: #cbd5e1;
+            cursor: col-resize;
+            z-index: 10;
+            transition: background-color 0.2s;
+        }
+        .splitter:hover, .splitter:active {
+            background-color: #94a3b8;
+        }
+        
+        .reading-passage {
+            font-family: 'Merriweather', serif;
+            line-height: 1.9;
+            color: #334155;
+            text-align: justify;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .passage-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+        .passage-title span.script {
+            color: #8cc63f;
+            font-size: 4.5rem;
+            margin-right: 1rem;
+        }
+
+        .paragraph-block {
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .paragraph-header {
+            background-color: var(--theme-orange);
+            color: white;
+            padding: 0.5rem 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+        .paragraph-header .letter {
+            background-color: rgba(255,255,255,0.2);
+            padding: 0.1rem 0.6rem;
+            border-radius: 0.25rem;
+            margin-right: 0.75rem;
+            font-size: 1.2em;
+        }
+        
+        .paragraph-content {
+            padding: 1.5rem;
+            background-color: #ffffff;
+        }
+
+        .q-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 0.75rem;
+        }
+        .text-input {
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.2s;
+            text-align: center;
+            background-color: #f8fafc;
+            display: inline-block;
+        }
+        .text-input:focus {
+            outline: none;
+            border-color: var(--theme-green);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(140, 198, 63, 0.15);
+        }
+        .inline-input {
+            margin: 0 4px;
+            vertical-align: baseline;
+        }
+        
+        select.text-input {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 12px;
+            padding-right: 24px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .vocab-word {
+            color: #a855f7; /* Purple to match image highlights slightly */
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px dotted #d8b4fe;
+            transition: all 0.2s ease-in-out;
+            padding: 0 2px;
+            background-color: #f3e8ff;
+            border-radius: 3px;
+        }
+        .vocab-word:hover {
+            background-color: #e9d5ff;
+            border-bottom-style: solid;
+        }
+
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #1e293b;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 100;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        mark {
+            background-color: #fef08a;
+            border-radius: 3px;
+            padding: 2px 0;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            position: relative;
+        }
+        mark:hover {
+            background-color: #fca5a5;
+            color: #7f1d1d;
+        }
+        mark:hover::after {
+            content: ' ×';
+            font-weight: bold;
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #cbd5e1;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin: 2px;
+        }
+        .progress-item.answered {
+            background-color: var(--theme-green);
+            border-color: var(--theme-green);
+            color: white;
+        }
+        .progress-item:hover:not(.answered) {
+            border-color: var(--theme-orange);
+            color: var(--theme-orange);
+        }
+        .progress-tracker {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            align-items: center;
+        }
+        .progress-section-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin: 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        @media (max-width: 768px) {
+            .content-panes {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 5px 1fr;
+            }
+            .splitter {
+                cursor: row-resize;
+            }
+            .pane {
+                padding: 1.5rem;
+            }
+            .passage-title { font-size: 2.5rem; }
+            .passage-title span.script { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="test-container" class="ielts-container">
+    
+    <header class="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center z-20 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="bg-[#8cc63f] text-white p-2 rounded-lg hidden sm:block">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <h1 class="text-lg sm:text-xl font-bold text-gray-800">Reading Practice <span class="text-[#8cc63f] font-medium hidden md:inline">| Out of the Ordinary</span></h1>
+        </div>
+        <div class="flex items-center space-x-3 sm:space-x-5">
+            <div class="flex items-center space-x-2 border-r border-gray-200 pr-3 sm:pr-4">
+                <span class="text-sm text-gray-500 font-medium hidden sm:inline">Name:</span>
+                <input type="text" id="student-name" class="border border-gray-300 rounded px-2 py-1 text-sm w-24 sm:w-40 focus:outline-none focus:ring-2 focus:ring-[#8cc63f]" placeholder="Your Name">
+            </div>
+            
+            <button id="clear-highlights-btn" class="hidden sm:flex items-center justify-center px-3 py-1.5 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 transition-colors focus:outline-none border border-amber-200 text-sm font-medium" title="Clear Highlights">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                Clear
+            </button>
+
+            <div class="flex items-center space-x-1 sm:space-x-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
+                <button id="decrease-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#8cc63f] font-bold" title="Decrease Font Size">A-</button>
+                <button id="increase-font-btn" class="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm hover:bg-gray-100 text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#8cc63f] font-bold" title="Increase Font Size">A+</button>
+            </div>
+        </div>
+    </header>
+
+    <main id="content-panes" class="content-panes">
+        <div id="left-pane" class="pane relative pb-16">
+            <div class="reading-passage">
+                
+                <h1 class="passage-title"><span class="script">Out</span> OF THE ORDINARY</h1>
+                
+                <!-- Paragraph A -->
+                <div class="paragraph-block">
+                    <div class="paragraph-header bg-[#f7931e]">
+                        <span class="letter">A</span> Competing for customers
+                    </div>
+                    <div class="paragraph-content">
+                        <p>There are hundreds of restaurants in every big city. Often they serve similar food at similar prices – so how do they attract <span class="vocab-word" data-word="customers">customers</span>? Most restaurants try to offer good food and great <span class="vocab-word" data-word="service">service</span> – and they hope customers come back again and again. But some restaurants offer a gimmick – something unusual to make their restaurant different from all the others.</p>
+                    </div>
+                </div>
+
+                <!-- Paragraph B -->
+                <div class="paragraph-block">
+                    <div class="paragraph-header bg-[#fbb03b]">
+                        <span class="letter">B</span> Location, location, location
+                    </div>
+                    <div class="paragraph-content">
+                        <p>Sometimes the gimmick is the restaurant's location. El Diablo, on the Spanish island of Lanzarote, is on a volcano. The <span class="vocab-word" data-word="chef">chef</span> uses heat from the volcano to cook the food. Or how about an underwater restaurant? At Ithaa, a restaurant in the Maldives, you can have dinner five metres below the Indian Ocean and watch sharks and turtles while you eat. Or you can go to the other extreme and choose Dinner in the Sky. Here, customers enjoy their meal at a special table 50 metres in the air. The company has restaurants in 45 different countries. It's an amazing experience – but don't drop your <span class="vocab-word" data-word="knife">knife</span> or <span class="vocab-word" data-word="fork">fork</span>!</p>
+                    </div>
+                </div>
+                
+                <!-- Paragraph C -->
+                <div class="paragraph-block">
+                    <div class="paragraph-header bg-[#f15a24]">
+                        <span class="letter">C</span> Are you sitting comfortably?
+                    </div>
+                    <div class="paragraph-content">
+                        <p>People often complain about the seats in aeroplanes: they're uncomfortable and there isn't enough space. So surely a restaurant inside an aeroplane is a bad idea. Well maybe not. In Accra, the capital of Ghana, you can have lunch or dinner inside an old DC-10 aeroplane. The <span class="vocab-word" data-word="waiter">waiter</span> brings your food and drink on a trolley! Other restaurants offer extra comfort. At the Hammock Café in Sri Lanka, there are hammocks instead of chairs. And at B.E.D. in Miami, Florida, there are only beds. On each bed there is a candle and a <span class="vocab-word" data-word="tray">tray</span>.</p>
+                    </div>
+                </div>
+
+                <!-- Paragraph D -->
+                <div class="paragraph-block">
+                    <div class="paragraph-header bg-[#c1272d]">
+                        <span class="letter">D</span> Work for your food
+                    </div>
+                    <div class="paragraph-content">
+                        <p>People go to restaurants to eat, chat with their friends and relax. But some restaurants ask their customers to work for their food. Zauo is a popular restaurant in Tokyo, Japan. It is a fish restaurant, but the customers do not order their fish from the <span class="vocab-word" data-word="menu">menu</span> – they have to catch it. Inside the restaurant, all of the tables are on an artificial boat, with water all around. There are different fish in different parts of the water. They choose their fish and then try to catch it!</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="splitter" class="splitter relative flex items-center justify-center">
+            <div class="w-1 h-8 bg-gray-400 rounded-full opacity-50"></div>
+        </div>
+
+        <div id="right-pane" class="pane">
+            <div id="questions-section" class="max-w-3xl mx-auto space-y-8 pb-10">
+                
+                <!-- Exercise 1: Locating Information & Completion -->
+                <div class="p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-[#8cc63f] text-white text-sm font-bold px-3 py-1 rounded shadow-sm mr-3">1</span>
+                        <h4 class="font-bold text-gray-800">Locating Information</h4>
+                    </div>
+                    
+                    <p class="mb-5 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        In which paragraph of the text (A-D) can you find the information for each sentence? Complete the sentences below with information from the text. 
+                    </p>
+
+                    <div class="space-y-6 text-gray-800 mt-2">
+                        <div class="q-item" id="container-q1">
+                            <div class="flex items-start mb-2">
+                                <strong class="text-[#8cc63f] w-6 flex-shrink-0 mt-1">1</strong> 
+                                <span class="leading-loose">It is difficult for restaurants in big cities to attract <input type="text" name="q1_text" class="text-input inline-input w-28" placeholder="1 word">.</span>
+                            </div>
+                            <div class="ml-6 flex items-center text-sm text-gray-500">
+                                <span class="mr-2">Paragraph:</span>
+                                <select name="q1_para" class="text-input w-16 p-1 text-sm bg-white">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="q-item" id="container-q2">
+                            <div class="flex items-start mb-2">
+                                <strong class="text-[#8cc63f] w-6 flex-shrink-0 mt-1">2</strong> 
+                                <span class="leading-loose">A 'gimmick' is something to make your restaurant <input type="text" name="q2_text" class="text-input inline-input w-28" placeholder="1 word">.</span>
+                            </div>
+                            <div class="ml-6 flex items-center text-sm text-gray-500">
+                                <span class="mr-2">Paragraph:</span>
+                                <select name="q2_para" class="text-input w-16 p-1 text-sm bg-white">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="q-item" id="container-q3">
+                            <div class="flex items-start mb-2">
+                                <strong class="text-[#8cc63f] w-6 flex-shrink-0 mt-1">3</strong> 
+                                <span class="leading-loose">At Ithaa, you can have dinner at a table below the <input type="text" name="q3_text" class="text-input inline-input w-36" placeholder="2 words">.</span>
+                            </div>
+                            <div class="ml-6 flex items-center text-sm text-gray-500">
+                                <span class="mr-2">Paragraph:</span>
+                                <select name="q3_para" class="text-input w-16 p-1 text-sm bg-white">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="q-item" id="container-q4">
+                            <div class="flex items-start mb-2">
+                                <strong class="text-[#8cc63f] w-6 flex-shrink-0 mt-1">4</strong> 
+                                <span class="leading-loose">You can experience Dinner in the Sky in 45 different <input type="text" name="q4_text" class="text-input inline-input w-32" placeholder="1 word">.</span>
+                            </div>
+                            <div class="ml-6 flex items-center text-sm text-gray-500">
+                                <span class="mr-2">Paragraph:</span>
+                                <select name="q4_para" class="text-input w-16 p-1 text-sm bg-white">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="q-item" id="container-q5">
+                            <div class="flex items-start mb-2">
+                                <strong class="text-[#8cc63f] w-6 flex-shrink-0 mt-1">5</strong> 
+                                <span class="leading-loose">In Accra, you can have a meal inside an <input type="text" name="q5_text" class="text-input inline-input w-32" placeholder="1 word">.</span>
+                            </div>
+                            <div class="ml-6 flex items-center text-sm text-gray-500">
+                                <span class="mr-2">Paragraph:</span>
+                                <select name="q5_para" class="text-input w-16 p-1 text-sm bg-white">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="q-item" id="container-q6">
+                            <div class="flex items-start mb-2">
+                                <strong class="text-[#8cc63f] w-6 flex-shrink-0 mt-1">6</strong> 
+                                <span class="leading-loose">At B.E.D. in Miami, there aren't any tables or <input type="text" name="q6_text" class="text-input inline-input w-28" placeholder="1 word"> for the customers.</span>
+                            </div>
+                            <div class="ml-6 flex items-center text-sm text-gray-500">
+                                <span class="mr-2">Paragraph:</span>
+                                <select name="q6_para" class="text-input w-16 p-1 text-sm bg-white">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="q-item" id="container-q7">
+                            <div class="flex items-start mb-2">
+                                <strong class="text-[#8cc63f] w-6 flex-shrink-0 mt-1">7</strong> 
+                                <span class="leading-loose">At Zauo, the customers don't order their fish, they <input type="text" name="q7_text" class="text-input inline-input w-32" placeholder="2 words">.</span>
+                            </div>
+                            <div class="ml-6 flex items-center text-sm text-gray-500">
+                                <span class="mr-2">Paragraph:</span>
+                                <select name="q7_para" class="text-input w-16 p-1 text-sm bg-white">
+                                    <option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercise 2: Vocabulary -->
+                <div class="p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-purple-500 text-white text-sm font-bold px-3 py-1 rounded shadow-sm mr-3">2</span>
+                        <h4 class="font-bold text-gray-800 text-purple-700">VOCABULARY</h4>
+                    </div>
+                    
+                    <p class="mb-5 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        Complete the definitions using the <strong>highlighted words</strong> in the text.
+                    </p>
+
+                    <div class="space-y-3">
+                        <div class="q-item leading-[2.2rem]" id="container-v1">
+                            <strong class="text-purple-600 mr-2 w-4 inline-block">1</strong> 
+                            <input type="text" name="v1" class="text-input inline-input w-28 text-purple-700 placeholder-gray-300" placeholder="Word"> 
+                            is the help and attention you get in a restaurant.
+                        </div>
+                        <div class="q-item leading-[2.2rem]" id="container-v2">
+                            <strong class="text-purple-600 mr-2 w-4 inline-block">2</strong> 
+                            <input type="text" name="v2" class="text-input inline-input w-28 text-purple-700"> 
+                            are people who pay to eat in a restaurant.
+                        </div>
+                        <div class="q-item leading-[2.2rem]" id="container-v3">
+                            <strong class="text-purple-600 mr-2 w-4 inline-block">3</strong> 
+                            You use a <input type="text" name="v3" class="text-input inline-input w-24 text-purple-700"> 
+                            to cut food on your plate.
+                        </div>
+                        <div class="q-item leading-[2.2rem]" id="container-v4">
+                            <strong class="text-purple-600 mr-2 w-4 inline-block">4</strong> 
+                            You use a <input type="text" name="v4" class="text-input inline-input w-24 text-purple-700"> 
+                            to hold the food while you cut it.
+                        </div>
+                        <div class="q-item leading-[2.2rem]" id="container-v5">
+                            <strong class="text-purple-600 mr-2 w-4 inline-block">5</strong> 
+                            You can use a <input type="text" name="v5" class="text-input inline-input w-24 text-purple-700"> 
+                            to carry a lot of drinks at the same time.
+                        </div>
+                        <div class="q-item leading-[2.2rem]" id="container-v6">
+                            <strong class="text-purple-600 mr-2 w-4 inline-block">6</strong> 
+                            A <input type="text" name="v6" class="text-input inline-input w-24 text-purple-700"> 
+                            cooks the food in a restaurant or café.
+                        </div>
+                        <div class="q-item leading-[2.2rem]" id="container-v7">
+                            <strong class="text-purple-600 mr-2 w-4 inline-block">7</strong> 
+                            The <input type="text" name="v7" class="text-input inline-input w-24 text-purple-700"> 
+                            is a list of the food and drink you can order.
+                        </div>
+                        <div class="q-item leading-[2.2rem]" id="container-v8">
+                            <strong class="text-purple-600 mr-2 w-4 inline-block">8</strong> 
+                            A <input type="text" name="v8" class="text-input inline-input w-24 text-purple-700"> 
+                            serves customers in a restaurant.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-200 text-center pb-8">
+                    <button id="submit-form-btn" class="bg-[#8cc63f] hover:bg-[#7ab133] text-white font-bold py-3 px-8 rounded-md transition-colors text-lg shadow-md inline-flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13 2 9L22 2z"></path></svg>
+                        <span>Submit to Google Form</span>
+                    </button>
+                    <p class="text-sm text-gray-500 mt-2">This will open a pre-filled Google Form in a new tab.</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 p-3 flex flex-wrap justify-center items-center z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <span class="text-sm font-bold text-gray-700 mr-2 w-full text-center sm:w-auto mb-2 sm:mb-0">Progress:</span>
+        <div class="progress-tracker">
+            <span class="progress-section-label">Ex 1:</span>
+            <a href="#container-q1" class="progress-item" data-q="q1">1</a>
+            <a href="#container-q2" class="progress-item" data-q="q2">2</a>
+            <a href="#container-q3" class="progress-item" data-q="q3">3</a>
+            <a href="#container-q4" class="progress-item" data-q="q4">4</a>
+            <a href="#container-q5" class="progress-item" data-q="q5">5</a>
+            <a href="#container-q6" class="progress-item" data-q="q6">6</a>
+            <a href="#container-q7" class="progress-item" data-q="q7">7</a>
+            
+            <span class="progress-section-label ml-4">Vocab:</span>
+            <a href="#container-v1" class="progress-item" data-q="v1">1</a>
+            <a href="#container-v2" class="progress-item" data-q="v2">2</a>
+            <a href="#container-v3" class="progress-item" data-q="v3">3</a>
+            <a href="#container-v4" class="progress-item" data-q="v4">4</a>
+            <a href="#container-v5" class="progress-item" data-q="v5">5</a>
+            <a href="#container-v6" class="progress-item" data-q="v6">6</a>
+            <a href="#container-v7" class="progress-item" data-q="v7">7</a>
+            <a href="#container-v8" class="progress-item" data-q="v8">8</a>
+        </div>
+    </footer>
+</div>
+
+<!-- Highlight Tooltip -->
+<div id="highlight-tooltip" class="highlight-tooltip">Highlight Text</div>
+
+<div id="vocab-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50 transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative transform transition-all scale-95 opacity-0" id="vocab-modal-content">
+        <button id="close-vocab-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">&times;</button>
+        <div class="flex items-center mb-6 border-b pb-4">
+            <h3 id="vocab-word" class="text-3xl font-extrabold text-gray-900 capitalize tracking-tight"></h3>
+        </div>
+        <div class="flex items-center mb-5">
+            <button id="play-audio-btn" class="flex items-center justify-center h-12 w-12 rounded-full bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white mr-4 transition-all shadow-sm border border-purple-100" title="Listen to pronunciation">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+            </button>
+            <p id="vocab-pronunciation-text" class="text-gray-500 font-mono text-lg bg-gray-50 px-3 py-1 rounded-md border border-gray-100"></p>
+        </div>
+        <p id="vocab-meaning" class="text-gray-700 text-lg leading-relaxed"></p>
+    </div>
+</div>
+
+<script>
+    const vocabulary = {
+        'customers': { meaning: 'People who buy goods or services from a shop or business.', phonetic: '/ˈkʌstəməz/' },
+        'service': { meaning: 'The action of helping or doing work for someone; the help and attention you get in a restaurant.', phonetic: '/ˈsɜːvɪs/' },
+        'chef': { meaning: 'A professional cook, typically the chief cook in a restaurant or hotel.', phonetic: '/ʃef/' },
+        'knife': { meaning: 'An instrument composed of a blade fixed into a handle, used for cutting food.', phonetic: '/naɪf/' },
+        'fork': { meaning: 'An implement with two or more prongs used for lifting food to the mouth or holding it when cutting.', phonetic: '/fɔːk/' },
+        'waiter': { meaning: 'A person whose job is to serve customers at their tables in a restaurant.', phonetic: '/ˈweɪtə/' },
+        'tray': { meaning: 'A flat, shallow container with a raised rim, typically used for carrying food and drink.', phonetic: '/treɪ/' },
+        'menu': { meaning: 'A list of dishes available in a restaurant.', phonetic: '/ˈmenjuː/' }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = {
+            currentFontSize: 17,
+
+            leftPane: document.getElementById('left-pane'),
+            rightPane: document.getElementById('right-pane'),
+            splitter: document.getElementById('splitter'),
+            highlightTooltip: document.getElementById('highlight-tooltip'),
+            vocabModal: document.getElementById('vocab-modal'),
+            vocabModalContent: document.getElementById('vocab-modal-content'),
+            closeVocabModalBtn: document.getElementById('close-vocab-modal'),
+            vocabWordEl: document.getElementById('vocab-word'),
+            vocabMeaningEl: document.getElementById('vocab-meaning'),
+            vocabPronunciationText: document.getElementById('vocab-pronunciation-text'),
+            playAudioBtn: document.getElementById('play-audio-btn'),
+            clearHighlightsBtn: document.getElementById('clear-highlights-btn'),
+
+            init() {
+                this.setupEventListeners();
+                this.initSplitter();
+                this.initHighlighter();
+                this.initProgressTracker();
+            },
+
+            setupEventListeners() {
+                document.getElementById('increase-font-btn').addEventListener('click', () => this.changeFontSize(1));
+                document.getElementById('decrease-font-btn').addEventListener('click', () => this.changeFontSize(-1));
+
+                if (this.clearHighlightsBtn) {
+                    this.clearHighlightsBtn.addEventListener('click', () => {
+                        const marks = this.leftPane.querySelectorAll('mark');
+                        marks.forEach(mark => {
+                            // Using replaceWith(...childNodes) unwraps safely, keeping vocab spans intact
+                            mark.replaceWith(...mark.childNodes);
+                        });
+                    });
+                }
+
+                this.closeVocabModalBtn.addEventListener('click', () => this.closeModal());
+                this.vocabModal.addEventListener('click', (e) => {
+                   if (e.target === this.vocabModal) this.closeModal();
+                });
+                
+                document.body.addEventListener('click', (e) => {
+                    const submitBtn = e.target.closest('#submit-form-btn');
+                    if (submitBtn) {
+                        this.submitToGoogleForm();
+                    }
+                });
+                
+                this.leftPane.addEventListener('click', (e) => {
+                    // Handle Vocab Click
+                    const vocabSpan = e.target.closest('.vocab-word');
+                    if (vocabSpan) {
+                        const wordKey = vocabSpan.dataset.word;
+                        this.openVocabModal(wordKey);
+                        return;
+                    }
+                    
+                    // Handle Removing Highlight
+                    if (e.target.tagName === 'MARK') {
+                        e.target.replaceWith(...e.target.childNodes);
+                    }
+                });
+
+                this.playAudioBtn.addEventListener('click', () => {
+                   const word = this.vocabWordEl.textContent;
+                   if (!word) return;
+                   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                   
+                   this.playAudioBtn.classList.remove('text-purple-600', 'bg-purple-50');
+                   this.playAudioBtn.classList.add('bg-green-500', 'text-white');
+                   
+                   if ('speechSynthesis' in window) {
+                       const utterance = new SpeechSynthesisUtterance(word);
+                       utterance.lang = 'en-GB'; 
+                       utterance.rate = 0.9; 
+                       utterance.onend = () => this.resetAudioBtn();
+                       utterance.onerror = () => this.resetAudioBtn();
+                       window.speechSynthesis.speak(utterance);
+                   } else {
+                       setTimeout(() => this.resetAudioBtn(), 500);
+                   }
+                });
+            },
+
+            initProgressTracker() {
+                const inputs = document.querySelectorAll('.text-input');
+                const progressItems = document.querySelectorAll('.progress-item');
+
+                const updateProgress = () => {
+                    progressItems.forEach(item => {
+                        const qNum = item.dataset.q;
+                        let isAnswered = false;
+                        
+                        // Check if it's a dual-input question (like q1) or single (like v1)
+                        if (qNum.startsWith('q')) {
+                            const textInput = document.querySelector(`[name="${qNum}_text"]`);
+                            const paraSelect = document.querySelector(`[name="${qNum}_para"]`);
+                            if (textInput && paraSelect) {
+                                isAnswered = (textInput.value.trim() !== '') && (paraSelect.value.trim() !== '');
+                            }
+                        } else {
+                            const input = document.querySelector(`[name="${qNum}"]`);
+                            if (input && input.value.trim() !== '') {
+                                isAnswered = true;
+                            }
+                        }
+
+                        if (isAnswered) {
+                            item.classList.add('answered');
+                        } else {
+                            item.classList.remove('answered');
+                        }
+                    });
+                };
+
+                inputs.forEach(input => {
+                    input.addEventListener('input', updateProgress);
+                    input.addEventListener('change', updateProgress);
+                });
+                updateProgress();
+            },
+
+            initHighlighter() {
+                document.body.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+
+                    if (selectedText.length > 0) {
+                        const range = selection.getRangeAt(0);
+                        if (!this.leftPane.contains(range.commonAncestorContainer) && !this.rightPane.contains(range.commonAncestorContainer)) {
+                           this.highlightTooltip.style.display = 'none';
+                           return;
+                        }
+
+                        this.highlightTooltip.style.left = `${e.pageX - 30}px`;
+                        this.highlightTooltip.style.top = `${e.pageY - 40}px`;
+                        this.highlightTooltip.style.display = 'block';
+
+                        this.highlightTooltip.onclick = () => {
+                            const container = range.commonAncestorContainer;
+                            if (container.nodeType === 3) { 
+                                if (range.startContainer.parentElement !== range.endContainer.parentElement) {
+                                    this.highlightTooltip.style.display = 'none';
+                                    return;
+                                }
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            try {
+                                range.surroundContents(mark);
+                            } catch (ex) {} 
+                            finally {
+                                selection.removeAllRanges();
+                                this.highlightTooltip.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        this.highlightTooltip.style.display = 'none';
+                    }
+                });
+
+                document.body.addEventListener('mousedown', (e) => {
+                   if (e.target !== this.highlightTooltip && window.getSelection().toString().length === 0) {
+                        this.highlightTooltip.style.display = 'none';
+                   }
+                });
+            },
+
+            resetAudioBtn() {
+                this.playAudioBtn.classList.add('text-purple-600', 'bg-purple-50');
+                this.playAudioBtn.classList.remove('bg-green-500', 'text-white');
+            },
+            
+            changeFontSize(delta) {
+                this.currentFontSize += delta;
+                if (this.currentFontSize < 14) this.currentFontSize = 14;
+                if (this.currentFontSize > 26) this.currentFontSize = 26;
+                document.documentElement.style.setProperty('--app-font-size', `${this.currentFontSize}px`);
+            },
+
+            openVocabModal(wordKey) {
+                const data = vocabulary[wordKey];
+                if (data) {
+                    this.vocabWordEl.textContent = wordKey;
+                    this.vocabMeaningEl.textContent = data.meaning;
+                    this.vocabPronunciationText.textContent = data.phonetic || '';
+                    this.vocabModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        this.vocabModalContent.classList.remove('scale-95', 'opacity-0');
+                        this.vocabModalContent.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                }
+            },
+
+            closeModal() {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                this.vocabModalContent.classList.remove('scale-100', 'opacity-100');
+                this.vocabModalContent.classList.add('scale-95', 'opacity-0');
+                this.resetAudioBtn();
+                setTimeout(() => this.vocabModal.classList.add('hidden'), 200);
+            },
+
+            submitToGoogleForm() {
+                const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdOMk3RN28rux_F2BscjvL2wbUkXKud6nxcPKThDOzmW6BAvg/viewform?usp=pp_url";
+                
+                const getVal = (selector) => {
+                    const el = document.querySelector(selector);
+                    return el ? encodeURIComponent(el.value.trim()) : '';
+                };
+
+                const entries = {
+                    '1373499884': getVal('#student-name'), 
+                    '1880149555': getVal('[name="q1_text"]'), 
+                    '171599658': getVal('[name="q1_para"]'), 
+                    '958114575': getVal('[name="q2_text"]'), 
+                    '1423294111': getVal('[name="q2_para"]'), 
+                    '926260450': getVal('[name="q3_text"]'), 
+                    '1556903121': getVal('[name="q3_para"]'), 
+                    '147681525': getVal('[name="q4_text"]'), 
+                    '579530594': getVal('[name="q4_para"]'), 
+                    '170125193': getVal('[name="q5_text"]'), 
+                    '1267821480': getVal('[name="q5_para"]'), 
+                    '1164183043': getVal('[name="q6_text"]'), 
+                    '1219491164': getVal('[name="q6_para"]'), 
+                    '1335833684': getVal('[name="q7_text"]'), 
+                    '1688357742': getVal('[name="q7_para"]'), 
+                    '702442011': getVal('[name="v1"]'), 
+                    '1732599633': getVal('[name="v2"]'), 
+                    '472504624': getVal('[name="v3"]'), 
+                    '551146214': getVal('[name="v4"]'), 
+                    '1186586731': getVal('[name="v5"]'), 
+                    '1243819095': getVal('[name="v6"]'), 
+                    '1728605032': getVal('[name="v7"]'), 
+                    '1395307818': getVal('[name="v8"]')  
+                };
+
+                let url = baseUrl;
+                for (const [entryId, value] of Object.entries(entries)) {
+                    if (value) {
+                        url += `&entry.${entryId}=${value}`;
+                    }
+                }
+
+                window.open(url, '_blank');
+            },
+
+            initSplitter() {
+                let isDragging = false;
+                const contentPanes = document.getElementById('content-panes');
+
+                this.splitter.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                    document.body.style.cursor = 'col-resize';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    if (window.innerWidth <= 768) return; 
+                    
+                    const containerRect = contentPanes.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - containerRect.left;
+                    if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 200) {
+                        const newLeftPercent = (newLeftWidth / containerRect.width) * 100;
+                        contentPanes.style.gridTemplateColumns = `${newLeftPercent}% 5px 1fr`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        document.body.style.cursor = 'default';
+                    }
+                });
+            }
+        };
+
+        app.init();
+    });
+</script>
+
+</body>
+</html>
