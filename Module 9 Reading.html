@@ -608,7 +608,62 @@
             },
             
             submitToGoogleForm() {
-                alert("This button is ready! You can hook this up to a specific Google Form URL.");
+                const nameInput = document.getElementById('student-name');
+                const name = nameInput ? nameInput.value : '';
+
+                const params = new URLSearchParams();
+                params.append('usp', 'pp_url');
+                
+                // Name Field
+                if (name) params.append('entry.909158151', name);
+
+                // Sentence Completion (Q1 - Q5)
+                const textEntries = {
+                    'q1': 'entry.2045450076',
+                    'q2': 'entry.1293900591',
+                    'q3': 'entry.1145315644',
+                    'q4': 'entry.724488423',
+                    'q5': 'entry.377857042'
+                };
+
+                for (const [qId, entryId] of Object.entries(textEntries)) {
+                    const el = document.querySelector(`[name="${qId}"]`);
+                    if (el && el.value) {
+                        params.append(entryId, el.value.trim());
+                    }
+                }
+
+                // Matching Features (Q6 - Q10)
+                const matchingEntries = {
+                    'q6': 'entry.1351291555',
+                    'q7': 'entry.818068349',
+                    'q8': 'entry.384049438',
+                    'q9': 'entry.657898952',
+                    'q10': 'entry.100853219'
+                };
+                
+                // Map the selected letter to the full string required by the Google Form
+                const matchingValueMap = {
+                    'A': "A. Sarah O'Connor",
+                    'B': "B. David Willetts",
+                    'C': "C. Robert Colville",
+                    'D': "D. Robbie Allen",
+                    'E': "E. Ken Doctor"
+                };
+
+                for (const [qId, entryId] of Object.entries(matchingEntries)) {
+                    const el = document.querySelector(`[name="${qId}"]`);
+                    if (el && el.value) {
+                        const mappedValue = matchingValueMap[el.value] || el.value;
+                        params.append(entryId, mappedValue);
+                    }
+                }
+
+                // Construct final URL and open in new tab
+                const formId = '1FAIpQLSc3T6x4VcoR8HwYVKKSjQWMyH4iGXsOgtoTHO-XTlc8obZ67w';
+                const url = `https://docs.google.com/forms/d/e/${formId}/viewform?${params.toString()}`;
+                
+                window.open(url, '_blank');
             },
 
             initSplitter() {
