@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 10: Mastering Adjectives</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .tab-active {
+            border-bottom-width: 4px;
+            border-color: #4f46e5;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        
+        .tab-inactive {
+            border-bottom-width: 4px;
+            border-color: transparent;
+            color: #64748b;
+        }
+        
+        .tab-inactive:hover {
+            color: #334155;
+            border-color: #cbd5e1;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Interactive Study Styles */
+        .interactive-group {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .interactive-adj {
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            text-decoration-color: #6366f1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .interactive-noun {
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .interactive-active-adj {
+            background-color: #e0e7ff; /* Indigo 100 */
+            color: #4338ca; /* Indigo 700 */
+            font-weight: bold;
+            text-decoration-color: transparent;
+        }
+
+        .interactive-active-noun {
+            background-color: #dcfce7; /* Green 100 */
+            color: #15803d; /* Green 700 */
+            font-weight: bold;
+            border-color: #86efac; /* Green 300 */
+            box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+        }
+
+        /* Connecting line visualization for study mode */
+        .connection-indicator {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #6366f1;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .interactive-active-adj .connection-indicator {
+            opacity: 1;
+        }
+
+        /* Exercise Sub-Tabs */
+        .subtab-active {
+            background-color: #4f46e5;
+            color: white;
+            box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+        }
+        .subtab-inactive {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        .subtab-inactive:hover {
+            background-color: #e2e8f0;
+        }
+
+        /* Pop Out Animations & Enhancements */
+        .pop-out {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .pop-out:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3), 0 4px 6px -2px rgba(79, 70, 229, 0.15);
+        }
+        
+        .pulse-border {
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+
+        /* Fill in the Blanks Styles */
+        .fill-blank {
+            display: inline-block;
+            min-width: 80px;
+            height: 32px;
+            border-bottom: 3px dashed #94a3b8;
+            margin: 0 8px;
+            vertical-align: middle;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: bold;
+            color: #4f46e5;
+        }
+        .fill-blank.filled {
+            border-bottom-style: solid;
+            border-bottom-color: #4f46e5;
+            background-color: #e0e7ff;
+            border-radius: 4px 4px 0 0;
+            padding: 0 8px;
+        }
+        .fill-blank.correct {
+            border-bottom-color: #22c55e;
+            color: #166534;
+            background-color: #dcfce7;
+        }
+        .fill-blank.incorrect {
+            border-bottom-color: #ef4444;
+            color: #991b1b;
+            background-color: #fee2e2;
+            animation: shake 0.4s;
+        }
+
+        /* Identify Exercise Styles */
+        .identify-word {
+            display: inline-block;
+            padding: 4px 8px;
+            margin: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.125rem;
+            user-select: none;
+            border: 1px solid transparent;
+        }
+        .identify-word:hover {
+            background-color: #e2e8f0;
+        }
+        .identify-word.selected {
+            background-color: #818cf8;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+        }
+        .identify-word.correct {
+            background-color: #22c55e;
+            color: white;
+        }
+        .identify-word.incorrect {
+            background-color: #ef4444;
+            color: white;
+            text-decoration: line-through;
+        }
+        .identify-word.missed {
+            border-color: #eab308;
+            border-width: 2px;
+            border-style: dashed;
+        }
+
+        /* Match Exercise Styles */
+        .match-btn {
+            transition: all 0.2s;
+            border: 2px solid #e2e8f0;
+        }
+        .match-btn:hover:not(:disabled) {
+            border-color: #818cf8;
+            background-color: #f8fafc;
+            transform: translateY(-2px);
+        }
+        .match-btn.selected {
+            background-color: #e0e7ff;
+            border-color: #6366f1;
+            color: #4338ca;
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+        .match-btn.matched {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+            opacity: 0.7;
+            cursor: default;
+            transform: scale(0.98);
+        }
+        .match-btn.wrong-flash {
+            animation: shake 0.4s;
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        /* Option button states (Quiz) */
+        .option-btn { transition: all 0.2s; }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-color: #6366f1;
+        }
+        .option-correct { background-color: #dcfce7; border-color: #22c55e; color: #166534; }
+        .option-incorrect { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; }
+        .option-disabled { opacity: 0.7; cursor: not-allowed; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <header class="bg-white shadow-sm sticky top-0 z-20">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-slate-900 hidden sm:block">Unit 10: Adjectives</h1>
+                    <h1 class="text-xl font-bold text-slate-900 sm:hidden">Unit 10</h1>
+                </div>
+                <nav class="flex space-x-2 sm:space-x-4 h-full pt-2">
+                    <button id="tab-study" class="tab-active px-3 py-4 text-sm font-medium transition-colors hover:text-indigo-600" onclick="switchMainTab('study')">
+                        <i class="fa-solid fa-book-open sm:mr-2"></i><span class="hidden sm:inline">Study Guide</span>
+                    </button>
+                    <button id="tab-practice" class="tab-inactive px-3 py-4 text-sm font-medium transition-colors hover:text-indigo-600" onclick="switchMainTab('practice')">
+                        <i class="fa-solid fa-dumbbell sm:mr-2"></i><span class="hidden sm:inline">Practice</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- ============================================== -->
+        <!-- STUDY SECTION -->
+        <!-- ============================================== -->
+        <section id="section-study" class="fade-in block">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Grammar: Adjectives</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">Master how to describe nouns, ask questions with How/What, and use nouns as adjectives.</p>
+                
+                <div class="inline-flex items-center gap-2 mt-4 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium border border-indigo-100">
+                    <i class="fa-solid fa-hand-pointer animate-pulse"></i>
+                    Interactive: Tap or hover over the dashed words below to see connections!
+                </div>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Grammar Point 1 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-indigo-50 px-6 py-4 border-b border-indigo-100 flex items-center gap-3">
+                        <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">1</span>
+                        <h3 class="text-lg font-semibold text-indigo-900">Modifying Nouns with Adjectives</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="mb-4 text-slate-700">Adjectives describe or modify nouns. They appear in two main patterns:</p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <!-- Interactive Block 1 -->
+                            <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-inner">
+                                <h4 class="font-semibold text-slate-800 mb-2"><i class="fa-solid fa-arrow-right text-indigo-500 mr-2"></i>After the verb 'be'</h4>
+                                <p class="text-sm text-slate-600 mb-4">Modifies the subject directly.</p>
+                                
+                                <div class="space-y-4 text-lg bg-white p-4 rounded-lg border border-slate-200">
+                                    <div class="interactive-group block">
+                                        The <span id="noun1" class="interactive-noun">desert</span> is <span class="interactive-adj" data-target="noun1">hot</span>.
+                                        <span class="connection-indicator"><i class="fa-solid fa-arrow-turn-up fa-rotate-270 mr-1"></i>modifies</span>
+                                    </div>
+                                    <div class="interactive-group block border-t pt-4">
+                                        The <span id="noun2" class="interactive-noun">foxes</span> are <span class="interactive-adj" data-target="noun2">small</span>.
+                                        <span class="connection-indicator"><i class="fa-solid fa-arrow-turn-up fa-rotate-270 mr-1"></i>modifies</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Block 2 -->
+                            <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 shadow-inner">
+                                <h4 class="font-semibold text-slate-800 mb-2"><i class="fa-solid fa-arrow-left text-indigo-500 mr-2"></i>Before a noun</h4>
+                                <p class="text-sm text-slate-600 mb-4">Placed directly in front of the noun.</p>
+                                
+                                <div class="space-y-4 text-lg bg-white p-4 rounded-lg border border-slate-200">
+                                    <div class="interactive-group block">
+                                        It's an <span class="interactive-adj" data-target="noun3">interesting</span> <span id="noun3" class="interactive-noun">article</span>.
+                                        <span class="connection-indicator"><i class="fa-solid fa-arrow-turn-down fa-rotate-90 mr-1"></i>modifies</span>
+                                    </div>
+                                    <div class="interactive-group block border-t pt-4">
+                                        He is a <span class="interactive-adj" data-target="noun4">tall</span> <span id="noun4" class="interactive-noun">man</span>.
+                                        <span class="connection-indicator"><i class="fa-solid fa-arrow-turn-down fa-rotate-90 mr-1"></i>modifies</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Core Rules -->
+                        <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-xl">
+                            <h4 class="font-semibold text-amber-800 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Core Rules</h4>
+                            <ul class="mt-2 space-y-2 text-sm text-amber-900">
+                                <li><strong>Invariant Form:</strong> Adjectives NEVER change form for plural nouns. <br>
+                                    <span class="text-green-700"><i class="fa-solid fa-check mr-1"></i> The rooms are big.</span> | 
+                                    <span class="text-red-700"><i class="fa-solid fa-xmark mr-1"></i> The rooms are bigs.</span>
+                                </li>
+                                <li><strong>Indefinite Articles (a/an):</strong> Use <strong>"a"</strong> before consonant sounds (<em>a <span class="underline decoration-wavy">g</span>ood student</em>). Use <strong>"an"</strong> before vowel sounds (<em>an <span class="underline decoration-wavy">e</span>xcellent teacher</em>).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grammar Point 2 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-emerald-50 px-6 py-4 border-b border-emerald-100 flex items-center gap-3">
+                        <span class="bg-emerald-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">2</span>
+                        <h3 class="text-lg font-semibold text-emerald-900">Adjectives with How and What Questions</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="mb-4 text-slate-700">Use these structures to ask for descriptions, measurements, or conditions:</p>
+                        
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <div class="font-bold text-emerald-700 font-mono text-sm bg-white px-3 py-1 rounded border border-emerald-200 inline-block mb-2">How + Adjective</div>
+                                <p class="text-sm text-slate-700 mb-2">Inquire about measurements.</p>
+                                <ul class="text-sm space-y-1 text-slate-800 bg-white p-2 rounded">
+                                    <li><strong>How old</strong> are you? (Age)</li>
+                                    <li><strong>How tall</strong> are you? (Height)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <div class="font-bold text-emerald-700 font-mono text-sm bg-white px-3 py-1 rounded border border-emerald-200 inline-block mb-2">How + Be</div>
+                                <p class="text-sm text-slate-700 mb-2">Ask about general conditions.</p>
+                                <ul class="text-sm space-y-1 text-slate-800 bg-white p-2 rounded">
+                                    <li><strong>How's</strong> the weather today?</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <div class="font-bold text-emerald-700 font-mono text-sm bg-white px-3 py-1 rounded border border-emerald-200 inline-block mb-2">What + Be + Subj + Like</div>
+                                <p class="text-sm text-slate-700 mb-2">Request a general description.</p>
+                                <ul class="text-sm space-y-1 text-slate-800 bg-white p-2 rounded">
+                                    <li><strong>What's</strong> John <strong>like</strong>? (He's funny)</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <div class="font-bold text-emerald-700 font-mono text-sm bg-white px-3 py-1 rounded border border-emerald-200 inline-block mb-2">What kind of + Noun</div>
+                                <p class="text-sm text-slate-700 mb-2">Ask about specific types.</p>
+                                <ul class="text-sm space-y-1 text-slate-800 bg-white p-2 rounded">
+                                    <li><strong>What kind of</strong> photographer is he?</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grammar Point 3 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-violet-50 px-6 py-4 border-b border-violet-100 flex items-center gap-3">
+                        <span class="bg-violet-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">3</span>
+                        <h3 class="text-lg font-semibold text-violet-900">Using Nouns as Adjectives</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="mb-4 text-slate-700">Nouns can be placed before other nouns to modify or describe them.</p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Rule Alert -->
+                            <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl h-full flex flex-col justify-center">
+                                <h4 class="font-semibold text-red-800 mb-2"><i class="fa-solid fa-triangle-exclamation"></i> Singular Form Rule</h4>
+                                <p class="text-sm text-red-900 mb-3">The modifying noun MUST remain singular.</p>
+                                <div class="bg-white p-3 rounded-lg text-base border border-red-100">
+                                    <div class="interactive-group block mb-2">
+                                        <i class="fa-solid fa-check text-green-600 mr-2"></i>
+                                        <span class="interactive-adj" data-target="noun5">horse</span> <span id="noun5" class="interactive-noun">trainer</span>
+                                    </div>
+                                    <div class="text-red-500 line-through opacity-70">
+                                        <i class="fa-solid fa-xmark mr-2"></i> horses trainer
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- More Examples -->
+                            <div class="space-y-4">
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <h4 class="font-semibold text-slate-800 mb-2">Nouns Ending in -ing</h4>
+                                    <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-2">
+                                        <div class="interactive-group block">
+                                            <span class="interactive-adj" data-target="noun6">camping</span> <span id="noun6" class="interactive-noun">trip</span>
+                                        </div>
+                                        <div class="interactive-group block">
+                                            <span class="interactive-adj" data-target="noun7">shopping</span> <span id="noun7" class="interactive-noun">center</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-slate-800 mb-3 border-b pb-2">Common Examples (Try hovering!)</h4>
+                            <div class="flex flex-wrap gap-3">
+                                <div class="interactive-group bg-violet-50 px-3 py-1.5 rounded-lg border border-violet-100">
+                                    <span class="interactive-adj" data-target="noun8">desert</span> <span id="noun8" class="interactive-noun">sand</span>
+                                </div>
+                                <div class="interactive-group bg-violet-50 px-3 py-1.5 rounded-lg border border-violet-100">
+                                    <span class="interactive-adj" data-target="noun9">pencil</span> <span id="noun9" class="interactive-noun">case</span>
+                                </div>
+                                <div class="interactive-group bg-violet-50 px-3 py-1.5 rounded-lg border border-violet-100">
+                                    <span class="interactive-adj" data-target="noun10">baby</span> <span id="noun10" class="interactive-noun">elephant</span>
+                                </div>
+                                <div class="interactive-group bg-violet-50 px-3 py-1.5 rounded-lg border border-violet-100">
+                                    <span class="interactive-adj" data-target="noun11">weather</span> <span id="noun11" class="interactive-noun">report</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center py-6">
+                    <button onclick="switchMainTab('practice')" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-4 px-10 rounded-full shadow-[0_10px_20px_rgba(79,70,229,0.3)] transition-all transform hover:-translate-y-2 hover:scale-105 pulse-border text-lg pop-out">
+                        Test Your Skills <i class="fa-solid fa-rocket ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- PRACTICE SECTION -->
+        <!-- ============================================== -->
+        <section id="section-practice" class="hidden fade-in">
+            <div class="max-w-4xl mx-auto">
+                
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 md:p-8">
+                    
+                    <!-- Header & Sub-Tabs -->
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-slate-900 mb-4">Practice Exercises</h2>
+                        
+                        <div class="flex flex-wrap justify-center gap-2 p-1 bg-slate-100 rounded-xl inline-flex">
+                            <button id="ex-tab-quiz" onclick="switchExTab('quiz')" class="subtab-active px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
+                                <i class="fa-solid fa-list-check mr-2"></i>Multiple Choice
+                            </button>
+                            <button id="ex-tab-identify" onclick="switchExTab('identify')" class="subtab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
+                                <i class="fa-solid fa-magnifying-glass mr-2"></i>Identify
+                            </button>
+                            <button id="ex-tab-match" onclick="switchExTab('match')" class="subtab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
+                                <i class="fa-solid fa-link mr-2"></i>Match Pairs
+                            </button>
+                            <button id="ex-tab-fill" onclick="switchExTab('fill')" class="subtab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
+                                <i class="fa-solid fa-keyboard mr-2"></i>Fill Blanks
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --------------------------------------- -->
+                    <!-- EXERCISE 1: QUIZ                        -->
+                    <!-- --------------------------------------- -->
+                    <div id="ex-container-quiz" class="block fade-in">
+                        <div class="mb-4 flex justify-between items-center">
+                            <h3 class="font-bold text-lg text-slate-800">Knowledge Check</h3>
+                            <span id="quiz-progress" class="text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">Q 1/5</span>
+                        </div>
+                        
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-4">
+                            <p id="quiz-question" class="text-xl font-semibold text-slate-900 mb-5">Question text?</p>
+                            <div id="quiz-options" class="space-y-3">
+                                <!-- Options injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Feedback Box for Quiz -->
+                        <div id="quiz-feedback" class="hidden p-4 rounded-xl border mb-4 text-lg">
+                            <p id="quiz-feedback-text" class="font-medium"></p>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button id="quiz-btn-next" onclick="quizNext()" class="hidden bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg pop-out">
+                                Next <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                            <button id="quiz-btn-reset" onclick="quizInit()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-8 rounded-xl pop-out">
+                                Retry Quiz <i class="fa-solid fa-rotate-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --------------------------------------- -->
+                    <!-- EXERCISE 2: IDENTIFY ADJECTIVES         -->
+                    <!-- --------------------------------------- -->
+                    <div id="ex-container-identify" class="hidden fade-in">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-lg text-slate-800">Identify the Adjectives</h3>
+                            <p class="text-sm text-slate-600 mt-1">Click on <strong>all</strong> the adjectives (or nouns used as adjectives) in the sentence below.</p>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Sentence <span id="identify-current">1</span> of <span id="identify-total">3</span></span>
+                        </div>
+
+                        <div class="bg-white border-2 border-indigo-100 shadow-inner rounded-xl p-6 mb-6 text-center min-h-[120px] flex items-center justify-center">
+                            <div id="identify-sentence-container" class="leading-loose">
+                                <!-- Words injected here -->
+                            </div>
+                        </div>
+
+                        <div id="identify-feedback" class="hidden p-4 rounded-xl border mb-6 text-center font-medium">
+                        </div>
+
+                        <div class="flex justify-center gap-4">
+                            <button id="identify-btn-check" onclick="identifyCheck()" class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-[0_5px_15px_rgba(79,70,229,0.4)] pop-out">
+                                Check Answer <i class="fa-solid fa-check ml-2"></i>
+                            </button>
+                            <button id="identify-btn-next" onclick="identifyNext()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl shadow-lg pop-out">
+                                Next Sentence <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                            <button id="identify-btn-reset" onclick="identifyInit()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-8 rounded-xl pop-out">
+                                Play Again <i class="fa-solid fa-rotate-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --------------------------------------- -->
+                    <!-- EXERCISE 3: MATCH PAIRS                 -->
+                    <!-- --------------------------------------- -->
+                    <div id="ex-container-match" class="hidden fade-in">
+                        <div class="mb-6 text-center">
+                            <h3 class="font-bold text-lg text-slate-800">Noun as Adjective Matcher</h3>
+                            <p class="text-sm text-slate-600 mt-1">Connect the modifying noun (left) to the primary noun (right) to form correct pairs taught in the lesson.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-8 md:gap-16 max-w-2xl mx-auto mb-8 relative">
+                            <!-- Column 1 -->
+                            <div id="match-col-left" class="space-y-3">
+                                <!-- Buttons injected -->
+                            </div>
+                            <!-- Connector visual (desktop only) -->
+                            <div class="hidden md:flex absolute inset-0 items-center justify-center pointer-events-none">
+                                <div class="h-full w-px bg-slate-200"></div>
+                            </div>
+                            <!-- Column 2 -->
+                            <div id="match-col-right" class="space-y-3">
+                                <!-- Buttons injected -->
+                            </div>
+                        </div>
+
+                        <div id="match-feedback" class="text-center h-8 font-semibold text-lg transition-colors">
+                            <!-- Feedback injected -->
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <button id="match-btn-reset" onclick="matchInit()" class="hidden bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg pop-out inline-block">
+                                Play Again <i class="fa-solid fa-rotate-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --------------------------------------- -->
+                    <!-- EXERCISE 4: FILL IN THE BLANKS          -->
+                    <!-- --------------------------------------- -->
+                    <div id="ex-container-fill" class="hidden fade-in">
+                        <div class="mb-4 flex justify-between items-center">
+                            <h3 class="font-bold text-lg text-slate-800">Fill in the Blanks</h3>
+                            <span id="fill-progress" class="text-sm font-medium text-violet-600 bg-violet-50 px-3 py-1 rounded-full border border-violet-100">Q 1/5</span>
+                        </div>
+                        
+                        <div class="bg-slate-50 border-2 border-violet-100 rounded-2xl shadow-inner p-8 mb-6 text-center">
+                            <p id="fill-sentence" class="text-2xl font-medium text-slate-800 leading-relaxed tracking-wide">
+                                <!-- Sentence injected here -->
+                            </p>
+                        </div>
+
+                        <div id="fill-options" class="flex flex-wrap justify-center gap-4 mb-6">
+                            <!-- Options injected here -->
+                        </div>
+
+                        <div id="fill-feedback" class="hidden p-4 rounded-xl border mb-6 text-center font-bold text-lg">
+                        </div>
+
+                        <div class="flex justify-center gap-4">
+                            <button id="fill-btn-next" onclick="fillNext()" class="hidden bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg pop-out">
+                                Next Question <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                            <button id="fill-btn-reset" onclick="fillInit()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-8 rounded-xl pop-out">
+                                Play Again <i class="fa-solid fa-rotate-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ==========================================
+        // UI & INTERACTIVITY LOGIC
+        // ==========================================
+        
+        function switchMainTab(tabId) {
+            document.getElementById('tab-study').className = tabId === 'study' ? 'tab-active px-3 py-4 text-sm font-medium transition-colors' : 'tab-inactive px-3 py-4 text-sm font-medium transition-colors';
+            document.getElementById('tab-practice').className = tabId === 'practice' ? 'tab-active px-3 py-4 text-sm font-medium transition-colors' : 'tab-inactive px-3 py-4 text-sm font-medium transition-colors';
+            
+            if (tabId === 'study') {
+                document.getElementById('section-study').classList.remove('hidden');
+                document.getElementById('section-practice').classList.add('hidden');
+            } else {
+                document.getElementById('section-study').classList.add('hidden');
+                document.getElementById('section-practice').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Initialize exercises if not done
+                if(quizCurrent === 0 && identifyCurrent === 0) {
+                    quizInit();
+                    identifyInit();
+                    matchInit();
+                    fillInit();
+                }
+            }
+        }
+
+        function switchExTab(exId) {
+            // Update Subtabs UI
+            const tabs = ['quiz', 'identify', 'match', 'fill'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`ex-tab-${t}`);
+                if (t === exId) {
+                    btn.className = 'subtab-active px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105 shadow-md';
+                    document.getElementById(`ex-container-${t}`).classList.remove('hidden');
+                    document.getElementById(`ex-container-${t}`).classList.add('block');
+                } else {
+                    btn.className = 'subtab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105';
+                    document.getElementById(`ex-container-${t}`).classList.remove('block');
+                    document.getElementById(`ex-container-${t}`).classList.add('hidden');
+                }
+            });
+        }
+
+        // Setup Interactive Study Hover/Click Effects
+        function setupInteractiveStudy() {
+            const adjs = document.querySelectorAll('.interactive-adj');
+            
+            adjs.forEach(adj => {
+                // For Desktop Hover
+                adj.addEventListener('mouseenter', () => activateConnection(adj));
+                adj.addEventListener('mouseleave', () => deactivateConnection(adj));
+                
+                // For Mobile Tap
+                adj.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if(adj.classList.contains('interactive-active-adj')) {
+                        deactivateConnection(adj);
+                    } else {
+                        // clear others first
+                        adjs.forEach(a => deactivateConnection(a));
+                        activateConnection(adj);
+                        // auto deactivate after 2 secs on mobile
+                        setTimeout(() => deactivateConnection(adj), 2000);
+                    }
+                });
+            });
+        }
+
+        function activateConnection(adjEl) {
+            const targetId = adjEl.getAttribute('data-target');
+            const targetEl = document.getElementById(targetId);
+            if(targetEl) {
+                targetEl.classList.add('interactive-active-noun');
+                adjEl.classList.add('interactive-active-adj');
+            }
+        }
+
+        function deactivateConnection(adjEl) {
+            const targetId = adjEl.getAttribute('data-target');
+            const targetEl = document.getElementById(targetId);
+            if(targetEl) {
+                targetEl.classList.remove('interactive-active-noun');
+                adjEl.classList.remove('interactive-active-adj');
+            }
+        }
+
+
+        // ==========================================
+        // EXERCISE 1: QUIZ LOGIC
+        // ==========================================
+        const quizData = [
+            { q: "He bought a new _____ cover.", opts: ["cars", "car's", "car"], ans: 2, exp: "When a noun (car) is used as an adjective, it remains singular." },
+            { q: "_____ heavy is that box?", opts: ["How", "What", "Which"], ans: 0, exp: "Use 'How + Adjective' to ask about specific measurements like weight." },
+            { q: "Those are very _____ computers.", opts: ["fasts", "fast", "fast's"], ans: 1, exp: "Adjectives never change form for plural nouns." },
+            { q: "They live in _____ old house.", opts: ["a", "an", "the"], ans: 1, exp: "Use 'an' because 'old' begins with a vowel sound." },
+            { q: "_____ your new boss like?", opts: ["What's", "How's", "Who's"], ans: 0, exp: "Use 'What + Be + Subject + Like' to ask for a general description of a person." },
+            { q: "We need a new _____ machine.", opts: ["washes", "wash", "washing"], ans: 2, exp: "Some nouns used as adjectives are formed with an -ing ending (washing machine)." },
+            { q: "_____ the food at that restaurant?", opts: ["What's", "Which", "How's"], ans: 2, exp: "'How + Be' is used to ask about general conditions or states." },
+            { q: "I need to find a _____ opener.", opts: ["can", "cans", "can's"], ans: 0, exp: "Even if it opens multiple cans, the noun used as an adjective (can) must be singular." },
+            { q: "She is _____ brilliant musician.", opts: ["an", "a", "some"], ans: 1, exp: "Use 'a' because 'brilliant' begins with a consonant sound." },
+            { q: "_____ music do you usually listen to?", opts: ["How type of", "What kind of", "Which of"], ans: 1, exp: "'What kind of' is used to ask about specific types or categories." },
+            { q: "_____ deep is the ocean here?", opts: ["What", "How", "Which"], ans: 1, exp: "Use 'How + Adjective' (How deep) to ask about measurements like depth." },
+            { q: "The soup is extremely _____.", opts: ["spicys", "spicy", "a spicy"], ans: 1, exp: "Adjectives appear after the verb 'be' without an article when there is no following noun." },
+            { q: "Please grab a _____ towel.", opts: ["papers", "paper's", "paper"], ans: 2, exp: "The modifying noun (paper) stays singular." },
+            { q: "_____ the movie like?", opts: ["How was", "What was", "Which was"], ans: 1, exp: "The pattern 'What + Be + Subject + Like' applies to the past tense too." },
+            { q: "She adopted two _____ cats.", opts: ["beautiful", "beautifuls", "beautiful's"], ans: 0, exp: "Adjectives NEVER change form, even when modifying plural nouns." }
+        ];
+        
+        let quizCurrent = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        function quizInit() {
+            quizCurrent = 0;
+            quizScore = 0;
+            document.getElementById('quiz-btn-reset').classList.add('hidden');
+            quizLoad();
+        }
+
+        function quizLoad() {
+            quizAnswered = false;
+            const q = quizData[quizCurrent];
+            
+            document.getElementById('quiz-progress').textContent = `Q ${quizCurrent + 1}/${quizData.length}`;
+            document.getElementById('quiz-question').textContent = q.q;
+            
+            const optsContainer = document.getElementById('quiz-options');
+            optsContainer.innerHTML = '';
+            
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-slate-200 bg-white font-medium text-slate-700 flex items-center justify-between';
+                btn.innerHTML = `<span>${opt}</span> <i class="fa-solid fa-circle indicator-icon text-slate-200"></i>`;
+                btn.onclick = () => quizSelect(idx, btn);
+                optsContainer.appendChild(btn);
+            });
+            
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('quiz-btn-next').classList.add('hidden');
+        }
+
+        function quizSelect(idx, btnElement) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+            
+            const q = quizData[quizCurrent];
+            const isCorrect = idx === q.ans;
+            if (isCorrect) quizScore++;
+            
+            const allBtns = document.getElementById('quiz-options').children;
+            for (let i = 0; i < allBtns.length; i++) {
+                allBtns[i].classList.add('option-disabled');
+                allBtns[i].onclick = null;
+                
+                const icon = allBtns[i].querySelector('.indicator-icon');
+                if (i === q.ans) {
+                    allBtns[i].className = 'w-full text-left p-4 rounded-xl border-2 font-medium flex items-center justify-between option-correct';
+                    icon.className = 'fa-solid fa-circle-check text-green-600 text-xl';
+                } else if (i === idx && !isCorrect) {
+                    allBtns[i].className = 'w-full text-left p-4 rounded-xl border-2 font-medium flex items-center justify-between option-incorrect';
+                    icon.className = 'fa-solid fa-circle-xmark text-red-600 text-xl';
+                }
+            }
+            
+            const fbBox = document.getElementById('quiz-feedback');
+            const fbText = document.getElementById('quiz-feedback-text');
+            fbBox.classList.remove('hidden', 'bg-green-50', 'border-green-200', 'text-green-800', 'bg-red-50', 'border-red-200', 'text-red-800');
+            
+            if (isCorrect) {
+                fbBox.classList.add('bg-green-50', 'border-green-200', 'text-green-800');
+                fbText.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Correct! ${q.exp}`;
+            } else {
+                fbBox.classList.add('bg-red-50', 'border-red-200', 'text-red-800');
+                fbText.innerHTML = `<i class="fa-solid fa-xmark mr-2"></i> Incorrect. ${q.exp}`;
+            }
+            
+            document.getElementById('quiz-btn-next').classList.remove('hidden');
+            if (quizCurrent === quizData.length - 1) {
+                document.getElementById('quiz-btn-next').textContent = "Finish Quiz";
+            } else {
+                document.getElementById('quiz-btn-next').innerHTML = `Next <i class="fa-solid fa-arrow-right ml-2"></i>`;
+            }
+        }
+
+        function quizNext() {
+            if (quizCurrent < quizData.length - 1) {
+                quizCurrent++;
+                quizLoad();
+            } else {
+                // Show final score
+                document.getElementById('quiz-options').innerHTML = '';
+                document.getElementById('quiz-question').innerHTML = `<div class="text-center py-8"><i class="fa-solid fa-trophy text-6xl text-yellow-500 mb-6 animate-pulse"></i><br>Quiz Complete!<br><span class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Score: ${quizScore}/${quizData.length}</span></div>`;
+                document.getElementById('quiz-progress').textContent = "Done";
+                document.getElementById('quiz-feedback').classList.add('hidden');
+                document.getElementById('quiz-btn-next').classList.add('hidden');
+                document.getElementById('quiz-btn-reset').classList.remove('hidden');
+            }
+        }
+
+
+        // ==========================================
+        // EXERCISE 2: IDENTIFY LOGIC
+        // ==========================================
+        // Data format: array of words/punctuation. isAdj marks correct targets.
+        const identifyData = [
+            [
+                {w:"The"}, {w:"angry", isAdj:true}, {w:"customer"}, {w:"demanded"}, {w:"a"}, {w:"full", isAdj:true}, {w:"refund."}
+            ],
+            [
+                {w:"My"}, {w:"brother"}, {w:"drinks"}, {w:"cold", isAdj:true}, {w:"apple", isAdj:true}, {w:"juice"}, {w:"every"}, {w:"morning."}
+            ],
+            [
+                {w:"What"}, {w:"kind"}, {w:"of"}, {w:"music", isAdj:true}, {w:"festival"}, {w:"is"}, {w:"happening"}, {w:"downtown?"}
+            ],
+            [
+                {w:"The"}, {w:"heavy", isAdj:true}, {w:"suitcase"}, {w:"contains"}, {w:"important", isAdj:true}, {w:"documents."}
+            ],
+            [
+                {w:"We"}, {w:"walked"}, {w:"through"}, {w:"a"}, {w:"dark", isAdj:true}, {w:"pine", isAdj:true}, {w:"forest."}
+            ],
+            [
+                {w:"Their"}, {w:"new", isAdj:true}, {w:"apartment"}, {w:"has"}, {w:"huge", isAdj:true}, {w:"windows."}
+            ],
+            [
+                {w:"He"}, {w:"wore"}, {w:"a"}, {w:"clean", isAdj:true}, {w:"cotton", isAdj:true}, {w:"shirt"}, {w:"to"}, {w:"the"}, {w:"formal", isAdj:true}, {w:"dinner."}
+            ],
+            [
+                {w:"How"}, {w:"long", isAdj:true}, {w:"is"}, {w:"the"}, {w:"wooden", isAdj:true}, {w:"bridge?"}
+            ],
+            [
+                {w:"She"}, {w:"is"}, {w:"reading"}, {w:"a"}, {w:"fascinating", isAdj:true}, {w:"history", isAdj:true}, {w:"book."}
+            ],
+            [
+                {w:"The"}, {w:"fresh", isAdj:true}, {w:"strawberries"}, {w:"taste"}, {w:"sweet", isAdj:true}, {w:"and"}, {w:"delicious.", isAdj:true}
+            ]
+        ];
+        
+        let identifyCurrent = 0;
+        let identifySelected = new Set();
+        let identifyChecked = false;
+
+        function identifyInit() {
+            identifyCurrent = 0;
+            document.getElementById('identify-total').textContent = identifyData.length;
+            document.getElementById('identify-btn-reset').classList.add('hidden');
+            identifyLoad();
+        }
+
+        function identifyLoad() {
+            identifySelected.clear();
+            identifyChecked = false;
+            document.getElementById('identify-current').textContent = identifyCurrent + 1;
+            
+            const container = document.getElementById('identify-sentence-container');
+            container.innerHTML = '';
+            
+            const sentenceData = identifyData[identifyCurrent];
+            
+            sentenceData.forEach((item, index) => {
+                const span = document.createElement('span');
+                span.textContent = item.w;
+                span.className = 'identify-word bg-slate-100 text-slate-800';
+                span.dataset.index = index;
+                span.dataset.isAdj = item.isAdj ? "true" : "false";
+                
+                span.onclick = () => identifyToggle(span, index);
+                container.appendChild(span);
+            });
+
+            document.getElementById('identify-feedback').classList.add('hidden');
+            document.getElementById('identify-btn-check').classList.remove('hidden');
+            document.getElementById('identify-btn-next').classList.add('hidden');
+        }
+
+        function identifyToggle(span, index) {
+            if(identifyChecked) return;
+            
+            if(identifySelected.has(index)) {
+                identifySelected.delete(index);
+                span.classList.remove('selected');
+            } else {
+                identifySelected.add(index);
+                span.classList.add('selected');
+            }
+        }
+
+        function identifyCheck() {
+            if(identifyChecked) return;
+            identifyChecked = true;
+            
+            const sentenceData = identifyData[identifyCurrent];
+            const spans = document.querySelectorAll('.identify-word');
+            
+            let correctCount = 0;
+            let totalAdjs = sentenceData.filter(i => i.isAdj).length;
+            let mistakeMade = false;
+
+            spans.forEach((span, idx) => {
+                const isTarget = span.dataset.isAdj === "true";
+                const isSelected = identifySelected.has(idx);
+                
+                // Remove general selected style
+                span.classList.remove('selected', 'bg-slate-100');
+                
+                if(isTarget && isSelected) {
+                    span.classList.add('correct'); // Hit
+                    correctCount++;
+                } else if (!isTarget && isSelected) {
+                    span.classList.add('incorrect'); // False positive
+                    mistakeMade = true;
+                } else if (isTarget && !isSelected) {
+                    span.classList.add('missed'); // Missed
+                    span.classList.add('bg-slate-50', 'text-slate-500');
+                    mistakeMade = true;
+                } else {
+                    // Normal unselected word
+                    span.classList.add('bg-transparent', 'text-slate-400');
+                    span.style.cursor = 'default';
+                }
+            });
+
+            const fbBox = document.getElementById('identify-feedback');
+            fbBox.classList.remove('hidden', 'bg-green-50', 'text-green-700', 'border-green-200', 'bg-amber-50', 'text-amber-700', 'border-amber-200');
+            
+            if(!mistakeMade && correctCount === totalAdjs) {
+                fbBox.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+                fbBox.innerHTML = "<i class='fa-solid fa-star mr-2'></i> Perfect! You found all adjectives.";
+            } else {
+                fbBox.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+                fbBox.innerHTML = `You found ${correctCount} of ${totalAdjs} adjectives. <br><span class="text-sm font-normal">Green = Correct | Red = Incorrect | Dashed Border = Missed</span>`;
+            }
+
+            document.getElementById('identify-btn-check').classList.add('hidden');
+            
+            if(identifyCurrent < identifyData.length - 1) {
+                document.getElementById('identify-btn-next').classList.remove('hidden');
+            } else {
+                document.getElementById('identify-btn-reset').classList.remove('hidden');
+            }
+        }
+
+        function identifyNext() {
+            if (identifyCurrent < identifyData.length - 1) {
+                identifyCurrent++;
+                identifyLoad();
+            }
+        }
+
+
+        // ==========================================
+        // EXERCISE 3: MATCH PAIRS LOGIC
+        // ==========================================
+        const matchPairsPool = [
+            { id: 1, left: "car", right: "door" },
+            { id: 2, left: "coffee", right: "cup" },
+            { id: 3, left: "water", right: "bottle" },
+            { id: 4, left: "guitar", right: "string" },
+            { id: 5, left: "tennis", right: "court" },
+            { id: 6, left: "computer", right: "screen" },
+            { id: 7, left: "picture", right: "frame" },
+            { id: 8, left: "kitchen", right: "sink" },
+            { id: 9, left: "flower", right: "pot" },
+            { id: 10, left: "mountain", right: "peak" },
+            { id: 11, left: "ticket", right: "counter" },
+            { id: 12, left: "train", right: "station" },
+            { id: 13, left: "apple", right: "tree" },
+            { id: 14, left: "fruit", right: "salad" },
+            { id: 15, left: "office", right: "chair" },
+            { id: 16, left: "chicken", right: "soup" },
+            { id: 17, left: "winter", right: "jacket" },
+            { id: 18, left: "morning", right: "coffee" },
+            { id: 19, left: "flight", right: "attendant" },
+            { id: 20, left: "paper", right: "bag" }
+        ];
+
+        let activeMatchPairs = [];
+        let selLeft = null;
+        let selRight = null;
+        let matchedCount = 0;
+
+        // Shuffle utility
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function matchInit() {
+            selLeft = null;
+            selRight = null;
+            matchedCount = 0;
+            
+            // Select 5 random pairs from the pool for a game
+            activeMatchPairs = shuffleArray([...matchPairsPool]).slice(0, 5);
+            
+            document.getElementById('match-btn-reset').classList.add('hidden');
+            document.getElementById('match-feedback').textContent = '';
+            document.getElementById('match-feedback').className = 'text-center h-8 font-semibold text-lg transition-colors text-transparent';
+
+            const leftCol = document.getElementById('match-col-left');
+            const rightCol = document.getElementById('match-col-right');
+            leftCol.innerHTML = '';
+            rightCol.innerHTML = '';
+
+            // Clone and shuffle independently
+            const leftItems = shuffleArray([...activeMatchPairs].map(p => ({ id: p.id, text: p.left, side: 'left' })));
+            const rightItems = shuffleArray([...activeMatchPairs].map(p => ({ id: p.id, text: p.right, side: 'right' })));
+
+            leftItems.forEach(item => leftCol.appendChild(createMatchBtn(item)));
+            rightItems.forEach(item => rightCol.appendChild(createMatchBtn(item)));
+        }
+
+        function createMatchBtn(item) {
+            const btn = document.createElement('button');
+            btn.className = 'match-btn pop-out w-full p-4 rounded-xl text-center font-bold text-slate-700 bg-white border-2 border-slate-100 shadow-sm hover:border-indigo-400 hover:text-indigo-600';
+            btn.textContent = item.text;
+            btn.dataset.id = item.id;
+            btn.dataset.side = item.side;
+            btn.onclick = () => handleMatchClick(btn, item);
+            return btn;
+        }
+
+        function handleMatchClick(btn, item) {
+            if(btn.classList.contains('matched')) return;
+
+            // Clear previous flashes
+            document.querySelectorAll('.match-btn').forEach(b => b.classList.remove('wrong-flash'));
+
+            if(item.side === 'left') {
+                if(selLeft) selLeft.element.classList.remove('selected');
+                selLeft = { element: btn, id: item.id };
+                btn.classList.add('selected');
+            } else {
+                if(selRight) selRight.element.classList.remove('selected');
+                selRight = { element: btn, id: item.id };
+                btn.classList.add('selected');
+            }
+
+            // Check if both selected
+            if(selLeft && selRight) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const fb = document.getElementById('match-feedback');
+            
+            if(selLeft.id === selRight.id) {
+                // Match Success
+                selLeft.element.classList.remove('selected');
+                selRight.element.classList.remove('selected');
+                selLeft.element.classList.add('matched');
+                selRight.element.classList.add('matched');
+                
+                // Get text for feedback
+                const fullPhrase = `${selLeft.element.textContent} ${selRight.element.textContent}`;
+                fb.textContent = `Correct: ${fullPhrase}`;
+                fb.className = 'text-center h-8 font-semibold text-lg transition-colors text-green-600';
+                
+                matchedCount++;
+                selLeft = null;
+                selRight = null;
+
+                if(matchedCount === activeMatchPairs.length) {
+                    setTimeout(() => {
+                        fb.innerHTML = `<i class="fa-solid fa-trophy mr-2 text-yellow-500 animate-bounce"></i> All pairs matched successfully!`;
+                        fb.className = 'text-center h-8 font-bold text-2xl transition-all text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-600 mt-4';
+                        document.getElementById('match-btn-reset').classList.remove('hidden');
+                    }, 500);
+                }
+            } else {
+                // Match Failed
+                fb.textContent = 'Try again!';
+                fb.className = 'text-center h-8 font-semibold text-lg transition-colors text-red-500';
+                
+                selLeft.element.classList.remove('selected');
+                selRight.element.classList.remove('selected');
+                selLeft.element.classList.add('wrong-flash');
+                selRight.element.classList.add('wrong-flash');
+                
+                selLeft = null;
+                selRight = null;
+                
+                setTimeout(() => {
+                    if(fb.textContent === 'Try again!') {
+                        fb.className = 'text-center h-8 font-semibold text-lg transition-colors text-transparent';
+                    }
+                }, 1500);
+            }
+        }
+
+
+        // ==========================================
+        // EXERCISE 4: FILL IN THE BLANKS LOGIC
+        // ==========================================
+        const fillData = [
+            { pre: "We are planning a huge ", blank: "birthday", post: " party.", opts: ["birthdays", "birthday", "birthday's"] },
+            { pre: "", blank: "How", post: " far is the airport from here?", opts: ["What", "Which", "How"] },
+            { pre: "They bought ", blank: "an", post: " expensive television.", opts: ["a", "an", "the"] },
+            { pre: "What is your hometown ", blank: "like", post: "?", opts: ["look", "like", "love"] },
+            { pre: "He forgot his ", blank: "credit", post: " card at home.", opts: ["credits", "credit", "credit's"] },
+            { pre: "These farm apples are very ", blank: "sweet", post: ".", opts: ["sweets", "sweet", "a sweet"] },
+            { pre: "She works as a ", blank: "computer", post: " programmer.", opts: ["computers", "computer", "computer's"] },
+            { pre: "What ", blank: "kind", post: " of car does he drive?", opts: ["type", "kind", "style"] },
+            { pre: "My older brother is a ", blank: "police", post: " officer.", opts: ["polices", "police", "police's"] },
+            { pre: "I need to buy a ", blank: "swimming", post: " cap.", opts: ["swim", "swimming", "swims"] },
+            { pre: "The new singer has ", blank: "an", post: " amazing voice.", opts: ["a", "an", "the"] },
+            { pre: "", blank: "How", post: " was your family vacation?", opts: ["What", "How", "Which"] }
+        ];
+
+        let fillCurrent = 0;
+        let fillAnswered = false;
+
+        function fillInit() {
+            fillCurrent = 0;
+            document.getElementById('fill-btn-reset').classList.add('hidden');
+            fillLoad();
+        }
+
+        function fillLoad() {
+            fillAnswered = false;
+            const q = fillData[fillCurrent];
+            
+            document.getElementById('fill-progress').textContent = `Q ${fillCurrent + 1}/${fillData.length}`;
+            
+            // Build sentence
+            const sentenceContainer = document.getElementById('fill-sentence');
+            sentenceContainer.innerHTML = `${q.pre}<span id="fill-target" class="fill-blank text-slate-300">___</span>${q.post}`;
+            
+            // Build options
+            const optsContainer = document.getElementById('fill-options');
+            optsContainer.innerHTML = '';
+            
+            // Shuffle options for display
+            const shuffledOpts = shuffleArray([...q.opts]);
+            
+            shuffledOpts.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = 'pop-out bg-white border-2 border-violet-200 text-violet-700 font-bold py-3 px-6 rounded-xl hover:bg-violet-50 hover:border-violet-400 shadow-sm text-lg';
+                btn.textContent = opt;
+                btn.onclick = () => fillSelect(opt, q.blank, btn);
+                optsContainer.appendChild(btn);
+            });
+            
+            document.getElementById('fill-feedback').classList.add('hidden');
+            document.getElementById('fill-btn-next').classList.add('hidden');
+        }
+
+        function fillSelect(selectedWord, correctWord, btnElement) {
+            if (fillAnswered) return;
+            fillAnswered = true;
+            
+            const target = document.getElementById('fill-target');
+            target.textContent = selectedWord;
+            target.classList.add('filled');
+            
+            const isCorrect = selectedWord === correctWord;
+            const fbBox = document.getElementById('fill-feedback');
+            fbBox.classList.remove('hidden', 'bg-green-50', 'text-green-700', 'border-green-200', 'bg-red-50', 'text-red-700', 'border-red-200');
+            
+            // Disable options
+            const allBtns = document.getElementById('fill-options').children;
+            for (let i = 0; i < allBtns.length; i++) {
+                allBtns[i].disabled = true;
+                allBtns[i].classList.remove('pop-out', 'hover:bg-violet-50', 'hover:border-violet-400');
+                allBtns[i].classList.add('opacity-50', 'cursor-not-allowed');
+                
+                if (allBtns[i].textContent === correctWord) {
+                    allBtns[i].classList.remove('border-violet-200', 'text-violet-700', 'opacity-50');
+                    allBtns[i].classList.add('border-green-500', 'bg-green-100', 'text-green-800');
+                }
+            }
+
+            if (isCorrect) {
+                target.classList.add('correct');
+                btnElement.classList.remove('border-violet-200');
+                btnElement.classList.add('border-green-500', 'bg-green-100', 'text-green-800', 'scale-105');
+                
+                fbBox.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+                fbBox.innerHTML = "<i class='fa-solid fa-circle-check text-xl mr-2'></i> Excellent!";
+            } else {
+                target.classList.add('incorrect');
+                btnElement.classList.remove('border-violet-200');
+                btnElement.classList.add('border-red-500', 'bg-red-100', 'text-red-800', 'opacity-100');
+                
+                fbBox.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
+                fbBox.innerHTML = "<i class='fa-solid fa-circle-xmark text-xl mr-2'></i> Not quite. The correct answer is highlighted.";
+            }
+            
+            document.getElementById('fill-btn-next').classList.remove('hidden');
+            if (fillCurrent === fillData.length - 1) {
+                document.getElementById('fill-btn-next').innerHTML = `Finish <i class="fa-solid fa-flag-checkered ml-2"></i>`;
+            }
+        }
+
+        function fillNext() {
+            if (fillCurrent < fillData.length - 1) {
+                fillCurrent++;
+                fillLoad();
+            } else {
+                document.getElementById('fill-options').innerHTML = '';
+                document.getElementById('fill-sentence').innerHTML = `<div class="py-6"><i class="fa-solid fa-award text-6xl text-fuchsia-500 mb-6 animate-pulse"></i><br><span class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-fuchsia-600">Great Job!</span></div>`;
+                document.getElementById('fill-progress').textContent = "Done";
+                document.getElementById('fill-feedback').classList.add('hidden');
+                document.getElementById('fill-btn-next').classList.add('hidden');
+                document.getElementById('fill-btn-reset').classList.remove('hidden');
+            }
+        }
+
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        window.onload = function() {
+            setupInteractiveStudy();
+            // Optional: init practice in background so it's ready
+            quizInit();
+            identifyInit();
+            matchInit();
+            fillInit();
+        };
+
+    </script>
+</body>
+</html>
