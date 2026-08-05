@@ -250,9 +250,68 @@
         .option-correct { background-color: #dcfce7; border-color: #22c55e; color: #166534; }
         .option-incorrect { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; }
         .option-disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* Reading Passage Styles */
+        .reading-word {
+            display: inline-block;
+            margin: 2px 1px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            font-size: 1.125rem;
+        }
+        .reading-word:hover {
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+        .reading-word.selected {
+            background-color: #818cf8;
+            color: white;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+            border-color: #6366f1;
+        }
+        .reading-word.correct {
+            background-color: #22c55e;
+            color: white;
+            border-color: #16a34a;
+        }
+        .reading-word.incorrect {
+            background-color: #ef4444;
+            color: white;
+            text-decoration: line-through;
+            border-color: #dc2626;
+        }
+        .reading-word.missed {
+            border-color: #eab308;
+            border-width: 2px;
+            border-style: dashed;
+            background-color: #fefce8;
+            color: #854d0e;
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <!-- Global SVG Overlay for Connection Arrows -->
+    <svg id="connection-svg" class="hidden fixed top-0 left-0 w-full h-full pointer-events-none z-[100]">
+        <defs>
+            <marker id="arrowhead-study" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
+            </marker>
+            <marker id="arrowhead-correct" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a" /> <!-- Green 600 -->
+            </marker>
+            <marker id="arrowhead-incorrect" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /> <!-- Red 600 -->
+            </marker>
+            <marker id="arrowhead-neutral" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" /> <!-- Slate 400 -->
+            </marker>
+        </defs>
+        <g id="svg-paths-container"></g>
+    </svg>
 
     <header class="bg-white shadow-sm sticky top-0 z-20">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -481,11 +540,17 @@
                         <h2 class="text-2xl font-bold text-slate-900 mb-4">Practice Exercises</h2>
                         
                         <div class="flex flex-wrap justify-center gap-2 p-1 bg-slate-100 rounded-xl inline-flex">
-                            <button id="ex-tab-quiz" onclick="switchExTab('quiz')" class="subtab-active px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
+                            <button id="ex-tab-quiz" onclick="switchExTab('quiz')" class="subtab-active px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105 shadow-md">
                                 <i class="fa-solid fa-list-check mr-2"></i>Multiple Choice
                             </button>
                             <button id="ex-tab-identify" onclick="switchExTab('identify')" class="subtab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
                                 <i class="fa-solid fa-magnifying-glass mr-2"></i>Identify
+                            </button>
+                            <button id="ex-tab-reading" onclick="switchExTab('reading')" class="subtab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
+                                <i class="fa-solid fa-book-open-reader mr-2"></i>Reading
+                            </button>
+                            <button id="ex-tab-link" onclick="switchExTab('link')" class="subtab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
+                                <i class="fa-solid fa-diagram-project mr-2"></i>Connect Words
                             </button>
                             <button id="ex-tab-match" onclick="switchExTab('match')" class="subtab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105">
                                 <i class="fa-solid fa-link mr-2"></i>Match Pairs
@@ -557,6 +622,76 @@
                                 Next Sentence <i class="fa-solid fa-arrow-right ml-2"></i>
                             </button>
                             <button id="identify-btn-reset" onclick="identifyInit()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-8 rounded-xl pop-out">
+                                Play Again <i class="fa-solid fa-rotate-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --------------------------------------- -->
+                    <!-- EXERCISE 2.5: READING PASSAGE           -->
+                    <!-- --------------------------------------- -->
+                    <div id="ex-container-reading" class="hidden fade-in">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-lg text-slate-800">Passage Analysis</h3>
+                            <p class="text-sm text-slate-600 mt-1">Read the short passage below. Click on <strong>all</strong> the adjectives and nouns used as adjectives.</p>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Passage <span id="reading-current">1</span> of <span id="reading-total">2</span></span>
+                        </div>
+
+                        <div class="bg-white border-2 border-indigo-100 shadow-inner rounded-xl p-6 md:p-8 mb-6 leading-loose text-slate-700">
+                            <div id="reading-passage-container" class="text-justify">
+                                <!-- Paragraph words injected here -->
+                            </div>
+                        </div>
+
+                        <div id="reading-feedback" class="hidden p-4 rounded-xl border mb-6 text-center font-medium">
+                        </div>
+
+                        <div class="flex justify-center gap-4">
+                            <button id="reading-btn-check" onclick="readingCheck()" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-bold py-3 px-8 rounded-xl shadow-[0_5px_15px_rgba(16,185,129,0.4)] pop-out">
+                                Check Passage <i class="fa-solid fa-check ml-2"></i>
+                            </button>
+                            <button id="reading-btn-next" onclick="readingNext()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl shadow-lg pop-out">
+                                Next Passage <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                            <button id="reading-btn-reset" onclick="readingInit()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-8 rounded-xl pop-out">
+                                Restart Reading <i class="fa-solid fa-rotate-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --------------------------------------- -->
+                    <!-- EXERCISE 2.75: CONNECT WORDS            -->
+                    <!-- --------------------------------------- -->
+                    <div id="ex-container-link" class="hidden fade-in">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-lg text-slate-800">Connect the Modifiers</h3>
+                            <p class="text-sm text-slate-600 mt-1">Tap an adjective, then tap the noun it modifies to draw a connection. Connect all adjective-noun pairs in the sentence!</p>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Sentence <span id="link-current">1</span> of <span id="link-total">3</span></span>
+                        </div>
+
+                        <div class="bg-white border-2 border-indigo-100 shadow-inner rounded-xl p-6 mb-6 text-center min-h-[160px] flex items-center justify-center">
+                            <div id="link-sentence-container" class="leading-[4rem] text-xl flex flex-wrap justify-center gap-x-2 gap-y-6">
+                                <!-- Words injected here -->
+                            </div>
+                        </div>
+
+                        <div id="link-feedback" class="hidden p-4 rounded-xl border mb-6 text-center font-medium">
+                        </div>
+
+                        <div class="flex justify-center gap-4">
+                            <button id="link-btn-check" onclick="linkCheck()" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3 px-8 rounded-xl shadow-[0_5px_15px_rgba(79,70,229,0.4)] pop-out">
+                                Check Connections <i class="fa-solid fa-check ml-2"></i>
+                            </button>
+                            <button id="link-btn-next" onclick="linkNext()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl shadow-lg pop-out">
+                                Next Sentence <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                            <button id="link-btn-reset" onclick="linkInit()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-8 rounded-xl pop-out">
                                 Play Again <i class="fa-solid fa-rotate-right ml-2"></i>
                             </button>
                         </div>
@@ -640,12 +775,13 @@
         // ==========================================
         
         function switchMainTab(tabId) {
-            document.getElementById('tab-study').className = tabId === 'study' ? 'tab-active px-3 py-4 text-sm font-medium transition-colors' : 'tab-inactive px-3 py-4 text-sm font-medium transition-colors';
-            document.getElementById('tab-practice').className = tabId === 'practice' ? 'tab-active px-3 py-4 text-sm font-medium transition-colors' : 'tab-inactive px-3 py-4 text-sm font-medium transition-colors';
+            document.getElementById('tab-study').className = tabId === 'study' ? 'tab-active px-3 py-4 text-sm font-medium transition-colors hover:text-indigo-600' : 'tab-inactive px-3 py-4 text-sm font-medium transition-colors hover:text-indigo-600';
+            document.getElementById('tab-practice').className = tabId === 'practice' ? 'tab-active px-3 py-4 text-sm font-medium transition-colors hover:text-indigo-600' : 'tab-inactive px-3 py-4 text-sm font-medium transition-colors hover:text-indigo-600';
             
             if (tabId === 'study') {
                 document.getElementById('section-study').classList.remove('hidden');
                 document.getElementById('section-practice').classList.add('hidden');
+                setTimeout(redrawAllArrows, 50);
             } else {
                 document.getElementById('section-study').classList.add('hidden');
                 document.getElementById('section-practice').classList.remove('hidden');
@@ -656,13 +792,15 @@
                     identifyInit();
                     matchInit();
                     fillInit();
+                    linkInit();
                 }
+                setTimeout(redrawAllArrows, 50);
             }
         }
 
         function switchExTab(exId) {
             // Update Subtabs UI
-            const tabs = ['quiz', 'identify', 'match', 'fill'];
+            const tabs = ['quiz', 'identify', 'reading', 'match', 'fill', 'link'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`ex-tab-${t}`);
                 if (t === exId) {
@@ -675,9 +813,12 @@
                     document.getElementById(`ex-container-${t}`).classList.add('hidden');
                 }
             });
+            setTimeout(redrawAllArrows, 50);
         }
 
         // Setup Interactive Study Hover/Click Effects
+        let activeAdjEl = null;
+
         function setupInteractiveStudy() {
             const adjs = document.querySelectorAll('.interactive-adj');
             
@@ -695,11 +836,21 @@
                         // clear others first
                         adjs.forEach(a => deactivateConnection(a));
                         activateConnection(adj);
-                        // auto deactivate after 2 secs on mobile
-                        setTimeout(() => deactivateConnection(adj), 2000);
+                        // auto deactivate after 3 secs on mobile
+                        setTimeout(() => {
+                            if(activeAdjEl === adj) deactivateConnection(adj);
+                        }, 3000);
                     }
                 });
             });
+
+            // Hide arrows on scroll or resize to prevent misalignment
+            window.addEventListener('scroll', hideAllConnections);
+            window.addEventListener('resize', hideAllConnections);
+        }
+
+        function hideAllConnections() {
+            if(activeAdjEl) deactivateConnection(activeAdjEl);
         }
 
         function activateConnection(adjEl) {
@@ -708,6 +859,8 @@
             if(targetEl) {
                 targetEl.classList.add('interactive-active-noun');
                 adjEl.classList.add('interactive-active-adj');
+                activeAdjEl = adjEl;
+                redrawAllArrows();
             }
         }
 
@@ -718,7 +871,68 @@
                 targetEl.classList.remove('interactive-active-noun');
                 adjEl.classList.remove('interactive-active-adj');
             }
+            if(activeAdjEl === adjEl) {
+                activeAdjEl = null;
+                redrawAllArrows();
+            }
         }
+
+        function createArrowSVG(startEl, endEl, state) {
+            if (!startEl || !endEl) return '';
+            const startRect = startEl.getBoundingClientRect();
+            const endRect = endEl.getBoundingClientRect();
+            
+            const startX = startRect.left + (startRect.width / 2);
+            const startY = startRect.bottom + 2;
+            const endX = endRect.left + (endRect.width / 2);
+            const endY = endRect.bottom + 2;
+            
+            const diffX = Math.abs(endX - startX);
+            const curveDepth = Math.max(25, diffX * 0.15);
+            const lowestY = Math.max(startY, endY) + curveDepth;
+            
+            let color = '#94a3b8'; // neutral
+            let marker = 'url(#arrowhead-neutral)';
+            
+            if(state === 'study') { color = '#6366f1'; marker = 'url(#arrowhead-study)'; }
+            if(state === 'correct') { color = '#16a34a'; marker = 'url(#arrowhead-correct)'; }
+            if(state === 'incorrect') { color = '#dc2626'; marker = 'url(#arrowhead-incorrect)'; }
+            
+            return `<path d="M ${startX},${startY} Q ${(startX+endX)/2},${lowestY} ${endX},${endY + 6}" 
+                          stroke="${color}" stroke-width="2.5" fill="none" stroke-dasharray="4" marker-end="${marker}"/>`;
+        }
+
+        function redrawAllArrows() {
+            let html = '';
+            
+            // Draw for Study Guide
+            if (activeAdjEl && document.getElementById('section-study').classList.contains('block')) {
+                const targetId = activeAdjEl.getAttribute('data-target');
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) html += createArrowSVG(activeAdjEl, targetEl, 'study');
+            }
+            
+            // Draw for Link Exercise
+            if (document.getElementById('ex-container-link') && !document.getElementById('ex-container-link').classList.contains('hidden')) {
+                linkUserPairs.forEach(pair => {
+                    const startEl = document.getElementById(`link-word-${pair.start}`);
+                    const endEl = document.getElementById(`link-word-${pair.end}`);
+                    if(startEl && endEl) html += createArrowSVG(startEl, endEl, pair.status || 'neutral');
+                });
+            }
+            
+            document.getElementById('svg-paths-container').innerHTML = html;
+            
+            if (html !== '') {
+                document.getElementById('connection-svg').classList.remove('hidden');
+            } else {
+                document.getElementById('connection-svg').classList.add('hidden');
+            }
+        }
+
+        // Add scroll and resize listeners to maintain connections visually
+        window.addEventListener('scroll', () => requestAnimationFrame(redrawAllArrows));
+        window.addEventListener('resize', redrawAllArrows);
 
 
         // ==========================================
@@ -979,6 +1193,274 @@
             if (identifyCurrent < identifyData.length - 1) {
                 identifyCurrent++;
                 identifyLoad();
+            }
+        }
+
+        // ==========================================
+        // EXERCISE 2.5: READING PASSAGE LOGIC
+        // ==========================================
+        const readingData = [
+            [
+                {w:"The"}, {w:"hot", isAdj:true}, {w:"summer", isAdj:true}, {w:"sun"}, {w:"beat"}, {w:"down"}, {w:"on"}, {w:"the"}, {w:"dry", isAdj:true}, {w:"desert", isAdj:true}, {w:"sand."}, 
+                {w:"A"}, {w:"small", isAdj:true}, {w:"lizard"}, {w:"scurried"}, {w:"quickly"}, {w:"under"}, {w:"a"}, {w:"large", isAdj:true}, {w:"rock."}, 
+                {w:"It"}, {w:"was"}, {w:"a"}, {w:"perfect", isAdj:true}, {w:"hiding", isAdj:true}, {w:"spot"}, {w:"from"}, {w:"the"}, {w:"hungry", isAdj:true}, {w:"hawk"}, {w:"circling"}, {w:"in"}, {w:"the"}, {w:"clear", isAdj:true}, {w:"blue", isAdj:true}, {w:"sky."}
+            ],
+            [
+                {w:"Our"}, {w:"science", isAdj:true}, {w:"teacher"}, {w:"gave"}, {w:"us"}, {w:"a"}, {w:"difficult", isAdj:true}, {w:"homework", isAdj:true}, {w:"assignment."}, 
+                {w:"We"}, {w:"have"}, {w:"to"}, {w:"build"}, {w:"a"}, {w:"water", isAdj:true}, {w:"filter"}, {w:"using"}, {w:"empty", isAdj:true}, {w:"plastic", isAdj:true}, {w:"bottles"}, {w:"and"}, {w:"clean", isAdj:true}, {w:"gravel."}, 
+                {w:"It"}, {w:"sounds"}, {w:"like"}, {w:"an"}, {w:"interesting", isAdj:true}, {w:"project,"}, {w:"but"}, {w:"I"}, {w:"need"}, {w:"some"}, {w:"extra", isAdj:true}, {w:"time."}
+            ]
+        ];
+
+        let readingCurrent = 0;
+        let readingSelected = new Set();
+        let readingChecked = false;
+
+        function readingInit() {
+            readingCurrent = 0;
+            document.getElementById('reading-total').textContent = readingData.length;
+            document.getElementById('reading-btn-reset').classList.add('hidden');
+            readingLoad();
+        }
+
+        function readingLoad() {
+            readingSelected.clear();
+            readingChecked = false;
+            document.getElementById('reading-current').textContent = readingCurrent + 1;
+            
+            const container = document.getElementById('reading-passage-container');
+            container.innerHTML = '';
+            
+            const passage = readingData[readingCurrent];
+            
+            passage.forEach((item, index) => {
+                const span = document.createElement('span');
+                span.textContent = item.w;
+                span.className = 'reading-word';
+                span.dataset.index = index;
+                span.dataset.isAdj = item.isAdj ? "true" : "false";
+                
+                span.onclick = () => readingToggle(span, index);
+                container.appendChild(span);
+            });
+
+            document.getElementById('reading-feedback').classList.add('hidden');
+            document.getElementById('reading-btn-check').classList.remove('hidden');
+            document.getElementById('reading-btn-next').classList.add('hidden');
+        }
+
+        function readingToggle(span, index) {
+            if(readingChecked) return;
+            
+            if(readingSelected.has(index)) {
+                readingSelected.delete(index);
+                span.classList.remove('selected');
+            } else {
+                readingSelected.add(index);
+                span.classList.add('selected');
+            }
+        }
+
+        function readingCheck() {
+            if(readingChecked) return;
+            readingChecked = true;
+            
+            const passage = readingData[readingCurrent];
+            const spans = document.querySelectorAll('#reading-passage-container .reading-word');
+            
+            let correctCount = 0;
+            let totalAdjs = passage.filter(i => i.isAdj).length;
+            let mistakeMade = false;
+
+            spans.forEach((span, idx) => {
+                const isTarget = span.dataset.isAdj === "true";
+                const isSelected = readingSelected.has(idx);
+                
+                span.classList.remove('selected');
+                span.style.cursor = 'default';
+                
+                if(isTarget && isSelected) {
+                    span.classList.add('correct');
+                    correctCount++;
+                } else if (!isTarget && isSelected) {
+                    span.classList.add('incorrect');
+                    mistakeMade = true;
+                } else if (isTarget && !isSelected) {
+                    span.classList.add('missed');
+                    mistakeMade = true;
+                } else {
+                    span.classList.add('text-slate-400'); // Dim non-targets
+                }
+            });
+
+            const fbBox = document.getElementById('reading-feedback');
+            fbBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-amber-50', 'text-amber-800', 'border-amber-200');
+            
+            if(!mistakeMade && correctCount === totalAdjs) {
+                fbBox.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+                fbBox.innerHTML = "<i class='fa-solid fa-star mr-2 text-emerald-600'></i> Brilliant! You identified every adjective and modifier.";
+            } else {
+                fbBox.classList.add('bg-amber-50', 'text-amber-800', 'border-amber-200');
+                fbBox.innerHTML = `You found ${correctCount} of ${totalAdjs} adjectives. Review the highlighted text to see what you missed.`;
+            }
+
+            document.getElementById('reading-btn-check').classList.add('hidden');
+            
+            if(readingCurrent < readingData.length - 1) {
+                document.getElementById('reading-btn-next').classList.remove('hidden');
+            } else {
+                document.getElementById('reading-btn-reset').classList.remove('hidden');
+            }
+        }
+
+        function readingNext() {
+            if (readingCurrent < readingData.length - 1) {
+                readingCurrent++;
+                readingLoad();
+            }
+        }
+
+        // ==========================================
+        // EXERCISE 2.75: CONNECT WORDS LOGIC
+        // ==========================================
+        const linkData = [
+            { words: ["The", "heavy", "metal", "box", "broke", "the", "glass", "table."], pairs: [{adj: 1, noun: 3}, {adj: 2, noun: 3}, {adj: 6, noun: 7}] },
+            { words: ["She", "wears", "a", "beautiful", "silver", "necklace", "daily."], pairs: [{adj: 3, noun: 5}, {adj: 4, noun: 5}] },
+            { words: ["His", "new", "gaming", "computer", "is", "extremely", "fast."], pairs: [{adj: 1, noun: 3}, {adj: 2, noun: 3}, {adj: 6, noun: 3}] }, // fast -> computer
+            { words: ["They", "stayed", "in", "a", "luxury", "mountain", "hotel."], pairs: [{adj: 4, noun: 6}, {adj: 5, noun: 6}] },
+            { words: ["What", "kind", "of", "sports", "car", "is", "that?"], pairs: [{adj: 3, noun: 4}] }
+        ];
+
+        let linkCurrent = 0;
+        let linkUserPairs = [];
+        let linkSelectedWord = null;
+        let linkChecked = false;
+
+        function linkInit() {
+            linkCurrent = 0;
+            document.getElementById('link-total').textContent = linkData.length;
+            document.getElementById('link-btn-reset').classList.add('hidden');
+            linkLoad();
+        }
+
+        function linkLoad() {
+            linkUserPairs = [];
+            linkSelectedWord = null;
+            linkChecked = false;
+            document.getElementById('link-current').textContent = linkCurrent + 1;
+            
+            const container = document.getElementById('link-sentence-container');
+            container.innerHTML = '';
+            
+            const sentenceData = linkData[linkCurrent];
+            
+            sentenceData.words.forEach((word, index) => {
+                const span = document.createElement('span');
+                span.textContent = word;
+                span.id = `link-word-${index}`;
+                span.className = 'cursor-pointer px-3 py-1 rounded-lg border-2 border-transparent hover:bg-slate-100 transition-all font-medium text-slate-700 relative z-10';
+                span.onclick = () => linkWordClick(index, span);
+                container.appendChild(span);
+            });
+
+            document.getElementById('link-feedback').classList.add('hidden');
+            document.getElementById('link-btn-check').classList.remove('hidden');
+            document.getElementById('link-btn-next').classList.add('hidden');
+            
+            redrawAllArrows();
+        }
+
+        function linkWordClick(index, spanElement) {
+            if(linkChecked) return;
+
+            // Deselect if clicking the already selected word
+            if (linkSelectedWord === index) {
+                spanElement.classList.remove('ring-4', 'ring-indigo-400', 'bg-indigo-100');
+                linkSelectedWord = null;
+                return;
+            }
+
+            if (linkSelectedWord === null) {
+                // Select first word
+                linkSelectedWord = index;
+                spanElement.classList.add('ring-4', 'ring-indigo-400', 'bg-indigo-100');
+            } else {
+                // Second word clicked, toggle pair
+                const existingIndex = linkUserPairs.findIndex(p => 
+                    (p.start === linkSelectedWord && p.end === index) || 
+                    (p.start === index && p.end === linkSelectedWord)
+                );
+                
+                if (existingIndex > -1) {
+                    linkUserPairs.splice(existingIndex, 1); // Remove pair
+                } else {
+                    linkUserPairs.push({ start: linkSelectedWord, end: index, status: 'neutral' }); // Add pair
+                }
+                
+                // Clear selection visual
+                document.getElementById(`link-word-${linkSelectedWord}`).classList.remove('ring-4', 'ring-indigo-400', 'bg-indigo-100');
+                linkSelectedWord = null;
+                
+                redrawAllArrows();
+            }
+        }
+
+        function linkCheck() {
+            if(linkChecked) return;
+            
+            // Clear pending selection if any
+            if(linkSelectedWord !== null) {
+                document.getElementById(`link-word-${linkSelectedWord}`).classList.remove('ring-4', 'ring-indigo-400', 'bg-indigo-100');
+                linkSelectedWord = null;
+            }
+            
+            linkChecked = true;
+            const q = linkData[linkCurrent];
+            
+            let correctCount = 0;
+            let falseConnections = 0;
+
+            // Validate connections
+            linkUserPairs.forEach(up => {
+                // Allow pointing Adjective->Noun or Noun->Adjective
+                const isMatch = q.pairs.find(p => (p.adj === up.start && p.noun === up.end) || (p.adj === up.end && p.noun === up.start));
+                if (isMatch) {
+                    up.status = 'correct';
+                    correctCount++;
+                } else {
+                    up.status = 'incorrect';
+                    falseConnections++;
+                }
+            });
+
+            const totalTargets = q.pairs.length;
+            const missedCount = totalTargets - correctCount;
+
+            const fbBox = document.getElementById('link-feedback');
+            fbBox.classList.remove('hidden', 'bg-green-50', 'text-green-700', 'border-green-200', 'bg-amber-50', 'text-amber-700', 'border-amber-200');
+
+            if (correctCount === totalTargets && falseConnections === 0) {
+                fbBox.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+                fbBox.innerHTML = "<i class='fa-solid fa-star mr-2'></i> Perfect! You found every connection.";
+            } else {
+                fbBox.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+                fbBox.innerHTML = `You made ${correctCount} correct connections. ${falseConnections > 0 ? `You had ${falseConnections} incorrect. ` : ''}${missedCount > 0 ? `You missed ${missedCount} pair(s).` : ''}`;
+            }
+
+            redrawAllArrows();
+            
+            document.getElementById('link-btn-check').classList.add('hidden');
+            if (linkCurrent < linkData.length - 1) {
+                document.getElementById('link-btn-next').classList.remove('hidden');
+            } else {
+                document.getElementById('link-btn-reset').classList.remove('hidden');
+            }
+        }
+
+        function linkNext() {
+            if (linkCurrent < linkData.length - 1) {
+                linkCurrent++;
+                linkLoad();
             }
         }
 
@@ -1254,8 +1736,13 @@
             // Optional: init practice in background so it's ready
             quizInit();
             identifyInit();
+            readingInit();
+            linkInit();
             matchInit();
             fillInit();
+            
+            // Listen for resize to ensure arrows scale well
+            window.addEventListener('resize', redrawAllArrows);
         };
 
     </script>
